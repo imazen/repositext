@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 
 require 'kramdown/document'
-require 'repositext/parser'
-require 'repositext/kramdown_adaptions'
+require_relative '../lib/repositext/parser'
+require_relative '../lib/repositext/kramdown_adaptions' 
 
-puts Kramdown::Document.new(ARGF.read, :input => :repositext).to_html
+puts Kramdown::Document.new(ARGF.read, { :input => :repositext, :disable_sync_a => true, :disable_sync_b => true, :disable_subdoc =>true} ).to_html
