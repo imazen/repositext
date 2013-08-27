@@ -9,11 +9,11 @@ class Kramdown::Converter::Html
   end
 
   def convert_line_synchro_marker(el, indent)
-    "<span#{html_attributes(el.attr)}>%</span>"
+    "<span class=\"sync-mark-b\"></span>"
   end
 
   def convert_word_synchro_marker(el, indent)
-    "<span#{html_attributes(el.attr)}>@</span>"
+    "<span class=\"sync-mark-a\"></span>"
   end
 
 end
