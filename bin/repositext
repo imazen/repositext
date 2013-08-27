@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+# -*- encoding: utf-8 -*-
+
+require 'kramdown/document'
+require 'repositext/parser'
+require 'repositext/kramdown_adaptions'
+
+puts Kramdown::Document.new(ARGF.read, :input => :repositext).to_html
