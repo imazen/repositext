@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+
+require 'kramdown/document'
+require_relative '../lib/repositext/parser/idml_story'
+
+doc = Kramdown::Document.new(ARGF.read, :input => 'IDMLStory')
+puts doc.to_kramdown
