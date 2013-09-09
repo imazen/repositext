@@ -195,7 +195,11 @@ module Kramdown
         process_child = lambda do |el, index|
           iterate_over_children.call(el)
 
-          if (el.type == :em || el.type == :strong)
+          # first check if element is empty and can be completely deleted
+          if (el.type == :em || el.type == :strong) && el.children.length == 0
+            @stack.last.children.delete_at(index)
+            index -= 1
+          elsif (el.type == :em || el.type == :strong)
             if el.children.first.type == :text && el.children.first.value =~ /\A[[:space:]]+/
               index = add_whitespace.call(@stack.last, index - 1, Regexp.last_match(0), true)
               el.children.first.value.lstrip!
