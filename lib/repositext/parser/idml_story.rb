@@ -57,10 +57,22 @@ module Kramdown
         el = case para['AppliedParagraphStyle']
              when "ParagraphStyle/Title of Sermon"
                Element.new(:header, nil, nil, :level => 1, :raw_text => para.text)
+             when "ParagraphStyle/Sub-title"
+               Element.new(:header, nil, nil, :level => 3, :raw_text => para.text)
              when "ParagraphStyle/Scripture"
                Element.new(:p, nil, {'class' => 'scr'})
              when "ParagraphStyle/Question 1#", "ParagraphStyle/Question 2#", "ParagraphStyle/Question 3#"
                Element.new(:p, nil, {'class' => 'q'})
+             when "ParagraphStyle/Song stanza"
+               Element.new(:p, nil, {'class' => 'stanza'})
+             when "ParagraphStyle/Song"
+               Element.new(:p, nil, {'class' => 'song'})
+             when "ParagraphStyle/IDTitle1"
+               Element.new(:p, nil, {'class' => 'id_title1'})
+             when "ParagraphStyle/IDTitle2"
+               Element.new(:p, nil, {'class' => 'id_title2'})
+             when "ParagraphStyle/IDParagraph"
+               Element.new(:p, nil, {'class' => 'id_paragraph'})
              when "Reading"
                Element.new(:p, nil, {'class' => 'reading'})
              else
@@ -70,10 +82,14 @@ module Kramdown
         el
       end
 
+
       def parse_para_children(children)
         children.each do |child|
-          if child.name == 'CharacterStyleRange'
+          case child.name
+          when 'CharacterStyleRange'
             parse_char(child)
+          when 'Properties'
+            # ignore
           else
             raise InvalidElementException, "Found unexpected child element #{child.name} of ParagraphStyleRange"
           end
@@ -109,6 +125,10 @@ module Kramdown
         add_class.call('underline') if char['Underline'] == 'true'
         add_class.call('smcaps') if char['Capitalization'] == 'SmallCaps'
 
+        if char['FillColor'] == "Color/GAP RED"
+          (el.nil? ? @tree : el).children << Element.new(:line_synchro_marker)
+        end
+
         @tree.children << parent_el if !parent_el.nil?
 
         el
@@ -135,6 +155,8 @@ module Kramdown
             char_el = add_element_for_CharacterStyleRange(char_level.last)
             @stack.push([char_el || @tree, char_level.last])
             @tree = char_el || @tree
+          when 'Properties'
+            # ignore this
           else
             raise InvalidElementException, "Found unexpected child element #{child.name} of CharacterStyleRange"
           end
