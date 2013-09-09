@@ -37,8 +37,12 @@ module Kramdown
       def parse_story(story)
         story.xpath('ParagraphStyleRange').each do |para|
           parse_para(para)
-          if @tree.children.last.children.length == 1 &&
-              @tree.children.last.children.first.children.length == 0 # last element of CharacterStyleRange was <Br />
+          # check for last element of CharacterStyleRange equal to <Br /> and therefore for an
+          # invalid empty inserted element
+          if @tree.children.last.children.length == 0 ||
+              (@tree.children.last.children.length == 1 &&
+               @tree.children.last.children.first.children.length == 0 &&
+               @tree.children.last.children.first.type != :text)
             @tree.children.pop
           end
         end
