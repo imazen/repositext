@@ -31,7 +31,7 @@ module Kramdown
         xml.xpath('/idPkg:Story/Story').each do |story|
           with_stack(@root, story) { parse_story(story) }
         end
-        fix_inline_whitespace
+        update_tree
       end
 
       def parse_story(story)
@@ -73,8 +73,12 @@ module Kramdown
                Element.new(:p, nil, {'class' => 'id_title2'})
              when "ParagraphStyle/IDParagraph"
                Element.new(:p, nil, {'class' => 'id_paragraph'})
-             when "Reading"
+             when "ParagraphStyle/Reading"
                Element.new(:p, nil, {'class' => 'reading'})
+             when "ParagraphStyle/Normal"
+               Element.new(:p, nil, {'class' => 'normal'})
+             when "ParagraphStyle/Horizontal rule"
+               Element.new(:hr)
              else
                Element.new(:p)
              end
@@ -129,6 +133,10 @@ module Kramdown
           (el.nil? ? @tree : el).children << Element.new(:line_synchro_marker)
         end
 
+        if char['AppliedCharacterStyle'] == 'CharacterStyle/Paragraph number' && @tree.attr['class'] =~ /\bnormal\b/
+          @tree.attr['class'].sub!(/\bnormal\b/, 'normal-pn')
+        end
+
         @tree.children << parent_el if !parent_el.nil?
 
         el
@@ -163,13 +171,15 @@ module Kramdown
         end
       end
 
-      def fix_inline_whitespace
+      def update_tree
         @stack = [@root]
 
         iterate_over_children = nil
 
+        ### lambda for managing whitespace
         # index - the place where the whitespace text should be inserted
         # append - true if the whitespace should be appended to existing text
+        # → return modified index of element
         add_whitespace = lambda do |el, index, text, append|
           if index == -1
             el.children.insert(0, Element.new(:text, text))
@@ -191,15 +201,55 @@ module Kramdown
           end
         end
 
-        # postfix iteration to ensure that whitespace from inner elements is pushed outside first
+        ### lambda for joining adjacent :em/:strong elements
+        # parent - the parent element
+        # index - index of the element that should be joined
+        # → return modified index of last processed element
+        try_join_elements = lambda do |parent, index|
+          el = parent.children[index]
+          prev = parent.children[index-1]
+          prev2 = parent.children[index-2]
+          if index == 0
+            # nothing to do here
+            index
+          elsif prev.type == el.type && prev.attr == el.attr && prev.options == el.options
+            # preceeding element has same data
+            prev.children.concat(el.children)
+            parent.children.delete_at(index)
+            index - 1
+          elsif index >= 2 && prev.type == :text && prev.value.strip.empty? &&
+              prev2.type == el.type && prev2.attr == el.attr && prev2.options == el.options
+            # preceeding element is :text with just whitespace, element before that has same data
+            prev2.children.push(prev)
+            prev2.children.concat(el.children)
+            parent.children.delete_at(index)
+            parent.children.delete_at(index-1)
+            index - 2
+          else
+            index
+          end
+        end
+
+        ### postfix iteration
+        # - ensures that whitespace from inner elements is pushed outside first
         process_child = lambda do |el, index|
           iterate_over_children.call(el)
 
-          # first check if element is empty and can be completely deleted
-          if (el.type == :em || el.type == :strong) && el.children.length == 0
+          if el.type == :hr
+            el.children.clear
+          elsif el.type == :p && el.attr['class'] =~ /\bnormal\b/ &&
+              el.children.first.type == :text
+            el.children.first.value.sub!(/\A\t/, '')
+          elsif el.type == :text && index != 0 && @stack.last.children[index-1].type == :text
+            @stack.last.children[index-1].value += el.value
+            @stack.last.children.delete_at(index)
+            index -= 1
+          elsif (el.type == :em || el.type == :strong) && el.children.length == 0
+            # check if element is empty and can be completely deleted
             @stack.last.children.delete_at(index)
             index -= 1
           elsif (el.type == :em || el.type == :strong)
+            # manage whitespace
             if el.children.first.type == :text && el.children.first.value =~ /\A[[:space:]]+/
               index = add_whitespace.call(@stack.last, index - 1, Regexp.last_match(0), true)
               el.children.first.value.lstrip!
@@ -208,6 +258,10 @@ module Kramdown
               index = add_whitespace.call(@stack.last, index + 1, Regexp.last_match(0), false)
               el.children.last.value.rstrip!
             end
+
+            # join neighbour elements and then, possibly, text elements
+            index = try_join_elements.call(@stack.last, index)
+            iterate_over_children.call(@stack.last.children[index])
           end
           index
         end
@@ -221,7 +275,6 @@ module Kramdown
           end
           @stack.pop
         end
-
 
         iterate_over_children.call(@root)
       end
