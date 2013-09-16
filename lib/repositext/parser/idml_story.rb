@@ -61,7 +61,7 @@ module Kramdown
                Element.new(:header, nil, nil, :level => 3, :raw_text => para.text)
              when "ParagraphStyle/Scripture"
                Element.new(:p, nil, {'class' => 'scr'})
-             when "ParagraphStyle/Question 1#", "ParagraphStyle/Question 2#", "ParagraphStyle/Question 3#"
+             when "ParagraphStyle/Question1", "ParagraphStyle/Question2", "ParagraphStyle/Question3"
                Element.new(:p, nil, {'class' => 'q'})
              when "ParagraphStyle/Song stanza"
                Element.new(:p, nil, {'class' => 'stanza'})
