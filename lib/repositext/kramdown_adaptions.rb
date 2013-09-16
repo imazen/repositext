@@ -25,9 +25,9 @@ class Kramdown::Converter::Html
 
   alias_method :convert_root_old, :convert_root
   def convert_root(el, indent)
-    "<!-- #{Time.now.to_s} -->\n" + 
-    "<!-- #{@options.inspect} -->\n" + 
+    # "<!-- #{Time.now.to_s} -->\n" +
+    # "<!-- #{@options.inspect} -->\n" +
     convert_root_old(el,indent)
-  end 
+  end
 
 end
