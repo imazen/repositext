@@ -4,9 +4,9 @@ require 'kramdown/converter/html'
 require 'kramdown/options'
 
 module Kramdown::Options
-  define(:disable_sync_a, Boolean, false, "Some documentation for the option") 
-  define(:disable_sync_b, Boolean, false, "Some documentation for the option") 
-  define(:disable_subdoc, Boolean, false, "Some documentation for the option") 
+  define(:disable_sync_a, Boolean, false, "Some documentation for the option")
+  define(:disable_sync_b, Boolean, false, "Some documentation for the option")
+  define(:disable_subdoc, Boolean, false, "Some documentation for the option")
 end
 
 class Kramdown::Converter::Html
