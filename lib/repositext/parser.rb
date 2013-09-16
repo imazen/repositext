@@ -14,7 +14,7 @@ module Kramdown
         @block_parsers = [:blank_line, :atx_header, :horizontal_rule, :setext_header,
                           :block_extensions, :document_divider, :paragraph]
         @span_parsers =  [:emphasis, :word_synchro_marker, :line_synchro_marker,
-                          :span_extensions, :repositext_escaped_chars]
+                          :span_extensions]
       end
 
       def parse #:nodoc:
@@ -63,10 +63,6 @@ module Kramdown
         @tree.children << Element.new(:line_synchro_marker)
       end
       define_parser(:line_synchro_marker, LINE_SYNCHRO_MARKER, LINE_SYNCHRO_MARKER)
-
-
-      REPOSITEXT_ESCAPED_CHARS = /\\([\\#*_{=@%-])/
-      define_parser(:repositext_escaped_chars, REPOSITEXT_ESCAPED_CHARS, '\\\\', :parse_escaped_chars)
 
     end
 
