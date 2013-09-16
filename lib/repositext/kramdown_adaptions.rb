@@ -12,7 +12,7 @@ end
 class Kramdown::Converter::Html
 
   def convert_subdoc(el, indent)
-    @options[:disable_subdoc] ? inner(el, indent) : format_as_indented_block_html('div', el.attr, inner(el, indent), indent) 
+    @options[:disable_subdoc] ? inner(el, indent - @indent) : format_as_indented_block_html('div', el.attr, inner(el, indent), indent)
   end
 
   def convert_line_synchro_marker(el, indent)
