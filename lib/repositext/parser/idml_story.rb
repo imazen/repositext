@@ -133,8 +133,9 @@ module Kramdown
           (el.nil? ? @tree : el).children << Element.new(:line_synchro_marker)
         end
 
-        if char['AppliedCharacterStyle'] == 'CharacterStyle/Paragraph number' && @tree.attr['class'] =~ /\bnormal\b/
-          @tree.attr['class'].sub!(/\bnormal\b/, 'normal-pn')
+        if char['AppliedCharacterStyle'] == 'CharacterStyle/Paragraph number'
+          @tree.attr['class'].sub!(/\bnormal\b/, 'normal-pn') if @tree.attr['class'] =~ /\bnormal\b/
+          add_class.call('pn')
         end
 
         @tree.children << parent_el if !parent_el.nil?
