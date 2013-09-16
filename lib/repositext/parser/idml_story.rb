@@ -238,10 +238,12 @@ module Kramdown
 
           if el.type == :hr
             el.children.clear
-          elsif el.type == :p && el.attr['class'] =~ /\bnormal\b/ &&
+          elsif el.type == :p && (el.attr['class'] =~ /\bnormal\b/ || el.attr['class'] =~ /\bq\b/) &&
               el.children.first.type == :text
+            # remove leading tab from 'normal' and 'q' paragraphs
             el.children.first.value.sub!(/\A\t/, '')
           elsif el.type == :text && index != 0 && @stack.last.children[index-1].type == :text
+            # join simple text elements
             @stack.last.children[index-1].value += el.value
             @stack.last.children.delete_at(index)
             index -= 1
