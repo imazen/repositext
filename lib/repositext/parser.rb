@@ -20,8 +20,8 @@ module Kramdown
       def parse #:nodoc:
         configure_parser
         str = adapt_source(source)
-        if str !~ /\A#{DOCUMENT_DIVIDER}/
-          str = "^^^\n#{source}"
+        if str !~ /\A\s*#{DOCUMENT_DIVIDER}/
+          str = "^^^\n#{ str }"
         end
         parse_blocks(@root.children.last, str)
         update_tree(@root)
