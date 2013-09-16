@@ -25,3 +25,7 @@ text to HTML.
 * If sub-document IDs can start with a number, the IAL parser needs to
   be adapted due to a recent change in the kramdown library (the change
   is not released yet).
+
+## How to run specs
+
+    rake
