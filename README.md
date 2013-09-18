@@ -1,6 +1,6 @@
 ## Customized parser/converter for repositext
 
-The parser class in `lib/repositext/parser.rb` contains the
+The parser class in `lib/repositext/parser/repositext.rb` contains the
 implementation of the special repositext.org parser that is based on the
 kramdown parser.
 
@@ -26,23 +26,17 @@ text to HTML.
   be adapted due to a recent change in the kramdown library (the change
   is not released yet).
 
-## IDML story parser
 
-There is an IDML story file parser in
-`lib/repositext/parser/idml_story.rb`. It needs to be supplied not with
-a whole IDML file but just with an IDML story file.
+## IDML and IDML story parsers
 
-The idea is that there will be a separate module that knows how to
-handle a whole IDML file (i.e. opening the IDML file with the rubyzip
-library, parsing designmap.xml for the list of story files, combining
-multiple stories files into a single XML file and providing this XML
-file to the IDML story parser).
+There is an IDML file parser in `lib/repositext/parser/idml.rb` and an
+IDML story file parser in `lib/repositext/parser/idml_story.rb`. The
+IDML file parser is not a kramdown parser like the IDML story file
+parser -- it just reads an IDML file, extracts the IDML story files and
+uses the IDML story file parser to parse them.
 
-
-### TODO (at least)
-
-* respect attribute FillColor for text color
-* parse song paragraphs
+Note that the IDML story file parser needs to be supplied not with a
+whole IDML file but just with an IDML story file.
 
 ### How to run specs
 
