@@ -79,6 +79,8 @@ module Kramdown
                Element.new(:p, nil, {'class' => 'normal'})
              when "ParagraphStyle/Horizontal rule"
                Element.new(:hr)
+             when String
+               Element.new(:p, nil, {'class' => normalize_style_name(para['AppliedParagraphStyle'])})
              else
                Element.new(:p)
              end
@@ -104,6 +106,10 @@ module Kramdown
         el = add_element_for_CharacterStyleRange(char)
         with_stack(el || @tree, char) { parse_char_children(char.children) }
       end
+
+      HANDLED_CHARACTER_STYLES = ['CharacterStyle/Bold', 'CharacterStyle/Italic',
+                                  'CharacterStyle/Paragraph number',
+                                  'CharacterStyle/Regular']
 
       def add_element_for_CharacterStyleRange(char)
         el = parent_el = nil
@@ -138,6 +144,10 @@ module Kramdown
           add_class.call('pn')
         end
 
+        if !HANDLED_CHARACTER_STYLES.include?(char['AppliedCharacterStyle'])
+          add_class.call(normalize_style_name(char['AppliedCharacterStyle']))
+        end
+
         @tree.children << parent_el if !parent_el.nil?
 
         el
@@ -170,6 +180,13 @@ module Kramdown
             raise InvalidElementException, "Found unexpected child element #{child.name} of CharacterStyleRange"
           end
         end
+      end
+
+      def normalize_style_name(name)
+        name.gsub!(/^ParagraphStyle\/|^CharacterStyle\//, '')
+        name.gsub!(/[^A-Za-z0-9_-]/, '-')
+        name = "c-#{name}" unless name =~ /^[a-zA-Z]/
+        name
       end
 
       def update_tree
