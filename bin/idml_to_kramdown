@@ -1,8 +1,9 @@
 #!/usr/bin/env ruby
+# -*- encoding: utf-8 -*-
 
 require 'kramdown/document'
-require_relative '../lib/repositext/parser/idml'
-require_relative '../lib/repositext/kramdown_adaptions'
+require 'repositext/parser/idml'
+require 'repositext/kramdown_adaptions'
 
 idml_parser = Repositext::Parser::IDML.new(ARGV.shift)
 $stderr.puts "Found #{idml_parser.story_names.size} stories: #{idml_parser.story_names.join(", ")}"
