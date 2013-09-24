@@ -108,22 +108,29 @@ module Kramdown
       end
 
       HANDLED_CHARACTER_STYLES = ['CharacterStyle/Bold', 'CharacterStyle/Italic',
+                                  'CharacterStyle/Bold Italic',
                                   'CharacterStyle/Paragraph number',
                                   'CharacterStyle/Regular']
 
       def add_element_for_CharacterStyleRange(char)
         el = parent_el = nil
 
-        if char['AppliedCharacterStyle'] == 'CharacterStyle/Bold' || char['FontStyle'] == 'Bold'
-          el = parent_el = Element.new(:strong)
-        end
+        if char['AppliedCharacterStyle'] == 'CharacterStyle/Bold Italic'
+          parent_el = Element.new(:strong)
+          el = Element.new(:em)
+          parent_el.children << el
+        else
+          if char['AppliedCharacterStyle'] == 'CharacterStyle/Bold' || char['FontStyle'] == 'Bold'
+            el = parent_el = Element.new(:strong)
+          end
 
-        if char['AppliedCharacterStyle'] == 'CharacterStyle/Italic' || char['FontStyle'] == 'Italic'
-          if parent_el
-            el = Element.new(:em)
-            parent_el.children << el
-          else
-            el = parent_el = Element.new(:em)
+          if char['AppliedCharacterStyle'] == 'CharacterStyle/Italic' || char['FontStyle'] == 'Italic'
+            if parent_el
+              el = Element.new(:em)
+              parent_el.children << el
+            else
+              el = parent_el = Element.new(:em)
+            end
           end
         end
 
