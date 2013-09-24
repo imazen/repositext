@@ -230,28 +230,30 @@ module Kramdown
         # parent - the parent element
         # index - index of the element that should be joined
         # → return modified index of last processed element
-        try_join_elements = lambda do |parent, index|
-          el = parent.children[index]
-          prev = parent.children[index-1]
-          prev2 = parent.children[index-2]
-          if index == 0
-            # nothing to do here
-            index
-          elsif prev.type == el.type && prev.attr == el.attr && prev.options == el.options
-            # preceeding element has same data
-            prev.children.concat(el.children)
-            parent.children.delete_at(index)
-            index - 1
-          elsif index >= 2 && prev.type == :text && prev.value.strip.empty? &&
-              prev2.type == el.type && prev2.attr == el.attr && prev2.options == el.options
-            # preceeding element is :text with just whitespace, element before that has same data
-            prev2.children.push(prev)
-            prev2.children.concat(el.children)
-            parent.children.delete_at(index)
-            parent.children.delete_at(index-1)
-            index - 2
-          else
-            index
+        try_join_elements = lambda do |el|
+          index = 0
+          while index < el.children.length - 1
+            cur_el = el.children[index]
+            next_el = el.children[index + 1]
+            next_next_el = el.children[index + 2]
+            if cur_el.type == next_el.type && cur_el.attr == next_el.attr && cur_el.options == next_el.options
+              if cur_el.type == :text
+                cur_el.value += next_el.value
+              else
+                cur_el.children.concat(next_el.children)
+              end
+              el.children.delete_at(index + 1)
+            elsif next_next_el && [:em, :strong].include?(next_next_el.type) &&
+                next_el.type == :text && next_el.value.strip.empty? &&
+                next_next_el.type == cur_el.type && next_next_el.attr == cur_el.attr &&
+                next_next_el.options == cur_el.options
+              cur_el.children.push(next_el)
+              cur_el.children.concat(next_next_el.children)
+              el.children.delete_at(index + 1)
+              el.children.delete_at(index + 2)
+            else
+              index += 1
+            end
           end
         end
 
@@ -266,11 +268,6 @@ module Kramdown
               el.children.first.type == :text
             # remove leading tab from 'normal' and 'q' paragraphs
             el.children.first.value.sub!(/\A\t/, '')
-          elsif el.type == :text && index != 0 && @stack.last.children[index-1].type == :text
-            # join simple text elements
-            @stack.last.children[index-1].value += el.value
-            @stack.last.children.delete_at(index)
-            index -= 1
           elsif (el.type == :em || el.type == :strong) && el.children.length == 0
             # check if element is empty and can be completely deleted
             @stack.last.children.delete_at(index)
@@ -285,15 +282,14 @@ module Kramdown
               index = add_whitespace.call(@stack.last, index + 1, Regexp.last_match(0), false)
               el.children.last.value.rstrip!
             end
-
-            # join neighbour elements and then, possibly, text elements
-            index = try_join_elements.call(@stack.last, index)
-            iterate_over_children.call(@stack.last.children[index])
           end
           index
         end
 
         iterate_over_children = lambda do |el|
+          # join neighbour elements of same type
+          try_join_elements.call(el) if el.children.first && ::Kramdown::Element.category(el.children.first) == :span
+
           @stack.push(el)
           index = 0
           while index < el.children.length
