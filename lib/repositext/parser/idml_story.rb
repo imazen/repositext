@@ -114,14 +114,17 @@ module Kramdown
 
       def add_element_for_CharacterStyleRange(char)
         el = parent_el = nil
+        char_style = :regular
 
         if char['AppliedCharacterStyle'] == 'CharacterStyle/Bold Italic'
           parent_el = Element.new(:strong)
           el = Element.new(:em)
           parent_el.children << el
+          char_style = :bold_italic
         else
           if char['AppliedCharacterStyle'] == 'CharacterStyle/Bold' || char['FontStyle'] == 'Bold'
             el = parent_el = Element.new(:strong)
+            char_style = :bold
           end
 
           if char['AppliedCharacterStyle'] == 'CharacterStyle/Italic' || char['FontStyle'] == 'Italic'
@@ -131,12 +134,19 @@ module Kramdown
             else
               el = parent_el = Element.new(:em)
             end
+            char_style = :italic
           end
         end
 
         add_class = lambda do |css_class|
           parent_el = el = Element.new(:em) if el.nil?
           parent_el.attr['class'] = ((parent_el.attr['class'] || '') << " #{css_class}").lstrip
+          parent_el.attr['class'] += case char_style
+                                     when :regular then ''
+                                     when :italic then ' italic'
+                                     when :bold then ' bold'
+                                     when :bold_italic then 'bold italic'
+                                     end
         end
 
         add_class.call('underline') if char['Underline'] == 'true'
