@@ -20,7 +20,7 @@ module Kramdown
       def parse #:nodoc:
         configure_parser
         str = adapt_source(source)
-        if str !~ /\A\s*#{RECORD_MARK}/
+        if options[:auto_insert_first_record_mark] && str !~ /\A\s*#{RECORD_MARK}/
           str = "^^^\n#{ str }"
         end
         parse_blocks(@root.children.last, str)

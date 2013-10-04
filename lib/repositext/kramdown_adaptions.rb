@@ -8,6 +8,7 @@ module Kramdown::Options
   define(:disable_subtitle_mark, Boolean, false, "Some documentation for the option")
   define(:disable_gap_mark, Boolean, false, "Some documentation for the option")
   define(:disable_record_mark, Boolean, false, "Some documentation for the option")
+  define(:auto_insert_first_record_mark, Boolean, true, "Automatically insert a record_mark element at the root of the document if it doesn't start with one already.")
 end
 
 class Kramdown::Converter::Html
