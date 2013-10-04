@@ -13,7 +13,7 @@ end
 
 class Kramdown::Converter::Html
 
-  def convert_subdoc(el, indent)
+  def convert_record_mark(el, indent)
     @options[:disable_record_mark] ? inner(el, indent - @indent) : format_as_indented_block_html('div', el.attr, inner(el, indent), indent)
   end
 
@@ -39,10 +39,10 @@ module Kramdown
   module Converter
     class Kramdown
 
-      # copied from original converter because the :subdoc element needs to be handled specially
+      # copied from original converter because the :record_mark element needs to be handled specially
       def convert(el, opts = {:indent => 0})
         res = send("convert_#{el.type}", el, opts)
-        if ![:html_element, :li, :dd, :td, :subdoc].include?(el.type) && (ial = ial_for_element(el))
+        if ![:html_element, :li, :dd, :td, :record_mark].include?(el.type) && (ial = ial_for_element(el))
           res << ial
           res << "\n\n" if Element.category(el) == :block
         elsif [:ul, :dl, :ol, :codeblock].include?(el.type) && opts[:next] &&
@@ -58,7 +58,7 @@ module Kramdown
         res
       end
 
-      def convert_subdoc(el, opts)
+      def convert_record_mark(el, opts)
         if @options[:disable_record_mark]
           inner(el, opts)
         else

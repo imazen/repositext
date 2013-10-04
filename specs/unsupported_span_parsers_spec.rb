@@ -18,7 +18,7 @@ describe 'Unsupported span parsers' do
     it "doesn't parse #{ parser_name }" do
       doc = Kramdown::Document.new(
         kramdown_in,
-        { :input => :repositext, :disable_subdoc => true }
+        { :input => :repositext, :disable_record_mark => true }
       )
       doc.to_html.must_equal html_out
    end

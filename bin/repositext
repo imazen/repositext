@@ -5,4 +5,12 @@ require 'kramdown/document'
 require 'repositext/parser/repositext'
 require 'repositext/kramdown_adaptions'
 
-puts Kramdown::Document.new(ARGF.read, { :input => :repositext, :disable_sync_a => true, :disable_sync_b => true, :disable_subdoc =>true} ).to_html
+puts Kramdown::Document.new(
+  ARGF.read,
+  {
+    :input => :repositext,
+    :disable_gap_mark => true,
+    :disable_subtitle_mark => true,
+    :disable_record_mark =>true
+  }
+).to_html
