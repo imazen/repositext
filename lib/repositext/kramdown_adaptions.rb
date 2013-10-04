@@ -5,23 +5,23 @@ require 'kramdown/converter/kramdown'
 require 'kramdown/options'
 
 module Kramdown::Options
-  define(:disable_sync_a, Boolean, false, "Some documentation for the option")
-  define(:disable_sync_b, Boolean, false, "Some documentation for the option")
-  define(:disable_subdoc, Boolean, false, "Some documentation for the option")
+  define(:disable_subtitle_mark, Boolean, false, "Some documentation for the option")
+  define(:disable_gap_mark, Boolean, false, "Some documentation for the option")
+  define(:disable_record_mark, Boolean, false, "Some documentation for the option")
 end
 
 class Kramdown::Converter::Html
 
   def convert_subdoc(el, indent)
-    @options[:disable_subdoc] ? inner(el, indent - @indent) : format_as_indented_block_html('div', el.attr, inner(el, indent), indent)
+    @options[:disable_record_mark] ? inner(el, indent - @indent) : format_as_indented_block_html('div', el.attr, inner(el, indent), indent)
   end
 
   def convert_gap_mark(el, indent)
-    @options[:disable_sync_b] ? "" : "<span class=\"sync-mark-b\"></span>"
+    @options[:disable_gap_mark] ? "" : "<span class=\"sync-mark-b\"></span>"
   end
 
   def convert_subtitle_mark(el, indent)
-    @options[:disable_sync_a] ? "" : "<span class=\"sync-mark-a\"></span>"
+    @options[:disable_subtitle_mark] ? "" : "<span class=\"sync-mark-a\"></span>"
   end
 
   alias_method :convert_root_old, :convert_root
@@ -58,7 +58,7 @@ module Kramdown
       end
 
       def convert_subdoc(el, opts)
-        if @options[:disable_subdoc]
+        if @options[:disable_record_mark]
           inner(el, opts)
         else
           ial = ial_for_element(el)
@@ -67,11 +67,11 @@ module Kramdown
       end
 
       def convert_gap_mark(el, opts)
-        @options[:disable_sync_b] ? "" : "%"
+        @options[:disable_gap_mark] ? "" : "%"
       end
 
       def convert_subtitle_mark(el, opts)
-        @options[:disable_sync_a] ? "" : "@"
+        @options[:disable_subtitle_mark] ? "" : "@"
       end
 
     end
