@@ -34,7 +34,7 @@ module Kramdown
       # Parse the record mark at the current location
       def parse_record_mark
         if @src.scan(RECORD_MARK)
-          @tree = el = new_block_el(:subdoc, nil, nil, :category => :block)
+          @tree = el = new_block_el(:record_mark, nil, nil, :category => :block)
           parse_attribute_list(@src[2], el.options[:ial] ||= Utils::OrderedHash.new) if @src[1]
           @root.children << el
           true
