@@ -16,9 +16,9 @@ text to HTML.
 
 ### Special elements
 
-* :line_synchro_marker (span element, no content)
-* :work_synchro_marker (span element, no content)
-* :subdoc (block element)
+* :gap_mark (%, span element, no content)
+* :subtitle_mark (@, span element, no content)
+* :record_mark (block element)
 
 ### TODO (at least)
 

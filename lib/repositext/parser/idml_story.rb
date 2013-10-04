@@ -153,7 +153,7 @@ module Kramdown
         add_class.call('smcaps') if char['Capitalization'] == 'SmallCaps'
 
         if char['FillColor'] == "Color/GAP RED"
-          (el.nil? ? @tree : el).children << Element.new(:line_synchro_marker)
+          (el.nil? ? @tree : el).children << Element.new(:gap_mark)
         end
 
         if char['AppliedCharacterStyle'] == 'CharacterStyle/Paragraph number'

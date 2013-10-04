@@ -16,11 +16,11 @@ class Kramdown::Converter::Html
     @options[:disable_subdoc] ? inner(el, indent - @indent) : format_as_indented_block_html('div', el.attr, inner(el, indent), indent)
   end
 
-  def convert_line_synchro_marker(el, indent)
+  def convert_gap_mark(el, indent)
     @options[:disable_sync_b] ? "" : "<span class=\"sync-mark-b\"></span>"
   end
 
-  def convert_word_synchro_marker(el, indent)
+  def convert_subtitle_mark(el, indent)
     @options[:disable_sync_a] ? "" : "<span class=\"sync-mark-a\"></span>"
   end
 
@@ -66,11 +66,11 @@ module Kramdown
         end
       end
 
-      def convert_line_synchro_marker(el, opts)
+      def convert_gap_mark(el, opts)
         @options[:disable_sync_b] ? "" : "%"
       end
 
-      def convert_word_synchro_marker(el, opts)
+      def convert_subtitle_mark(el, opts)
         @options[:disable_sync_a] ? "" : "@"
       end
 

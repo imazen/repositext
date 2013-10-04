@@ -12,15 +12,15 @@ module Kramdown
         super
 
         @block_parsers = [:blank_line, :atx_header, :horizontal_rule, :setext_header,
-                          :block_extensions, :document_divider, :paragraph]
-        @span_parsers =  [:emphasis, :word_synchro_marker, :line_synchro_marker,
+                          :block_extensions, :record_mark, :paragraph]
+        @span_parsers =  [:emphasis, :subtitle_mark, :gap_mark,
                           :span_extensions, :repositext_escaped_chars]
       end
 
       def parse #:nodoc:
         configure_parser
         str = adapt_source(source)
-        if str !~ /\A\s*#{DOCUMENT_DIVIDER}/
+        if str !~ /\A\s*#{RECORD_MARK}/
           str = "^^^\n#{ str }"
         end
         parse_blocks(@root.children.last, str)
@@ -29,11 +29,11 @@ module Kramdown
 
 
 
-      DOCUMENT_DIVIDER = /^\^\^\^\s*?(#{IAL_SPAN_START})?\s*?\n/
+      RECORD_MARK = /^\^\^\^\s*?(#{IAL_SPAN_START})?\s*?\n/
 
-      # Parse the document divider at the current location
-      def parse_document_divider
-        if @src.scan(DOCUMENT_DIVIDER)
+      # Parse the record mark at the current location
+      def parse_record_mark
+        if @src.scan(RECORD_MARK)
           @tree = el = new_block_el(:subdoc, nil, nil, :category => :block)
           parse_attribute_list(@src[2], el.options[:ial] ||= Utils::OrderedHash.new) if @src[1]
           @root.children << el
@@ -42,27 +42,27 @@ module Kramdown
           false
         end
       end
-      define_parser(:document_divider, /^\^\^\^/)
+      define_parser(:record_mark, /^\^\^\^/)
 
 
-      WORD_SYNCHRO_MARKER = /@/
+      SUBTITLE_MARK = /@/
 
-      # Parse word synchronization marker at current location.
-      def parse_word_synchro_marker
+      # Parse subtitle mark at current location.
+      def parse_subtitle_mark
         @src.pos += @src.matched_size
-        @tree.children << Element.new(:word_synchro_marker, nil, nil, :category => :span)
+        @tree.children << Element.new(:subtitle_mark, nil, nil, :category => :span)
       end
-      define_parser(:word_synchro_marker, WORD_SYNCHRO_MARKER, WORD_SYNCHRO_MARKER)
+      define_parser(:subtitle_mark, SUBTITLE_MARK, SUBTITLE_MARK)
 
 
-      LINE_SYNCHRO_MARKER = /%/
+      GAP_MARK = /%/
 
-      # Parse line synchronization marker at current location.
-      def parse_line_synchro_marker
+      # Parse gap mark at current location.
+      def parse_gap_mark
         @src.pos += @src.matched_size
-        @tree.children << Element.new(:line_synchro_marker, nil, nil, :category => :span)
+        @tree.children << Element.new(:gap_mark, nil, nil, :category => :span)
       end
-      define_parser(:line_synchro_marker, LINE_SYNCHRO_MARKER, LINE_SYNCHRO_MARKER)
+      define_parser(:gap_mark, GAP_MARK, GAP_MARK)
 
 
       REPOSITEXT_ESCAPED_CHARS = /\\([\\#*_{=@%-])/
