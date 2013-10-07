@@ -2,10 +2,10 @@
 
 require 'zip'
 require 'nokogiri'
-require 'repositext/parser/idml_story'
+require 'kramdown/parser/idml_story'
 require 'kramdown/document'
 
-module Repositext
+module Kramdown
   module Parser
 
     # Open an IDML file and parse all story files within with the Kramdown::Parser::IDMLStory parser.

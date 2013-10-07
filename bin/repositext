@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 
 require 'kramdown/document'
-require 'repositext/parser/repositext'
+require 'kramdown/parser/repositext'
 require 'repositext/kramdown_adaptions'
 
 puts Kramdown::Document.new(

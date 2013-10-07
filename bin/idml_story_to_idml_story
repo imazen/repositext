@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
 
 require 'kramdown/document'
-require 'repositext/parser/idml_story'
-require 'repositext/converter/idml_story'
+require 'kramdown/parser/idml_story'
+require 'kramdown/converter/idml_story'
 
 template = File.expand_path(File.join(File.dirname(__FILE__), '..', 'data', 'repositext', 'document.idml_story'))
 doc = Kramdown::Document.new(ARGF.read, :input => 'IDMLStory', :template => template)

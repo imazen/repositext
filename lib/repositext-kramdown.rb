@@ -1,0 +1,5 @@
+require 'kramdown/converter/idml_story.rb'
+require 'kramdown/parser/idml'
+require 'kramdown/parser/idml_story'
+require 'kramdown/parser/repositext'
+require 'repositext/kramdown_adaptations'

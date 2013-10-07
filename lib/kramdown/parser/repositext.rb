@@ -23,7 +23,7 @@ module Kramdown
         if options[:auto_insert_first_record_mark] && str !~ /\A\s*#{RECORD_MARK}/
           str = "^^^\n#{ str }"
         end
-        parse_blocks(@root.children.last, str)
+        parse_blocks(@root, str)
         update_tree(@root)
       end
 
