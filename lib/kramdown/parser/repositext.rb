@@ -19,14 +19,9 @@ module Kramdown
 
       def parse #:nodoc:
         configure_parser
-        str = adapt_source(source)
-        if options[:auto_insert_first_record_mark] && str !~ /\A\s*#{RECORD_MARK}/
-          str = "^^^\n#{ str }"
-        end
-        parse_blocks(@root, str)
+        parse_blocks(@root, adapt_source(source))
         update_tree(@root)
       end
-
 
 
       RECORD_MARK = /^\^\^\^\s*?(#{IAL_SPAN_START})?\s*?\n/
