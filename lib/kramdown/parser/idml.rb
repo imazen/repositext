@@ -18,52 +18,52 @@ module Kramdown
 
       def initialize(filename)
         @filename = filename
-        read_story_filenames
+        @stories = extract_stories
       end
 
-      def story_names
-        @stories.keys
+      # Returns the stories we want to import by default. Typically
+      # the longest story in the IDML file.
+      # @return[Array<OpenStruct>] array of story objects to be imported
+      def stories_to_import
+        [@stories.max_by { |e| e.length }]
       end
 
-      def parse(names = self.story_names)
+      # @param[Array<Story>] stories the stories to import. Defaults to story_to_import.
+      def parse(stories = self.stories_to_import)
         data = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
         data << '<idPkg:Story xmlns:idPkg="http://ns.adobe.com/AdobeInDesign/idml/1.0/packaging" DOMVersion="8.0">'
 
-        names.each do |name|
-          raise Exception.new("Unknown story name #{name}") unless @stories.has_key?(name)
-          data << get_stories(name).to_s
+        stories.each do |story|
+          data << story.body
         end
 
         data << '</idPkg:Story>'
         Kramdown::Document.new(data, :input => 'IDMLStory')
       end
 
-      private
+    private
 
-      def read_story_filenames
-        @stories = {}
-        Zip::File.open(@filename, false) do |zip|
-          data = zip.get_entry('designmap.xml').get_input_stream.read
-          xml = Nokogiri::XML(data) {|cfg| cfg.noblanks}
-          xml.xpath('/Document/idPkg:Story').each do |story|
-            story_file = story['src']
-            story_data = zip.get_entry(story_file).get_input_stream.read
-            story_xml = Nokogiri::XML(story_data) {|cfg| cfg.noblanks}
-            story_xml.xpath('/idPkg:Story/Story').each do |s|
-              @stories[s['Self']] = story_file
+      # Extracts story names from @filename
+      # @return[Array<OpenStruct>] an array with story objects. See `get_story` for details.
+      def extract_stories
+        stories = []
+        Zip::File.open(@filename, false) do |zipped_files|
+          design_map_data = zipped_files.get_entry('designmap.xml').get_input_stream.read
+          design_map_xml = Nokogiri::XML(design_map_data) { |cfg| cfg.noblanks }
+          design_map_xml.xpath('/Document/idPkg:Story').each do |design_map_story_xml|
+            story_src = design_map_story_xml['src']
+            pkg_story_data = zipped_files.get_entry(story_src).get_input_stream.read
+            pkg_story_xml = Nokogiri::XML(pkg_story_data) { |cfg| cfg.noblanks }
+            pkg_story_xml.xpath('/idPkg:Story/Story').each do |story_xml|
+              name = story_xml['Self']
+              body = story_xml.to_s
+              stories << OpenStruct.new(:name => name, :body => body, :length => body.length)
             end
           end
         end
+        stories
       rescue
         raise Exception.new($!)
-      end
-
-      def get_stories(name)
-        Zip::File.open(@filename, false) do |zip|
-          story_data = zip.get_entry(@stories[name]).get_input_stream.read
-          story_xml = Nokogiri::XML(story_data) {|cfg| cfg.noblanks}
-          story_xml.xpath('/idPkg:Story/Story')
-        end
       end
 
     end
