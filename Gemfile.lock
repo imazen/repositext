@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     repositext-kramdown (0.0.1)
+      builder
       kramdown
       nokogiri
       rubyzip
@@ -9,6 +10,7 @@ PATH
 GEM
   remote: http://rubygems.org/
   specs:
+    builder (3.2.2)
     kramdown (1.2.0)
     mini_portile (0.5.1)
     minitest (5.0.8)
