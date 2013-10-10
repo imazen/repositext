@@ -1,4 +1,4 @@
-require_relative 'helper'
+require 'helper'
 
 describe 'Unsupported block parsers' do
 
@@ -18,10 +18,7 @@ describe 'Unsupported block parsers' do
   ].each do |parser_attrs|
     parser_name, kramdown_in, html_out = parser_attrs
     it "doesn't parse #{ parser_name }" do
-      doc = Kramdown::Document.new(
-        kramdown_in,
-        { :input => :repositext, :disable_record_mark => true }
-      )
+      doc = Kramdown::Document.new(kramdown_in, { :input => :repositext })
       doc.to_html.must_equal html_out
     end
   end
