@@ -104,7 +104,7 @@ module Kramdown
       end
 
       # Parses a ParagraphStyleRange's child nodes, adds parsed elements to tree
-      # @param[Nokogiri::Xml::Node] children the xml node for each child
+      # @param[Array<Nokogiri::Xml::Node>] children an array of xml nodes, one for each child
       def parse_para_children(children)
         children.each do |child|
           case child.name
@@ -212,12 +212,12 @@ module Kramdown
       end
 
       # Parses a CharacterStyleRange's child nodes, adds parsed elements to tree
-      # @param[Nokogiri::Xml::Node] children the xml node for each child
+      # @param[Array<Nokogiri::Xml::Node>] children an array of xml nodes, one for each child
       def parse_char_children(children)
         children.each do |child|
           case child.name
           when 'Content'
-            text_elements = child.content.split("\u2028")
+            text_elements = child.inner_text.split("\u2028") # split on LINE SEPARATOR
             while text_elements.length > 0
               add_text(text_elements.shift)
               @tree.children << Element.new(:br) if text_elements.length > 0
