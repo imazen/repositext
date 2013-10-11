@@ -43,7 +43,8 @@ whole IDML file but just with an IDML story file.
 vgrspecific
 
 * HyperlinkTextDestination (bookmarks) in XML
-*
+* any CharStyleRange elements that contain whitespace only. We preserve the
+  whitespace as Text elements, but not the char_style.
 
 ### How to run specs
 

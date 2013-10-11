@@ -141,6 +141,11 @@ module Kramdown
         el = parent_el = nil
         char_style = :regular
 
+        char_has_non_whitespace_content = char.children.any? { |child|
+          'Content' == child.name && !child.inner_text.strip.empty?
+        }
+        return el  unless char_has_non_whitespace_content
+
         if char['AppliedCharacterStyle'] == 'CharacterStyle/Bold Italic'
           # Create pair of nested elements to include both bold and italic styles.
           parent_el = Element.new(:strong)
