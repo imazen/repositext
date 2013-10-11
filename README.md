@@ -38,6 +38,13 @@ uses the IDML story file parser to parse them.
 Note that the IDML story file parser needs to be supplied not with a
 whole IDML file but just with an IDML story file.
 
+### Elements that are removed during IDML import
+
+vgrspecific
+
+* HyperlinkTextDestination (bookmarks) in XML
+*
+
 ### How to run specs
 
-    rake
+    bundle exec rake
