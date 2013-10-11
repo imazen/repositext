@@ -125,8 +125,10 @@ module Kramdown
         with_stack(el || @tree, char) { parse_char_children(char.children) }
       end
 
-      HANDLED_CHARACTER_STYLES = ['CharacterStyle/Bold', 'CharacterStyle/Italic',
+      HANDLED_CHARACTER_STYLES = ['CharacterStyle/$ID/[No character style]',
+                                  'CharacterStyle/Bold',
                                   'CharacterStyle/Bold Italic',
+                                  'CharacterStyle/Italic',
                                   'CharacterStyle/Paragraph number',
                                   'CharacterStyle/Regular']
 
@@ -159,6 +161,21 @@ module Kramdown
               el = parent_el = Element.new(:em)
             end
             char_style = :italic
+          end
+
+        end
+
+        if char['AppliedCharacterStyle'] == 'CharacterStyle/$ID/[No character style]'
+          # Preserve FontStyles
+          if 'Italic' == char['FontStyle']
+            el = parent_el = Element.new(:em)
+            char_style = :italic
+          elsif 'Bold' == char['FontStyle']
+            el = parent_el = Element.new(:strong)
+            char_style = :bold
+          else
+            # No FontStyle applied so we don't need to add any parent elements
+            # for this CharacterStyleRange
           end
         end
 
