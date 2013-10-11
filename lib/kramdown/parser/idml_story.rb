@@ -10,13 +10,18 @@ module Kramdown
 
       class InvalidElementException < RuntimeError; end
 
-      # Create an IDML parser with the given +options+.
+      # Create an IDML parser with the given source and options.
+      # @param[String] source the story's XML as string
+      # @param[Hash] options
       def initialize(source, options)
         super
         @stack = []
         @tree = nil
       end
 
+      # Manages stack, yields to given block
+      # @param[Kramdown::Element] kd_el
+      # @param[Nokogiri::Xml::Node] xml_el
       def with_stack(kd_el, xml_el)
         @stack.push([kd_el, xml_el])
         @tree = kd_el
@@ -26,6 +31,8 @@ module Kramdown
         @tree = @stack.last.first rescue nil
       end
 
+      # Parses source and returns parse tree
+      # @return[Kramdown::Element] the root element of the parse tree with all children.
       def parse #:nodoc:
         xml = Nokogiri::XML(@source) {|cfg| cfg.noblanks }
         xml.xpath('/idPkg:Story/Story').each do |story|
@@ -34,6 +41,8 @@ module Kramdown
         update_tree
       end
 
+      # Parses a story, adds parsed elements to tree
+      # @param[Nokogiri::Xml::Node] story the root node of the story xml
       def parse_story(story)
         story.xpath('ParagraphStyleRange').each do |para|
           parse_para(para)
@@ -48,11 +57,17 @@ module Kramdown
         end
       end
 
+      # Parses a ParagraphStyleRange, adds parsed elements to tree
+      # @param[Nokogiri::Xml::Node] para the xml node for the ParagraphStyleRange
       def parse_para(para)
         el = add_element_for_ParagraphStyleRange(para)
         with_stack(el, para) { parse_para_children(para.children) }
       end
 
+      # Creates a Kramdown::Element for the currently parsed ParagraphStyleRange
+      # and adds the new element to the tree.
+      # @param[Nokogiri::Xml::Node] para the xml node for the ParagraphStyleRange
+      # @return[Kramdown::Element] the new kramdown element
       def add_element_for_ParagraphStyleRange(para)
         el = case para['AppliedParagraphStyle']
              when "ParagraphStyle/Title of Sermon"
@@ -88,7 +103,8 @@ module Kramdown
         el
       end
 
-
+      # Parses a ParagraphStyleRange's child nodes, adds parsed elements to tree
+      # @param[Nokogiri::Xml::Node] children the xml node for each child
       def parse_para_children(children)
         children.each do |child|
           case child.name
@@ -102,6 +118,8 @@ module Kramdown
         end
       end
 
+      # Parses a CharacterStyleRange, adds parsed elements to tree
+      # @param[Nokogiri::Xml::Node] char the xml node for the CharacterStyleRange
       def parse_char(char)
         el = add_element_for_CharacterStyleRange(char)
         with_stack(el || @tree, char) { parse_char_children(char.children) }
@@ -112,11 +130,17 @@ module Kramdown
                                   'CharacterStyle/Paragraph number',
                                   'CharacterStyle/Regular']
 
+      # Creates a Kramdown::Element for the currently parsed CharacterStyleRange
+      # and adds the new element to the tree. We do this to preserve any formatting
+      # of the CharacterStyleRange node.
+      # @param[Nokogiri::Xml::Node] char the xml node for the CharacterStyleRange
+      # @return[Kramdown::Element] the new kramdown element
       def add_element_for_CharacterStyleRange(char)
         el = parent_el = nil
         char_style = :regular
 
         if char['AppliedCharacterStyle'] == 'CharacterStyle/Bold Italic'
+          # Create pair of nested elements to include both bold and italic styles.
           parent_el = Element.new(:strong)
           el = Element.new(:em)
           parent_el.children << el
@@ -170,6 +194,8 @@ module Kramdown
         el
       end
 
+      # Parses a CharacterStyleRange's child nodes, adds parsed elements to tree
+      # @param[Nokogiri::Xml::Node] children the xml node for each child
       def parse_char_children(children)
         children.each do |child|
           case child.name
@@ -199,6 +225,9 @@ module Kramdown
         end
       end
 
+      # Normalizes an IDML style name to something we can use in kramdown.
+      # @param[String] name the IDML style name
+      # @return[String] the normalized style name
       def normalize_style_name(name)
         name.gsub!(/^ParagraphStyle\/|^CharacterStyle\//, '')
         name.gsub!(/[^A-Za-z0-9_-]/, '-')
@@ -206,6 +235,7 @@ module Kramdown
         name
       end
 
+      # Walks the parse tree from @root and performs various updates
       def update_tree
         @stack = [@root]
 
