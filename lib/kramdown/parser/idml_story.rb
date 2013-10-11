@@ -306,8 +306,11 @@ module Kramdown
                 next_next_el.options == cur_el.options
               cur_el.children.push(next_el)
               cur_el.children.concat(next_next_el.children)
-              el.children.delete_at(index + 1)
+              # Important: delete_at index+2 first, so that the other element is still
+              # at index+1. If we delete index+1 first, then the other element
+              # we want to delete is not at index+2 any more, but has moved up to index+1
               el.children.delete_at(index + 2)
+              el.children.delete_at(index + 1)
             else
               index += 1
             end
