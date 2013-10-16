@@ -340,7 +340,7 @@ module Kramdown
           elsif (el.type == :em || el.type == :strong)
             # manage whitespace
             if el.children.first.type == :text && el.children.first.value =~ /\A[[:space:]]+/
-              index = add_whitespace.call(@stack.last, index - 1, Regexp.last_match(0), true)
+              index = add_whitespace.call(@stack.last, index, Regexp.last_match(0), true)
               el.children.first.value.lstrip!
             end
             if el.children.last.type == :text && el.children.last.value =~ /[[:space:]]+\Z/
