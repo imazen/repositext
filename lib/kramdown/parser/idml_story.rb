@@ -340,6 +340,11 @@ module Kramdown
               index = add_whitespace.call(@stack.last, index + 1, Regexp.last_match(0), false)
               el.children.last.value.rstrip!
             end
+            if el.children.all? { |c| :text == c.type && '' == c.value }
+              # Delete el if removal of whitespace leaves el with all empty text childlren
+              @stack.last.children.delete(el)
+              index -= 1
+            end
           end
           index
         end
