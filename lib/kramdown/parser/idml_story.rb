@@ -10,7 +10,6 @@ module Kramdown
 
       class InvalidElementException < RuntimeError; end
 
-      # Create an IDML parser with the given source and options.
       # @param[String] source the story's XML as string
       # @param[Hash] options
       def initialize(source, options)
@@ -19,7 +18,6 @@ module Kramdown
         @tree = nil
       end
 
-      # Manages stack, yields to given block
       # @param[Kramdown::Element] kd_el
       # @param[Nokogiri::Xml::Node] xml_el
       def with_stack(kd_el, xml_el)
@@ -31,9 +29,9 @@ module Kramdown
         @tree = @stack.last.first rescue nil
       end
 
-      # Parses source and returns parse tree
+      # Parses all stories in @source and returns parse tree.
       # @return[Kramdown::Element] the root element of the parse tree with all children.
-      def parse #:nodoc:
+      def parse
         xml = Nokogiri::XML(@source) {|cfg| cfg.noblanks }
         xml.xpath('/idPkg:Story/Story').each do |story|
           with_stack(@root, story) { parse_story(story) }
@@ -41,7 +39,6 @@ module Kramdown
         update_tree
       end
 
-      # Parses a story, adds parsed elements to tree
       # @param[Nokogiri::Xml::Node] story the root node of the story xml
       def parse_story(story)
         story.xpath('ParagraphStyleRange').each do |para|
@@ -57,15 +54,12 @@ module Kramdown
         end
       end
 
-      # Parses a ParagraphStyleRange, adds parsed elements to tree
       # @param[Nokogiri::Xml::Node] para the xml node for the ParagraphStyleRange
       def parse_para(para)
         el = add_element_for_ParagraphStyleRange(para)
         with_stack(el, para) { parse_para_children(para.children) }
       end
 
-      # Creates a Kramdown::Element for the currently parsed ParagraphStyleRange
-      # and adds the new element to the tree.
       # @param[Nokogiri::Xml::Node] para the xml node for the ParagraphStyleRange
       # @return[Kramdown::Element] the new kramdown element
       def add_element_for_ParagraphStyleRange(para)
@@ -103,7 +97,6 @@ module Kramdown
         el
       end
 
-      # Parses a ParagraphStyleRange's child nodes, adds parsed elements to tree
       # @param[Array<Nokogiri::Xml::Node>] children an array of xml nodes, one for each child
       def parse_para_children(children)
         children.each do |child|
@@ -118,7 +111,6 @@ module Kramdown
         end
       end
 
-      # Parses a CharacterStyleRange, adds parsed elements to tree
       # @param[Nokogiri::Xml::Node] char the xml node for the CharacterStyleRange
       def parse_char(char)
         el = add_element_for_CharacterStyleRange(char)
@@ -216,7 +208,6 @@ module Kramdown
         el
       end
 
-      # Parses a CharacterStyleRange's child nodes, adds parsed elements to tree
       # @param[Array<Nokogiri::Xml::Node>] children an array of xml nodes, one for each child
       def parse_char_children(children)
         children.each do |child|
@@ -247,7 +238,6 @@ module Kramdown
         end
       end
 
-      # Normalizes an IDML style name to something we can use in kramdown.
       # @param[String] name the IDML style name
       # @return[String] the normalized style name
       def normalize_style_name(name)
@@ -257,13 +247,13 @@ module Kramdown
         name
       end
 
-      # Walks the parse tree from @root and performs various updates
       def update_tree
         @stack = [@root]
 
         iterate_over_children = nil
 
         ### lambda for managing whitespace
+        # el - the parent element to add whitespace element to (as child)
         # index - the place where the whitespace text should be inserted
         # append - true if the whitespace should be appended to existing text
         # → return modified index of element
@@ -326,7 +316,6 @@ module Kramdown
         # - ensures that whitespace from inner elements is pushed outside first
         process_child = lambda do |el, index|
           iterate_over_children.call(el)
-
           if el.type == :hr
             el.children.clear
           elsif el.type == :p && (el.attr['class'] =~ /\bnormal\b/ || el.attr['class'] =~ /\bq\b/) &&
@@ -340,10 +329,14 @@ module Kramdown
           elsif (el.type == :em || el.type == :strong)
             # manage whitespace
             if el.children.first.type == :text && el.children.first.value =~ /\A[[:space:]]+/
+              # First child is text and has leading whitespace. Move leading
+              # whitespace as sibling before el.
               index = add_whitespace.call(@stack.last, index, Regexp.last_match(0), true)
               el.children.first.value.lstrip!
             end
             if el.children.last.type == :text && el.children.last.value =~ /[[:space:]]+\Z/
+              # Last child is text and has trailing whitespace. Move trailing
+              # whitespace to parent of el.
               index = add_whitespace.call(@stack.last, index + 1, Regexp.last_match(0), false)
               el.children.last.value.rstrip!
             end
