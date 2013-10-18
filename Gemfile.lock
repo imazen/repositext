@@ -5,6 +5,7 @@ PATH
       builder
       kramdown
       nokogiri
+      ruby-graphviz
       rubyzip
 
 GEM
@@ -19,6 +20,7 @@ GEM
     nokogiri (1.6.0)
       mini_portile (~> 0.5.0)
     rake (10.1.0)
+    ruby-graphviz (1.0.9)
     rubyzip (1.0.0)
 
 PLATFORMS

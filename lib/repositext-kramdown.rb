@@ -1,3 +1,4 @@
+require 'kramdown/converter/graphviz.rb'
 require 'kramdown/converter/idml_story.rb'
 require 'kramdown/parser/idml'
 require 'kramdown/parser/idml_story'

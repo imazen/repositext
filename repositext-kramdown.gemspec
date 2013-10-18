@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency('builder')
   s.add_runtime_dependency('kramdown')
   s.add_runtime_dependency('nokogiri')
+  s.add_runtime_dependency('ruby-graphviz')
   s.add_runtime_dependency('rubyzip')
 
   # Test libraries
