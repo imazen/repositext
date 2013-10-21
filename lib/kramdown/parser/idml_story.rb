@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+# Added validation hooks
 # Added position information to each Element's options [:line, :story]
 
 require 'kramdown/parser'
@@ -71,6 +72,7 @@ module Kramdown
       def parse_para(para)
         el = add_element_for_ParagraphStyleRange(para)
         with_stack(el, para) { parse_para_children(para.children) }
+        validation_hook_during_parsing(el, para)
       end
 
       # @param[Nokogiri::Xml::Node] para the xml node for the ParagraphStyleRange
@@ -134,6 +136,7 @@ module Kramdown
       def parse_char(char)
         el = add_element_for_CharacterStyleRange(char)
         with_stack(el || @tree, char) { parse_char_children(char.children) }
+        validation_hook_during_parsing(el, char)
       end
 
       HANDLED_CHARACTER_STYLES = ['CharacterStyle/$ID/[No character style]',
@@ -381,9 +384,24 @@ module Kramdown
             index += 1
           end
           @stack.pop
+
+          validation_hook_during_update_tree(el)
         end
 
         iterate_over_children.call(@root)
+      end
+
+      # A validation hook during parsing. Override this method for your custom
+      # validations.
+      # @param[Kramdown::Element] kd_el the kramdown element for xml_node
+      # @param[Nokogiri::Xml::Node] xml_node the currently parsed idml node
+      def validation_hook_during_parsing(kd_el, xml_node)
+      end
+
+      # A validation hook during update_tree. Override this method for your custom
+      # validations.
+      # @param[Kramdown::Element] kd_el the kramdown element for xml_node
+      def validation_hook_during_update_tree(kd_el)
       end
 
     end
