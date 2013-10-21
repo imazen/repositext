@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+# Added position information to each Element's options [:line, :story]
+
 require 'kramdown/parser'
 require 'nokogiri'
 
@@ -16,6 +18,7 @@ module Kramdown
         super
         @stack = []
         @tree = nil
+        @story_name = nil # recorded for position information
       end
 
       # @param[Kramdown::Element] kd_el
@@ -39,8 +42,18 @@ module Kramdown
         update_tree
       end
 
+      # Overrides method from Kramdown::Parser::Base to add location information
+      def add_text(text, tree = @tree, type = @text_type)
+        if tree.children.last && tree.children.last.type == type
+          tree.children.last.value << text
+        elsif !text.empty?
+          tree.children << Element.new(type, text, nil, :story => @story_name, :line => tree.options[:line])
+        end
+      end
+
       # @param[Nokogiri::Xml::Node] story the root node of the story xml
       def parse_story(story)
+        @story_name = story['Self']
         story.xpath('ParagraphStyleRange').each do |para|
           parse_para(para)
           # check for last element of CharacterStyleRange equal to <Br /> and therefore for an
@@ -63,35 +76,41 @@ module Kramdown
       # @param[Nokogiri::Xml::Node] para the xml node for the ParagraphStyleRange
       # @return[Kramdown::Element] the new kramdown element
       def add_element_for_ParagraphStyleRange(para)
+        l = para.line
         el = case para['AppliedParagraphStyle']
              when "ParagraphStyle/Title of Sermon"
-               Element.new(:header, nil, nil, :level => 1, :raw_text => para.text)
+               Element.new(:header, nil, nil, :level => 1, :raw_text => para.text, :line => l, :story => @story_name)
              when "ParagraphStyle/Sub-title"
-               Element.new(:header, nil, nil, :level => 3, :raw_text => para.text)
+               Element.new(:header, nil, nil, :level => 3, :raw_text => para.text, :line => l, :story => @story_name)
              when "ParagraphStyle/Scripture"
-               Element.new(:p, nil, {'class' => 'scr'})
+               Element.new(:p, nil, {'class' => 'scr'}, :line => l, :story => @story_name)
              when "ParagraphStyle/Question1", "ParagraphStyle/Question2", "ParagraphStyle/Question3"
-               Element.new(:p, nil, {'class' => 'q'})
+               Element.new(:p, nil, {'class' => 'q'}, :line => l, :story => @story_name)
              when "ParagraphStyle/Song stanza"
-               Element.new(:p, nil, {'class' => 'stanza'})
+               Element.new(:p, nil, {'class' => 'stanza'}, :line => l, :story => @story_name)
              when "ParagraphStyle/Song"
-               Element.new(:p, nil, {'class' => 'song'})
+               Element.new(:p, nil, {'class' => 'song'}, :line => l, :story => @story_name)
              when "ParagraphStyle/IDTitle1"
-               Element.new(:p, nil, {'class' => 'id_title1'})
+               Element.new(:p, nil, {'class' => 'id_title1'}, :line => l, :story => @story_name)
              when "ParagraphStyle/IDTitle2"
-               Element.new(:p, nil, {'class' => 'id_title2'})
+               Element.new(:p, nil, {'class' => 'id_title2'}, :line => l, :story => @story_name)
              when "ParagraphStyle/IDParagraph"
-               Element.new(:p, nil, {'class' => 'id_paragraph'})
+               Element.new(:p, nil, {'class' => 'id_paragraph'}, :line => l, :story => @story_name)
              when "ParagraphStyle/Reading"
-               Element.new(:p, nil, {'class' => 'reading'})
+               Element.new(:p, nil, {'class' => 'reading'}, :line => l, :story => @story_name)
              when "ParagraphStyle/Normal"
-               Element.new(:p, nil, {'class' => 'normal'})
+               Element.new(:p, nil, {'class' => 'normal'}, :line => l, :story => @story_name)
              when "ParagraphStyle/Horizontal rule"
-               Element.new(:hr)
+               Element.new(:hr, nil, nil, :line => l, :story => @story_name)
              when String
-               Element.new(:p, nil, {'class' => normalize_style_name(para['AppliedParagraphStyle'])})
+               Element.new(
+                :p,
+                nil,
+                {'class' => normalize_style_name(para['AppliedParagraphStyle'])},
+                :line => l, :story => @story_name
+              )
              else
-               Element.new(:p)
+               Element.new(:p, nil, nil, :line => l, :story => @story_name)
              end
         @tree.children << el
         el
@@ -132,6 +151,7 @@ module Kramdown
       def add_element_for_CharacterStyleRange(char)
         el = parent_el = nil
         char_style = :regular
+        l = char.line
 
         char_has_non_whitespace_content = char.children.any? { |child|
           'Content' == child.name && !child.inner_text.strip.empty?
@@ -140,22 +160,22 @@ module Kramdown
 
         if char['AppliedCharacterStyle'] == 'CharacterStyle/Bold Italic'
           # Create pair of nested elements to include both bold and italic styles.
-          parent_el = Element.new(:strong)
-          el = Element.new(:em)
+          parent_el = Element.new(:strong, nil, nil, :line => l, :story => @story_name)
+          el = Element.new(:em, nil, nil, :line => l, :story => @story_name)
           parent_el.children << el
           char_style = :bold_italic
         else
           if char['AppliedCharacterStyle'] == 'CharacterStyle/Bold' || char['FontStyle'] == 'Bold'
-            el = parent_el = Element.new(:strong)
+            el = parent_el = Element.new(:strong, nil, nil, :line => l, :story => @story_name)
             char_style = :bold
           end
 
           if char['AppliedCharacterStyle'] == 'CharacterStyle/Italic' || char['FontStyle'] == 'Italic'
             if parent_el
-              el = Element.new(:em)
+              el = Element.new(:em, nil, nil, :line => l, :story => @story_name)
               parent_el.children << el
             else
-              el = parent_el = Element.new(:em)
+              el = parent_el = Element.new(:em, nil, nil, :line => l, :story => @story_name)
             end
             char_style = :italic
           end
@@ -165,10 +185,10 @@ module Kramdown
         if char['AppliedCharacterStyle'] == 'CharacterStyle/$ID/[No character style]'
           # Preserve FontStyles
           if 'Italic' == char['FontStyle']
-            el = parent_el = Element.new(:em)
+            el = parent_el = Element.new(:em, nil, nil, :line => l, :story => @story_name)
             char_style = :italic
           elsif 'Bold' == char['FontStyle']
-            el = parent_el = Element.new(:strong)
+            el = parent_el = Element.new(:strong, nil, nil, :line => l, :story => @story_name)
             char_style = :bold
           else
             # No FontStyle applied so we don't need to add any parent elements
@@ -177,7 +197,7 @@ module Kramdown
         end
 
         add_class = lambda do |css_class|
-          parent_el = el = Element.new(:em) if el.nil?
+          parent_el = el = Element.new(:em, nil, nil, :line => l, :story => @story_name) if el.nil?
           parent_el.attr['class'] = ((parent_el.attr['class'] || '') << " #{css_class}").lstrip
           parent_el.attr['class'] += case char_style
                                      when :regular then ''
@@ -191,7 +211,7 @@ module Kramdown
         add_class.call('smcaps') if char['Capitalization'] == 'SmallCaps'
 
         if char['FillColor'] == "Color/GAP RED"
-          (el.nil? ? @tree : el).children << Element.new(:gap_mark)
+          (el.nil? ? @tree : el).children << Element.new(:gap_mark, nil, nil, :line => l, :story => @story_name)
         end
 
         if char['AppliedCharacterStyle'] == 'CharacterStyle/Paragraph number'
@@ -216,7 +236,7 @@ module Kramdown
             text_elements = child.inner_text.split("\u2028") # split on LINE SEPARATOR
             while text_elements.length > 0
               add_text(text_elements.shift)
-              @tree.children << Element.new(:br) if text_elements.length > 0
+              @tree.children << Element.new(:br, nil, nil, :line => child.line, :story => @story_name) if text_elements.length > 0
             end
           when 'Br'
             char_level = @stack.pop
@@ -258,11 +278,12 @@ module Kramdown
         # append - true if the whitespace should be appended to existing text
         # → return modified index of element
         add_whitespace = lambda do |el, index, text, append|
+          l = el.options[:line]
           if index == -1
-            el.children.insert(0, Element.new(:text, text))
+            el.children.insert(0, Element.new(:text, text, nil, :line =>l, :story => @story_name))
             1
           elsif index == el.children.length
-            el.children.insert(index, Element.new(:text, text))
+            el.children.insert(index, Element.new(:text, text, nil, :line =>l, :story => @story_name))
             index - 1
           elsif el.children[index].type == :text
             if append
@@ -273,7 +294,7 @@ module Kramdown
               index - 1
             end
           else
-            el.children.insert(index, Element.new(:text, text))
+            el.children.insert(index, Element.new(:text, text, nil, :line =>l, :story => @story_name))
             index + (append ? 1 : -1)
           end
         end
