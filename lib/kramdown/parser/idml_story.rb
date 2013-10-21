@@ -23,9 +23,9 @@ module Kramdown
       end
 
       # @param[Kramdown::Element] kd_el
-      # @param[Nokogiri::Xml::Node] xml_el
-      def with_stack(kd_el, xml_el)
-        @stack.push([kd_el, xml_el])
+      # @param[Nokogiri::Xml::Node] xml_node
+      def with_stack(kd_el, xml_node)
+        @stack.push([kd_el, xml_node])
         @tree = kd_el
         yield
       ensure
