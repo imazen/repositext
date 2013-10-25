@@ -10,8 +10,7 @@
 #
 #
 require 'kramdown/document'
-require 'kramdown/parser/idml'
-require 'repositext/kramdown_adaptions'
+require 'repositext-kramdown'
 
 file_pattern = ARGV.shift
 STDERR.puts "Batch importing all IDML files at #{ file_pattern }."
