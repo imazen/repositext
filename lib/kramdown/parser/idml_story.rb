@@ -158,6 +158,7 @@ module Kramdown
         char_style = :regular
         l = { :story => @story_name, :line => char.line }
 
+        # Only proceed if char has at least one non-empty Content node
         char_has_non_whitespace_content = char.children.any? { |child|
           'Content' == child.name && !child.inner_text.strip.empty?
         }
@@ -306,7 +307,7 @@ module Kramdown
           end
         end
 
-        ### lambda for joining adjacent :em/:strong elements
+        ### join adjacent :em/:strong elements
         # parent - the parent element
         # index - index of the element that should be joined
         # → return modified index of last processed element
@@ -377,7 +378,7 @@ module Kramdown
             # remove leading tab from 'normal' and 'q' paragraphs
             el.children.first.value.sub!(/\A\t/, '')
           elsif (el.type == :em || el.type == :strong) && el.children.length == 0
-            # check if element is empty and can be completely deleted
+            # element is empty and can be completely deleted
             @stack.last.children.delete_at(index)
             index -= 1
           elsif (el.type == :em || el.type == :strong)
