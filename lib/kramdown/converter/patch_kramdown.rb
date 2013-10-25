@@ -42,10 +42,11 @@ module Kramdown
       end
 
       # Patch this method to allow for nullop IAL {:s}
-      # The purpose of nullop IALs is to allow unambigous rendering of consecutive
-      # ems like *firstHalf*{:s}*secondHalf*{: .smallCaps}. Without the nullop IAL
-      # this would render as *firstHalf**secondHalf*{: .smallCaps} which is
-      # ambiguous.
+      # The purpose of nullop IALs is to allow unambigous rendering of adjacent
+      # ems without whitespace separation.
+      # Example:
+      # *firstHalf**secondHalf*{: .smallCaps} is ambiguous without nullop IAL
+      # *firstHalf*{:s}*secondHalf*{: .smallCaps}. Can be rendered unambiguously
       # Return the IAL containing the attributes of the element +el+.
       def ial_for_element(el)
         res = el.attr.map do |k,v|

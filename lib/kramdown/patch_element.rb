@@ -28,8 +28,5 @@ module Kramdown
       children.each { |e| e.inspect_tree(_indent_level + 1, el_options) }
     end
 
-    def has_consecutive_ems_that_require_nullop_ial?
-    end
-
   end
 end
