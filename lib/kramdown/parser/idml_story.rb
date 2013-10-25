@@ -104,6 +104,8 @@ module Kramdown
           Element.new(:p, nil, {'class' => 'normal'}, :location => l)
         when "ParagraphStyle/Horizontal rule"
           Element.new(:hr, nil, nil, :location => l)
+        when "ParagraphStyle/$ID/[No paragraph style]"
+          Element.new(:p, nil, nil, :location => l)
         when String
           Element.new(
            :p,
