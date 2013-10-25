@@ -328,10 +328,12 @@ module Kramdown
                 cur_el.children.concat(next_el.children)
               end
               el.children.delete_at(index + 1)
-            elsif next_next_el && [:em, :strong].include?(next_next_el.type) &&
-                next_el.type == :text && next_el.value.strip.empty? &&
-                next_next_el.type == cur_el.type && next_next_el.attr == cur_el.attr &&
-                next_next_el.options == cur_el.options
+            elsif(
+              next_next_el && [:em, :strong].include?(next_next_el.type) &&
+              next_el.type == :text && next_el.value.strip.empty? &&
+              next_next_el.type == cur_el.type && next_next_el.attr == cur_el.attr &&
+              cur_el.options.select {|k,v| :location != k } == next_el.options.select {|k,v| :location != k }
+            )
               cur_el.children.push(next_el)
               cur_el.children.concat(next_next_el.children)
               # Important: delete_at index+2 first, so that the other element is still
