@@ -1,44 +1,5 @@
 # -*- encoding: utf-8 -*-
-
-require 'kramdown/converter/html'
 require 'kramdown/converter/kramdown'
-require 'kramdown/options'
-
-# We need to define options since Kramdown currently discards any unknown options
-# in Kramdown::Options.merge.
-# This may change in the future.
-module Kramdown::Options
-  define(:disable_subtitle_mark, Boolean, false, "Some documentation for the option")
-  define(:disable_gap_mark, Boolean, false, "Some documentation for the option")
-  define(:disable_record_mark, Boolean, false, "Some documentation for the option")
-  define(:validation_errors, Object, nil, "Some documentation for the option") { |v| v }
-  define(:validation_file_descriptor, String, '', "Some documentation for the option")
-  define(:validation_warnings, Object, nil, "Some documentation for the option") { |v| v }
-end
-
-class Kramdown::Converter::Html
-
-  def convert_record_mark(el, indent)
-    @options[:disable_record_mark] ? inner(el, indent - @indent) : format_as_indented_block_html('div', el.attr, inner(el, indent), indent)
-  end
-
-  def convert_gap_mark(el, indent)
-    @options[:disable_gap_mark] ? "" : "<span class=\"sync-mark-b\"></span>"
-  end
-
-  def convert_subtitle_mark(el, indent)
-    @options[:disable_subtitle_mark] ? "" : "<span class=\"sync-mark-a\"></span>"
-  end
-
-  alias_method :convert_root_old, :convert_root
-  def convert_root(el, indent)
-    # "<!-- #{Time.now.to_s} -->\n" +
-    # "<!-- #{@options.inspect} -->\n" +
-    convert_root_old(el,indent)
-  end
-
-end
-
 
 module Kramdown
   module Converter
@@ -78,6 +39,42 @@ module Kramdown
 
       def convert_subtitle_mark(el, opts)
         @options[:disable_subtitle_mark] ? "" : "@"
+      end
+
+      # Patch this method to allow for nullop IAL {:s}
+      # The purpose of nullop IALs is to allow unambigous rendering of consecutive
+      # ems like *firstHalf*{:s}*secondHalf*{: .smallCaps}. Without the nullop IAL
+      # this would render as *firstHalf**secondHalf*{: .smallCaps} which is
+      # ambiguous.
+      # Return the IAL containing the attributes of the element +el+.
+      def ial_for_element(el)
+        res = el.attr.map do |k,v|
+          next if [:img, :a].include?(el.type) && ['href', 'src', 'alt', 'title'].include?(k)
+          next if el.type == :header && k == 'id' && !v.strip.empty?
+          if :nullop == k && v.nil?
+            :nullop
+          elsif v.nil?
+            ''
+          elsif k == 'class' && !v.empty?
+            " " + v.split(/\s+/).map {|w| ".#{w}"}.join(" ")
+          elsif k == 'id' && !v.strip.empty?
+            " ##{v}"
+          else
+            " #{k}=\"#{v.to_s}\""
+          end
+        end.compact
+        if (el.type == :ul || el.type == :ol) && (el.options[:ial][:refs].include?('toc') rescue nil)
+          res.unshift(" toc")
+        end
+        res = if [:nullop] == res
+          # nullop is the only item, keep it and convert to 's'
+          ['s']
+        else
+          # discard nullop item since we have other items that will trigger rendering of IAL
+          res - [:nullop]
+        end
+        res = res.join('')
+        res.strip.empty? ? nil : "{:#{res}}"
       end
 
     end
