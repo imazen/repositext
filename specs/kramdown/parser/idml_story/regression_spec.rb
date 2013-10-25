@@ -160,6 +160,19 @@ describe Kramdown::Parser::IDMLStory do
         {},
         %(rfect is made known.”\n{: .normal}\n\nNow, I’ve got a question\n{: .normal}\n\n)
       ],
+      [
+        "merges two sibling Content nodes of same type, with same attrs and same options (except :location)",
+        %(
+          <CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Italic">
+            <Content>first node </Content>
+          </CharacterStyleRange>
+          <CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Italic">
+            <Content>second node</Content>
+          </CharacterStyleRange>
+        ),
+        {},
+        %(*first node second node*\n\n)
+      ],
     ].each do |attrs|
       description, character_style_range, options, expected = attrs
       it description do
