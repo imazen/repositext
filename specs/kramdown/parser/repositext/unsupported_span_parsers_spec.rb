@@ -12,7 +12,7 @@ describe 'Unsupported span parsers' do
     [:link, "simple [URL]()", "<p>simple [URL]()</p>\n"],
     [:smart_quotes, %("_Hurrah!_"), "<p>\"<em>Hurrah!</em>\"</p>\n"],
     [:span_html, %(<a href="test">title</a> is a title.), "<p>&lt;a href=\"test\"&gt;title&lt;/a&gt; is a title.</p>\n"],
-    [:typographic_syms, "This is... something---this too--!", "<p>This is... something---this too--!</p>\n"]
+    [:typographic_syms, %(This is... something---this too--! << keep these >> and leave the 'single' and "double" quotes as is.), %(<p>This is... something---this too--! &lt;&lt; keep these &gt;&gt; and leave the 'single' and "double" quotes as is.</p>\n)]
   ].each do |parser_attrs|
     parser_name, kramdown_in, html_out = parser_attrs
     it "doesn't parse #{ parser_name }" do

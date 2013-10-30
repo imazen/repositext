@@ -140,7 +140,7 @@ describe Kramdown::Parser::IDMLStory do
           </CharacterStyleRange>
         ),
         {},
-        %(*This is italic a**nd this is italic with smallcaps.*{: .smcaps .italic}\n{: .normal}\n\n)
+        %(*This is italic a*{:s}*nd this is italic with smallcaps.*{: .smcaps\n.italic}\n{: .normal}\n\n)
       ],
       [
         "removes Content nodes that contain whitespace only while preserving the unstyled whitespace",
