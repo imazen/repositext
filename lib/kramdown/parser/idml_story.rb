@@ -239,7 +239,19 @@ module Kramdown
         children.each do |child|
           case child.name
           when 'Content'
-            text_elements = child.inner_text.split("\u2028") # split on LINE SEPARATOR
+            # Split on LINE SEPARATOR unicode char before we entity encode legitimate
+            # special chars. This makes it possible to insert &#x2028 in a document
+            # without triggering a line break at that position.
+            text_elements = child.inner_text.split("\u2028")
+            # Entity encode any legitimate special characters. We have to do
+            # it after Nokogiri is done parsing since Nokogiri converts all
+            # encoded entities to their character representations and thus undoes
+            # what we're trying to accomplish here, i.e. it converts &amp; => '&'
+            text_elements = text_elements.map { |te|
+              te.gsub(/[\u00A0\u2011\u2028\u202F\uFEFF]/) { |match|
+                sprintf('&#x%04X;', match.codepoints.first)
+              }
+            }
             while text_elements.length > 0
               add_text(text_elements.shift)
               if text_elements.length > 0

@@ -41,6 +41,12 @@ module Kramdown
         @options[:disable_subtitle_mark] ? "" : "@"
       end
 
+      # Override this method to always convert entities to their numeric representation.
+      # Kramdown defaults to converting them to their character representation.
+      def convert_entity(el, opts)
+        "&##{ el.value.code_point };"
+      end
+
       # Patch this method to allow for nullop IAL {:s}
       # The purpose of nullop IALs is to allow unambigous rendering of adjacent
       # ems without whitespace separation.

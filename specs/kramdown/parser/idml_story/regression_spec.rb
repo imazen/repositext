@@ -171,7 +171,57 @@ describe Kramdown::Parser::IDMLStory do
           </CharacterStyleRange>
         ),
         {},
-        %(*first node second node*\n\n)
+        %(*first node second node*\n{: .normal}\n\n)
+      ],
+      [
+        "converts U+2028 to :br element (kramdown inserts two spaces before \\n)",
+        %(
+          <CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+            <Content>before\u2028after</Content>
+          </CharacterStyleRange>
+        ),
+        {},
+        %(before  \nafter\n{: .normal}\n\n)
+      ],
+      [
+        "entity encodes U+2011",
+        %(
+          <CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+            <Content>before\u2011after</Content>
+          </CharacterStyleRange>
+        ),
+        {},
+        %(before&#x2011;after\n{: .normal}\n\n)
+      ],
+      [
+        "entity encodes U+00A0",
+        %(
+          <CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+            <Content>before\u00A0after</Content>
+          </CharacterStyleRange>
+        ),
+        {},
+        %(before&#x00A0;after\n{: .normal}\n\n)
+      ],
+      [
+        "entity encodes U+202F",
+        %(
+          <CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+            <Content>before\u202Fafter</Content>
+          </CharacterStyleRange>
+        ),
+        {},
+        %(before&#x202F;after\n{: .normal}\n\n)
+      ],
+      [
+        "entity encodes U+FEFF",
+        %(
+          <CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+            <Content>before\uFEFFafter</Content>
+          </CharacterStyleRange>
+        ),
+        {},
+        %(before&#xFEFF;after\n{: .normal}\n\n)
       ],
     ].each do |attrs|
       description, character_style_range, options, expected = attrs
