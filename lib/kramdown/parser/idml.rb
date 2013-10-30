@@ -2,6 +2,7 @@
 
 require 'zip'
 require 'nokogiri'
+require 'ostruct'
 require 'kramdown/parser/idml_story'
 require 'kramdown/document'
 
@@ -14,7 +15,7 @@ module Kramdown
       class Exception < RuntimeError; end
 
       # The name of the file from which the data was read.
-      attr_reader :filename
+      attr_reader :filename, :stories
 
       def initialize(filename)
         @filename = filename

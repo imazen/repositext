@@ -10,5 +10,6 @@ module Kramdown::Options
   define(:disable_record_mark, Boolean, false, "Some documentation for the option")
   define(:validation_errors, Object, nil, "Some documentation for the option") { |v| v }
   define(:validation_file_descriptor, String, '', "Some documentation for the option")
+  define(:validation_instance, Object, nil, "Some documentation for the option") { |v| v }
   define(:validation_warnings, Object, nil, "Some documentation for the option") { |v| v }
 end

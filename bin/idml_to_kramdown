@@ -6,6 +6,5 @@ require 'kramdown/parser/idml'
 require 'repositext/kramdown_adaptions'
 
 idml_parser = Kramdown::Parser::IDML.new(ARGV.shift)
-STDERR.puts "Found #{idml_parser.story_names.size} stories: #{idml_parser.story_names.join(", ")}"
-doc = idml_parser.parse(ARGV.empty? ? idml_parser.story_names : ARGV)
+doc = idml_parser.parse(ARGV.empty? ? idml_parser.stories_to_import : ARGV)
 STDOUT.puts doc.to_kramdown

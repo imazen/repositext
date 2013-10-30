@@ -352,6 +352,7 @@ module Kramdown
         #   E.g., "*first**second*{: .italic}"
         # el - the parent element of the adjacent ems
         insert_nullop_ial = lambda do |el|
+          # HACK: this is a duplication of Kramdown::Parser::VgrIdmlStoryValidation#validate_no_mid_word_style_changes
           return true  if el.children.size < 2
           el.children.each_with_index do |cur_child, index|
             next_child = el.children[index + 1]
