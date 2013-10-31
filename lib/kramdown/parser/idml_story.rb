@@ -9,7 +9,7 @@ require 'nokogiri'
 module Kramdown
   module Parser
 
-    class IDMLStory < Base
+    class IdmlStory < Base
 
       class InvalidElementException < RuntimeError; end
 

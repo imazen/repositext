@@ -5,7 +5,7 @@ require 'builder'
 
 module Kramdown
   module Converter
-    class IDMLStory < Base
+    class IdmlStory < Base
 
       class Exception < RuntimeError; end
       class InvalidElementException < Exception; end

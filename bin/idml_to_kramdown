@@ -5,6 +5,6 @@ require 'kramdown/document'
 require 'kramdown/parser/idml'
 require 'repositext/kramdown_adaptions'
 
-idml_parser = Kramdown::Parser::IDML.new(ARGV.shift)
+idml_parser = Kramdown::Parser::Idml.new(ARGV.shift)
 doc = idml_parser.parse(ARGV.empty? ? idml_parser.stories_to_import : ARGV)
 STDOUT.puts doc.to_kramdown

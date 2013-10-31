@@ -9,8 +9,8 @@ require 'kramdown/document'
 module Kramdown
   module Parser
 
-    # Open an IDML file and parse all story files within with the Kramdown::Parser::IDMLStory parser.
-    class IDML
+    # Open an IDML file and parse all story files within with the Kramdown::Parser::IdmlStory parser.
+    class Idml
 
       class Exception < RuntimeError; end
 
@@ -39,7 +39,7 @@ module Kramdown
         end
 
         data << '</idPkg:Story>'
-        Kramdown::Document.new(data, :input => 'IDMLStory')
+        Kramdown::Document.new(data, :input => 'IdmlStory')
       end
 
     private

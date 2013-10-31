@@ -5,5 +5,5 @@ require 'kramdown/document'
 require 'kramdown/parser/idml_story'
 require 'repositext/kramdown_adaptions'
 
-doc = Kramdown::Document.new(ARGF.read, :input => 'IDMLStory')
+doc = Kramdown::Document.new(ARGF.read, :input => 'IdmlStory')
 puts doc.to_kramdown

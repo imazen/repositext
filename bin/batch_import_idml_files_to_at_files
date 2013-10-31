@@ -24,10 +24,10 @@ Dir.glob(file_pattern).find_all { |e| e =~ /\.idml$/}.each do |idml_file_name|
   STDERR.puts " - importing #{ idml_file_name }"
   begin
     at_file_name = idml_file_name.gsub(/\.idml$/, '.at')
-    doc = Kramdown::Parser::IDML.new(idml_file_name).parse
+    doc = Kramdown::Parser::Idml.new(idml_file_name).parse
     File.write(at_file_name, doc.to_kramdown)
     success_count += 1
-  rescue Kramdown::Parser::IDMLStory::InvalidElementException => e
+  rescue Kramdown::Parser::IdmlStory::InvalidElementException => e
     STDERR.puts "   Error: #{ e.class.name } - #{ e.message }"
     errors_count += 1
   end

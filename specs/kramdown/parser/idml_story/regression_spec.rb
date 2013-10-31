@@ -1,6 +1,6 @@
 require_relative '../../../helper'
 
-describe Kramdown::Parser::IDMLStory do
+describe Kramdown::Parser::IdmlStory do
 
   # Wraps plain_text so that it is a valid IdmlStory that can be parsed.
   # @param[String] plain_text
@@ -56,7 +56,7 @@ describe Kramdown::Parser::IDMLStory do
       plain_text, options, expected = attrs
       it "parses plain_text #{plain_text}" do
         doc = Kramdown::Document.new(
-          plain_text_as_idml_story(plain_text, options), { :input => 'IDMLStory' }
+          plain_text_as_idml_story(plain_text, options), { :input => 'IdmlStory' }
         )
         doc.to_kramdown.must_equal expected
       end
@@ -227,7 +227,7 @@ describe Kramdown::Parser::IDMLStory do
       description, character_style_range, options, expected = attrs
       it description do
         doc = Kramdown::Document.new(
-          char_as_idml_story(character_style_range, options), { :input => 'IDMLStory' }
+          char_as_idml_story(character_style_range, options), { :input => 'IdmlStory' }
         )
         doc.to_kramdown.must_equal expected
       end

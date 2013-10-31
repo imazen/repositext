@@ -6,7 +6,7 @@ require 'kramdown/parser/idml'
 require 'repositext/kramdown_adaptions'
 require 'kramdown/converter/graphviz'
 
-kd_doc = Kramdown::Parser::IDML.new(ARGV.shift).parse
+kd_doc = Kramdown::Parser::Idml.new(ARGV.shift).parse
 kd_doc.to_graphviz
 STDOUT.puts '-' * 80
 STDOUT.puts "Wrote 'kramdown_parse_tree.png' file."

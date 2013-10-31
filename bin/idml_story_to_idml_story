@@ -5,5 +5,5 @@ require 'kramdown/parser/idml_story'
 require 'kramdown/converter/idml_story'
 
 template = File.expand_path(File.join(File.dirname(__FILE__), '..', 'data', 'repositext', 'document.idml_story'))
-doc = Kramdown::Document.new(ARGF.read, :input => 'IDMLStory', :template => template)
-puts doc.to_IDML_story
+doc = Kramdown::Document.new(ARGF.read, :input => 'IdmlStory', :template => template)
+puts doc.to_idml_story
