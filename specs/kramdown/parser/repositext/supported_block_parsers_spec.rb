@@ -18,4 +18,16 @@ describe 'Supported block parsers' do
     end
   end
 
+  describe "record ids starting with numbers" do
+    it "doesn't handle record_mark ids starting with numbers" do
+      doc = Kramdown::Document.new("^^^{:.rid #123abc}", { :input => :repositext })
+      doc.to_html.must_equal %(<div class="rid">\n</div>\n)
+    end
+
+    it "handles record_mark ids that don't start with numbers" do
+      doc = Kramdown::Document.new("^^^{:.rid #rid-123abc}", { :input => :repositext })
+      doc.to_html.must_equal %(<div class="rid" id="rid-123abc">\n</div>\n)
+    end
+  end
+
 end
