@@ -62,14 +62,14 @@ describe Kramdown::Converter::Html do
       Kramdown::Document.new(
         "*text*{:.other-class}",
         { :input => :repositext, :disable_gap_mark => true }
-      ).to_html.must_equal %(<p><span class=\"other-class\">text</span></p>\n)
+      ).to_html.must_equal %(<p><span class="other-class">text</span></p>\n)
     end
 
-    it 'converts ems with class italic to <em> elements and adds other classes' do
+    it 'converts ems with class italic to <em> elements and adds classes' do
       Kramdown::Document.new(
         "*text*{:.italic .other-class}",
         { :input => :repositext, :disable_gap_mark => true }
-      ).to_html.must_equal %(<p><em class=\"italic other-class\">text</em></p>\n)
+      ).to_html.must_equal %(<p><em class="italic other-class">text</em></p>\n)
     end
 
     it 'converts ems without any classes to <em> elements' do

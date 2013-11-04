@@ -14,11 +14,25 @@ class Kramdown::Converter::Html
     @options[:disable_subtitle_mark] ? "" : "<span class=\"subtitle-mark\"></span>"
   end
 
-  # Add converter for ems:
-  # In IDML em are used as container to apply a class to a span. It's a container
-  # if it has a class (to emulate a SPAN for applying styles). Will be rendered
-  # italic only if it has italic class. Bare em elements are interpreted as
-  # emphasis and will be displayed in italic.
+  # Patch this method to handle ems that came from idml docs:
+  # When importing IDML, :ems are used as container to apply a class to a span.
+  def convert_em(el, indent)
+    case
+    when 'strong' == el.type
+      # nothing special here. alias :strong. need this?
+      format_as_span_html(el.type, el.attr, inner(el, indent))
+    when [nil, ''].include?(el.attr['class'])
+      # em without class => convert to <em> element
+      format_as_span_html(el.type, el.attr, inner(el, indent))
+    when el.attr['class'] =~ /\bitalic\b/
+      # em with classes, including .italic => convert to <em> with classes added
+      format_as_span_html(el.type, el.attr, inner(el, indent))
+    when el.attr['class'] !=~ /\bitalic\b/
+      # em with classes, excluding .italic => convert to <span> with classes added
+      format_as_span_html(:span, el.attr, inner(el, indent))
+    else
+      raise("Handle this: el.inspect")
+    end
+  end
 
 end
-
