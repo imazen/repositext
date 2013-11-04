@@ -1,3 +1,5 @@
+require 'awesome_print'
+
 require 'kramdown/converter/graphviz.rb'
 require 'kramdown/converter/idml_story.rb'
 require 'kramdown/converter/patch_html.rb'

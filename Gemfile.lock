@@ -11,6 +11,7 @@ PATH
 GEM
   remote: http://rubygems.org/
   specs:
+    awesome_print (1.2.0)
     builder (3.2.2)
     kramdown (1.2.0)
     mini_portile (0.5.1)
@@ -27,6 +28,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  awesome_print
   minitest
   minitest-spec-expect
   rake
