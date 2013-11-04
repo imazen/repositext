@@ -7,11 +7,11 @@ class Kramdown::Converter::Html
   end
 
   def convert_gap_mark(el, indent)
-    @options[:disable_gap_mark] ? "" : "<span class=\"sync-mark-b\"></span>"
+    @options[:disable_gap_mark] ? "" : "<span class=\"gap-mark\"></span>"
   end
 
   def convert_subtitle_mark(el, indent)
-    @options[:disable_subtitle_mark] ? "" : "<span class=\"sync-mark-a\"></span>"
+    @options[:disable_subtitle_mark] ? "" : "<span class=\"subtitle-mark\"></span>"
   end
 
   # Add converter for ems:
@@ -19,14 +19,6 @@ class Kramdown::Converter::Html
   # if it has a class (to emulate a SPAN for applying styles). Will be rendered
   # italic only if it has italic class. Bare em elements are interpreted as
   # emphasis and will be displayed in italic.
-
-
-  alias_method :convert_root_old, :convert_root
-  def convert_root(el, indent)
-    # "<!-- #{Time.now.to_s} -->\n" +
-    # "<!-- #{@options.inspect} -->\n" +
-    convert_root_old(el,indent)
-  end
 
 end
 

@@ -22,6 +22,7 @@ module Kramdown
         @story_name = nil # recorded for position information
       end
 
+      # Called from parse_para and parse_char to manage the stack.
       # @param[Kramdown::Element] kd_el
       # @param[Nokogiri::Xml::Node] xml_node
       def with_stack(kd_el, xml_node)
@@ -171,6 +172,8 @@ module Kramdown
           parent_el.children << el
           char_style = :bold_italic
         else
+          # TODO: assignment of char_style depends on code execution: if both are present, it will always be 'Italic' and never 'Bold'
+          #       Is this ok or intended?
           if char['AppliedCharacterStyle'] == 'CharacterStyle/Bold' || char['FontStyle'] == 'Bold'
             el = parent_el = Element.new(:strong, nil, nil, :location => l)
             char_style = :bold
@@ -209,7 +212,7 @@ module Kramdown
                                      when :regular then ''
                                      when :italic then ' italic'
                                      when :bold then ' bold'
-                                     when :bold_italic then 'bold italic'
+                                     when :bold_italic then ' bold italic'
                                      end
         end
 
@@ -221,6 +224,7 @@ module Kramdown
         end
 
         if char['AppliedCharacterStyle'] == 'CharacterStyle/Paragraph number'
+          # TODO: - matches word boundary, resulting in normal-pn-pn.
           @tree.attr['class'].sub!(/\bnormal\b/, 'normal-pn') if @tree.attr['class'] =~ /\bnormal\b/
           add_class.call('pn')
         end
@@ -289,6 +293,8 @@ module Kramdown
 
       def update_tree
         @stack = [@root]
+
+#Kramdown::Converter::Graphviz.send(:new, @root, { :graphviz_output_file => 'before.png'}).convert(@root)
 
         iterate_over_children = nil
 
@@ -416,6 +422,9 @@ module Kramdown
               index -= 1
             end
           end
+
+#Kramdown::Converter::Graphviz.send(:new, @root, { :graphviz_output_file => 'after.png'}).convert(@root)
+
           index
         end
 
