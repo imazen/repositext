@@ -1,4 +1,7 @@
-## Customized parser/converter for repositext
+Repositext Kramdown
+===================
+
+A customized parser/converter for repositext.
 
 The parser class in `lib/repositext/parser/repositext.rb` contains the
 implementation of the special repositext.org parser that is based on the
@@ -8,24 +11,45 @@ If a document is parsed with it, the resulting document tree **cannot**
 be converted by an un-patched converter because of special
 repositext.org elements.
 
-A patch for the HTML converter can be loaded by requiring
-`lib/repositext/kramdown_adaptions.rb`.
+Installation (while in development)
+-----------------------------------
 
-The binary `bin/repositext` sets up everything and converts the input
-text to HTML.
+Follow these steps to install repositext-kramdown:
 
-### Special elements
+* Install Ruby 2.0 using rbenv or rvm.
+* Install the bundler gem: `gem install bundler`
+* Clone the repository from github.com
+* Switch into the repositext-kramdown directory: `cd repositext-kramdown`
+* Install the required gems: `bundle install`
+
+Usage
+-----
+
+Use these commands to perform conversions:
+
+### Convert IDML files to kramdown
+
+    bundle exec batch_import_idml_files_to_at_files '../idml_files/*'
+
+#### File Pattern
+
+You can use file patterns to select which files you want to convert. You can
+use all features of [Ruby's Dir.glob method](http://ruby-doc.org/core-2.0.0/Dir.html#method-c-glob).
+
+When providing a relative file pattern, the current directory will be used as
+base directory.
+
+**IMPORTANT NOTE**: When using glob patterns, it is important that you surround
+the pattern with quotes. Otherwise the shell will evaluate the pattern and you
+will likely only convert a single file (the first one that matches the pattern).
+
+## Special elements
+
+repositext-kramdown adds the following elements to kramdown:
 
 * :gap_mark (%, span element, no content)
 * :subtitle_mark (@, span element, no content)
 * :record_mark (block element)
-
-### TODO (at least)
-
-* If sub-document IDs can start with a number, the IAL parser needs to
-  be adapted due to a recent change in the kramdown library (the change
-  is not released yet).
-
 
 ## IDML and IDML story parsers
 
@@ -38,15 +62,7 @@ uses the IDML story file parser to parse them.
 Note that the IDML story file parser needs to be supplied not with a
 whole IDML file but just with an IDML story file.
 
-### Elements that are removed during IDML import
-
-vgrspecific
-
-* HyperlinkTextDestination (bookmarks) in XML
-* any CharStyleRange elements that contain whitespace only. We preserve the
-  whitespace as Text elements, but not the char_style.
-
-### How to run specs
+## How to run specs
 
 To run the entire spec suite:
 
