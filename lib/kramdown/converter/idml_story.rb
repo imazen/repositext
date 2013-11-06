@@ -11,7 +11,7 @@ module Kramdown
       class InvalidElementException < Exception; end
       class UnsupportedElementException < Exception; end
 
-      # Create an IDML converter with the given +options+.
+      # Create an IDMLStory converter with the given +options+.
       def initialize(root, options)
         super
         @xml = ''
