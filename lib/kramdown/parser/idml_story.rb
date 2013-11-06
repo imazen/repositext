@@ -17,14 +17,26 @@ module Kramdown
       # @param[Hash] options
       def initialize(source, options)
         super
-        @stack = []
-        @tree = nil
+        @stack = [] # the parse stack, see #with_stack for details
+        @tree = nil # the current kramdown_element
         @story_name = nil # recorded for position information
       end
 
-      # Called from parse_para and parse_char to manage the stack.
-      # @param[Kramdown::Element] kd_el
-      # @param[Nokogiri::Xml::Node] xml_node
+      # Called from parse_para and parse_char to manage the stack. Puts the
+      # current kramdown_element (kd_el) and the currently parsed XML node (xml_node)
+      # onto the stack as last item before processing the children of the current
+      # element/node. Removes the current element/node from the stack when done.
+      #
+      # This is what the stack looks like when parsing an em inside a character
+      # style range:
+      # [
+      #   [<:root element>, <Story xml>],
+      #   [<:p element>, <ParagraphStyleRange xml>],
+      #   [<:em element>, <CharacterStyleRange xml>]
+      # ]
+      #
+      # @param[Kramdown::Element] kd_el the current Kramdown::Element.
+      # @param[Nokogiri::Xml::Node] xml_node the current XML node.
       def with_stack(kd_el, xml_node)
         @stack.push([kd_el, xml_node])
         @tree = kd_el
@@ -263,6 +275,9 @@ module Kramdown
               end
             end
           when 'Br'
+            # Convert <Br> node to :p element
+            # The new :p element inherits the styles from the parent char and para
+            # xml nodes.
             char_level = @stack.pop
             para_level = @stack.pop
             @tree = @stack.last.first
@@ -451,12 +466,14 @@ module Kramdown
       # @param[Kramdown::Element] kd_el the kramdown element for xml_node
       # @param[Nokogiri::Xml::Node] xml_node the currently parsed idml node
       def validation_hook_during_parsing(kd_el, xml_node)
+        # override this method in validating subclass of self
       end
 
       # A validation hook during update_tree. Override this method for your custom
       # validations.
       # @param[Kramdown::Element] kd_el the kramdown element for xml_node
       def validation_hook_during_update_tree(kd_el)
+        # override this method in validating subclass of self
       end
 
     end
