@@ -1,10 +1,7 @@
-#!/usr/bin/env ruby
-# -*- encoding: utf-8 -*-
-
-require 'kramdown/document'
-require 'kramdown/parser/idml'
-require 'repositext/kramdown_adaptions'
-require 'kramdown/converter/graphviz'
+# Convert IDML files to AT files
+#
+# For testing and development
+require 'repositext-kramdown'
 
 kd_doc = Kramdown::Parser::Idml.new(ARGV.shift).parse
 kd_doc.to_graphviz
