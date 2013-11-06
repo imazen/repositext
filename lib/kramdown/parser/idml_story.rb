@@ -88,37 +88,53 @@ module Kramdown
         validation_hook_during_parsing(el, para)
       end
 
+      # Maps IDML paragraph styles to kramdown elements
+      # @return[Hash] hash with paragraph styles as keys and arrays with the
+      # following items as values:
+      # * element type: a supported Kramdown::Element type
+      # * element value: String or nil
+      # * element attr: Hash or nil.
+      # * element options (can contain a lambda for lazy execution, gets passed the para XML node)
+      def paragraph_style_mappings
+        {
+          "Title of Sermon"          => [:header, nil, nil                        , lambda { |para| {:level => 1, :raw_text => para.text} }],
+          "Sub-title"                => [:header, nil, nil                        , lambda { |para| {:level => 3, :raw_text => para.text} }],
+          "Scripture"                => [:p     , nil, {'class' => 'scr'}         , nil],
+          "Question1"                => [:p     , nil, {'class' => 'q'}           , nil],
+          "Question2"                => [:p     , nil, {'class' => 'q'}           , nil],
+          "Question3"                => [:p     , nil, {'class' => 'q'}           , nil],
+          "Song stanza"              => [:p     , nil, {'class' => 'stanza'}      , nil],
+          "Song"                     => [:p     , nil, {'class' => 'song'}        , nil],
+          "IDTitle1"                 => [:p     , nil, {'class' => 'id_title1'}   , nil],
+          "IDTitle2"                 => [:p     , nil, {'class' => 'id_title2'}   , nil],
+          "IDParagraph"              => [:p     , nil, {'class' => 'id_paragraph'}, nil],
+          "Reading"                  => [:p     , nil, {'class' => 'reading'}     , nil],
+          "Normal"                   => [:p     , nil, {'class' => 'normal'}      , nil],
+          "Horizontal rule"          => [:hr    , nil, nil                        , nil],
+          "$ID/[No paragraph style]" => [:p     , nil, nil                        , nil]
+        }
+      end
+
+      # Adds a new :p element as child to @tree, depending on the style of para.
+      # You can override the style mappings via the #paragraph_style_mappings
+      # method.
       # @param[Nokogiri::Xml::Node] para the xml node for the ParagraphStyleRange
       # @return[Kramdown::Element] the new kramdown element
       def add_element_for_ParagraphStyleRange(para)
         l = { :line => para.line, :story => @story_name }
         el = case para['AppliedParagraphStyle']
-        when "ParagraphStyle/Title of Sermon"
-          Element.new(:header, nil, nil, :level => 1, :raw_text => para.text, :location => l)
-        when "ParagraphStyle/Sub-title"
-          Element.new(:header, nil, nil, :level => 3, :raw_text => para.text, :location => l)
-        when "ParagraphStyle/Scripture"
-          Element.new(:p, nil, {'class' => 'scr'}, :location => l)
-        when "ParagraphStyle/Question1", "ParagraphStyle/Question2", "ParagraphStyle/Question3"
-          Element.new(:p, nil, {'class' => 'q'}, :location => l)
-        when "ParagraphStyle/Song stanza"
-          Element.new(:p, nil, {'class' => 'stanza'}, :location => l)
-        when "ParagraphStyle/Song"
-          Element.new(:p, nil, {'class' => 'song'}, :location => l)
-        when "ParagraphStyle/IDTitle1"
-          Element.new(:p, nil, {'class' => 'id_title1'}, :location => l)
-        when "ParagraphStyle/IDTitle2"
-          Element.new(:p, nil, {'class' => 'id_title2'}, :location => l)
-        when "ParagraphStyle/IDParagraph"
-          Element.new(:p, nil, {'class' => 'id_paragraph'}, :location => l)
-        when "ParagraphStyle/Reading"
-          Element.new(:p, nil, {'class' => 'reading'}, :location => l)
-        when "ParagraphStyle/Normal"
-          Element.new(:p, nil, {'class' => 'normal'}, :location => l)
-        when "ParagraphStyle/Horizontal rule"
-          Element.new(:hr, nil, nil, :location => l)
-        when "ParagraphStyle/$ID/[No paragraph style]"
-          Element.new(:p, nil, nil, :location => l)
+        when *(paragraph_style_mappings.keys.map { |e| 'ParagraphStyle/' + e })
+          type, value, attr, options = paragraph_style_mappings[para['AppliedParagraphStyle'].gsub('ParagraphStyle/', '')]
+          Element.new(
+            type,
+            value,
+            attr,
+            if options.respond_to?(:call)
+              { :location => l }.merge(options.call(para))
+            else
+              { :location => l }.merge(options || {})
+            end
+          )
         when String
           Element.new(
            :p,
