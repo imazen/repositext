@@ -1,0 +1,1407 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<idPkg:Story xmlns:idPkg="http://ns.adobe.com/AdobeInDesign/idml/1.0/packaging" DOMVersion="8.0">
+	<Story Self="u193f" AppliedTOCStyle="n" TrackChanges="false" StoryTitle="$ID/" AppliedNamedGrid="n">
+		<StoryPreference OpticalMarginAlignment="false" OpticalMarginSize="12" FrameType="TextFrameType" StoryOrientation="Horizontal" StoryDirection="LeftToRightDirection" />
+		<InCopyExportOption IncludeGraphicProxies="true" IncludeAllResources="false" />
+		<ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/Title of Sermon">
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Italic">
+				<Content>Ang Dios Mao Ang Mismong Tighubad</Content>
+				<Br />
+			</CharacterStyleRange>
+		</ParagraphStyleRange>
+		<ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/Normal">
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Among Langitnong Amahan, usa lang ka Pulong gikan Kanimo magkahulogan na og labaw pa kay sa mahimo o masulti man sa tanang tawo sa unsa man nga oras, tungod kay ang maong mga tawo nagahulat nga makita Ka. Ug nagapasalamat kami Kanimo tungod nga aduna kining mga nagapaabot, nagapaabot sila alang sa usa ka butang nga magakahitabo. Ug sa diha nga ang mga tawo nagakauhaw para sa usa ka butang, ang kahiladman nga nagatawag ngadto sa Kahiladman, aduna gayu’y Kahiladman nga magatubag sa nianang pagtawag. Ug mao kana ang hinungdan nga ania kami dinhi karong gabhiona, tungod kay anaa sa mga kasingkasing sa niining mga ministro, ug sa maong mga tawo, nga tawgon kami aron magkatigum sa paghangyo Kanimo alang sa mga panabang ug mga panalangin, nga nagatoo nga Imong pagaayohon ang mga may sakit ug luwason ang mga nahisalaag, ug igapahayag ang Imong Pulong.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>2</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Ug nagaampo kami, Langitnong Amahan, nga Imong itugot kini kanamo ingon nga mapainubsanon kaming nagahulat Kanimo, sa matag gabii. Hinaut nga adunay bug-os nga—nga pagbubo sa Balaang Espiritu, ug hinaut nga mamahimong buta ang matag tawo sa unsa man nga ania sa ilang palibot gawas sa Dios. Hinaut nga magkaaduna og ingon ka daku nga pagtuaw sa taliwala sa mga tawo, nga nagakauhaw sa Dios, hangtud nga magkaaduna og rebaybal dinhi sa tibuok nasud ug ang matag simbahan mapuno sa mga tawo, mga makasasala nga nagahilak ngadto sa Dios aron nga kaloy-an, ug—ug ang Balaang Espiritu nga nagaayo sa mga masakiton, nga ginapalakaw ang mga bakul, ug ginabanhaw ang patay, ug nga ginahatag kini nga mga butang nga gisaad na diha sa Imong Pulong.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>3</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Umari Ka, Ginoong Jesus, ug tumana ang Imong saad. Umari Ka kanamo karong gabhiona. Nagatoo kami nga Ikaw ang mao sa gihapon kagahapon, karon, ug hangtud sa kahangturan, nga ang Imong mga saad dili gayud mapakyas. Ang mga langit ug yuta parehong mangapakyas apan ang Imong Pulong dili mapakyas. Hinaut nga maablihan ang among mga panabut. Hinaut nga moanhi ang Balaang Espiritu ug andamon ang dinaro nga yuta. Hinaut nga maablihan ang among mga salabutan ngadto sa Espiritu ug gahum sa Dios karong gabhiona, aron nga maipahayag Niya ang Iyang gisaad nga mga Pulong pinaagi kanamo. Kay amo kining ginapangamuyo sa Ngalan ni Jesus. Amen.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>4</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Karong, gabii, kamo nga nagahulat sa teksto, atong ablihan ang Biblia ngadto sa Basahon sa Ikaduhang Pedro, ug magsugod sa ika-15 nga bersekulo, para lang sa usa ka paagi sa pagpakighisgot sa Kasulatan sulod sa pipila ka minuto.</Content>
+				<Br />
+			</CharacterStyleRange>
+		</ParagraphStyleRange>
+		<ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/Scripture">
+			<Properties>
+				<TabList type="list">
+					<ListItem type="record">
+						<Alignment type="enumeration">LeftAlign</Alignment>
+						<AlignmentCharacter type="string">.</AlignmentCharacter>
+						<Leader type="string"></Leader>
+						<Position type="unit">18</Position>
+					</ListItem>
+				</TabList>
+			</Properties>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Italic" CharacterDirection="LeftToRightDirection">
+				<Content>Ug paningkamotan ko aron nga bisan kon unya patay na ako makahimo gihapon kamo sa paghinumdom niining mga butanga bisan kanus-a. </Content>
+				<Br />
+				<Content>Kay wala kami magsubay’g mga malalangon</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular" CharacterDirection="LeftToRightDirection">
+				<Content> nga pagkaminaomao</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Italic" CharacterDirection="LeftToRightDirection">
+				<Content>, mga sugilanon, sa diha nga gipaila namo kaninyo ang gahum ug </Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular" CharacterDirection="LeftToRightDirection">
+				<Content>ang</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Italic" CharacterDirection="LeftToRightDirection">
+				<Content> pag-anhi </Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular" CharacterDirection="LeftToRightDirection">
+				<Content>ni</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Italic" CharacterDirection="LeftToRightDirection">
+				<Content> Ginoong Jesus Cristo, hinonoa kami mga saksi-nga-nakakita sa iyang pagkahalangdon.</Content>
+				<Br />
+			</CharacterStyleRange>
+		</ParagraphStyleRange>
+		<ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/Normal">
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>5</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Gusto ko gayud kana, “mga saksi-nga-nakakita.” Dili nga kung unsa nga sugilanon lamang. Mga saksi kita sa kung unsay atong ginasulti. </Content>
+				<Br />
+			</CharacterStyleRange>
+		</ParagraphStyleRange>
+		<ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/Scripture">
+			<Properties>
+				<TabList type="list">
+					<ListItem type="record">
+						<Alignment type="enumeration">LeftAlign</Alignment>
+						<AlignmentCharacter type="string">.</AlignmentCharacter>
+						<Leader type="string"></Leader>
+						<Position type="unit">18</Position>
+					</ListItem>
+				</TabList>
+			</Properties>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Italic" CharacterDirection="LeftToRightDirection">
+				<Content>Kay gidawat niya gikan sa Dios nga Amahan ang kadungganan ug himaya, </Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular" CharacterDirection="LeftToRightDirection">
+				<Content>ug</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Italic" CharacterDirection="LeftToRightDirection">
+				<Content> miabot kaniya ang usa ka tingog pinaagi sa halangdon nga himaya, Kini mao ang akong Anak nga hinigugma, nga kaniya may kalipay Ako.</Content>
+				<Br />
+				<Content>Ug hingbatian namo kini nga tingog gikan sa langit, sa didto kami uban kaniya sa bukid nga balaan.</Content>
+				<Br />
+				<Content>Ug nagabaton kami sa pulong sa propesiya nga labi pang matino; nga tungod niini </Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular" CharacterDirection="LeftToRightDirection">
+				<Content>mahimo kamong</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Italic" CharacterDirection="LeftToRightDirection">
+				<Content> nagabuhat og maayo sa nagamatngon </Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular" CharacterDirection="LeftToRightDirection">
+				<Content>kamo</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Italic" CharacterDirection="LeftToRightDirection">
+				<Content>, ingon sa usa ka suga nga nagadan-ag sa…dapit nga mangitngit, hangtud ang adlaw mobanagbanag, ug magasubang sa inyong mga kasingkasing ang bitoon sa kaadlawon:</Content>
+				<Br />
+				<Content>Sa hingbaloan kini una sa tanan, nga walay bisan unsa nga propesiya diha sa kasulatan nga nagagikan sa kinaugalingon nga pagsaysay.</Content>
+				<Br />
+				<Content>Kay walay propesiya </Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular" CharacterDirection="LeftToRightDirection">
+				<Content>nga</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Italic" CharacterDirection="LeftToRightDirection">
+				<Content> miabot pinaagi sa kabubut-on sa tawo: kondili ang balaang </Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular" CharacterDirection="LeftToRightDirection">
+				<Content>tawo </Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Italic" CharacterDirection="LeftToRightDirection">
+				<Content>sa Dios mingsulti nga minandoan sila sa Espiritu Santo.</Content>
+				<Br />
+			</CharacterStyleRange>
+		</ParagraphStyleRange>
+		<ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/Normal">
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>6</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Hinaut nga idugang sa Ginoo ang Iyang mga panalangin ngadto sa pagbasa sa Iyang Pulong. Karon, akong pagahisgotan kini ingon nga usa ka hilisgutang: </Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Italic">
+				<Content>Ang Dios Mao Ang Mismong Tighubad</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>7</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Nagapuyo kita sa usa ka panahon sa pagkalibog. Nagapuyo kita sa usa ka panahon kon diin ang mga kalalaken-an ug mga kababayen-an halos dili na makahibalo kung unsay buhaton. Ang tanan, kini—daw sa anaa kini diha sa usa ka kaguliyang. Ang tanan, daw sa daghan kaayong nagkalainlaing mga pamaagi sa pagtan-aw. Si Satanas kana, nga mobuhat niana.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>8</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Karon, dili mahimo nga makatarunganong hukman sa Dios ang mga tawo, diha sa husto, gawas kung adunay sukaranan nga basihanan Niya sa paghukom kanila. Ug nagaingon ang Biblia nga Iyang pagahukman ang tanan nga tawo pinaagi kang Jesus Cristo, ug si Jesus Cristo mao ang Pulong. Diha sa San Juan, sa unang kapitulo, nag-ingon Kini:</Content>
+				<Br />
+			</CharacterStyleRange>
+		</ParagraphStyleRange>
+		<ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/Scripture">
+			<Properties>
+				<TabList type="list">
+					<ListItem type="record">
+						<Alignment type="enumeration">LeftAlign</Alignment>
+						<AlignmentCharacter type="string">.</AlignmentCharacter>
+						<Leader type="string"></Leader>
+						<Position type="unit">18</Position>
+					</ListItem>
+				</TabList>
+			</Properties>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Italic" CharacterDirection="LeftToRightDirection">
+				<Content>Sa sinugdan mao na ang Pulong, ug ang Pulong uban sa Dios, ug Dios ang Pulong. </Content>
+				<Br />
+				<Content>Ug ang Pulong nahimong tawo, ug nagpuyo ipon kanato,…</Content>
+				<Br />
+			</CharacterStyleRange>
+		</ParagraphStyleRange>
+		<ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/Normal">
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>9</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Karon, kung unsa kitang tanan karon mao’y mga pagpakita sa Iyang mga kinaiya. Diha sa Dios…Una dili pa gani Siya kaniadto Dios, ang Dios, mahimo lang nato Siya tawgon nga “Ang Maong Walay Katapusan.” Dili pa Siya kaniadto Dios, tungod kay ang pulong (ang Iningles nga pulong) nga </Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Italic">
+				<Content>God</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content> nagakahulogan og “butang nga silimbahon” ug wala pa kaniadto og bisan unsa man nga mosimba Kaniya. Busa Siya kaniadto ang Maong Walay Katapusan, ang—ang pinaka Tuboran sa tanang intelihensiya. Ug sa niini nga Tuboran sa tanang intelihensiya wala pa kaniadto ni usa ka atom, molekula, o bisan unsa man, kahayag sa bisan asa man, bitoon, bulan, wala ni bisan unsa pa man. Ang Dios, ang nahibaloan nato ingon nga Dios, ang halangdon nga Espiritu nga Eternal (nga wala gayud sukad nagsugod, nga dili gayud matapos), anaa na Siya daan. Ug diha Kaniya mao’y mga kinaiya: mga kinaiya kadto nga mamahimong Dios, Iyang mga kinaiya kaniadto nga mamahimong usa ka Amahan, mga kinaiya nga mamahimong usa ka Anak, mga kinaiya nga mamahimong usa ka Manluluwas, mga kinaiya nga mamahimong usa ka Mananambal. Ang tanan niini nga mga kinaiya anaa Kaniya. Ug Siya karon…Kini nga mga butang nga nagakadayag sukad kaniadto maoy Iyang mga kinaiya lamang nga nagakatuman.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>10</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Ang gusto kong ipasabot sa, </Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Italic">
+				<Content>mga kinaiya</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content> mao ang Iyang “mga hunahuna.” Ug ang—ang pulong mao’y “usa ka gipahayag nga hunahuna.” Ug atua na kini kaniadto sa Iyang hunahuna. Ug pagkasulti Niya, “Magkaaduna og,” ug nagkaaduna dayon. “Magkaadunay,” ug nagkaaduna dayon.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>11</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Ug karon, hinumdumi, kamong mga Cristohanon mao’y mga Iyaha nang mga hunahuna sa wala pa nagkaaduna og kalibutan. Ug kamo mao ang manipestasyon sa Iyang hunahuna. Bisan sa wala pa kaniadto nagkaaduna og kalibutan, atua na kamo kang Cristo, (amen) atua na sa Dios sa sinugdanan pa. Nagapahimo kana kaninyo, kung ingon-ana, nakita n’yo, nga Iyang mga sakop. Ug ang maong tibuok butang Dios, Siya Mismo, nga nagahimo sa Iyang Kaugalingon nga usa ka butang nga materyal aron nga Siya mahikap, makita, ug—ug uban pa. Ug mao kana ang Dios, ang tibuok butang niini.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>12</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Dayon moingon ang mga tawo, “Ang interpretasyon…” Nagapakigsulti ako dili pa lang dugay dinhi sa usa ka panagtigum, usa ka lalaki ang misulti kanako, miingon siya, “Igsoong Branham, aduna ka og sayup nga interpretasyon. Wala mo Kana ginahubad sa husto.”</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>13</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Karon, madunggan nato…Moadto sila sa Methodist, ug moingon sila “Dili husto ang paghubad sa Baptist.” Moingon ang Baptist, “Dili husto ang sa mga Pentecostal.” Nagaingon ang Pentecostal nga “Dili husto ang—ang sa Oneness.” Nagaingon ang Oneness, “Dili husto ang sa Assemblies.” Ug nagaingon ang matag usa nga dili husto ang hubad sa uban.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>14</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Ang Dios mao ang Mismong Tighubad! Wala Siya nagkinahanglan og kinsa man nga maghubad para Kaniya. Siya mismo ang nagahimo sa Kaugalingon Niyang paghubad. Kinsa man nga tawo ang makahimo sa paghubad sa Dios? Ang Dios mao ang Mismong Tighubad.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>15</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Karon, si Pedro nga maoy nagasulti niini, mahibaloan nato nga sa sinugdanan sa diha nga misulti ang Dios, “Magkaadunay kahayag,” ug nagkaaduna og kahayag, mao na kana ang interpretasyon niini. Pagmosulti ang Dios og unsa man nga butang ug natuman kini, kung ingon-ana mao na kana ang interpretasyon sa Dios nga ang Iyang Pulong husto. Kita n’yo? Sa diha nga nagsulti Siya, “Magkaadunay kahayag,” atua usà kini sa Iyang hunahuna sa wala pa nagkaaduna og ingon niana nga butang sama sa kahayag. Sa diha nga miingon Siya, “Magkaaduna og kahayag,” mitungha ang kahayag sa kawanangan, mao na kana ang interpretasyon. Wala’y tawo nga kinahanglan pang hubaron kana, tungod kay gisulti na kini sa Dios ug anaa na dayon kini. Pagmosulti ang Dios ug natuman kini, mao na kana ang interpretasyon sa Iyang Pulong. Nganong dili man kana makita sa mga kalalaken-an? Nganong dili man kana makita sa mga tawo?</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>16</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Pagmosaad ang Dios ug nagaingon ang Dios…Sa—sa sinugdanan, sa Genesis, nagtagana Siya og Iyang Pulong alang sa matag kapanahonan sa diha nga nagapanaw Kini gikan sa sinugdan hangtud sa katapusan. Ug, sugod sa sinugdanan hangtud sa katapusan sa niining mga kapanahonan, gihimo sa kalibutan sa iglesia nga puno sa kalibog ang tanan niining mga butanga tungod sa mga tradisyon, ug uban pa, ug ang Dios kanunay nga nagapadala sa maong esena, sugod pa niadtong Daang Tugon ug diha sa Bag-o, og mga propeta! Ug nagaabot ang Pulong sa Ginoo ngadto sa propeta. Ug ginaunsa man sa Niini pagbuhat kini? Ginapahayag Niini ang Pulong sa Dios. Ang pagpahayag sa Dios, nga maoy nagasulti kung husto ba kini o sayup. Walay tawo ang kinahanglan maghubad Niini, ang Pulong ang nagahubad sa Kaugalingon Mismo Niini. Gisaad kini sa Dios ug mao nga nagakahibato kini!</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>17</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Unsa pa nga kaayohan ang mahimo sa pagsulti og unsa man mahitungod Niini? Kinsa man ang tawong makasasala nga mosulay sa pagsulti (sa diha nga nagsaad ang Dios ug gituman kini sa Dios) nga kana nga interpretasyon sayup? Kana ang Dios Mismo nga nagahimo sa Kaugalingon Niyang paghubad, nagahubad. Wala Siya nagkinahanglan sa kang kinsa man nga hubaron Siya, Siya Mismo ang nagahubad pinaagi sa pagpatuman sa kung unsay gisaad Niya nga Iyang pagabuhaton.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>18</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Oh, kung makita lang unta kana sa iglesia ug makita ang mga saad nga gitagana na alang sa matag kapanahonan! Sa tanang uban pa nga mga kapanahonan, nagsugo ang Dios diha sa maong esena (bisan sugod sa sinugdan hangtud sa katapusan sa pito ka mga kapanahonan sa iglesia) ug gituman ang tanan nga gisaad Niyang buhaton. Ang tanan gayud, wala ni usa ka butang nga wala pa Niya gihimo. Eksakto! Kung unsa man ang gisulti Niya nga buhaton Niya, kana gibuhat Niya.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>19</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Tungod sa diha nga nagsulti ang Dios, kaniadto diha sa Isaias, miingon Siya, “Usa ka ulay ang magapanamkon,” ug gihimo gayud sa usa ka ulay. Karon, kinsa—kinsa ma’y makahubad niana? Ang Dios na ang maoy naghubad. Miingon Siya, “Usa ka ulay ang magapanamkon,” ug nanamkon gayud siya. Karon, unsa man ang inyong…dili n’yo…Wala na’y mahimong isulti pa mahitungod niana, tungod kay nagsulti na ang Dios nga magapanamkon ang mao nga ulay ug gibuhat gayud sa maong ulay. Apan ang iglesia buta kaayo kaniadto aron makita kini. Kita n’yo, aduna sila kaniadto og ilang kaugalingong ideya mahitungod niini. Pagkalahi—pagkalahi kaayo kadto kay sa ilang ginapaabot.</Content>
+				<Br />
+			</CharacterStyleRange>
+		</ParagraphStyleRange>
+		<ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/Normal">
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>20</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Nagapahinungod balik si Pedro dinhi, ingon niya, “Gipahayag sa Dios si Cristo pinaagi sa Iyang Pulong, nga miingon Siya, ‘Kini mao ang Akong Anak nga pinalangga.’” Atua didto kini nga mga magtotoo. Ug si Cristo mao ang kapahayagan sa Dios. Kanunay Niyang ginapahayag si Cristo pinaagi sa Iyang Pulong, tungod kay si Cristo mao ang Pulong. Kanunay Siyang nagapahayag.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>21</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Sa dihang miingon Siya…Sa mga adlaw ni Noe, atua si Cristo kang Noe. Nagatoo ba kamo niana? Nag-ingon si Noe, “Magaulan. Magkaaduna og ulan, pagagun-obon ang kalibutan.” Nag-ulan gayud. Wala na kinahanglan kadto og unsa man nga paghubad. Nag-ulan tungod kay ang Dios, diha kang Noe, miingon, “Magaulan.” Usa siya ka propeta, ug ang ebidensiya mao nga natuman kung unsa ang iyang giingon. Busa dili na nila kinahanglan pa nga hubaron kana.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>22</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Mahimo ang pipila kanila, sa palibot, nag-ingon, “Kini nga tawo wala nakahibalo kung unsa ang iyang ginasulti.”</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>23</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Apan dugay nang gisaad sa Dios, “Kung adunay usa sa taliwala ninyo nga espirituwal, o propeta, ug kung unsa man ang iyang ginasulti nagakahitabo, kung ingon-ana patalinghugi siya.” Husto kana, tungod kay matuod kini. Kinahanglan nga nagasubay kini sa Pulong. Ug nagasubay si Noe sa Pulong. Sa diha nga nagpropesiya siya nga moulan, ug nag-ulan gayud. Wala na kana nagkinahanglan og interpretasyon para niadto, tungod nga gibuhat niini ang ingon niana gayud.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>24</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Nag-ingon si Isaias, “Usa ka ulay ang magapanamkon,” ug nanamkon gayud siya. Karon, pagkatalagsaon kaayo kadto. Tungod kay, kita n’yo, ginatus kadto ka mga katuigan sa wala pa kini nga ulay nanamkon.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>25</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Pagkatalagsaon kaayo kadto hangtud nga ang usa ka buutan nga lalaki nga gihinganlan og Jose, nga iyang bana, “sanglit tawo man siya nga matarung ug dili buot magpakaulaw kaniya…” Kadto nga buutan nga tawo sa niadtong mga adlawa, daw sa unsa kalisud siguro kang Jose sa diha nga minyoonon na siya, nga kaslonon na kaniadto kang Maria.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>26</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Kaslonon na si Maria. Niadtong panahona, ang dili pagtuman niana, pareho lang kana sa pagpanapaw. Ug, siyempre, para kang Jose, daw sama kini nga ginasulayan ni Maria nga himoon siya ingon nga pangtabon, o himoon siya nga pangtaming tungod sa iyang kasaypanan, tungod kay nakaplagan siya nga buros, ingon nga dili pa minyo, minyoonon pa lang. Ang usa ka limbong nga sama niana, pagabatoon hangtud mamatay; mamaingon gyud kana, subay sa balaod.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>27</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Ug si Jose, nga iyang bana, usa ka matarung nga tawo, matarung gayud nga tawo. Nagatoo si Jose sa Dios. Ug gitan-aw siya niadto ni Maria sa kadtong matahum, og dagkung malolot nga mga mata, ug nagaingon, “Jose, giduaw baya ako ni Gabriel nga Arkanghel ug gisultihan ako nga magasamkon kono ako, nga wala man ako makaila og lalaki.”</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>28</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Karon, kung misusi lang balik unta si Jose sa Kasulatan, nag-ingon ang propeta nga mahitabo kana sa mao nga dalaga! Ang Dios lamang kadto nga nagahubad sa Kaugalingon Niyang Pulong! Kita n’yo? Pero pagkatalagsaon kaayo kadto.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>29</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Mao kana ang nagakahitabo dinha sa unsa man nga kapanahonan. Langyaw na ang Pulong sa Dios ngadto sa mga tawo; talagsaon na Kini kaayo. Kanunay nga ginahimo sa Dios ang talagsaon. Talagsaon kini bisan asa man ang Dios. Batok Kini sa mga sistema sa kalibutan, tungod kay ginapahimutang nila ang mga butang sa paagi nga angay nga mapahimutang kini uyon sa hunahuna nila. Apan nagaabot ang Dios ug ginabuhat ang talagsaon.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>30</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Unsaon man pagpanamkon sa niini nga ulay?” Matinud-anon si Jose, gihibalo niya sa Dios ang mahitungod niini.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>31</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Ug dayon nagpakigsulti ang Dios kaniya diha sa usa ka damgo, ug miingon, “Jose, anak ni David, ayaw pagpanuko sa pagpangasawa kang Maria, kay kanang iyang gisamkon iya sa Balaang Espiritu. Gilandongan siya sa Dios. Kini ang nakapahimo niini.”</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>32</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Nahimatikdan ba ninyo kung giunsa gayud sa Dios sa pagpakig-kontak kaniadto kang Jose? Diha sa pang-ikaduha lang nga pamaagi, paagi sa usa ka damgo. Karon, nahibalo kita nga adunay mga damgo, nagatoo kita sa mga damgo. Nagatoo ako sa mga damgo. Dugay nang…Dugay nang nagpakigkontak ang Dios sa mga tawo diha sa mga damgo. Apan ang mga damgo mao’y pang-ikaduha lamang, kita n’yo, mahimong husto kini o mahimong sayup gawas kung mahubad kini. Apan wala siya kaniadto nagkinahanglan og unsa man nga paghubad. Ang Dios Mismo kadto nga diretsong nagpakigsulti kang Jose, tungod kay wala kaniadto og usa ka propeta sa kayutaan niadtong panahona aron maghubad. Dugay na sila nga walay propeta sulod sa upat ka gatus ka tuig. Busa ang sunod nga pinakamaayo, nga maatiman sa Dios ang kaayohan, ang kaayohan sa Mismo Niyang Anak, mao ang pagpakigsulti kang Jose pinaagi sa usa ka damgo ug nga wala na’y paghubad. Miingon Siya, “Husto ang maong babaye. Kanang Balaan nga Butang nga gisamkon niya mao ang Anak sa Dios.” Wala na nagkinahanglan og unsa man nga mga paghubad.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>33</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Ginahimo sa Dios ang Kaugalingon Niyang pagpanghubad ngadto sa matinud-anon, sinsero nga mga kasingkasing, mga lalaki ug mga babaye nga nagalantaw sa—sa butang nga makahibulong, kung ikaw matinud-anon ug sinsero ug nga motoo, adunay pamaagi ang Dios sa paghubad niini alang kanimo. Una, hibaloa kung usa ba kini ka saad. Kung si Jose mibalik lang unta ug mipahilayo gikan sa mga tradisyon ug gibalikan lang unta ang Biblia, ug gihibalo kini, nag-ingon na si Isaias nga buhaton kini sa ulay nga babaye.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>34</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Ug ang mga butang nga gisulti na, ug ang Iyang pagkahimugso, ug ang tanan nga mahitungod niini gihisgotan na diha sa Mga Kasulatan, “pinaagi sa balaan nga mga propeta,” sama sa giingon ni Pedro. Ug walay tawo nga may katungod nga maghatag niana og kinaugalingon nga interpretasyon. Eksakto na gayud Kini sa kung unsa ang giingon sa Dios nga magakahitabo. Siya mao ang kapahayagan sa Pulong sa Dios nga gisaad alang niadtong adlawa. Gisulti kini sa Dios, busa mao na kadto. Mao na kini.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>35</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Nag-ingon si Jesus…Niadtong ania pa Siya sa yuta, sa diha nga dili nila masabtan ang Iyang ministerio, pagkahalangdon kaayo kadto, katingad-an kaayo, (dili nila), katingalahan, diay. Dili nila Siya masabtan. Nag-ingon Siya, “Susiha ninyo ang mga Kasulatan!” (Nagalaum ako nga wala ko kamo ginabungol diha, sa pagsinggit niana.) “Susiha ninyo ang Mga Kasulatan, tungod kay kamo nanaghunahuna nga diha Niini may Kinabuhi kamo nga Walay Katapusan, ug ang mga Niini mao ang nanagpamatuod Kanako.” Kita n’yo? “Ang mga Niini Mao ang mga nanagsulti kaninyo Kung kinsa Ako.”</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>36</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Kita n’yo, gibahin-bahin sa Dios ang Pulong. Kadtong adlawa mao ang pagpadayag sa Dios, ang Dios (Emmanuel) nga uban nato, “Ang Iyang Ngalan pagatawgon Kahibulongan, Magtatambag, Prinsipe sa Pakigdait, Dios nga Makagagahum, Amahan nga Walay Katapusan. Ug ang Iyang Ngalan pagatawgon nga </Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Italic">
+				<Content>Emmanuel,</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content> ‘Ang Dios kauban nato.’” Atua ang Dios kaniadto kang David. Atua ang Dios kaniadto kang Moises. Ang Dios! Ang Dios kana gikan pa sa sinugdan hangtud sa katapusan, nga ginapadayag ang Iyang Kaugalingon alang nianang kapanahonan. Apan sa niadtong kapanahonan, “Usa ka ulay ang manamkon ug magaanak siya og usa ka Anak-nga-Lalaki, ug Siya ang mamahimong Dios nga makauban nato.”</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>37</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Kana ang hinungdan nga gilansang nila Siya sa krus, tungod nga gihimo Niyang Dios ang Iyang Kaugalingon, ug tungod usab sa paglapas sa Sabbath. Siya mao—Siya mao ang Dios sa Sabbath, ug Siya mao gayud ang Dios. Ug dili Siya usa ka ordinaryo lang nga tawo o ordinaryo nga propeta (bisan pa man nga usa Siya kaniadto ka ordinaryong Tawo ug usa ka Propeta), apan Siya mao ang Dios-nga-Propeta. Ug Siya mao kaniadto ang katumanan sa Pulong, eksakto sa kung unsa ang giingon sa Dios nga pagabuhaton Niya. Miingon, “Kinsa ba kaninyo ang makapamatuod nga Ako nakahimo’g sala? Susiha ninyo ang Mga Kasulatan! Kay diha kanila nanaghunahuna kamo nga may Kinabuhi kamo nga Walay Katapusan, ug kini sila mao ang nanagpamatuod Kanako.” Apan tungod sa ilang mga tradisyon, nagakinabuhi sila kaniadto diha sa sulaw sa uban pa nga kapanahonan.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>38</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Sama sa pagwali ko mga pipila na ka semana ang milabay, “</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Italic">
+				<Content>Nagakinabuhi diha sa kasulaw</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>.” Ang kasulaw maoy “lipat sa mata,” ang adlaw nga ginapareplektar lang ang kaugalingon niini, ug dili kini ang mao gayud. Ug ang unsa man nga kasulaw sa uban nga kapanahonan usa ka dili tinuod nga hulagway. Ang mga tawo kanunay nga nagalakaw diha sa usa ka butang nga nahitabo mga tinuig na ang milabay. Nagalakaw ang mga Lutheran diha sa Lutheran nga kasulaw. Ang sanag sa adlaw ni Luther maayo kaniadto sa iyang panahon; ang kang Wesley maayo kaniadto diha sa iyang panahon; ang sa Pentecostal maayo kaniadto diha sa iyang panahon niini. Pasaka na kita sa hagdanan, nagakinabuhi kita diha sa usa na usab nga kapanahonan! Nagapadayon kita, nga nagapadayon, nga dili kita mahimong magsige lingi-lingi sa likod.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>39</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Pagnapahimutang na ang atong mga kaugalingon diha sa mga butang, abi nato nga nahimo na nato ang tanan, nakatutok na kita og ayo sa atong mga tradisyon; ug okey ra man kana alang sa niadtong panahon, apan nagapadayon kita! Susiha ninyo ang Mga Kasulatan ug tan-awa kung unsa ang gisaad na alang sa karong panahon, dayon mahibaloan nato kung asa na kita, dayon masulti na nato kung asa kita nagabarug.</Content>
+				<Br />
+			</CharacterStyleRange>
+		</ParagraphStyleRange>
+		<ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/Normal">
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>40</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Ang kang Luther; mahimo ninyong tan-awon diha sa Kasulatan ug makita sa nianang—sa nianang kapanahonan sa Sardis, eksaktong makita ninyo kung unsay gisaad. Tan-awa kung unsa nga matang sa magkakabayo ang mitungha, tan-awa kung unsa ang misugata kaniya, eksaktong-eksakto, “ang pagkamaalam sa tawo,” ang repormasyon. Tan-awa si Wesley, ug uban pa. Sa diha nga nagapadayon kini paingon sa kapanahonang Pentecostal, ug diretso sa nianang kapanahonan, tan-awa kung giunsa niini pagbiyahe. Tan-awa ang Mga Kasulatan ug hibaloa kung asa na kita. Mao kana ang hinungdan nga miingon si Jesus, “Susiha ninyo ang Mga Kasulatan!”</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>41</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Tan-awa kung asa na kita! Nagatoo ako nga ania na kita sa Pag-abot sa Anak sa Dios mismo karon. Nagatoo ako nga ania na kita sa kapanahonan sa—sa mismong panahon nga mahimo na Siyang magpakita sa bisan unsa man nga oras. Nagatoo ako nga ang Mga Kasulatan nagapahayag niana, nga ania na kita sa kaulahiang mga oras sa kasaysayan niining kalibutan. Makita ko ang maong mga butang samtang ang mga niini nagakahayag. Makita kining Ecumenical Council nga ginadala ang tanang mga kaiglesiahan pasulod niini, paingon sa marka sa mapintas nga mananap. Ug makita ang Emperyong Romano ug kung unsa ang ginabuhat niini, ug ang tanang uban pa kanila. Makita sila nga nagakahiusa, nga ginasirhan aron dili makasulod ang Kahayag, nga ginasirhan aron nga dili makasulod ang Ebanghelyo. Ang tanan nga tawo kinahanglan nga magpasakop niini ug magalakaw diha sa ilang mga kahayag o dili na gayud makalakaw. Kita n’yo, ania na kita sa kaulahiang panahon. Wala na’y nahibilin alang kanato kondili ang manggunit sa Dios ug toohan ang Iyang Pulong. Kanunay gayud nga husto ang Pulong.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>42</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Sa kapanahonan sa iglesiang Laodicea, kana lamang ang kapanahonan sa iglesia, gikan sa ilang tanan, nga si Cristo gibutang didto sa gawas sa iglesia. Atua na Siya sa gawas, nga nagapanuktok. Unsa ma’y nahitabo? Kining Ecumenical Council mao ang mopagawas Kaniya. Nag-ingon ang Biblia nga igapagawas Siya, ug nahipagawas gayud Siya. Dili ipasulod niini ang unsa? Ang Pulong. Ug Siya mao ang Pulong, Siya’y Pulong na kaniadto pa, ug Siya sa gihapon mao ang Pulong karong gabhiona! Siya mao ang Pulong.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>43</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Nag-ingon ang Biblia, “Ang Pulong labi pang mahait, mas gamhanan kay sa espada nga duhay sulab,” Mga Hebreohanon, sa ika-4 nga kapitulo, “magtutugkad sa mga hunahuna ug katuyoan sa kasingkasing.” Ingon niana ang Pulong! Nailhan nila unta kung Kinsa Siya sa diha nga gisulti kana ni Jesus niadtong adlawa.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>44</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Tan-awa kung unsay Iyang gibuhat. Usa ka adlaw nagatindog Siya didto, sa unang pagsugod kaniadto sa Iyang ministerio. Adunay usa ka lalaki nga miduol Kaniya, nga ginganlan og Simon, si Simon Pedro. Ug sa pagkatan-aw ni Pedro Kaniya ug—ug nakita Siya, miingon si Jesus kaniya, “Simon ang imong ngalan ug anak ikaw ni Jonas.” (Siguradong nakahibalo na siya nga nag-ingon kaniadto si Moises, “Ang Ginoo nga inyong Dios magapatindog og usa ka Propeta nga sama kanako, ug Kaniya magpatalinghug kamo.”) Ug ania ang usa ka Tawo nga wala pa sukad nakakita kaniya sa tibuok niyang kinabuhi, miingon, “Simon ang imong ngalan ug anak ka ni Jonas.” Aba, nahibaloan niya dayon niadtong tungora nga kana wala na’y lain pa…Wala pa sila kaniadto nagkaaduna og propeta sulod sa ginatus na ka mga katuigan, ug ania ang usa ka Tawo nga nagasulti kung kinsa siya. Dili ikatingala nga madawat niya kini!</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>45</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Si Felipe, niadto nga panahon, milakaw ug—ug nakaplagan si Natanael didto ilalum sa usa ka kahoy, ug gidala siya didto kang Jesus. Miingon si Jesus, “Tan-awa ang usa ka Israelinhon nga kaniya walay limbong.”</Content>
+				<Br />
+				<Content>	Miingon siya, “Rabbi, diin Mo ako hiilhi?”</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>46</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Miingon Siya, “Sa wala pa si Felipe magtawag kanimo, niadtong didto ka pa ilalum sa kahoy, nakita Ko na ikaw.”</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>47</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Miingon siya, “Rabbi, Ikaw mao ang Anak sa Dios! Ikaw mao ang Hari sa Israel.” Nailhan niya kadto! Unsa man? Wala kini nagkinahanglan og unsa man nga interpretasyon, si Jehova ang misulti niana!</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>48</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Adunay mga nagatindog didto nga wala mitoo niini. Ingon nila, “Kini nga Tawo mao si Beelzebub. Aduna Siya’y—aduna Siya og unsa man nga matang sa panglingla nga Iyang ginahimo. Siya—usa Siya ka manghihimalad, o unsa man.”</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>49</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Mitan-aw si Jesus kanila, ug miingon, “Aba, ginasulti ninyo kana batok sa Anak sa tawo, mapasaylo kamo niini. Apan ang pagbuhat nianang mao ra nga butang pagmoabot na ang Espiritu Santo, magsulti batok Niana, dili na gayud kamo mapasaylo niini, bisan niining panahon sa kalibutan o niadtong palaabuton.” Ginapropesiya Niya kaniadto ang mahitungod sa atong panahon, ang panahon nga atong angay makita. Kay Siya mao sa gihapon kagahapon, karon, ug hangtud sa kahangturan.</Content>
+				<Br />
+				<Content>	Hinumdumi, si Jesus Cristo kadto nga atua kang Moises.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>50</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Si Jesus Cristo kadto nga atua kang David. Sa diha nga si David, ang anak ni…Mitungas si David kaniadto didto sa bukid, nga usa ka sinalikway nga hari, ug naghilak tungod sa Jerusalem, walay lain kadto kondili si Cristo nga atua kaniya. Tungod kay mga walo ka gatus human niadto, milingkod ang Anak ni David didto sa Bukid sa Mga Olivo ug mitan-aw paingon didto sa Jerusalem ug mihilak, ug miingon, “Jerusalem, Jerusalem, makapila nga buot Kong lumluman ka sama sa buhaton sa usa ka himungaan sa iyang mga anak, apan nagadumili ka!”</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>51</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Sa diha nga nabilanggo kaniadto si Joseph, si Jesus kadto. Niadtong gibaligya siya halos sa traynta ka buok nga pilak, si Jesus kadto. Niadtong gihimo siya nga kasaligan ni Potiphar, si Jesus kadto. Niadtong milingkod siya didto sa tuong kamot ni Faraon. Ug pagmolakaw siya, ang tanan…motingog ang trumpeta, ug kinahanglan ang tanan nga tawo moluhod, si Jesus kadto. Walay tawo nga makaduol kang Faraon kondili pinaagi lamang—pinaagi kang Joseph; walay tawo nga makaduol sa Dios, pinaagi lamang kang Jesus. Si Jesus kadto, ang gipropesiya nga Pulong nga natuman, nga gisulti kaniadto diha sa mga landong ug mga pagtipo.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>52</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Niadtong ania pa si Jesus sa yuta, gibuhat Niya ang mao rang mga butang nga gipangbuhat kaniadto sa mga propeta, mao kana kon ngano nga nahibaloan nila nga Siya kadto ang kapadayagan sa Dios sa Iyang Pulong. Wala na kadto nagkinahanglan nga hubaron pa.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>53</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Pagkakita ni Natanael niini, miyukbo siya, miingon, “Ikaw mao ang Hari sa Israel, ang Anak sa Dios, ang Hari sa Israel. Nakaila kami Kanimo, walay tawo nga makahimo niini.”</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>54</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Miadto si Nicodemo sa gabii, giingon ang mao ra sa gihapon nga butang alang sa mga Fariseo. Apan, nakita n’yo, nakahawid na sila og ayo sa ilang Ecumenical Council nga dili na sila makadawat Niini. Iyang gipahayag kung unsay ilang gipang-ingon, miingon, “Rabbi, kami…” Kinsang “kami”? Ang ilang konseho! “Nakahibalo kami nga usa Ikaw ka magtutudlo gikan sa Dios, tungod kay walay tawo ang makahimo niining mga butanga gawas kung anaa ang Dios Kaniya.” Naila nila Kini, nasayran Nila nga mao na Kadto, apan nakahawid na sila kaayo ngadto niini.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>55</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Ug ang Dios, sa milabay nga kuwarenta ka tuig, gitay-og kini nga nasud pinaagi sa bautismo sa Espiritu Santo, ug ang mga kalalaken-an ug kababayen-an anaa lang sa gihapon sa gawas Niini tungod kay nakahawid na sila og ayo sa mao ra gihapon nga butang, nagakinabuhi diha sa kasulaw sa uban nga panahon. Unsa ma’y nagakahitabo? Ang tanan gusto mamahimong usa ka Methodist, Baptist, Presbyterian, Lutheran, o unsa man. Kita n’yo, usa kini ka kasulaw.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>56</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Nagakinabuhi sila kaniadto diha sa kasulaw nga panahon pa ni Moises. Unsay iyang giingon? Miingon Siya…Miingon sila, “Mga tinun-an kami ni Moises.”</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>57</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Miingon Siya, “Kung nakaila kamo kang Moises, nakaila kamo unta Kanako. Nagsulat si Moises kaniadto mahitungod Kanako!”</Content>
+				<Br />
+			</CharacterStyleRange>
+		</ParagraphStyleRange>
+		<ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/Normal">
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>58</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Kung nakaila kamo kang Luther, nakaila kamo unta sa niining kapanahonan! Kung nailhan ninyo ang Methodist, nakaila unta kamo sa niining kapanahonan! Kay si Cristo nagsulat mahitungod sa niining kapanahonan! Ang mga Pulong nga nagakatuman na kinahanglan nga matuman gayud sa niining kapanahonan. Wala na Niini kinahanglana ang si kinsa man aron nga hubaron Kini, ang Dios na Mismo ang nagahubad. Ang Dios ang nagahubad sa Iyang Kaugalingon, tungod kay Siya lamang ang Usa nga makahubad Niini. Kanunay nga ginapanghimatud-an sa mga saad sa Dios kung unsay Iyang giingon, ug mao na kana ang interpretasyon.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>59</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Karon, si Jesus, (aron dili ta maglangan), miingon si Jesus, diha sa San Juan, sa ika-14 nga kapitulo, sa ika-12 nga bersekulo, “Ang nagatoo Kanako, magabuhat sa mao usab nga mga buhat nga ginabuhat Ko.” Iya bang gisulti kini? Husto kana. Wala na kana nagkinahanglan og unsa man nga paghubad. Pagmay nagabuhat sa niana nga buhat, Dios kana. Sigurado!</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>60</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Nagsulti usab Siya dinha, “Sama sa nahitabo kaniadto sa mga adlaw ni Lot, maingon man usab sa pag-abot sa Anak sa tawo.” Gisulti kana ni Jesus. Iya bang gisulti kini? Oo, gisulti Niya kini! Wala na kana nagkinahanglan og paghubad.</Content>
+				<Br />
+				<Content>	Moingon sila, “Bueno, nagakahulogan kana og…”</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>61</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Nagakahulogan lamang Kini eksakto sa kung unsa ang Iyang giingon! “Sama sa nahitabo kaniadto sa mga adlaw ni Lot, maingon man usab sa pag-abot sa Anak sa tawo.” Unsa man diay ang nahitabo kaniadto sa mga adlaw ni Lot? Balikan nato sa makadali lang, hibaloon kung unsa ang gipanghimo nila kaniadto.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>62</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Aduna kaniadto og tulo ka matang sa mga tawo sa mga adlaw ni Lot: magtotoo, nagapatoo-too, ug dili-magtotoo. Anaa kana diha sa matag tipun-og sa mga tawo, mao ra gihapon.</Content>
+				<Br />
+				<Content>	Makaplagan nato nga ang mga Sodomhanon kaniadto mga dili-magtotoo.</Content>
+				<Br />
+				<Content>	Si Lot kaniadto ang nagapatoo-too.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>63</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Si Abraham mao ang magtotoo. Ngadto kaniya gikumpirma ang pakigsaad. Siya kadtong nagahulat alang sa gisaad nga usa ka anak nga lalaki. Siya kadtong nagapaabot alang niini. Amen. (Wala ako “naga-amen” sa kaugalingon ko. Ang </Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Italic">
+				<Content>amen</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content> nagakahulogan og “Mao gayud!”) Ug husto kana. Wala si Abraham sa Sodoma. Atua si Abraham sa itaas ug gawas sa Sodoma. Usa siya ka tipo sa espirituhanong Iglesia sa karon.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>64</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Si Lot usa ka tipo sa denominasyonhong iglesia nga didto pa sa gihapon sa Sodoma. Bantayi, ang Biblia nag-ingon nga, “Ginasakit sa mga kasal-anan sa Sodoma ang iyang matarung nga kalag matag adlaw.” Nganong wala man siya og igong kaisog nga magbarug batok niini? Daghan maayong mga kalalaken-an nga anaa sa iglesia karon, nga nagatan-aw ug makita ang mga babaye nga nagasul-ob og mga syort ug mga lalaki nga nagabuhat sa niining mga butang, ug ang ilang mga miyembro nagaadto, nagadula og golf pag-Dominggo, ug pang-piknik nga mga salo-salo, magswimming-swimming ug ingon-ana nga mga butang, imbis nga magsimba. Mopabilin sa balay pag-Miyerkules sa gabii, magtan-aw og telebisyon, imbis nga magsimba. Daw sa gusto nilang mosulti bahin niini, apan ipalagpot man gud sila sa board. Unsa ma’y nagakahitabo? Si Lot na usab kini, nga nagadungaw sa iyang bintana ug nakita ang kasal-anan, ug nahadlok nga tawgon og “kasal-anan” ang kasal-anan!</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>65</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Wala si Abraham didto sa ilang kagubot, atua siya sa gawas niini. Usa siya ka tipo sa espirituhanong Iglesia. Karon bantayi kung unsay nahitabo sa niadtong kaulahiang panahon, sa wala pa gayud nahulog ang kalayo. Ug mga Gentil kadto. Gipakita niini daan ang kalayo nga magakahulog ngadto sa kalibutan sa mga Gentil karon, sa diha nga mangabungkag ang mga gingharian ug pagasunogon sila. “Magadilaab ang kalangitan,” ang ingon sa Ginoo, “ug mangasunog sila sa hilabihang kainit sa siga.” Landong lang kadto niini.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>66</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Karon ato silang ihulagway. Ania si Abraham nga atua na sa gawas, dili sulod sa Sodoma, atua siya sa gawas sa Sodoma. Si Lot usab atua pa sa gihapon sa Sodoma.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>67</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Talagsaon nga butang, nga usa niana ka mainit nga buntag, mga alas onse siguro kadto, nakakita siya og tulo ka mga lalaki nga nagapadulong, ordinaryong mga lalaki, nga nagalakaw didto sa dalan, sa agianan. Nagalingkod si Abraham kaniadto ilalum sa kahoy’ng encina, ginapapahulay ang iyang kaugalingon. Bag-o pa lang siya migawas, mahimong uban sa mga kabakahan niya niadtong buntaga, mipauli, nga halos udto na. Ug nakita niya ang tulo ka mga lalaki nga nagapadulong. Ug aduna sa kung unsa nga butang niadtong mga kalalaken-an, nga, daw sa pamilyar. Oh, sus!</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>68</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Kanunay nga aduna sa kung unsa gayud nga butang sa Dios, pagmoanha Kini sa taliwala sa mga tawo, daw sa pamilyar kini. Mailhan nila Kini. Aduna sa kung unsa nga butang nga nagasulti kanila, nga aduna og bindikasyon dinha.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>69</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Midagan dayon si Abraham, ug miingon, “Ginoo ko, paghapit Mo ug tugoti ako nga mokuha og gamay nga tubig, dalhon kini ug hugasan ang Inyong mga tiil, ug hatagan Kamo og usa ka buok nga tinapay, ug dayon puede na usab Kamo makalakaw.” Busa mipadaplin siya. Midagan ngadto sa kabakahan ug mikuha og usa ka nating baka ug giihaw kini, gipaluto kini sa usa ka ulipon. Mibalik sa tolda, didto sa ubos niya, ug gipamasa si Sarah og pipila ka harina, mihimo og pipila, o nagluto og makaon, nagluto og pipila ka tinapay, ug giluto ang tinapay diha sa abohan. Gidala kini didto ug gihatag. Samtang nagalingkod siya didto, nagakaon, sugod nilang nahimatikdan, nga kini nga Tawo nagasige og lantaw didto sa Sodoma. Ug miingon Siya…</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>70</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Ang duha kanila, timan-i, nga miadto sa Sodoma. Miadto ang duha sa Sodoma. Ayaw sipyata kini kung mahimo. Akong ginapahinungdan kung unsa ang giingon ni Jesus. Miadto sa Sodoma ang duha kanila aron nga ipagawas si Lot ug kung unsa pa ang andam na nga mapahigawas gikan didto. Ug silang duha nga mipaingon didto, miadto didto ug miwali. (Ug adunay Usa nga mipabilin kang Abraham. Bantayi ang ilhanan nga Iyang gihimo.) Aduna sila og usa ka ilhanan didto, adunay…gibutahan nila ang maong mga Sodomanhon. Ang pagwali sa Maayong Balita kanunay nga makapabuta sa dili-magtotoo. Ug himatikdi kung unsa ang nakapahimo niini.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>71</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Karon, adunay Usa nga nagatindog dinhi ug gibuhat ang mao nga ilhanan sa atubangan ni Abraham.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>72</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Karon, nahimatikdan na ba ninyo, kinsa man nga magsasaysay, nga ginasundan ang Mga Kasulatan, ginasundan ang kasaysayan, wala sukad og usa ka panahon diha sa mga kapanahonan sa iglesia kon diin nga usa ka tawo ang mianha sa nominal nga mga iglesia dinha sa kalibutan, dinha sa mga denominasyon, wala pa sukad og usa ka tawo nga ang iyang ngalan nagtapos nga sama kang Abraham og, h-a-m, kaniadto. Apan nagkaaduna sila karon og usa, G-r-a-h-a-m. Husto kana. Nagaadto didto, ginatawag sila pagawas. Ginabuhat niya ang usa ka maanindot nga buluhaton tungod niini. Graham, si Billy Graham, ang alagad sa Dios dinha sa taliwala sa mga denominasyon, mga pulitiko, ug uban pa, nga ginabangga kini.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>73</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Sa miaging adlaw sa diha nga gusto nila siyang modagan og Presidente, direkta niya kining gibalibaran. Ang Dios, magapanalangin kaniya tungod niini. Aba, silang mga kumpanya sa whiskey, wala gayud unta siya nakauna man lang nga lakang. Migasto unta sila og binilyon ka mga dolyares, tungod kay paundangon gyud niya sila bisan unsaon pa, kadtong mga kumpanya sa sigarilyo ug mga butang nga sama niana. Kita n’yo, atua siya didto ingon nga mensahero sa Dios ngadto sa mga Sodomanhon. Mao gyud kana.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>74</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Apan hinumdumi, adunay Usa nga mipabilin didto kang Abraham, usa pa ka Lalaki, dili kadtong duha nga mipaingon didto sama sa moderno nga ebanghelista nga miadto didto aron magwali. Himatikdi, adunay Usa nga mipabilin didto. Ang duha mipaingon sa </Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Italic">
+				<Content>nianang</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content> direksyon, ug ang Usa mipabilin </Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Italic">
+				<Content>dinhi</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content> uban kang Abraham. Ug ang maong Usa nga mipabilin kang Abraham mihatag kaniya og usa ka ilhanan.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>75</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Karon bantayi, ang iyang ngalan dugay na nga “Abram” ug ang iyang asawa dugay na nga “Sarai,” usa ra ka adlaw o duha sa wala pa kana. Mipakita ang Dios kaniya ug giingnan siya, “Akong bag-ohon ang imong ngalan karon gikan sa Abram ngadto sa Abraham.” (Kita n’yo, unom ka letra ang G-r-a-h-a-m, iya sa tawo.) Apan pito ang A-b-r-a-h-a-m, pito ka letra; h-a-m, nagatapos sa h-a-m.</Content>
+				<Br />
+			</CharacterStyleRange>
+		</ParagraphStyleRange>
+		<ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/Normal">
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>76</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Karon, dinhi sa espirituhanon nga Iglesia, adunay Usa nga didto kang Abraham, ug himatikdi kung unsa ang Iyang giingon. Miingon Siya, “Abraham,” (dili “Abram”) “Abraham, asa na ang imong asawa” (dili “S-a-r-r-a”) “S-a-r-a-h? Asa ang imong asawa nga si Sarah?”</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>77</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Bantayi kung unsa ang iyang gisulti, “Anaa siya sulod sa balung-balong sa likod Nimo.”</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>78</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Ug miingon Siya, “Pagaduawon Ko ikaw. Magaduaw Ako kanimo.” Nakita ba ninyo kanang pang-personal nga pulingalan, sa maong Usa, subay sa saad nga Iyang gisaad. Ang Dios kadto! Miingon Siya, “Magaduaw Ako kanimo.”</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>79</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Ug si Sarah, (diha sa paagi nga masabtan natong tanan) hilum nga mikatawa, sa iyang kaugalingon, ingon niya, “Ako, nga usa na ka tigulang nga babaye, usa na ka gatus ka tuig ang panuigon, ang akong ginoo” (nga mao si Abraham) “nga usab tigulang na, nga lagpas na sa kinabuhi nianang sama sa iya sa mga batan-on pa.” Miingon, “Aba, dili na kami mahimong magkaaduna pa og kalipay nga sama niana, tigulang na ako ug tigulang na siya.” Ug miingon, “Dili na kami mahimong magkaaduna niana.” Ug miingon, “Unsaon kaha? Dili mahimong mahitabo kining mga butanga!”</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>80</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Ug ang—ang mao nga Lalaki (ang Dios diha sa tawhanong lawas) miingon, “Nganong mikatawa man si Sarah ug nagduhaduha, nga ginasulti kini nga mga butang?” Diha sa sulod sa balung-balong, sa likod Niya.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>81</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Karon bantayi, kung dili pa kana ang mao ra nga ministerio nga aduna si Jesus Cristo kaniadto! Mitan-aw Siya didto sa mga mananambong ug gitugkad ang ilang hunahuna. Gisultihan Niya si Pedro kung kinsa siya ug kung unsa ang ngalan sa iyang amahan. Gisultihan usab si Natanael.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>82</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Gisultihan ang babaye didto sa atabay, niadtong miingon kini…Miingon Siya, “Lumakaw ka og hatagi Ko og mainom,” o “Dalhi Ko og mainom.”</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>83</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Miingon ang babaye, “Sir, dili kini ang nabatasan nga magapakigsulti Ka sa…kamong mga Judio nga makigsulti sa mga Samarianhon. Wala man kita og pagpakigharong sa usa’g usa.”</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>84</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Miingon Siya, “Apan kung nakaila ka lang kung Kinsa ang nagapakisulti kanimo, mangayo gyud ka Kanako og mainom. Nagpadayon ang maong pagpakig-estoryahanay. Miingon Siya, “Lumakaw ka og kuhaa ang imong bana ug balik dinhi.”</Content>
+				<Br />
+				<Content>	Mingon siya, “Wala ako’y bana.”</Content>
+				<Br />
+				<Content>	Miingon Siya, “Maayo ang imong panubag, tungod kay nagkaaduna ka na og lima.”</Content>
+				<Br />
+				<Content>	Miingon siya, “Sir!”</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>85</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Tan-awa ninyo ang kalainan tali niana ug kanilang—ug kanilang mga pari niadtong adlawa, niadtong konseho nga nagkinabuhi diha sa kasulaw sa laing panahon. Miingon sila, “Ang yawa kini!” Kinahanglan nila kaniadto nga tubagon ang ilang kongregasyon sa kung unsa nga butang, tungod nga nagkinahanglan kini og niana.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>86</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Apan unsa ma’y gihimo niining kabus og gamay’ng babaye, kanang predestinado nga Binhi nga napahimutang diha sa iyang kasingkasing…Dugay na siyang giluod ug gikapuyan nianang butanga, nahimo siyang libudsuroy diha sa kadalanan ingon nga usa ka bigaon. Apan sa diha nga nakita niya Kana, miingon siya, “Sir, naila ko nga Ikaw usa ka Propeta. Dili pa kami nagkaaduna og usa sulod sa upat na ka gatus ka tuig, ug giingnan kami nga pagmoabot ang Mesias ingon niana nga mga butang ang Iyang pagabuhaton.” Oh, sus! Kadto nga Binhi nga napahimutang didto kalit lang nga nabuhi! Ngano man? Wala na kadto nagkinahanglan og paghubad.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>87</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Miingon si Jesus, “Ako nga nagapakigsulti kanimo mao Siya.” Wala na kana nagkinahanglan pa og paghubad. Gibuhat na Niya ang maong milagro ug nagpahayag nga Siya mao kadtong Mesias, amen, ug nga eksaktong nagpamatuod kung unsa ang gisaad sa Dios (“Ang Ginoo nga inyong Dios magapatindog og usa ka Propeta nga sama kanako,” ang ingon ni Moises). Unsa man kadto? Usa ka pagpanghimatuod sa Kasulatan!</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>88</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Midagan siya paingon sa siyudad, ug miingon, “Umari kamo, tan-awa ninyo ang usa ka Tawo Nga mitug-an kanako sa mga butang nga nabuhat ko. Mao na ba kaha kini ang Cristo? Kini na kaha Siya? Gitug-an Niya kanako kung unsay akong nabuhat.”</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>89</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Karon himatikdi, si Jesus, Siya kadtong anaa niadtong Tawo nga nakatalikod sa balung-balong ug nagsulti kung mahitungod sa unsa ang gihunahuna ni Sarah sulod sa balung-balong kaniadto.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>90</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Ang Pulong sa Dios nagaingon, diha sa Mga Hebreohanon, sa ika-4 nga kapitulo, nga…ginaingon Niya kini, “Ang Pulong sa Dios labi pang gamhanan ug mahait kay sa espada nga duhay sulab, nga nagadulot ngadto sa gitagboan sa mga utok sa bukog, ug motugkad sa mga hunahuna ug katuyoan sa kasingkasing.” Mao kini ang Pulong! Ug sa matag higayon nga nagaabot ang propeta, nagaabot siya nga dala ang Pulong, ug siya mao ang Pulong para sa niana nga kapanahonan. Ug unsa ang gibuhat niini? Usa ka tigpropesiya nga nagatugkad sa mga hunahuna nga anaa sa kasingkasing.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>91</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Nahimo kini diha kang Jesus Cristo tungod kay Siya mao ang kahupnganan sa Pulong.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>92</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Ug miingon si Jesus, “Sama sa nahitabo kaniadto sa mga adlaw sa Sodoma, maingon usab sa pag-abot sa Anak sa tawo.” Moabot sa yuta ang Espiritu sa Dios diha sa porma sa tawo, ang Dios nga nahipadayag diha tawhanong lawas (Amen! Makita ba ninyo kini?), ug buhaton ang mao ra nga butang nga gihimo sa Dios nga atua kaniadto sa tawhanong lawas didto sa Sodoma. Hinumdumi, nagahulat sila kaniadto para sa usa ka gisaad nga anak. Ug, pagkahuman mismo niadto, miabot ang maong gisaad nga anak. Mao kadto ang kaulahiang ilhanan nga nakita sa Sodoma ug sa pundok ni Abraham sa wala pa miabot ang gisaad nga anak. Nahimatikdan ba ninyo kana? Ug karon ang espirituhanong iglesia miabot na nianang taknaa.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>93</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Adunay miingon, “Igsoong Branham, nag-ingon ka ba nga ‘ang Dios kadto’?”</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>94</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Nag-ingon ang Biblia, ang Dios kadto! Wala na kini nagkinahanglan pa og paghubad. Siya si Elohim. Mao kana ang tawag kaniya ni Abraham. Ang si kinsa man nga nagabasa sa Biblia nakahibalo niana. </Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Italic">
+				<Content>Elohim,</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content> “ang Maong Nag-inusarang May Kasarang.” Siya mao ang Nahauna, ang Ulahi; ang Sinugdan, ang Katapusan. Si Elohim! Gitawag Siya ni Abraham nga “Elohim.” Dios (diha sa dagkung mga letra sa Hebreohanon), Elohim; sama lang kaniadto sa sinugdanan, “Dios,” Elohim.</Content>
+				<Br />
+			</CharacterStyleRange>
+		</ParagraphStyleRange>
+		<ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/Normal">
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>95</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Siya mao si Elohim nga napadayag diha sa tawhanong lawas, nga nagasul-ob og sinina sa tawo, nagakaon og pagkaon nga iya sa tawo. Amen! Usa ka ilhanan nga sa kaulahiang mga adlaw nga magapakita na usab ang Dios ngadto sa Iyang mga tawo diha sa tawhanong lawas! Amen! Nag-ingon si Jesus, “Ang mga buhat nga Akong gibuhat inyo usab pagabuhaton. Ug sama sa nahitabo kaniadto sa mga adlaw sa Sodoma, maingon man usab sa pag-abot sa Anak sa tawo.” Amen! Wala na kana nagkinahanglan pa og paghubad; nagkinahanglan kini og pagpadayag, ingon niana ang gikinahanglan niini. Amen. Nagatoo ba kamo niana?</Content>
+				<Br />
+				<Content>	Iduko nato ang atong mga ulo.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>96</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Langitnon namong Amahan, among ginatugyan Kanimo ang Imong saad karong gabhiona nga Ikaw ang nag-ingon niining mga butanga. Gisaad Mo ang mga niini. Wala ni usa ka tawo ang makahatag og kinabuhi sa Imong Pulong kondili Ikaw. Nag-ingon Ka, “Magkaaduna og kahayag,” ug nagkaaduna og kahayag. Walay tawo nga kinahanglan pang hubaron kadto, natuman kadto.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>97</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Sama sa among pagkutlo kang Isaias, nga propeta, “Usa ka ulay ang magasamkon,” nanamkon gayud siya; wala na nagkinahanglan og unsa nga pagpahayag pa, gibuhat niya kadto. Mao gyud kadto ang nahitabo.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>98</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Nag-ingon Ka, pagmoabot Siya igapanganak Siya didto sa Bethlehem, “Gikan sa Bethlehem, Judaea. Dili ba ikaw ang pinakaubos sa tanang mga principe sa Judah, sa Israel? Apan gikan kanimo magaabot ang Magmamando sa Akong katawhan.”</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>99</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Ang mga butang nga Iyang pagabuhaton, kung unsa ang Iyang isinggit didto sa krus, kung unsaon Siya pagakondenahon, lagbason ang Iyang mga tiil ug Iyang mga kamot; “Siya gisamaran tungod sa atong mga kalapasan, ug napangos tungod sa atong mga kasal-anan; ang silot sa atong pakigdait diha sa ibabaw Niya; tungod sa Iyang mga labod kami nangaayo.”</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>100</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Kung unsa nga nag-ingon si David, “Dili Ko pagabiyaan ang Iyang kalag sa sheol, ni motugot Ako nga ang Akong Balaan makakita sa pagkadunot.” Ug diha sa ikatulo nga adlaw, sa wala pa miabot ang setenta’y dos oras aron nga madunot ang Iyang lawas, nag-ingon ang Pulong sa Dios, “Magabangon Siya.” (Miingon sila nga ilang gikawat ang Iyang lawas; ila kini sa gihapon ginatoohan.) Apan nagatoo kami, Ginoo, sa Imong Pulong! Natuman kadto. Nabanhaw si Jesus Cristo ug miingon Siya, “Akong…Ania karon, Ako magauban kaninyo sa kanunay, hangtud sa katapusan sa kalibutan.”</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>101</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Nagatoo kami nga ania Ka karong gabhiona. Nagatoo kami nga Ikaw mao sa gihapon si Jesus Cristo karong gabhiona, dinhi, sama sa kung unsa Ikaw kaniadto pa. Ug nagapangita lamang Ikaw og mga mata, mga bukton, mga tiil, baba, mga kalag, mga lawas, nga Imong magamit aron ipadayag ang Imong Kaugalingon. Dios, balaana kami karong gabhiona, aron nga makita namo ang buhing Jesus Cristo nga nagapuyo sa taliwala namo. Ipaanhi Siya! Kung ingon-ana mahitabo, nga sama niadtong uhaw nga mga Griyego nga nanganha niadtong adlawa, ug miingon, “Sir, kami buot unta makigkita kang Jesus.” Ug nakapakigkita gayud sila Kaniya. Oh, siguradong pagkakulbahinam gayud kadto sa diha nga nakita nila Siya!</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>102</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Dios, Ikaw mao ra sa gihapon karon. Ug nagsaad Ka nga kung uhawon kami makita Ka namo. “Hamubo na lang ang panahon, ug unya ang kalibutan dili na makakita Kanako” (ang dili-magtotoo); “apan kamo makakita ra unya Kanako, kay Ako magauban kaninyo, maanaa kaninyo, hangtud sa katapusan sa kalibutan.” Nakahibalo kami nga Ikaw mao sa gihapon kagahapon, karon, ug hangtud sa kahangturan.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>103</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Ginoo, gisulti na ang maong mga Pulong, nahisulat na kini, karon tugoting matuman kini, alang sa kahimayaan sa Dios, aron ipakita nga Iyang ginatuman ang Iyang Pulong. Amen. Panalanginan kamo sa Dios.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>104</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Motawag ako og linya sa pagpaampo. Nagtoo ko nga nanghatag si Billy og mga prayer card, usa ngadto sa usa ka gatus, o mga ingon niana. Wala lang siya dinhi karon. Ang…Unsa ang numero sa prayer card…Tan-awa ang likod sa inyong…Kini—kini ang numero ug ang—ang letra (A, B, C, D, o…). Unsa kana, A? Sige.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>105</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Sugdan nato sa A, numero uno, dos, tres, kuwatro, singko. Basta magtindog lang nga sama niini. A, numero uno, numero dos, numero tres, numero kuwatro. Kuwatro, wala ko makita nga mitindog kini. Prayer card numero kuwatro. Uno, dos, tres. Prayer…Dili sila tingali makatindog. Kung dili sila makatindog, adunay tawo nga motan-aw sa card sa tapad nila, mahimo nga aduna siya’y card ug dili siya makatindog. Dinalian na. Atua ra diay, ang kuwatro. Singko, prayer card numero singko. Sais, siete, otso, nuebe, diyes, onse, dose. Pagduol lang dinhi karon sa diha nga ginatawag ang inyong numero. Numero uno, dos, tres, pag-anhi lang mismo niining dapita. Prayer card numero uno, dos, tres, kuwatro, singko, sais, siete, otso, nuebe, diyes, onse, pag-adto lang sa inyong puwesto. Onse, dose, trese, katorse, kinse, dise-sais, dise-siete, dise-otso, dise-nuebe, baynte, baynte-uno, baynte-dos, baynte-tres, baynte-kuwatro, baynte-singko. Aduna ba nga dili…</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>106</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Makita ko ang usa ka batan-on nga lalaki dinha sa likod nga naka-wheelchair. Kung gitawag ang imong numero, anak, ug—ug dili ka maka…bueno, ipataas lang ang imong kamot, siguradohon namo nga makaanhi ka dinhi. Kita n’yo?</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>107</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Pila man ang ania dinhi nga walay prayer card ug bisan pa niana may sakit kamo? Tan-awon nato ang inyong kamot, kung asa man. Dinhi mismo, husto kana, ipataas ang inyong kamot. Nagatoo ba kamo? Samtang nga ginatipon nila sila, nagatoo ba kamo Niini, nga Siya mao sa gihapon kagahapon ug hangtud sa kahangturan? Pila man kaninyo? Tan-awa ninyo kini nga mga ministro; dili ba nagaingon ang Kasulatan karon, mga igsoon, nga usa Siya ka Labaw’ng Sacerdote nga arang matandog sa pagbati sa atong mga kaluyahon? Husto ba kana? Pila man ang nagatoo niana, ipataas ang inyong kamot? Usa Siya ka Labaw’ng Sacerdote nga arang matandog sa pagbati sa atong mga kaluyahon.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>108</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Dayon kung ang Biblia nagaingon, “Siya mao sa gihapon kagahapon ug hangtud sa kahangturan,” pila man ang nagatoo niana? Kung ingon-ana unsaon man Niya pagpamuhat sa karon? Kinahanglan Niyang magpamuhat sama sa pagpamuhat Niya kagahapon. Husto ba kana? Asa man Siya karong gabhiona? Nagalingkod diha sa tuo sa Halangdon, sa Iyang lawas; ania ang Balaang Espiritu dinhi sa bilding, aron nga ipaila Siya.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>109</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Himatikdi, karon tan-awa. Unsa ma’y nahitabo sa diha nga gihikap sa usa ka tawo kaniadto ang Iyang bisti, usa ka babaye usa niana ka adlaw? Wala siya og prayer card kaniadto, ingnon nato, apan gihikap niya ang Iyang bisti. Ug sa diha nga gihikap niya ang Iyang bisti, milingi si Jesus ug miingon, “Kinsa ba ang mihikap Kanako?”</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>110</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Gibadlong Siya ni Pedro, ug miingon, “Aba, Ginoo, daw sa walay panimuot kana kon paminawon. Aba, ang tanan mihikap na Kanimo. Nganong moingon Ka pa, ‘Kinsa ba ang mihikap Kanako?’”</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>111</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Miingon Siya, “Apan naila Ko nga nangluya Ako.” Pila man ang nakahibalo niana? </Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Italic">
+				<Content>Gahum</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>, nga nagakahulogan og “kusog,” ang migula gikan Kaniya. “Nangluya Ako, adunay tawo nga mihikap Kanako gamit ang usa ka lahi nga matang sa paghikap.” Ug milingi Siya ug mitan-aw sa mga tawong atua didto hangtud nga nakita Niya kung asa na kadtong maong alagianan sa pagtoo.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>112</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Giagbay na sa tanan ang ilang mga bukton diha Kaniya, “Oh Rabbi, nagatoo kami Kanimo,” ug tanan na niini.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>113</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Apan adunay usa ka tawo nga mitoo gayud Niini. Ug gihikap niya ang Iyang bisti ug mitoo nga naayo na siya, tungod kay nag-ingon ang maong babaye diha sa iyang kasingkasing nga kung mahimo niya lang kini ingon niana gayud ang mahitabo.</Content>
+				<Br />
+			</CharacterStyleRange>
+		</ParagraphStyleRange>
+		<ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/Normal">
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>114</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Milingi Siya ug mitan-aw sa mga atua didto hangtud nga nakita Niya ang maong babaye, ug miingon Siya…giingnan ang babaye nga ang iyang talinugo miundang na ug giayo na siya. Husto ba kana? Karon, ingon niana ang Iyang gihimo, diha sa mga tawo nga atua didto.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>115</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Karon, ginapahayag ko nga dili Siya patay, ingon gayud Siya ka buhi karon sama sa kung unsa Siya kaniadto. Ug ang Biblia nag-ingon, si Jesus nag-ingon, Siya Mismo, “Sama sa nahitabo kaniadto sa mga adlaw sa Sodoma, maingon man usab sa pag-abot sa Anak sa tawo.”</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>116</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Karon tan-awa, bisan unsa pa nga matang sa gasa nga anaa ang Dios dinhi, kinahanglan nga aduna og usa dinha, usab, aron nga motubag niini. Miadto Siya sa usa ka siyudad, nag-ingon ang Biblia, “Daghan Siyang dili mabuhat didto tungod sa ilang dili-pagtoo.” Husto ba kana? Mao sa gihapon sa karon. Kinahanglan ninyo Siyang toohan. Kinahanglan gayud nga inyo Siyang toohan. Kana lang ang bugtong paagi nga mahimo ninyo.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>117</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Andam na ba ang linya sa pagpaampo? Karon, magmatinahuron gayud ang tanan sulod lang sa mga napulo ka minuto. Wala ko nakahibalo kung makatapos ba ako hangtud dinha, aduna ko’y mga baynte-singko o traynta nga nagatindog dinha. Apan karon, diha sa linya sa pagpaampo, ang matag usa kaninyo dinha sa linya sa pagpaampo nga nasayod nga ako usa ka estranghero kaninyo, ug nga wala ako nakahibalo og unsa man bahin kaninyo, ipataas ang inyong kamot. Ang matag usa gayud diha sa linya sa pagpaampo.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>118</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Karon dinha sa mga nanambong, nga nasayod nga ako wala gayud may nahibaloan og unsa man bahin kaninyo, ipataas ang inyong kamot. Karon, karon, ania ang ginapaninguhaan kong isulti, higala, kita n’yo. Karon, ania kini. Ang tanan niining mga ministro nga ania ibabaw sa entablado. Ug si Cristo ang nagsaad niini nga saad. Kita n’yo, nahisulat na kini. Kanus-a ba kini magakahitabo? Sa kaulahiang mga adlaw, dihadiha sa dili pa ang Pag-abot sa Ginoo. Husto ba kana? Magakahitabo kini nianang panahona.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>119</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Karon, mao kana ang gipropesiya nga Pulong karon. Dili ang kahayag ni Luther; dili kahayag ni Wesley; ug dili ni bisan ang kahayag sa Pentecostal. Wala na kini karon. Karon, okey ra si Luther; okey ra ang Methodist; okey ra ang Baptist; silang tanan, ang Pentecostal, maayo man. Aduna dinhi nagalingkod ang tanan na nga matang karong gabhiona. Kini dili—kini dili—kini dili ang tagsatagsa. Unsa kaha kung…</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>120</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Dili mo gayud mahimong sultihan ang Methodist og bisan unsa man mahitungod kang Luther, tungod kay nagatoo kini diha sa pagkabalaan ug si Luther dili. Kita n’yo?</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>121</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Dili mo gayud mahimong isulti sa Pentecostal nga “ang pagpakabalaan mao na kini tanan,” nakita gayud niya ang pagpanag-uli sa mga gasa. Dili siya motoo niana. Dili, aduna siya og mas labaw pa niana. Kita n’yo? Ug kana ang ulahi nga kapanahonan sa iglesia nga aduna kita, ug nagaingon ang Biblia nga dili na magkaaduna pa og mga kapanahonan sa iglesia.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>122</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Apan magkaaduna og usa ka pagtigum sa mga tawo, kita n’yo, ug ania kita karon. Karon, hinumdumi, ang kaulahiang ilhanan. Mga tawo ba kita nga nagapaabot sa usa ka gisaad nga anak? Ipataas ang inyong kamot. Nagatoo ba kamo nga kamo ang Binhi ni Abraham pinaagi sa pagkaanaa diha kang Cristo? Ipataas ang inyong kamot. Kung ingon-ana, Binhi ni Abraham, dawata ang inyong ilhanan! Dili kini atua sa Babilonia, dili kini atua sa kalibutan sa denominasyon. Ania kini sa taliwala ninyo, sa kadtong mga wala nianang kagubot didto. Toohi kini!</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>123</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Ania ang usa ka babaye, usa siya ka bug-os nga estranghero kanako, mga anaa sa parehong edad. Wala ko pa gayud nakita ang maong babaye sa tibuok kong kinabuhi. Kung mahimo ko lang ayohon kana nga babaye buhaton ko kini, kung may sakit siya. Wala ko’y nahibaloan og unsa man bahin kaniya. Nakita ba ninyo siya nga mipataas sa iyang kamot pila pa lang ka gutlo ang milabay. Ako—wala ko pa gayud siya nakita. Usa lang siya ka babaye nga nagatindog dinha.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>124</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Karon nga adlaw mianhi sila ug nagdala og usa ka bugkos sa mga prayer card, gipangsagol-sagol kini tanan ug gipanghatag kini sa mga tawo. Ang usa nakuha ang numero uno dinhi, ug ang numero diyes dinha nga dapit, numero kinse, numero siete, numero…ingon niana lang. Gipangsagol-sagol ang mga niini, sa inyong atubangan mismo, kada adlaw. Ug sa diha nga tawgon na ang mga niini, palibot nga ginapangtawag ang mga niini gikan sa tanan na nga dapit. Kita n’yo? Ug, karon, dili mo na gani kinahanglan pa nga magkaaduna og prayer card, maglingkod lang dinha ug magtoo. Nganong dili man mahimong…</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>125</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Kusia ang inyong kaugalingon, karong gabhiona, hibaloa ang oras nga inyong ginakinabuhian. Kita n’yo? Karon, halos patapos na kini, usab, higala. Halos patapos na!</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>126</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Karon, kung ang Dios ni Abraham nagbanhaw kang Jesus Cristo gikan sa mga patay, ug nagsaad kana nga Jesus nga sa kaulahiang mga adlaw ang mao ra nga mga ilhanan nga si Abraham…nga gibuhat sa Manolunda (nga mao ang Dios diha sa tawhanong lawas) didto sa atubangan ni Abraham, sa wala pa gayud miabot ang gisaad nga anak, si Jesus nag-ingon nga ang mao ra sa gihapon nga butang magakahitabo karon.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>127</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Karon, makita nato ang mga atomika ug ang mga denominasyon, ug ang tanan niadto, ug ang kagubot nga gikahimutangan nila. Makita nato ang usa ka Billy Graham didto, ug si Oral Roberts, ug tanan silang mga tawo didto; ang Pentecostal nga mensahero ug ang denominasyon nga mensahero didto, makita nato kana tanan nga nagakahitabo, nga ginatuman na ang ilhanan. Si Billy Graham, tuman nga usa ka teologo, sa kung unsa gayud ang ginatoohan sa denominasyon. Si Oral Roberts, tuman nga usa ka mag-aayo, nga eksakto gayud sa kung unsa ang Pentecostal…</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>128</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Apan tan-awa dinhi, adunay uban pa nga gisaad ngadto sa Binhi ni Abraham. Atua sila didto sa taliwala sa niining mga denominasyon; aduna sa kung unsang butang nga</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Italic">
+				<Content> wala</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content> sa mga denominasyon nga ginapaabot nga magakahitabo, nga ginatigum ang mga tawo. Ato usà kini biyaan hangtud ugma na sa gabii.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>129</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Bantayi, wala ako nakaila sa niana nga babaye. Magatalikod ako kaniya. Kung ang Ginoong Dios magasulti og usa ka butang sa niana nga babaye, kini—tingali kini pang-pamilya, kini tingali pang-pinansiyal, balatian tingali; wala ko nakahibalo. Mahibaloan niya kung tinuod ba kini o dili.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>130</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Kung pagabuhaton Niya ang mao ra nga butang karong gabhiona nga Iyang gibuhat kaniadto, toohan ba ninyo nga ang Dios nga gisaad ni Jesus Cristo mamaania dinhi sa kaulahiang mga adlaw? Pila man ang nagatoo nga kita nagakinabuhi na nga sama kaniadto sa Sodoma, sa diha nga ang kalibutan midangat na ngadto sa usa ka Sodomanhon nga kahimtang? Pila man kaninyo ang nagatoo nga ang ginaingon ko kaninyo karong gabhiona maoy Kamatuoran? Kung ingon-ana, mga anak ug Binhi ni Abraham, toohi ang Dios!</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>131</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Karon, aron nga matangtang kini sa inyong hunahuna nga ginapaninguhaan kong magsulti og unsa man nga butang sa babaye, sa pagtan-aw sa iyang nawong, o aron matangtang na ang mga butang mahitungod sa telepatiya o unsa pa man nga gusto ninyong mahibaloan. Ang si kinsa man nga tawong nasayod mahitungod sa telepatiya angay nga may mas maayo nga pagsabot kay sa niana. Kita n’yo? Kita n’yo? May nakita na ba kamo og tawong nagagamit og telepatiya nga nagawali sa Maayong Balita? Nakakita na ba kamo og usa ka espiritista nga nagawali sa Maayong Balita, nagabuhat sa mga ilhanan ug mga katingalahan, ginasangyaw si Jesus Cristo nga mao ra gihapon? Wala.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>132</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Kita n’yo, kini lamang…sa hunahuna kini sa mga tawo. Kita n’yo, mga buta sila. Nagatoo ba kamo nga mamahimo silang buta? Nag-ingon ang Biblia nga mamahimo silang ingon niana. Husto ba kana? “Mga gahi’g ulo, hambugiro, mahigugmaon sa mga kalingawan labi pa kay sa paghigugma sa Dios, dili-malukmay, tigbutangbutang, dili-mapugnganon, dili-mahigugmaon sa maayo, nagabaton sa dagway sa pagka-diosnon, apan nanagdumili sa Gahum niini.”</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>133</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Dili ba nga nag-ingon si Jesus, diha sa San Mateo 24:24, nga, “Halos malimbongan sa duha ka espiritu sa ulahing mga adlaw ang mismong mga Pinili, kon arang mahimo”? Apan dili kini mahimo. Atua na sila sa mga hunahuna sa Dios sa sinugdanan pa lang, ug kabahin na sila sa Dios.</Content>
+				<Br />
+			</CharacterStyleRange>
+		</ParagraphStyleRange>
+		<ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/Normal">
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>134</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Karon, Dios ni Abraham, Isaac, ug ni Jacob, hinaut nga maipahibalo karong gabhiona nga ako nagasulti sa Kamatuoran bahin Kanimo. Ikaw kini, Ginoo. Mapainubsanon unta nga mahimo sa Imong mga alagad nga mapadaplin ang kaugalingon nilang mga hunahuna, aron nga magamit Mo ang among mga lawas alang sa Imong Kahimayaan. Sa Ngalan ni Jesus, ang Anak sa Dios. Amen.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>135</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Unsa ba ang usa ka gasa? Dili usa ka butang nga mahimo mong kuhaon, ug gutaron ug balihon. Dili, dili. Ang paghibalo kini kung unsaon mo pagpadaplin sa imong kaugalingon aron nga magamit ka sa Dios. Ang gasa mao ang pagpadaplin lamang sa imong kaugalingon, dayon gamiton na kini sa Dios.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>136</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Ang babaye sa likod ko mamatay na gayud kung dili siya mamaayo. Ang maong babaye sa likod ko naiampo na sa usa pa ka lalaki, bag-ohay lang. Aduna siya’y kanser. Ang kanser anaa diha sa iyang suso ug anaa na usab sa iyang baga. Ug bag-ohay lang siya naiampo, ug ginapaninguhaan niyang dawaton kini pinaagi sa pagtoo nga naayo na siya. Kana’y MAO KINI ANG GINAINGON SA GINOO! Tinuod ba kana, gining? [Ang babaye nagaingon, “Oo, tinuod gyud kana.”—Ed.] Kung tinuod kini, iwarawara—iwarawara ang imong kamot ngadto sa mga nanambong. Ang Dios ni Abraham buhi sa gihapon! Sige, adto na og toohi ang ginatoohan mo ug mamaayo ka na. Amen.</Content>
+				<Br />
+				<Content>	Nagatoo ba kamo? Moingon mo, “Unsa na man ang mga mananambong?</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>137</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Kining babaye nga nagalingkod dinhi uban sa iyang…diha sa tumoy sa laray, ang ikaduha nga babaye dinha mismo. Paglingi ko mismo dinha aduna ko’y nakita, usa ka butang nga nakabaligtos sa iyang bukton, ginabomba ang presyon sa iyang dugo. Taas ang presyon sa iyang dugo. Husto ba kana, gining? Ipataas ang imong kamot. Kung nagatoo ka, ang presyon sa imong dugo magaubos. Ang Dios ni Abraham ania sa esena sa gihapon. Eksaktong mao gayud Siya kung unsa Siya, ang Pulong sa Dios para sa niining panahon!</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>138</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Kumusta ka? Nagatoo ka na ba karon? Magtoo gayud sa Dios! Daw sa usa pa lang ka bata. Nahibalo ang Dios sa imong kasingkasing, batan-ong gining, ako wala nakahibalo. Nagatoo ka ba nga mahimo sa Dios ibutyag kanako kung unsay problema? Motoo ka ba Kaniya kung buhaton ko? Dili kini para kanimo, para kini sa uban, ang igsoon mo kini nga lalaki. Ug siya grabe na ug atua siya sa usa ka siyudad nga amihanan gikan dinhi, sa Tulare. Ug atua siya sa usa ka ospital, ug aduna siya’y leukemia, ug ang mga doktor misurender na kaniya aron mamatay. Wala na gayu’y paglaum. Husto kana. Nagatoo ka ba? [Ang gining, nga nagahilak, nagaingon, “Oo.”—Ed.] Sige. Unsa man ang anaa sa imong kamot? Dalha kana ug ipandong kini diha kaniya. Ug ayaw gayud duhaduhai kini! Toohan mo! Amen.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>139</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Nagatoo ba kamo? Wala ko pa gayud nakita ang maong babaye sa akong kinabuhi. Apan ang Dios nagapabilin nga Dios! Karon, sultihi ako kung mahimo ba kana sa tawo? Dili sa mga buhat sa tawo nga mahimo kini. Ang Dios kini nga gisaad ni Jesus Cristo nga maania dinhi sa kaulahiang mga adlaw ug pagapanghimatud-an ang Iyang Kaugalingon (sa atubangan gayud sa mga Binhi ni Abraham) sama sa nahitabo kaniadto sa mga adlaw sa Sodoma.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>140</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Karon dinhi, wala ako nakaila sa babaye, estranghero kami sa usa’g usa, siguro una namo kining pagtagboanay sa kinabuhi. Nagatoo ka ba kanako nga Iyang alagad? Nagatoo ka ba niini nga mao ang Pulong? Ug nasayod ka nga kung…Kini nga Pulong mao sa gihapon ang magtutugkad sa mga hunahuna ug katuyoan sa kasingkasing. Husto ba kana? Ang Pulong mao ang Mananambal, usab, kung mahimo mong toohan Kini. Nagatoo ka ba? Nalandongan ka, usab, sa usa ka maitum nga landong. Kanser kini. Ug nagatoo ka ba nga mahimo sa Dios nga isulti kanako kung asang dapita kana nga kanser? Anaa kini sa naubos nga bahin sa tinae, mao kana ang ginaingon sa doktor. Nagatoo ka ba karon nga mamaayo ka? Lakaw, ug dili gayud magduhaduha, ug pagaayohon ka sa Dios. Amen.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>141</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Nagatoo ba kamo, kamong tanan? Eksakto gayud kung unsa ang Iyang gisaad! Magtoo sa Dios, ayaw pagduhaduha.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>142</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Estranghero kita sa usa’g usa. Wala ako nakaila kanimo. Kung dili kita magkaila, ipahibalo kana sa mga mananambong, ipataas nato ang atong mga kamot. Wala ko pa gayud nakita ang maong babaye sa akong kinabuhi.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>143</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Nagatoo ba kamo dinha? Nagatoo ba kamo nga si Jesus Cristo kini? Unsa kini? Pulong Niya kini. Pag-isalikway Kini sa niining mga tawo, wala nila ginasalikway ang usa ka tawo, ginasalikway nila ang Pulong. Ang Pulong kini nga atua sa gawas, nga dili makasulod.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>144</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Karon, estranghero kanako ang maong babaye. Wala ko pa gayud siya nakita sa tibuok kong kinabuhi. Usa ka Mananambal ang Dios. Mahimo nga dili kini para nga mamaayo, mahimo nga alang kini sa kung unsa pa man, apan kung isaysay sa Dios kanako kung unsa ang imong problema, motoo ka ba kanako? Ang unang butang nga gusto mong maiampo, mao nga, aduna ka’y problema sa dalunggan. Ang usa sa imong mga dalunggan, dili ka makadungog gikan niini. Husto kana. Tinuod kana. Ug dayon aduna ka’y bisyo, ug gusto nimo nga tangtangon kana nga bisyo, ang pagpanigarilyo kini. Isuksok ang imong tudlo sa imong maayo nga dalunggan karon, sige, sa maayo mo nga dalunggan. Sige. Karon toohi ang Dios ug lakaw na, ug ayaw…ug dili ka na manigarilyo usab kung toohan mo. Lakaw, ug panalanginan ka sa Dios.</Content>
+				<Br />
+				<Content>	Nakita n’yo na unsay nahitabo. Dili ba nga tinuod gayud Siya?</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>145</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Wala ako nakaila kanimo, estranghero kita sa usa’g usa. Wala ko pa ikaw nakita sa tibuok kong kinabuhi, apan nakaila ang Dios kanimo. Kung mahimong isulti sa Dios kanako ang usa ka butang bahin kanimo, motoo ka ba?</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>146</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Motoo ba ang tanang mananambong? Kinsa man dinha ang nakaila sa babaye? Kinsa man sa mga mananambong ang nakaila sa babaye? Sige, mahibaloan ninyo kung tinuod ba kini o dili. Kini gayud ang maghusay niini. Kini gayud ang magsulti sa kamatuoran.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>147</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Karon nakita ninyo ang mga nahitabo sa niining mga pipila pa lamang ka mga minuto. Kita n’yo? Kini gyu’y…Ako nagasarasay na. Kita n’yo? Ang tanan daw sa nagakahanap na gayud sa panan-aw ko. Kita n’yo, Kini nagapangtugkad-. Kita n’yo, ang Balaang Espiritu Kini. Dili Kini ako. Ang Pulong Kini nga gisaad alang sa niining panahon. Dili gayud ingon-ani Kini sukad pa sa panahon sa mga apostoles, wala pa gayud kini sukad nahitabo. Apan kon diin kini nga giingon, “Dihadiha sa dili pa ang pag-abot sa Anak sa tawo. Sama sa nahitabo kaniadto sa mga adlaw ni Lot, maingon man usab sa pag-abot sa Anak sa tawo.” Ang mga dili-magtotoo dili gayud motoo Niini. Wala sila gilauman nga motoo Niini. Apan ang mga magtotoo nagatoo Niini!</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>148</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Karon, kung igapadayag kini sa Balaang Espiritu, pila man ang magatoo sa tibuok ninyong kasingkasing, ipataas ang inyong kamot?</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>149</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Aduna ka’y mga samad. Naaksidente ka sa sakyanan, nga nakapalisa sa pipila ka dugukan diha sa imong liog. Nalisa usab ang imong pantog. Husto kana, dili ba? Nagatoo ka ba? Mamaayo ka na. Dalaygon ang Ginoo. </Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>150</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Nagatoo ka ba nga ang Dios nagaayo sa mga sakit sa pantog. Kung ingon-ana lakaw na ug dawata ang imong pagkaayo.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>151</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Ari ka, gining. Tan-aw ka sa niining direksyon. Nagatoo ka ba nga ang Dios nagaayo og mga sakit sa kasingkasing? Sige, lakaw na ug toohi, ug mamaayo na ang imong kasingkasing.</Content>
+				<Br />
+			</CharacterStyleRange>
+		</ParagraphStyleRange>
+		<ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/Normal">
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>152</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Duol ka dinhi. Nagatoo ka ba nga mahimong ayohon sa Dios ang imong likod, himoon kang ayo na? Lakaw ug toohi kini kung ingon-ana.</Content>
+				<Br />
+				<Content>	Magtoo lamang sa Dios, ingon niana lang ang inyong buhaton!</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>153</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Ari ka, gining. Nagatoo ka ba nga ang Dios nagaayo og sakit sa tiyan? Lakaw, kaona ang imong panihapon, toohi sa tibuok mong kasingkasing.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>154</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Ari ka. Nagatoo ka ba nga ang Dios nagaayo og arthritis? Kung ingon-ana lakaw, magtoo, ug himoa…ug pagaayohon ka sa Dios.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>155</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Sige, ari ka. Nagatoo ka ba sa tibuok mong kasingkasing? Nagatoo ka? Arthritis, na usab. Nagatoo ka ba nga mahimo kang ayohon sa Dios? Lakaw na, toohi Kini, ingna, “Salamat, Ginoo.”</Content>
+				<Br />
+				<Content>	Pila man ang nagatoo dinha? Nagatoo ba kamo?</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>156</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Kining babaye dinhi nga nagsul-ob og pula nga sinina, nga ginapataas ang iyang kamot mismo dinha, nag-antus sa taas nga presyon sa dugo. Nagatoo ka ba nga mahimo kang ayohon sa Dios? Nagatoo ka? Sige. Ipandong ang imong mga kamot sa nianang gining sunod kanimo dinha mismo, ug sultihi siya nga maayo na ang iyang tingog. Amen.</Content>
+				<Br />
+				<Content>	Mao na kana. Amen. Nagatoo ba kamo? Magtoo gayud!</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>157</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Ania ang usa ka lalaki nga nagalingkod dinhi, nagakaaduna og dimapugngan nga pagdugo. Nagatoo ka ba, sir, nga nagalingkod dinha? Oo, aduna ka’y dimapugngan nga pagdugo. Nagatoo ka ba nga maayo kini?</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>158</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Ang babaye nga sunod kanimo may mga talinugo usab, ug aduna siya’y sakit sa likod. Nagatoo ka ba nga ayohon ka sa Dios? Nagatoo ka? Ipataas ang imong kamot ug dawata kini. Magtoo.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>159</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Kining babaye nga sunod kanimo adunay problema sa iyang mga batiis ug sa iyang bat-ang. Nagatoo ka ba nga husto kana, gining? Nagatoo ka ba nga maayo ka? Bueno, ipataas ang imong kamot, mag-ingon, “Ginadawat ko kini.”</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>160</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Sige, ang babaye nga sunod kanimo adunay impeksyon. Nagatoo ka ba nga pagaayohon sa Dios ang mao nga impeksyon, batan-ong gining nga nakaantipara? Ipataas ang imong kamot, moingon, “Ginadawat ko kini.” Sige, toohi kini.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>161</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Ang babaye nga sunod kaniya adunay sakit sa pantog. Nagatoo ka ba nga pagaayohon sa Dios ang mao nga sakit sa pantog, gining? Sige, ipataas ang imong kamot, dawata kini.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>162</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Ang batang babaye nga sunod kaniya adunay goiter. Nagatoo ka ba nga ayohon sa Dios ang mao nga goiter dinha? Ipataas ang imong kamot, dawata kini.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>163</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Pila ba kaninyo ang nagatoo sa tibuok ninyong kasingkasing? Kung ingon-ana magtindog ug dawata kini. Magtindog diha sa Presensiya sa Dios ni Abraham, Isaac, ug ni Jacob.</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
+				<Content>164</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>	Sa Ngalan ni Ginoong Jesus Cristo hinaut nga mokunsad ang Espiritu Santo sulod sa bilding karon ug pagaayohon ang matag tawo nga ania diha sa maong Balaanong Presensiya!</Content>
+				<Br />
+			</CharacterStyleRange>
+		</ParagraphStyleRange>
+		<ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/IDTitle1">
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Italic">
+				<Content>Ang Dios Mao Ang Mismong Tighubad</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>  </Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular" PointSize="8">
+				<Content>CEB64-0205</Content>
+				<Br />
+			</CharacterStyleRange>
+		</ParagraphStyleRange>
+		<ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/IDTitle2">
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>(God Is His Own Interpreter)</Content>
+				<Br />
+			</CharacterStyleRange>
+		</ParagraphStyleRange>
+		<ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/IDParagraph">
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+				<Content>Kining Mensahe ni Igsoong William Marrion Branham, una giwali sa Ingles niadtong Miyerkules sa gabii, Febrero 5, 1964, didto sa Kern County Fairgrounds sa Bakersfield, California, U.S.A., gibalhin gikan sa magnetikong teyp rekording ug gipatik nga walay nakulang sa Ingles. Kining Cebuanong hubad pinatikan na ug gipang-apodapod sa Voice of God Recordings.</Content>
+			</CharacterStyleRange>
+		</ParagraphStyleRange>
+	</Story>
+</idPkg:Story>
