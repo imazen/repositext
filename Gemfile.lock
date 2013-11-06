@@ -22,7 +22,7 @@ GEM
       mini_portile (~> 0.5.0)
     rake (10.1.0)
     ruby-graphviz (1.0.9)
-    rubyzip (1.0.0)
+    rubyzip (1.1.0)
 
 PLATFORMS
   ruby
