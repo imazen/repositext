@@ -1,4 +1,5 @@
 require 'awesome_print'
+require 'erb'
 require 'kramdown/document'
 
 require 'kramdown/converter/graphviz.rb'

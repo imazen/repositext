@@ -1,0 +1,39 @@
+# Convert kramdown to ICML
+#
+# This script converts all kramdown files that match the given Dir.glob pattern and
+# writes the corresponding ICML files in the same directory as the kramdown
+# source files, each with unchanged base name and extension changed to '.icml'.
+#
+# Use like so:
+#     bundle exec kramdown_to_icml '../kramdown_docs/*.at'
+#
+require 'repositext-kramdown'
+
+file_pattern = ARGV.shift
+STDERR.puts "Batch importing all kramdown files at #{ file_pattern }."
+STDERR.puts '-' * 80
+start_time = Time.now
+total_count = 0
+success_count = 0
+errors_count = 0
+
+Dir.glob(file_pattern).each do |kramdown_file_name|
+  STDERR.puts " - importing #{ kramdown_file_name }"
+  begin
+    icml_file_name = kramdown_file_name.gsub(/\.[^\.]+$/, '.icml')
+    Kramdown::Document.new(
+      File.read(kramdown_file_name),
+      {
+        :input => :repositext
+      }
+    ).to_icml
+    success_count += 1
+  # rescue Exception => e
+  #   STDERR.puts "   Error: #{ e.class.name } - #{ e.message }"
+  #   errors_count += 1
+  end
+  total_count += 1
+end
+
+STDERR.puts '-' * 80
+STDERR.puts "Finished converting #{ success_count } of #{ total_count } kramdown files in #{ Time.now - start_time } seconds. There were #{ errors_count } errors."
