@@ -1,4 +1,10 @@
 # -*- coding: utf-8 -*-
+
+# NOTE: This is WIP. I started implementing this and stopped just before we
+# had to implement templating for all the files involved. We decided to start
+# with a single file ICML conversion first.
+# TODO: implement templates for all the files other than the story file
+#       (see collect_files_for_archive method)
 module Kramdown
   module Converter
     class Idml < Base
@@ -9,19 +15,19 @@ module Kramdown
       def initialize(root, options = {})
         super
         @options = {
-          :idml_output_file_name => "idml_output.idml"
+          :output_file_name => "idml_output.idml"
         }.merge(options)
         configure_rubyzip
       end
 
-      # Writes an IDML file to disk (using @options[:idml_output_file_name]).
+      # Writes an IDML file to disk (using @options[:output_file_name]).
       # Contains a single story that is based on root.
       # @param[Kramdown::Element] root the kramdown root element
       # @return ???
       def convert(root)
         story_xml = compute_story_xml(root)
         files = collect_files_for_archive(story_xml)
-        create_zip_archive(options[:idml_output_file_name], files)
+        create_zip_archive(options[:output_file_name], files)
       end
 
     protected

@@ -25,7 +25,7 @@ Dir.glob(file_pattern).each do |kramdown_file_name|
       File.read(kramdown_file_name),
       {
         :input => :repositext,
-        :idml_output_file_name => idml_file_name
+        :output_file_name => idml_file_name
       }
     ).to_idml
     success_count += 1
