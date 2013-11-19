@@ -396,29 +396,6 @@ module Kramdown
           end
         end
 
-        ### inserts a nullop IAL for adjacent ems without whitespace separation.
-        #   They would otherwise result in ambiguous kramdown output.
-        #   E.g., "*first**second*{: .italic}"
-        # el - the parent element of the adjacent ems
-        insert_nullop_ial = lambda do |el|
-          # HACK: this is a duplication of Kramdown::Parser::VgrIdmlStoryValidation#validate_no_mid_word_style_changes
-          return true  if el.children.size < 2
-          el.children.each_with_index do |cur_child, index|
-            next_child = el.children[index + 1]
-            if(
-              next_child && \
-              :em == cur_child.type && :em == next_child.type && \
-              (lc = cur_child.children.last) && (fc = next_child.children.first) && \
-              :text == lc.type && lc.value =~ /[[:alnum:]]\Z/ && \
-              :text == fc.type && fc.value =~ /\A[[:alnum:]]/
-            )
-              # we have two adjacent :em children without whitespace separation
-              # add nullop IAL for unambiguous kramdown output
-              cur_child.attr[:nullop] = nil
-            end
-          end
-        end
-
         ### postfix iteration
         # - ensures that whitespace from inner elements is pushed outside first
         process_child = lambda do |el, index|
@@ -461,7 +438,6 @@ module Kramdown
 
         iterate_over_children = lambda do |el|
           try_join_elements.call(el) if el.children.first && ::Kramdown::Element.category(el.children.first) == :span
-          insert_nullop_ial.call(el)
 
           @stack.push(el)
           index = 0

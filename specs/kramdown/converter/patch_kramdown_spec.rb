@@ -70,12 +70,14 @@ describe Kramdown::Converter::Kramdown do
     end
   end
 
+  # This feature was originally a patch. Now it is part of kramdown proper
+  # we just keep the test here.
   describe "ial_for_element" do
     it "adds a nullop ial for adjacent ems without whitespace separation" do
       Kramdown::Document.new(
-        " *first half*{:.s}*second half*{:.italic}",
+        " *first half*{::}*second half*{:.italic}",
         { :input => :repositext }
-      ).to_kramdown.must_equal %(*first half*{: .s}*second half*{: .italic}\n\n)
+      ).to_kramdown.must_equal %(*first half*{::}*second half*{: .italic}\n\n)
     end
   end
 
