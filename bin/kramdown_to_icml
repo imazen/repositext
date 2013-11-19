@@ -18,19 +18,20 @@ success_count = 0
 errors_count = 0
 
 Dir.glob(file_pattern).each do |kramdown_file_name|
-  STDERR.puts " - importing #{ kramdown_file_name }"
+  STDERR.puts " - importing  #{ kramdown_file_name }"
   begin
     icml_file_name = kramdown_file_name.gsub(/\.[^\.]+$/, '.icml')
+    STDERR.puts "   writing to #{ icml_file_name }"
     Kramdown::Document.new(
       File.read(kramdown_file_name),
       {
-        :input => :repositext
+        :input => :repositext,
+        :output_file_name => icml_file_name,
+        :template_file_name => "../../../data/icml_template.erb",
+        :template_string => ''
       }
     ).to_icml
     success_count += 1
-  # rescue Exception => e
-  #   STDERR.puts "   Error: #{ e.class.name } - #{ e.message }"
-  #   errors_count += 1
   end
   total_count += 1
 end

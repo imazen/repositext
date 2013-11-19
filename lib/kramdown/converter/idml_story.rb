@@ -99,7 +99,8 @@ module Kramdown
 
       def convert_text(el)
         char_for_el(el) { }
-        content(el.value)
+        # Remove line breaks from text nodes
+        content(el.value.gsub(/\n/, ' '))
       end
 
       def convert_em(el)

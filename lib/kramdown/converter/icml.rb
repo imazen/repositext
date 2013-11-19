@@ -11,7 +11,7 @@ module Kramdown
         super
         @options = {
           :output_file_name => "icml_output.icml",
-          :template_file_name => "../../../data/icml_template.erb",
+          :template_file_name => "data/icml_template.erb",
           :template_string => ''
         }.merge(options)
       end
@@ -43,8 +43,13 @@ module Kramdown
       # @return[String] the erb template
       def compute_erb_template(template_file_name, template_string)
         if '' == template_string.to_s.strip
-          # use file
-          File.read(template_file_name)
+          # no template_string given, load from file
+          File.read(
+            File.join(
+              File.expand_path(File.dirname(__FILE__)),
+              template_file_name
+            )
+          )
         else
           # use template_string
           template_string
@@ -57,9 +62,12 @@ module Kramdown
       # @param[String] erb_template the erb template
       # @param[String] output_file_name a full path to the output file
       def write_file(story_xml, erb_template, output_file_name)
+        # assign i_vars referenced in template file
+        @story = story_xml
+
         erb = ERB.new(erb_template)
-        File.open(output_file_name, 'w').do |f|
-          f << erb.result
+        File.open(output_file_name, 'w') do |f|
+          f << erb.result(binding)
         end
       end
 
