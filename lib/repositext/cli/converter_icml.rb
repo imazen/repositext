@@ -56,7 +56,7 @@ class Repositext
       def compute_options(argv)
         # Set defaults
         opts = {
-          :template_path => File.expand_path("../../../../data/icml_template.erb", __FILE__)
+          :template_path => File.expand_path("../../../../templates/icml.erb", __FILE__)
         }
 
         @parser = OptionParser.new do |o|

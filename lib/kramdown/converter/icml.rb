@@ -11,7 +11,6 @@ module Kramdown
         super
         @options = {
           :output_file => File.new("icml_output.icml", 'w'),
-          :template_file => File.new(File.expand_path("../../../../data/icml_template.erb", __FILE__), 'r')
         }.merge(options)
       end
 

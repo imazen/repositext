@@ -3,6 +3,6 @@
 # For testing and development
 require 'repositext-kramdown'
 
-template = File.expand_path('../data/repositext/document.idml_story', __FILE__)
+template = File.expand_path('../templates/idml_story.erb', __FILE__)
 doc = Kramdown::Document.new(ARGF.read, :input => 'IdmlStory', :template => template)
 puts doc.to_idml_story
