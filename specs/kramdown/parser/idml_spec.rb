@@ -4,7 +4,7 @@ describe Kramdown::Parser::Idml do
 
   let(:parser) {
     Kramdown::Parser::Idml.new(
-      File.expand_path(File.dirname(__FILE__) + '../../../../test_data/idml/select_longest_story.idml')
+      File.expand_path('../../../../test_data/idml/select_longest_story.idml', __FILE__)
     )
   }
 
