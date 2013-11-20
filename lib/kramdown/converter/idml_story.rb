@@ -11,28 +11,36 @@ module Kramdown
       class InvalidElementException < Exception; end
       class UnsupportedElementException < Exception; end
 
-      # Create an IDMLStory converter with the given +options+.
+      # Instantiate an IDMLStory converter
+      # @param[Kramdown::Element] root
+      # @param[Hash] options
       def initialize(root, options)
         super
-        @xml = ''
+        @xml = '' # collector for IDML Story XML
         @xml_stack = []
         @stack = []
       end
 
-      DISPATCHER = Hash.new {|h,k| h[k] = "convert_#{k}"} #:nodoc:
+      # @return[String] the name of the converter method for element_type
+      DISPATCHER = Hash.new {
+        |h,element_type| h[element_type] = "convert_#{ element_type }"
+      }
 
+      # Converts +el+ and adds result to @xml string
+      # @param[Kramdown::Element] el
       def convert(el) #:nodoc:
         send(DISPATCHER[el.type], el)
       end
 
+      # Converts +el+'s child elements
+      # @param[Kramdown::Element] el
       def inner(el) #:nodoc:
         @stack.push(el)
         el.children.each {|child| convert(child)}
         @stack.pop
       end
 
-      protected
-
+    protected
 
       # ----------------------------
       # :section: Element conversion methods
@@ -42,24 +50,26 @@ module Kramdown
       #
       # ----------------------------
 
-
+      # @param[Kramdown::Element] root
       def convert_root(root)
         inner(root)
         emit_end_tag while @xml_stack.size > 0
         @xml
       end
 
+      # @param[Kramdown::Element] el
       def convert_header(el)
         case el.options[:level]
         when 1
-          para(el, 'Title of Sermon')
+          paragraph_style_range_tag(el, 'Title of Sermon')
         when 3
-          para(el, 'Sub-title')
+          paragraph_style_range_tag(el, 'Sub-title')
         else
           raise InvalidElementException, "IDML story converter can't output header with levels != 1 | 3"
         end
       end
 
+      # @param[Kramdown::Element] el
       def convert_p(el)
         style = case el.attr['class']
                 when /\bnormal\b/ then 'Normal'
@@ -85,38 +95,45 @@ module Kramdown
                   when 3 then 'Question3'
                   end
                 end
-        para(el, style)
+        paragraph_style_range_tag(el, style)
       end
 
+      # @param[Kramdown::Element] el
       def convert_hr(el)
-        para(nil, 'Horizontal rule') do
-          char(nil, 'Regular') do
-            content('* * *')
-            line_break
+        paragraph_style_range_tag(nil, 'Horizontal rule') do
+          char_st_rng_tag(nil, 'Regular') do
+            content_tag('* * *')
+            br_tag
           end
         end
       end
 
+      # @param[Kramdown::Element] el
       def convert_text(el)
-        char_for_el(el) { }
+        character_style_range_tag_for_el(el)
         # Remove line breaks from text nodes
-        content(el.value.gsub(/\n/, ' '))
+        content_tag(el.value.gsub(/\n/, ' '))
       end
 
+      # @param[Kramdown::Element] el
       def convert_em(el)
-        char_for_el(el)
+        character_style_range_tag_for_el(el)
       end
 
+      # @param[Kramdown::Element] el
       def convert_strong(el)
-        char_for_el(el)
+        character_style_range_tag_for_el(el)
       end
 
+      # We use +U2028 (LINE SEPARATOR) for kramdown :br elements
+      # @param[Kramdown::Element] el
       def convert_br(el)
-        char_for_el(el) { }
-        content("\u2028", el)
+        character_style_range_tag_for_el(el)
+        content_tag("\u2028", el)
       end
 
-      def convert_xml_comment(el) #:nodoc:
+      # @param[Kramdown::Element] el
+      def convert_xml_comment(el)
         # noop
       end
       alias_method :convert_xml_pi, :convert_xml_comment
@@ -125,9 +142,15 @@ module Kramdown
 
       # An exception is raised for all elements that cannot be converted by this converter.
       def method_missing(id, *args, &block)
-        raise UnsupportedElementException, "IDML story converter can't output elements of type #{id}"
+        if id.to_s =~ /^convert_/
+          raise(
+            UnsupportedElementException,
+            "IDML story converter can't output elements of type #{ id }"
+          )
+        else
+          super
+        end
       end
-
 
       # ----------------------------
       # :section: Helper methods for easier IDML output
@@ -137,47 +160,76 @@ module Kramdown
       # ----------------------------
 
 
-      # Create a ParagraphStyleRange tag with the given style ('ParagraphStyle/' is automatically
-      # prepended) and the optional attributes.
+      # Creates a ParagraphStyleRange tag
       #
-      # If a block is given, it is yielded. Otherwise the children of +el+ are converted it if is
-      # not +nil+.
-      def para(el, style, attrs = {})
-        emit_end_tag while @xml_stack.last && !['CharacterStyleRange', 'ParagraphStyleRange'].include?(@xml_stack.last.first)
+      # If a block is given, it is yielded. Otherwise the children of +el+ are
+      # converted if +el+ is not +nil+.
+      #
+      # @param[Kramdown::Element] el
+      # @param[String] style 'ParagraphStyle/' is automatically prepended
+      # @param[Hash, optional] attrs
+      def paragraph_style_range_tag(el, style, attrs = {})
+        # Close any open tags that are not CharacterStyleRange or ParagraphStyleRange
+        while(
+          @xml_stack.last && \
+          !['CharacterStyleRange', 'ParagraphStyleRange'].include?(@xml_stack.last.first)
+        ) do
+          emit_end_tag
+        end
 
-        attrs = attrs.merge("AppliedParagraphStyle" => "ParagraphStyle/#{style}")
+        attrs = attrs.merge("AppliedParagraphStyle" => "ParagraphStyle/#{ style }")
 
-        para_index = @xml_stack.size - 1
-        para_index -= 1 while para_index >= 0 && @xml_stack[para_index].first != 'ParagraphStyleRange'
+        # Try to find index of preceding ParagraphStyleRange in @xml_stack.
+        prev_para_idx = @xml_stack.size - 1
+        while prev_para_idx >= 0 && @xml_stack[prev_para_idx].first != 'ParagraphStyleRange' do
+          prev_para_idx -= 1
+        end
 
-        if para_index == -1 || @xml_stack[para_index].last != attrs
-          if para_index != -1
-            line_break
-            (@xml_stack.size - para_index).times { emit_end_tag }
+        if prev_para_idx == -1 || @xml_stack[prev_para_idx].last != attrs
+          # No preceding ParagraphStyleRange exists, or its attrs are different
+          # from current: Start new ParagraphStyleRange.
+          if prev_para_idx != -1
+            # Preceding ParagraphStyleRange exists, but attrs are different:
+            # insert a br tag and close all open tags.
+            br_tag
+            (@xml_stack.size - prev_para_idx).times { emit_end_tag }
           end
           emit_start_tag('ParagraphStyleRange', attrs)
         else
-          line_break
+          # Preceding ParagraphStyleRange exists and has identical attributes:
+          # insert br tag so that we can add children to preceding ParagraphStyleRange.
+          br_tag
         end
 
+        # yield if block is given, or convert el's children into current ParagraphStyleRange
         block_given? ? yield : el && inner(el)
       end
 
-      # Create a CharacterStyleRange tag using #char but automatically choose the correct style for
-      # the given element.
+      # Creates a CharacterStyleRange tag using #char_st_rng_tag and automatically chooses
+      # the correct style for the given element.
       #
-      # The +ancestors+ parameter needs to be an array holding the ancestors of the given element.
+      # If a block is given, it is yielded. Otherwise the children of +el+ are
+      # converted if +el+ is not +nil+.
       #
-      # **Note**: This method should normally be used instead of the #char method!
-      def char_for_el(el, ancestors = @stack, &block)
+      # **Note**: Use this method rather than the #char_st_rng_tag method!
+      #
+      # @param[Kramdown::Element] el
+      # @param[Array, optional] ancestors an array holding the ancestors of +el+.
+      # @param[Proc, optional] block
+      def character_style_range_tag_for_el(el, ancestors = @stack, &block)
         orig_el = el
-        orig_el, el, ancestors = el, ancestors[-1], ancestors[0..-2] if el.type != :em && el.type != :strong
+        if ![:em, :strong].include?(el.type)
+          # This is most likely a :text element: Use parent element for further processing.
+          # Parent could be e.g., :p, :em, :strong
+          el, ancestors = ancestors[-1], ancestors[0..-2]
+        end
         if (el.type == :em && ancestors.last.type == :strong) ||
             (el.type == :strong && ancestors.last.type == :em)
-          char(orig_el, 'Bold Italic', &block)
+          char_st_rng_tag(orig_el, 'Bold Italic', &block)
         elsif el.type == :strong
-          char(orig_el, 'Bold', &block)
+          char_st_rng_tag(orig_el, 'Bold', &block)
         elsif el.type == :em
+          # We use :em to represent spans. Compute class for span:
           style = if el.attr['class'] =~ /\bpn\b/
                     'Paragraph number'
                   elsif el.attr['class'] =~ /\bitalic\b/ && el.attr['class'] =~ /\bbold\b/
@@ -192,37 +244,46 @@ module Kramdown
           attr = {}
           attr['Underline'] = 'true' if el.attr['class'] =~ /\bunderline\b/
           attr['Capitalization'] = 'SmallCaps' if el.attr['class'] =~ /\bsmcaps\b/
-          char(orig_el, style, attr, &block)
+          char_st_rng_tag(orig_el, style, attr, &block)
         else
-          char(orig_el, 'Regular', &block)
+          char_st_rng_tag(orig_el, 'Regular', &block)
         end
       end
 
-      # Create a CharacterStyleRange tag with the given style ('CharacterStyle/' is automatically
-      # prepended) and the optional attributes.
+      # Creates a CharacterStyleRange tag
       #
-      # If a block is given, it is yielded. Otherwise the children of +el+ are converted it if is
-      # not +nil+.
-      def char(el, style, attrs = {})
-        attrs = attrs.merge("AppliedCharacterStyle" => "CharacterStyle/#{style}")
+      # If a block is given, it is yielded. Otherwise the children of +el+ are
+      # converted if +el+ is not +nil+.
+      #
+      # **Note**: You should not call this method directly, but rather #character_style_range_tag_for_el instead!
+      #
+      # @param[Kramdown::Element] el
+      # @param[String] style 'CharacterStyle/' is automatically prepended
+      # @param[Hash, optional] attrs
+      def char_st_rng_tag(el, style, attrs = {})
+        attrs = attrs.merge("AppliedCharacterStyle" => "CharacterStyle/#{ style }")
 
         if @xml_stack.last.first != 'CharacterStyleRange' || @xml_stack.last.last != attrs
-          emit_end_tag if @xml_stack.last.first == 'CharacterStyleRange'
+          # There is no preceding CharacterStyleRange, or it has different attrs.
+          if @xml_stack.last.first == 'CharacterStyleRange'
+            # Preceding CharacterStyleRange has different attrs: close it.
+            emit_end_tag
+          end
           emit_start_tag('CharacterStyleRange', attrs)
         end
 
+        # yield if block is given, or convert el's children into current CharacterStyleRange
         block_given? ? yield : el && inner(el)
       end
 
-      # Create a Content tag with the given text.
-      def content(text)
+      # @param[String] text
+      def content_tag(text)
         emit_start_tag('Content', {}, false, true, false)
         emit_text(text)
         emit_end_tag(false)
       end
 
-      # Create a Br tag.
-      def line_break
+      def br_tag
         emit_start_tag('Br', {}, true)
       end
 
@@ -239,39 +300,63 @@ module Kramdown
       # ----------------------------
 
 
-      # Escape the string so that it works for XML text.
+      # Escapes the string so that it works for XML text.
+      # @param[String] data
+      # @return[String]
       def escape_xml(data)
         Builder::XChar.encode(data)
       end
 
       # Characters that need to be escaped additionally in attributes
-      XML_ATTR_ESCAPES = {"\n" => "&#10;", "\r" => "&#13;", '"' => '&quot;'}
+      XML_ATTR_ESCAPES = { "\n" => "&#10;", "\r" => "&#13;", '"' => '&quot;' }
       # The regexp for the characters that need to be escaped
       XML_ATTR_ESCAPES_RE = /[\n\r"]/
 
-      # Escape the given XML attribute value.
+      # Escapes the given XML attribute value.
+      # @param[String] value
+      # @return[String]
       def escape_xml_attr(value)
-        escape_xml(value).gsub(XML_ATTR_ESCAPES_RE) {|c| XML_ATTR_ESCAPES[c]}
+        escape_xml(value).gsub(XML_ATTR_ESCAPES_RE) { |c| XML_ATTR_ESCAPES[c] }
       end
 
-      # Return a correctly formatted string for the given attribute key-value pairs.
+      # Returns a correctly formatted string for the given attribute key-value pairs.
+      # @param[Hash] attrs
+      # @return[String]
       def format_attrs(attrs)
-        " " << attrs.map {|k,v| "#{k}=\"#{escape_xml_attr(v)}\""}.join(' ')
+        " " << attrs.map { |k,v| "#{ k }=\"#{ escape_xml_attr(v) }\""}.join(' ')
       end
 
-      # Emit the start tag +name+, with the given attributes.
+      # Emits the start tag +name+ to @xml.
+      # @param[String] name the tag name
+      # @param[Hash, optional] attrs the tag's attributes
+      # @param[Boolean, optional] is_closed true for self closing tags
+      # @param[Boolean, optional] indent true if tag should be indented
+      # @param[Boolean, optional] line_break true if \n is to be inserted after
       def emit_start_tag(name, attrs = {}, is_closed = false, indent = true, line_break = true)
-        @xml << "#{indent ? '  '*@xml_stack.size : ''}<#{name}#{attrs.empty? ? '' : format_attrs(attrs)}#{is_closed ? ' />' : '>'}#{line_break ? "\n" : ''}"
-        @xml_stack.push([name, attrs]) if !is_closed
+        @xml << [
+          indent ? '  ' * @xml_stack.size : '',
+          "<#{ name }",
+          (format_attrs(attrs)  if attrs.any?),
+          is_closed ? ' />' : '>',
+          ("\n"  if line_break)
+        ].compact.join
+        @xml_stack.push([name, attrs])  if !is_closed
       end
 
-      # Emit the end tag for the last emitted start tag.
+      # Emits the end tag for the last emitted start tag to @xml.
+      # @param[Boolean, optional] indent true if tag should be indented
+      # @param[Boolean, optional] line_break true if \n is to be inserted after
       def emit_end_tag(indent = true, line_break = true)
         name, _ = @xml_stack.pop
-        @xml << "#{indent ? '  '*@xml_stack.size : ''}</#{name}>#{line_break ? "\n" : ''}"
+        @xml << [
+          indent ? '  ' * @xml_stack.size : '',
+          "</#{ name }>",
+          ("\n"  if line_break)
+        ].compact.join
       end
 
-      # Emit some text.
+      # Emits text to @xml.
+      # @param[String] text
       def emit_text(text)
         @xml << escape_xml(text)
       end
