@@ -15,7 +15,7 @@ module Kramdown
       def initialize(root, options = {})
         super
         @options = {
-          :output_file_name => "idml_output.idml"
+          :output_file => File.new("idml_output.idml", 'w')
         }.merge(options)
         configure_rubyzip
       end
@@ -27,7 +27,7 @@ module Kramdown
       def convert(root)
         story_xml = compute_story_xml(root)
         files = collect_files_for_archive(story_xml)
-        create_zip_archive(options[:output_file_name], files)
+        create_zip_archive(options[:output_file], files)
       end
 
     protected
@@ -74,10 +74,10 @@ module Kramdown
       end
 
       # Writes a ZIP archive to disk
-      # @param[String] zip_archive_file_name a complete path to the output file location and name
+      # @param[IO] zip_archive_file an IO object
       # @param[Array<Array>] files the files to include in archive. Tuple of name and contents.
-      def create_zip_archive(zip_archive_file_name, files)
-        Zip::OutputStream.open(zip_archive_file_name) { |io|
+      def create_zip_archive(zip_archive_file, files)
+        Zip::OutputStream.open(zip_archive_file) { |io|
           files.each do |(file_name, contents)|
             io.put_next_entry(file_name)
             io.write(contents)

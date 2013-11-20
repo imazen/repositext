@@ -25,13 +25,10 @@ Dir.glob(file_pattern).each do |kramdown_file_name|
       File.read(kramdown_file_name),
       {
         :input => :repositext,
-        :output_file_name => idml_file_name
+        :output_file => File.new(idml_file_name, 'w')
       }
     ).to_idml
     success_count += 1
-  # rescue Exception => e
-  #   STDERR.puts "   Error: #{ e.class.name } - #{ e.message }"
-  #   errors_count += 1
   end
   total_count += 1
 end

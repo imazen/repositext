@@ -8,9 +8,8 @@ module Kramdown::Options
   define(:disable_subtitle_mark, Boolean, false, "Some documentation for the option")
   define(:disable_gap_mark, Boolean, false, "Some documentation for the option")
   define(:disable_record_mark, Boolean, false, "Some documentation for the option")
-  define(:output_file_name, String, '', "Some documentation for the option")
-  define(:template_file_name, String, '', "Some documentation for the option")
-  define(:template_string, String, '', "Some documentation for the option")
+  define(:output_file, Object, nil, "Some documentation for the option") { |v| v }
+  define(:template_file, Object, nil, "Some documentation for the option") { |v| v }
   define(:validation_errors, Object, nil, "Some documentation for the option") { |v| v }
   define(:validation_file_descriptor, String, '', "Some documentation for the option")
   define(:validation_instance, Object, nil, "Some documentation for the option") { |v| v }
