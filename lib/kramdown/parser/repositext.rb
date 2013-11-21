@@ -14,7 +14,7 @@ module Kramdown
         @block_parsers = [:blank_line, :atx_header, :horizontal_rule, :setext_header,
                           :block_extensions, :record_mark, :paragraph]
         @span_parsers =  [:emphasis, :subtitle_mark, :gap_mark,
-                          :span_extensions, :repositext_escaped_chars]
+                          :span_extensions, :line_break, :repositext_escaped_chars]
       end
 
       def parse #:nodoc:

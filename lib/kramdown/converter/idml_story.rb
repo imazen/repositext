@@ -71,6 +71,7 @@ module Kramdown
 
       # @param[Kramdown::Element] el
       def convert_p(el)
+        # TODO: \b matches hyphen, so \bnormal\b also matches normal-pn
         style = case el.attr['class']
                 when /\bnormal\b/ then 'Normal'
                 when /\bnormal_pn\b/ then 'Normal'
@@ -129,7 +130,7 @@ module Kramdown
       # @param[Kramdown::Element] el
       def convert_br(el)
         character_style_range_tag_for_el(el)
-        content_tag("\u2028", el)
+        content_tag("\u2028")
       end
 
       # @param[Kramdown::Element] el
