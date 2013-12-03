@@ -19,7 +19,7 @@ class Repositext
 
       # Runs validations
       def run
-        STDERR.puts "Batch importing all kramdown files at #{ @file_pattern }."
+        STDERR.puts "Batch converting all kramdown files at #{ @file_pattern }."
         STDERR.puts '-' * 80
         start_time = Time.now
         total_count = 0

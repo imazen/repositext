@@ -9,9 +9,15 @@ module Kramdown
       # @param[Hash, optional] options
       def initialize(root, options = {})
         super
-        @options = {
-          :output_file => File.new("icml_output.icml", 'w'),
-        }.merge(options)
+        # NOTE: kramdown initializes all options with default values. So
+        # :output_file and :template_file are initialized to Nil. This breaks
+        # @options = { <defaults> }.merge(options), so I have to set them like below.
+        options[:output_file] ||= File.new("icml_output.icml", 'w')
+        options[:template_file] ||= File.new(
+          File.expand_path("../../../../templates/icml.erb", __FILE__),
+          'r'
+        )
+        @options = options
       end
 
       # Writes an ICML file to IO (using @options[:output_file]).
