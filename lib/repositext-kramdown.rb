@@ -3,6 +3,7 @@ require 'erb'
 require 'kramdown/document'
 
 require 'kramdown/converter/graphviz.rb'
+require 'kramdown/converter/html_doc.rb'
 require 'kramdown/converter/icml.rb'
 require 'kramdown/converter/idml_story.rb'
 require 'kramdown/converter/patch_html.rb'
