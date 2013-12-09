@@ -4,7 +4,7 @@ module Kramdown
     # Returns a tree representation of self, including all descendants.
     #   * One element per line
     #   * Indents nested elements
-    #   * truncates long text values in the middle
+    #   * truncates long text values in the middle so that string boundaries can be inspected.
     #   * includes attr and options if present
     # @param[String, optional] output all output is collected recursively into this string
     # @param[Integer, optional] _indent_level used for recursion
@@ -51,7 +51,7 @@ module Kramdown
         ].compact.join(" - ")
         output << "\n"
       else
-        # Raise on any other cases we forgot
+        # Raise on any other cases
         raise el_value.inspect
       end
       # Recurse over child elements

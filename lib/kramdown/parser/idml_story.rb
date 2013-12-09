@@ -124,6 +124,7 @@ module Kramdown
         l = { :line => para.line, :story => @story_name }
         el = case para['AppliedParagraphStyle']
         when *(paragraph_style_mappings.keys.map { |e| 'ParagraphStyle/' + e })
+          # A known paragraph style that we have a mapping for
           type, value, attr, options = paragraph_style_mappings[para['AppliedParagraphStyle'].gsub('ParagraphStyle/', '')]
           Element.new(
             type,
@@ -136,6 +137,7 @@ module Kramdown
             end
           )
         when String
+          # An unknown paragraph style
           Element.new(
            :p,
            nil,
@@ -143,6 +145,7 @@ module Kramdown
            :location => l
          )
         else
+          # No AppliedParagraphStyle
           Element.new(:p, nil, nil, :location => l)
         end
         @tree.children << el

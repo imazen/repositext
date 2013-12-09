@@ -60,6 +60,7 @@ module Kramdown
       define_parser(:gap_mark, GAP_MARK, GAP_MARK)
 
 
+      # original: ESCAPED_CHARS = /\\([\\.*_+`<>()\[\]{}#!:|"'\$=-])/
       REPOSITEXT_ESCAPED_CHARS = /\\([\\#*_{=@%-])/
       define_parser(:repositext_escaped_chars, REPOSITEXT_ESCAPED_CHARS, '\\\\', :parse_escaped_chars)
 
