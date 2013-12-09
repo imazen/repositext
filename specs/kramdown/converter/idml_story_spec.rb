@@ -238,6 +238,14 @@ describe Kramdown::Converter::IdmlStory do
 
     end
 
+    describe 'escaped chars' do
+
+      it "doesn't escape brackets" do
+        doc = Kramdown::Document.new("some text with \\[escaped brackets\\]", :input => 'repositext')
+        doc.to_idml_story.must_equal psr_node({ :content => 'some text with [escaped brackets]' })
+      end
+    end
+
   end
 
 end

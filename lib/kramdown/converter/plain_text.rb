@@ -20,7 +20,7 @@ module Kramdown
       def convert(el)
         if :text == el.type
           # capture value of all :text elements
-          @plain_text << el.value
+          @plain_text << unescape_brackets(el.value)
         end
         if :block == Element.category(el)
           # add a new line for each :block element

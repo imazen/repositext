@@ -35,4 +35,9 @@ class Kramdown::Converter::Html
     end
   end
 
+  # Patch this method to unescape_brackets
+  def convert_text(el, indent)
+    escape_html(unescape_brackets(el.value), :text)
+  end
+
 end

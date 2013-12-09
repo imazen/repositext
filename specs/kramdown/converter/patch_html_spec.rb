@@ -81,4 +81,15 @@ describe Kramdown::Converter::Html do
 
   end
 
+  describe 'escaped chars' do
+
+    it "doesn't escape brackets" do
+      Kramdown::Document.new(
+        "Some text with \\[escaped brackets\\].",
+        { :input => :repositext }
+      ).to_html.must_equal %(<p>Some text with [escaped brackets].</p>\n)
+    end
+
+  end
+
 end

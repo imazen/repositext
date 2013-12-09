@@ -11,6 +11,7 @@ describe Kramdown::Converter::PlainText do
     [%(**the strong**), %(the strong)],
     [%(para 1\n\npara 2), %(para 1\n\npara 2)],
     [
+    [%(some text with \\[escaped brackets\\]), %(some text with [escaped brackets])],
       %(# header 1\n\n## header 2 *with em*\n\npara 1\n\npara 2 **with strong** and [link](link.html).),
       %(header 1\n\nheader 2 with em\n\npara 1\n\npara 2 with strong and link.)
     ],
