@@ -50,7 +50,7 @@ describe Kramdown::Converter::IdmlStory do
   describe '#convert_p' do
 
     [
-      ['Handles class .normal', "the text\n{:.normal}", { :ps => 'Normal' }],
+      ['Handles class .normal', "the text\n{:.normal}", { :ps => 'Normal', :content => "\tthe text" }],
       ['Handles class .normal_pn', "the text\n{:.normal_pn}", { :ps => 'Normal' }],
       ['Handles class .scr', "the text\n{:.scr}", { :ps => 'Scripture' }],
       ['Handles class .stanza', "the text\n{:.stanza}", { :ps => 'Song stanza' }],
@@ -130,7 +130,7 @@ describe Kramdown::Converter::IdmlStory do
       doc.to_idml_story.must_equal %(
         <ParagraphStyleRange AppliedParagraphStyle=\"ParagraphStyle/Normal\">
           <CharacterStyleRange AppliedCharacterStyle=\"CharacterStyle/Regular\">
-            <Content>para 1</Content>
+            <Content>\tpara 1</Content>
             <Br />
           </CharacterStyleRange>
         </ParagraphStyleRange>
@@ -144,12 +144,15 @@ describe Kramdown::Converter::IdmlStory do
 
     it "merges text from adjacent paragraphs with identical attrs" do
       doc = Kramdown::Document.new("para 1\n{:.normal}\n\npara 2\n{:.normal}", :input => 'repositext')
+      # NOTE: because we insert leading tabs before we merge paras, there are two tabs here.
+      # I consider this a pretty edge case, however it may be an issue that
+      # needs to be addressed.
       doc.to_idml_story.must_equal %(
         <ParagraphStyleRange AppliedParagraphStyle=\"ParagraphStyle/Normal\">
           <CharacterStyleRange AppliedCharacterStyle=\"CharacterStyle/Regular\">
-            <Content>para 1</Content>
+            <Content>\tpara 1</Content>
             <Br />
-            <Content>para 2</Content>
+            <Content>\tpara 2</Content>
           </CharacterStyleRange>
         </ParagraphStyleRange>
       ).strip.gsub(/        /, '') + "\n"
@@ -238,12 +241,61 @@ describe Kramdown::Converter::IdmlStory do
 
     end
 
-    describe 'escaped chars' do
+  end
 
-      it "doesn't escape brackets" do
-        doc = Kramdown::Document.new("some text with \\[escaped brackets\\]", :input => 'repositext')
-        doc.to_idml_story.must_equal psr_node({ :content => 'some text with [escaped brackets]' })
-      end
+  describe 'escaped chars' do
+
+    it "doesn't escape brackets" do
+      doc = Kramdown::Document.new("some text with \\[escaped brackets\\]", :input => 'repositext')
+      doc.to_idml_story.must_equal psr_node({ :content => 'some text with [escaped brackets]' })
+    end
+
+  end
+
+  describe 'paragraph leading tabs' do
+
+    it "adds a single leading tab to a CharacterStyleRange following a Paragraph Number" do
+      doc = Kramdown::Document.new("*2*{: .pn}   para\n{: .normal_pn}\n", :input => 'repositext')
+      doc.to_idml_story.must_equal %(
+        <ParagraphStyleRange AppliedParagraphStyle=\"ParagraphStyle/Normal\">
+          <CharacterStyleRange AppliedCharacterStyle=\"CharacterStyle/Paragraph number\">
+            <Content>2</Content>
+          </CharacterStyleRange>
+          <CharacterStyleRange AppliedCharacterStyle=\"CharacterStyle/Regular\">
+            <Content>\tpara</Content>
+          </CharacterStyleRange>
+        </ParagraphStyleRange>
+      ).strip.gsub(/        /, '') + "\n"
+    end
+
+    it "adds a leading tab to the first CharacterStyleRange in a Paragraph if it is not a Paragraph number" do
+      doc = Kramdown::Document.new("para\n{: .normal}\n", :input => 'repositext')
+      doc.to_idml_story.must_equal %(
+        <ParagraphStyleRange AppliedParagraphStyle=\"ParagraphStyle/Normal\">
+          <CharacterStyleRange AppliedCharacterStyle=\"CharacterStyle/Regular\">
+            <Content>\tpara</Content>
+          </CharacterStyleRange>
+        </ParagraphStyleRange>
+      ).strip.gsub(/        /, '') + "\n"
+    end
+
+    it "adds a tab after the eagle character at the beginning of the document." do
+      doc = Kramdown::Document.new(" para", :input => 'repositext')
+      doc.to_idml_story.must_equal psr_node({ :content => "\tpara" })
+    end
+
+    it "adds a tab before the eagle character at the end of the document." do
+      doc = Kramdown::Document.new("*123*{: .pn} Para\n{: .normal_pn}\n", :input => 'repositext')
+      doc.to_idml_story.must_equal %(
+        <ParagraphStyleRange AppliedParagraphStyle=\"ParagraphStyle/Normal\">
+          <CharacterStyleRange AppliedCharacterStyle=\"CharacterStyle/Paragraph number\">
+            <Content>123</Content>
+          </CharacterStyleRange>
+          <CharacterStyleRange AppliedCharacterStyle=\"CharacterStyle/Regular\">
+            <Content>\tPara\t</Content>
+          </CharacterStyleRange>
+        </ParagraphStyleRange>
+      ).strip.gsub(/        /, '') + "\n"
     end
 
   end
