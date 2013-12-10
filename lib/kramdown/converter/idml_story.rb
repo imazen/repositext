@@ -71,7 +71,6 @@ module Kramdown
 
       # @param[Kramdown::Element] el
       def convert_p(el)
-        # TODO: \b matches hyphen, so \bnormal\b also matches normal-pn
         style = case el.attr['class']
         when /\bnormal\b/
           if((first_text_child = el.children.first) && :text == first_text_child.type)
@@ -81,7 +80,7 @@ module Kramdown
           end
           # return style
           'Normal'
-        when /\bnormal-pn\b/
+        when /\bnormal_pn\b/
           if((pn_child = el.children.first) && :em == pn_child.type && pn_child.attr['class'] =~ /\bpn\b/)
             # First child element is :em with class .pn
             if((first_text_child = el.children[1]) && :text == first_text_child.type)

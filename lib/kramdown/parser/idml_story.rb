@@ -255,8 +255,7 @@ module Kramdown
         end
 
         if char['AppliedCharacterStyle'] == 'CharacterStyle/Paragraph number'
-          # TODO: - matches word boundary, resulting in normal-pn-pn.
-          @tree.attr['class'].sub!(/\bnormal\b/, 'normal-pn') if @tree.attr['class'] =~ /\bnormal\b/
+          @tree.attr['class'].sub!(/\bnormal\b/, 'normal_pn') if @tree.attr['class'] =~ /\bnormal\b/
           add_class.call('pn')
         end
 
