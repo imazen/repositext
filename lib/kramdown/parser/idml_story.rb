@@ -307,7 +307,7 @@ module Kramdown
             char_el = add_element_for_CharacterStyleRange(char_level.last)
             @stack.push([char_el || @tree, char_level.last])
             @tree = char_el || @tree
-          when 'Properties', 'HyperlinkTextDestination'
+          when 'Properties', 'HyperlinkTextDestination', 'Note'
             # ignore this
           else
             raise InvalidElementException, "Found unexpected child element #{child.name} of CharacterStyleRange"
