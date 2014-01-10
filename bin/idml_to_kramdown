@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 # Convert IDML files to AT files
 #
 # Imports all IDML files that match the given Dir.glob pattern and
@@ -24,7 +25,7 @@ regex_replace = ARGV.shift
 STDERR.puts "Using regex " + Regexp.new(regex_search).to_s + "   ->   #{regex_replace}" if regex_search && regex_replace
 
 Dir.glob(file_pattern).find_all { |e| e =~ /\.idml$/}.each do |idml_file_name|
-  
+
   begin
     at_file_name = idml_file_name.gsub(/\.idml$/, '.at')
 

@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 # Convert IDML files to AT files
 #
 # For testing and development

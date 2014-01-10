@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 # Convert IDMLStory to IDMLStory
 #
 # For testing and development

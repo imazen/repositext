@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 # Convert kramdown to IDML
 #
 # This script converts all kramdown files that match the given Dir.glob pattern and
