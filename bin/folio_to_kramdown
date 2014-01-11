@@ -1,0 +1,46 @@
+#!/usr/bin/env ruby
+# Convert Folio per tape XML files to AT files
+#
+# Imports all XML files that match the given Dir.glob pattern and
+# writes the corresponding .at kramdown files in the same directory as the Folio XML
+# source files, each with unchanged base name and extension changed to '.at'.
+#
+# Use like so:
+#     bundle exec folio_to_kramdown '../converted_folio/[0-9][0-9]/*.xml'
+#
+# NOTE: Make sure to wrap the file pattern in single quotes!
+require 'repositext-kramdown'
+
+file_pattern = ARGV.shift
+STDERR.puts "Batch importing all XML files at #{ file_pattern }."
+STDERR.puts '-' * 80
+start_time = Time.now
+total_count = 0
+success_count = 0
+errors_count = 0
+
+regex_search = ARGV.shift
+regex_replace = ARGV.shift
+
+STDERR.puts "Using regex " + Regexp.new(regex_search).to_s + "   ->   #{regex_replace}" if regex_search && regex_replace
+
+Dir.glob(file_pattern).find_all { |e| e =~ /\.xml$/ }.each do |xml_file_name|
+
+  begin
+    at_file_name = xml_file_name.gsub(/\.xml\z/, '.at')
+    at_file_name = at_file_name.gsub(Regexp.new(regex_search), regex_replace) if regex_search && regex_replace
+
+    STDERR.puts " - importing #{ xml_file_name } to #{ at_file_name }"
+
+    doc = Kramdown::Parser::Folio.new(xml_file_name).parse
+    File.write(at_file_name, doc.to_kramdown)
+    success_count += 1
+  # rescue Exception => e
+  #   STDERR.puts "   Error: #{ e.class.name } - #{ e.message }"
+  #   errors_count += 1
+  end
+  total_count += 1
+end
+
+STDERR.puts '-' * 80
+STDERR.puts "Finished importing #{ success_count } of #{ total_count } IDML files in #{ Time.now - start_time } seconds. There were #{ errors_count } errors."
