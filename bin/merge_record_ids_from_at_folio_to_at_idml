@@ -1,0 +1,93 @@
+#!/usr/bin/env ruby
+# Merges just record ids from a folio exported at file into an idml exported at file.
+#
+# Creates new at files
+#
+# Use like so:
+#     bundle exec bin/merge_record_ids_from_at_folio_to_at_idml
+#
+require 'repositext-kramdown'
+require 'suspension'
+
+STDERR.puts "Merging :record tokens from folio_at into idml_at"
+STDERR.puts '-' * 80
+start_time = Time.now
+total_count = 0
+success_count = 0
+idml_not_present_count = 0
+filtered_text_mismatch_count = 0
+
+base_dir = File.expand_path('../../../vgr-english', __FILE__)
+at_folio_dir = base_dir + '/converted_folio'
+at_idml_dir = base_dir + '/content'
+output_dir = base_dir + '/at_merged'
+
+glob_pattern = at_folio_dir + '/[0-9][0-9]/*.at'
+#glob_pattern = at_folio_dir + '/49/*1225.at'
+
+Dir.glob(glob_pattern).each do |at_folio_file_name|
+  total_count += 1
+
+  # prepare paths
+  at_idml_file_name = at_folio_file_name.gsub(at_folio_dir, at_idml_dir)
+  output_file_name = at_folio_file_name.gsub(at_folio_dir, output_dir)
+
+  # Only process if idml file is present
+  if File.exists?(at_idml_file_name)
+    begin
+      # Replay text changes on at_folio_file, preserving :record tokens
+      updated_at_folio = Suspension::TextReplayer.new(
+        File.read(at_idml_file_name),
+        File.read(at_folio_file_name)
+      ).replay
+
+#puts updated_at_folio
+
+      # merge :record tokens
+      result = Suspension::TokenReplacer.new(
+        updated_at_folio,
+        File.read(at_idml_file_name)
+      ).replace([:record])
+
+      # write
+      FileUtils.mkdir_p(File.dirname(output_file_name))
+      File.write(output_file_name, result)
+    rescue Suspension::FilteredTextMismatchError => e
+      filtered_text_mismatch_count += 1
+      if true
+        # Debug info
+        suspended_at_idml = Suspension::Suspender.new(
+          File.read(at_idml_file_name),
+          Suspension::REPOSITEXT_TOKENS
+        ).suspend
+        suspended_updated_at_folio = Suspension::Suspender.new(
+          updated_at_folio,
+          Suspension::REPOSITEXT_TOKENS
+        ).suspend
+        diff = Suspension::DiffAlgorithm.new.call(
+          suspended_updated_at_folio.filtered_text,
+          suspended_at_idml.filtered_text
+        )
+        buff = ''
+        diff.each { |e|
+          if 0 != e.first
+            puts "#{ e.inspect } on line #{ buff.count("\n") } right after #{ buff[-50..-1].inspect }"
+          end
+          buff << e.last
+        }
+      end
+      STDERR.puts " - filtered text mismatch for #{ at_idml_file_name }"
+    else
+      success_count += 1
+      STDERR.puts " + merged rids from #{ at_folio_file_name }"
+    end
+  else
+    idml_not_present_count += 1
+    STDERR.puts " - skipped #{ at_folio_file_name } (corresponding at_idml file not found)."
+  end
+end
+
+STDERR.puts '-' * 80
+STDERR.puts "Finished merging #{ success_count } of #{ total_count } files in #{ Time.now - start_time } seconds."
+STDERR.puts " - IDML files not present: #{ idml_not_present_count }"
+STDERR.puts " - Files with filtered text mismatch: #{ filtered_text_mismatch_count }"
