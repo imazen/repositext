@@ -10,8 +10,14 @@ module Kramdown
       # The name of the file from which the data was read.
       attr_reader :filename
 
-      def initialize(the_filename)
+      # @param[String] the_filename
+      # @param[Hash, optional] options these will be passed to Kramdown::Parser
+      def initialize(the_filename, options = {})
         @filename = the_filename
+        @options = {
+          :line_width => 100000, # set to very large value so that each para is on a single line
+          :input => :repositext # that is what we generate as string below
+        }.merge(options)
       end
 
       # Return kramdown as string
@@ -56,7 +62,7 @@ module Kramdown
             raise [klass, level].inspect
           end
         end
-        Kramdown::Document.new(kramdown.strip + "\n", :input => :repositext)
+        Kramdown::Document.new(kramdown.strip + "\n", @options)
       end
 
       def extract_text_from_para_node(para_node, string_collector)

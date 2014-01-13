@@ -17,8 +17,14 @@ module Kramdown
       # The name of the file from which the data was read.
       attr_reader :filename, :stories
 
-      def initialize(filename)
-        @filename = filename
+      # @param[String] the_filename
+      # @param[Hash, optional] options these will be passed to Kramdown::Parser
+      def initialize(the_filename, options = {})
+        @filename = the_filename
+        @options = {
+          :line_width => 100000, # set to very large value so that each para is on a single line
+          :input => 'IdmlStory' # that is what we generate as string below
+        }.merge(options)
         @stories = extract_stories
       end
 
@@ -39,7 +45,7 @@ module Kramdown
         end
 
         data << '</idPkg:Story>'
-        Kramdown::Document.new(data, :input => 'IdmlStory')
+        Kramdown::Document.new(data, @options)
       end
 
     private
