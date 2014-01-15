@@ -1,3 +1,54 @@
+=begin
+
+Importing Folio XML files to AT
+===============================
+
+* css is case insensitive
+* 4 output sinks: AT, editors_notes, warnings, deleted_text
+
+* pull an element
+* delete an element and children
+* delete certain characters, pull element
+
+* checks on elements (compare to parent_record)
+* compare with other records in tape (p.referenceline)
+
+* add attrs to parent_record's IAL
+* translate CSS class to another one (.Paragraph => .pn)
+* look at children to decide on class (p with child span.pn => p.normal_pn)
+* add class to parent paragraph
+* choose class depending on element inline style
+
+* wrap text in markdown syntax (e.g., italics: *..*)
+* replace a span with horizontal rule, verify text contents
+
+* first note within record.tape: save to editors_notes
+* merge split elements
+
+Types of actions
+----------------
+
+* traverse tree
+* modify text contents
+* pull element
+* drop element
+* add warning
+* add editors note
+* add deleted text
+* add css class
+* compare element with other elements (parent, record, paragraph, other elements in tape)
+* add attrs to record IAL
+* map_css_classes
+* wrap text in markdown syntax
+* detect if self is first note in record.tape, add_editors_note
+* merge split events
+
+=end
+
+# Converts folio per tape XML files to AT kramdown files
+#
+# Parsing rules are documented here: https://docs.google.com/document/d/1vVVZ6HmRpr8c6WRpwCvQ9OXJzkKrc_AgzWQURHRSLX4/edit
+#
 require 'nokogiri'
 require 'kramdown/document'
 
@@ -7,34 +58,44 @@ module Kramdown
     # Open a per tape Folio XML file and parse all record entries to kramdown.
     class Folio
 
-      # The name of the file from which the data was read.
-      attr_reader :filename
-
-      # @param[String] the_filename
+      # @param[String] folio_xml
       # @param[Hash, optional] options these will be passed to Kramdown::Parser
-      def initialize(the_filename, options = {})
-        @filename = the_filename
+      def initialize(folio_xml, options = {})
+        @folio_xml = folio_xml
         @options = {
           :line_width => 100000, # set to very large value so that each para is on a single line
           :input => :repositext # that is what we generate as string below
         }.merge(options)
       end
 
-      # Return kramdown as string
+      # Returns AT kramdown and other related documents as Hash of Strings
+      # @return[Hash<String>] A hash with the following elements: Keys are the
+      #     corresponding file names, values are each document as string.
+      #     * 'folio.at': kramdown file imported from folio.xml
+      #     * 'folio.deleted_text.json': text that was deleted while importing folio.xml
+      #     * 'folio.editors_notes.json': editors notes that were extracted while importing folio.xml
+      #     * 'folio.warnings.json': warnings that were raised while importing folio.xml
       def parse
-        xml = File.read(@filename)
-        kramdown = convert_xml_to_kramdown(xml)
+        docs = convert_xml_to_kramdown(@folio_xml)
       end
 
     private
 
       # @param[String] xml
-      # @return[String] a kramdown doc
+      # @return[Hash<String>] A hash with the following elements: Keys are the
+      #     corresponding file names, values are each document as string.
+      #     * 'folio.at': kramdown file imported from folio.xml
+      #     * 'folio.deleted_text.json': text that was deleted while importing folio.xml
+      #     * 'folio.editors_notes.json': editors notes that were extracted while importing folio.xml
+      #     * 'folio.warnings.json': warnings that were raised while importing folio.xml
       def convert_xml_to_kramdown(xml)
-        # NOTE: for now we just want plain text and record ids.
-        kramdown = ''
-        doc = Nokogiri::XML(xml)
-        doc.css('record').each do |any_record|
+        # Collectors for output sinks
+        @kramdown_root = ElementFi.new(:root, nil, nil, :encoding => 'UTF-8')
+        @folio_deleted_text = []
+        @folio_editors_notes = []
+        @folio_warnings = []
+        xml_doc = Nokogiri::XML(xml)
+        xml_doc.css('record').each do |any_record|
           # extract record_ids
           year_id, tape_id, record_id = any_record['fullPath'].gsub(/\A\//, '').split('/')
           # extract differentiating features
@@ -49,27 +110,45 @@ module Kramdown
             # Nothing to do
           when ["Tape", "Tape"]
             # tape level record
-            kramdown << "\n\n^^^{:.rid #f-#{ tape_id }}"
+            tape_level_record = ElementFi.new(
+              :record_mark, nil, { 'class' => 'rid', 'id' => "f-#{ tape_id }" }
+            )
+            @kramdown_root.add_child(tape_level_record)
             title = any_record.at_css('span.TapeTitle').text.strip.gsub(/\s+/, ' ')
-            kramdown << "\n\n# #{ title }"
+            header_el = ElementFi.new(:header, nil, nil, :level => 1, :raw_text => title)
+            header_el.add_child(ElementFi.new(:text, title))
+            tape_level_record.add_child(header_el)
           when ["NormalLevel", nil]
             # paragraph level record
-            kramdown << "\n\n^^^{:.rid #f-#{ record_id }}"
+            para_level_record = ElementFi.new(
+              :record_mark, nil, { 'class' => 'rid', 'id' => "f-#{ record_id }" }
+            )
+            @kramdown_root.add_child(para_level_record)
             any_record.css('> p').each do |para|
-              extract_text_from_para_node(para, kramdown)
+              extract_text_from_para_el(para, para_level_record)
             end
           else
             raise [klass, level].inspect
           end
         end
-        Kramdown::Document.new(kramdown.strip + "\n", @options)
+        kramdown_doc = Kramdown::Document.new('', @options)
+        kramdown_doc.root = @kramdown_root
+        {
+          'folio.at' => kramdown_doc.to_kramdown,
+          'folio.deleted_text.json' => @folio_deleted_text.to_json,
+          'folio.editors_notes.json' => @folio_editors_notes.to_json,
+          'folio.warnings.json' => @folio_warnings.to_json,
+        }
       end
 
-      def extract_text_from_para_node(para_node, string_collector)
+      #
+      # @param[Nokogiri::XML::Element] para_el
+      # @param[Kramdown::ElementFi] para_record The para level record element
+      def extract_text_from_para_el(para_el, para_record)
         # skip referenceline
-        return  if 'referenceline' == para_node['class']
+        return  if 'referenceline' == para_el['class']
         para_text = ''
-        para_node.children.each do |para_child|
+        para_el.children.each do |para_child|
           case para_child
           when Nokogiri::XML::Element
             case para_child.name
@@ -81,25 +160,27 @@ module Kramdown
                 para_text << ' ' + own_text(para_child).strip
               end
             else
-              raise "Handle this para_child type: #{ para_child.inspect }\n para_node: #{ para_node.inspect }"
+              raise "Handle this para_child type: #{ para_child.inspect }\n para_el: #{ para_el.inspect }"
             end
           when Nokogiri::XML::Text
             para_text << ' ' + para_child.text.strip
           when Nokogiri::XML::Comment
             # discard
           else
-            raise "Handle this node type: #{ para_child.inspect }\n para_node: #{ para_node.inspect }"
+            raise "Handle this node type: #{ para_child.inspect }\n para_el: #{ para_el.inspect }"
           end
         end
         para_text = para_text.gsub(/\s+/, ' ').strip
         if '' != para_text
-          string_collector << "\n\n"
-          string_collector << para_text
+          pe = ElementFi.new(:p)
+          pe.add_child(ElementFi.new(:text, para_text))
+          para_record.add_child(pe)
         end
       end
 
-      def own_text(node)
-        node.xpath('text()').text
+      # @param[Nokogiri::XML::Element] el
+      def own_text(el)
+        el.xpath('text()').text
       end
 
     end
@@ -147,3 +228,4 @@ end
 #       <span class="Time" type="Time">103</span>
 #     </span>
 #   </p>
+
