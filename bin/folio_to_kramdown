@@ -6,7 +6,8 @@
 # source files, each with unchanged base name and extension changed to '.at'.
 #
 # Use like so:
-#     bundle exec bin/folio_to_kramdown '../vgr-english/converted_folio/[0-9][0-9]/*.xml'
+#     bundle exec bin/folio_to_kramdown '../vgr-english/import_folio/[0-9][0-9]/*.xml'
+#     bundle exec bin/folio_to_kramdown '../vgr-english/import_folio/47/*.xml'
 #
 # NOTE: Make sure to wrap the file pattern in single quotes!
 require 'repositext-kramdown'
@@ -40,9 +41,9 @@ Dir.glob(file_pattern).find_all { |e| e =~ /\.xml$/ }.each do |xml_file_name|
       File.write(ft_file_name, docs[file_type])
     end
     success_count += 1
-  rescue Exception => e
-    STDERR.puts "   Error: #{ e.class.name } - #{ e.message }"
-    errors_count += 1
+  # rescue Exception => e
+  #   STDERR.puts "   Error: #{ e.class.name } - #{ e.message }"
+  #   errors_count += 1
   end
   total_count += 1
 end
