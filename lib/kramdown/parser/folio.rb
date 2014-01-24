@@ -560,6 +560,9 @@ module Kramdown
           # then delete. Warn if there is a mismatch. Must happen before
           # p.referenceline(cab) is deleted.
           # TODO: implement this
+        when c =~ /\Azz/
+          # span[class=~zz] -> pull all other classes that start with 'zz'
+          pull_node(xn)
         else
           return false # return early without calling flag_match_found
         end
