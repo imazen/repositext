@@ -37,10 +37,7 @@ class Kramdown::Parser::Folio::KeContext
   # @param[Nokogiri::XML::Node] xn for warning location info
   def get(attr_name, xn)
     if (v = @cx[attr_name.to_s]).nil?
-      @folio_parser.add_warning(
-        message: "#{ attr_name } is nil (for #{ xn.name } in #{ xn.parent.inspect })",
-        line: xn.line
-      )
+      @folio_parser.add_warning(xn, "#{ attr_name } is nil.")
     end
     v
   end
@@ -60,13 +57,13 @@ class Kramdown::Parser::Folio::KeContext
   # @param[Object] attr_value
   def set_attr_on_record_mark(xn, attr_name, attr_value, expect_nil = false)
     if @cx['record_mark'].nil?
-      @folio_parser.add_warning(message: "#{ xn.name_and_class } outside of record_mark", line: xn.line)
+      @folio_parser.add_warning(xn, "#{ xn.name_and_class } outside of record_mark")
       return false
     end
     if expect_nil && (existing_attr_val = !@cx['record_mark'].attr[attr_name]).nil?
       @folio_parser.add_warning(
-        message: "Expected record.attr[#{ attr_name }] to be nil, but was #{ existing_attr_val.inspect }",
-        line: xn.line
+        xn,
+        "Expected record.attr[#{ attr_name }] to be nil, but was #{ existing_attr_val.inspect }"
       )
       return false
     end
@@ -79,7 +76,7 @@ class Kramdown::Parser::Folio::KeContext
   # @param[Object] attr_value
   def set_attr_on_p(xn, attr_name, attr_value)
     if @cx['p'].nil?
-      @folio_parser.add_warning(message: 'No containing p', line: xn.line)
+      @folio_parser.add_warning(xn, 'No containing p')
       return false
     end
     @cx['p'].attr[attr_name] = attr_value

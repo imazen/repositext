@@ -104,22 +104,37 @@ module Kramdown
         }
       end
 
-      # @param[Hash] data hash with :message and :line
-      def add_warning(data)
-        if !data[:message].nil? && data[:message] != ''
-          @warnings_output << data
+      # @param[Nokogiri::XML::Node] xn the XML Node to process
+      # @param[String] message
+      def add_warning(xn, message)
+        if !message.nil? && '' != message
+          @warnings_output << {
+            message: message,
+            line: xn.line,
+            path: xn_name_and_class_path(xn)
+          }
         end
       end
-      # @param[Hash] data hash with :message and :line
-      def add_deleted_text(data)
-        if !data[:message].nil? && data[:message] != ''
-          @deleted_text_output << data
+      # @param[Nokogiri::XML::Node] xn the XML Node to process
+      # @param[String] message
+      def add_deleted_text(xn, message)
+        if !message.nil? && '' != message
+          @deleted_text_output << {
+            message: message,
+            line: xn.line,
+            path: xn_name_and_class_path(xn)
+          }
         end
       end
-      # @param[Hash] data hash with :message and :line
-      def add_editors_note(data)
-        if !data[:message].nil? && data[:message] != ''
-          @editors_notes_output << data
+      # @param[Nokogiri::XML::Node] xn the XML Node to process
+      # @param[String] message
+      def add_editors_note(xn, message)
+        if !message.nil? && '' != message
+          @editors_notes_output << {
+            message: message,
+            line: xn.line,
+            path: xn_name_and_class_path(xn)
+          }
         end
       end
 
@@ -140,7 +155,7 @@ module Kramdown
           raise "Unexpected element type #{ xn.name } on line #{ xn.line }. Requires method #{ method_name.inspect }."
         end
         if !@xn_context.match_found
-          add_warning(message: "No match found for #{ xn_name_and_class(xn) }", line: xn.line)
+          add_warning(xn, "Unhandled XML node #{ xn_name_and_class(xn) }")
         end
         # recurse over child XML Nodes
         if @xn_context.process_children
@@ -536,7 +551,7 @@ module Kramdown
           # Warn if there is more than one per record or if text contents is not just digits.
           t = xn.text.strip
           if t !~ /\A\d+\z/
-            add_warning(message: "span.zzzKPN contains non-digit text: #{ tc.inspect }", line: xn.line)
+            add_warning(xn, "span.zzzKPN contains non-digit text: #{ tc.inspect }")
           end
           @ke_context.set_attr_on_record_mark(xn, 'kpn', t, true)
           @xn_context.process_children = false
@@ -559,14 +574,14 @@ module Kramdown
       def process_node_table(xn)
         # table, td, tr -> Pull for now, but issue warning
         pull_node(xn)
-        add_warning(message: "Found #{ xn.name_and_class }", line: xn.line)
+        add_warning(xn, "Found #{ xn.name_and_class }")
         flag_match_found
       end
 
       def process_node_td(xn)
         # table, td, tr -> Pull for now, but issue warning
         pull_node(xn)
-        add_warning(message: "Found #{ xn.name_and_class }", line: xn.line)
+        add_warning(xn, "Found #{ xn.name_and_class }")
         flag_match_found
       end
 
@@ -578,7 +593,7 @@ module Kramdown
       def process_node_tr(xn)
         # table, td, tr -> Pull for now, but issue warning
         pull_node(xn)
-        add_warning(message: "Found #{ xn.name_and_class }", line: xn.line)
+        add_warning(xn, "Found #{ xn.name_and_class }")
         flag_match_found
       end
 
@@ -592,8 +607,8 @@ module Kramdown
       # @param[Boolean] send_to_editors_notes whether to send node's text to editors_notes
       def delete_node(xn, send_to_deleted_text, send_to_editors_notes)
         @xn_context.process_children = false
-        add_deleted_text(message: xn.text, line: xn.line)  if send_to_deleted_text
-        add_editors_note(message: xn.text, line: xn.line)  if send_to_editors_notes
+        add_deleted_text(xn, xn.text)  if send_to_deleted_text
+        add_editors_note(xn, xn.text)  if send_to_editors_notes
       end
 
       # Deletes a_string from xn and all its descendant nodes.
@@ -663,8 +678,8 @@ module Kramdown
           true
         else
           add_warning(
-            message: "#{ xn_name_and_class(xn) } contained non-whitespace: #{ t.inspect }",
-            line: xn.line
+            xn,
+            "#{ xn_name_and_class(xn) } contained non-whitespace: #{ t.inspect }"
           )
           false
         end
@@ -674,6 +689,17 @@ module Kramdown
       # @param[Nokogiri::XML::Element] el
       def xn_name_and_class(xn)
         [xn.name, xn['class']].compact.join('.')
+      end
+
+      def xn_name_and_class_path(xn, downstream_path = '')
+        downstream_path = xn_name_and_class(xn) + downstream_path
+        if xn.parent && !xn.parent.xml?
+          # Recurse to parent unless it's the top level XML Document node (.xml?)
+          xn_name_and_class_path(xn.parent, ' > ' + downstream_path)
+        else
+          # This is the top level node
+          return downstream_path
+        end
       end
 
     end
