@@ -101,23 +101,26 @@ class Kramdown::Parser::Folio::KeContext
   # @param[String] content
   # @param[Nokogiri::XML::Node] xn for warning location
   def record_distinct_reference_line_contents(content, xn)
-    if 0 == @cx['distinct_p_referenceline_contents'][content]
+    # Sanitize content
+    sanitized_content = content.strip.split(/[\s]+/).map { |e| # split on spaces, newlines and tabs
+      e.gsub(/\d{8}/, '') # remove unique record ids before checking distinctness
+    }.map { |e|
+      '' == e.strip ? nil : e.strip # remove blank elements
+    }.compact.join(', ')
+    if 0 == @cx['distinct_p_referenceline_contents'][sanitized_content]
       # First occurrence of this distinct content
-      if !@cx['distinct_p_referenceline_contents'].keys.empty?
+      if @cx['distinct_p_referenceline_contents'].keys.any?
         # We already have other contents, create warning
         @folio_parser.add_warning(
-          message: "Inconsistent text contents of p.reference_line: #{ content.inspect }",
-          line: xn.line
+          xn,
+          "Inconsistent text contents of p.reference_line: #{ sanitized_content }"
         )
         # and send to deleted text
-        @folio_parser.add_deleted_text(
-          message: content,
-          line: xn.line
-        )
+        @folio_parser.add_deleted_text(message: sanitized_content, line: xn.line)
       end
     end
     # increment count
-    @cx['distinct_p_referenceline_contents'][content] += 1
+    @cx['distinct_p_referenceline_contents'][sanitized_content] += 1
   end
 
 end
