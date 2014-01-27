@@ -237,7 +237,7 @@ module Kramdown
         when 'tls' == c
           # link.TLS, span.TLS -> delete any instances of the † character (U+2020),
           # then pull the element.
-          delete_string_inside_node!("†", xn)
+          replace_string_inside_node!("†", '', xn)
           pull_node(xn)
         when 'popup' == t
           # link[type=popup] -> pull
@@ -603,12 +603,12 @@ module Kramdown
         when 'tls' == c
           # link.TLS, span.TLS -> delete any instances of the † character (U+2020),
           # then pull the element.
-          delete_string_inside_node!("†", xn)
+          replace_string_inside_node!("†", '', xn)
           pull_node(xn)
         when %[vgrspeaker zvgrspeaker].include?(c)
           # span.VGRSpeaker, span.zVGRSpeaker -> delete any instances of the
           # character « (U+00AB) character, then pull the element
-          delete_string_inside_node!("«", xn)
+          replace_string_inside_node!("«", '', xn)
           pull_node(xn)
         when 'zbold' == c
           # span.zBold type="highlighter" -> bold
@@ -725,14 +725,15 @@ module Kramdown
       end
 
       # Deletes a_string from xn and all its descendant nodes.
-      # @param[String] a_string the string to be deleted
+      # @param[String, Regexp] search_string_or_regex a string or regex for finding
+      # @param[String] replace_string the replacement string
       # @param[Nokogiri::XML::Node] xn
-      def delete_string_inside_node!(the_string, xn)
+      def replace_string_inside_node!(search_string_or_regex, replace_string, xn)
         if xn.text? && '' != xn.text && !xn.text.nil?
-          xn.content = xn.text.gsub(the_string, '')
+          xn.content = xn.text.gsub(search_string_or_regex, replace_string)
         else
           xn.children.each { |child_xn|
-            delete_string_inside_node!(the_string, child_xn)
+            replace_string_inside_node!(search_string_or_regex, replace_string, child_xn)
           }
         end
       end
