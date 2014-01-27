@@ -129,16 +129,6 @@ module Kramdown
           )
         end
       end
-      # @param[String] message
-      def add_warning(xn, message)
-        if !message.nil? && '' != message
-          @warnings_output << {
-            message: message,
-            line: xn.line,
-            path: xn_name_and_class_path(xn)
-          }
-        end
-      end
       # @param[Nokogiri::XML::Node] xn the XML Node to process
       # @param[String] message
       def add_deleted_text(xn, message)
@@ -152,9 +142,20 @@ module Kramdown
       end
       # @param[Nokogiri::XML::Node] xn the XML Node to process
       # @param[String] message
-      def add_editors_note(xn, message)
+      def add_editors_notes(xn, message)
         if !message.nil? && '' != message
           @editors_notes_output << {
+            message: message,
+            line: xn.line,
+            path: xn_name_and_class_path(xn)
+          }
+        end
+      end
+      # @param[Nokogiri::XML::Node] xn the XML Node to process
+      # @param[String] message
+      def add_warning(xn, message)
+        if !message.nil? && '' != message
+          @warnings_output << {
             message: message,
             line: xn.line,
             path: xn_name_and_class_path(xn)

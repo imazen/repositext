@@ -116,7 +116,7 @@ class Kramdown::Parser::Folio::KeContext
           "Inconsistent text contents of p.reference_line: #{ sanitized_content }"
         )
         # and send to deleted text
-        @folio_parser.add_deleted_text(message: sanitized_content, line: xn.line)
+        @folio_parser.add_deleted_text(xn, sanitized_content)
       end
     end
     # increment count
