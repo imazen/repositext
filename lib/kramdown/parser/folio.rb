@@ -80,21 +80,20 @@ module Kramdown
         )
         # TODO outside of traversing XML tree (either before or after, don't know yet):
         # * merge fragmented elements (caused by overlapping elements in Folio)
-        # * p.referenceline and p.referencelinecab -> Delete nodes and all contents. Text contents should be identical across all records in a tape (excluding zzPID). Warn if there is a discrepancy. Send to deleted_text only if there is a discrepancy with siblings.
         # * span.SmCaps1, span.SmCaps2, span.zVGRScriptureSmallCaps -> span.smcaps (join subsequent elements, deduplicate classes).
         # * span.ScriptureComments, span.ScriptureParaphrase -> *no* italics. Ensure no italics are applied, even if there is an overlap with span.ScriptureReading or span.RedLetterScriptureReading. Use temporary placeholder class that will prevent merging of overlapping elements in second phase, then remove placeholder classes.
         # * record groups - Excluding the Tape level record, the intersection of all groups on all records should be added to the 'json' file. The remainder can be piped to the editors file. groups is an attribute of record element. key in json is ‘folio-record-groups’. Put after everything else in editors file.
-        # * [Blank.spot.on.tape--Ed.] -> [Blank spot on tape—Ed.] These are notes from the editor to the public, so we want them in the document.
 
         # pre_process_xml_tree # not sure I need this...
         # Transform the XML tree
         Nokogiri::XML(@folio_xml).css('record').each do |record_xn|
           process_xml_node(record_xn)
         end
-        # post_process_kramdown_tree
-        # Prepare return value
         kramdown_doc = Kramdown::Document.new('', @kramdown_options)
         kramdown_doc.root = @ke_context.get('root', nil)
+        post_process_kramdown_tree!(kramdown_doc.root)
+
+        # Prepare return value
         kramdown_string = kramdown_doc.to_kramdown
         kramdown_string = post_process_kramdown_string(kramdown_string)
         json_state = JSON::State.new(array_nl: "\n") # to format json output
@@ -189,6 +188,14 @@ module Kramdown
         @xn_context = nil
       end
 
+      # Modifies kramdown_tree in place
+      # @param[Kramdown::Element] kramdown_tree the root of the tree
+      def post_process_kramdown_tree!(kramdown_tree)
+        # TODO: implement this
+        # p (with child element span.pn) -> p.normal_pn
+        # p (without child element span.pn) -> p.normal
+      end
+
       # Performs post-processing on the kramdown string
       # @param[String] kramdown_string
       # @return[String] a modified copy of kramdown_string
@@ -266,7 +273,7 @@ module Kramdown
       end
 
       def process_node_object(xn)
-        # TODO: what to do with object?
+        # QUESTION: what to do with object?
         # /vgr-english/import_folio/65/ENG65-1128e.xml
         # line 4246:
         # <object handler="Bitmap" name="eagles.bmp" src="MessageBeta all but 17 tapes.OB\FFF37.OB" style="width:1.0625in;height:0.677083in;" type="folio" />
@@ -280,13 +287,9 @@ module Kramdown
       end
 
       def process_node_p(xn)
-        # TODO: implement this
-        # p (with child element span.pn) -> p.normal_pn
-        # p (without child element span.pn) -> p.normal
         case (xn['class'] || '').downcase
         when ''
           # p without class -> add regular p element
-          # TODO: should we do .normal and .normal_pn here?
           rm = @ke_context.get('record_mark', xn)
           return false  if !rm
           p = Kramdown::ElementRt.new(:p)
@@ -303,7 +306,7 @@ module Kramdown
           delete_node(xn, true, true)
         when 'levelrecordtitleauxiliary'
           # p.levelrecordtitleauxiliary (inside record[level=tape]) -> json (alternate titles)
-          # TODO: implement this
+          # NOTE: this is implemented in process_node_record (tape)
         when 'quotespacing'
           # p.QuoteSpacing -> Assert that only whitespace is present -
           # and delete it and any children.
@@ -397,7 +400,7 @@ module Kramdown
           ignore_node(xn)
         when ['record', 'year', 'year']
           # record[level=year] -> ?
-          # TODO: what to do with year level records?
+          # QUESTION: what to do with year level records?
           ignore_node(xn)
         when ['record', 'tape', 'tape']
           # record.Tape[level=tape] -> Add :record_mark
@@ -466,18 +469,15 @@ module Kramdown
           # span.zlevelrecordtitle (inside record[level=tape]) -> h1
           # (after Camel casing from all caps). Compare this to the one we get
           # from the first note.
-          # TODO: implement comparison to first note
           header_el = Kramdown::ElementRt.new(:header, nil, nil, :level => 1)
           tape_level_record_mark.add_child(header_el)
           title_text = xn.at_css('span.zlevelrecordtitle').text || ''
-          title_text = title_text.split.map { |e| e.capitalize }.join(' ')
+          title_text = capitalize_each_word_in_string(title_text)
           text_el = Kramdown::ElementRt.new(:text, title_text)
           header_el.add_child(text_el)
-          # note (first note within record.tape ) -> Save to editors notes and
-          # json, parse using regex, put all attrs into array. Validate presence
-          # of expected fields. All other notes go to editors file, they are
-          # treated like popups.
-          # TODO: implement this
+          if(title_text.downcase != title_from_first_note.downcase)
+            add_warning(xn, "Discrepancy in tape title: '#{ title_text }' -> '#{ title_from_first_note }'")
+          end
           # p.levelrecordtitleauxiliary (inside record[level=tape]) -> json (alternate titles)
           if(p_xn = xn.at_css('p.levelrecordtitleauxiliary')) && p_xn.text
             add_data(xn, :alternate_title, p_xn.text.strip.gsub(/[\n\t ]+/, ' '))
@@ -491,8 +491,7 @@ module Kramdown
           )
           @ke_context.set('record_mark', para_level_record_mark)
           @ke_context.get('root', xn).add_child(para_level_record_mark)
-          # remove immediate text nodes
-          # TODO: implement this. Will eliminate "No current_text_container_element present" warnings
+          # QUESTION: remove immediate text nodes to eliminate "No current_text_container_element present" warnings?
         else
           return false # return early without calling flag_match_found
         end
@@ -513,14 +512,15 @@ module Kramdown
           # (look at element style, some elements may have a type ‘underline’
           # but style ‘text-decoration:normal’, style overrides type. This may
           # also apply to italics and bold, ...)
-          # TODO: should this be outside of case?
           # TODO: implement this
         when 'background-color' == t
           # span[type=background-color]  -> pull
           pull_node(xn)
         when 'bold' == t
           # span[type=bold] -> bold (only used in popups/notes)
-          # TODO: should this be outside of case?
+          # TODO: implement this
+          # This occurs only in popups (and notes?). Those turn off recursion,
+          # so we have to call this manually to process contained spans with type bold
         when 'font-family' == t
           # span[type=font-family] -> pull
           pull_node(xn)
@@ -533,9 +533,11 @@ module Kramdown
         when 'highlighter' == t
           # span[type=highlighter] -> pull
           pull_node(xn)
-        when 'italic' == t
+        when 'italic' == t && '' == c
           # span[type=italic] -> markdown italics (*text*)
-          # TODO: should this be outside of case?
+          # TODO: implement this
+          # This occurs only in popups (and notes?). Those turn off recursion,
+          # so we have to call this manually to process contained spans with type bold
         when 'datecode' == c
           # span.DateCode -> Delete (sending to both deleted text and editors notes)
           delete_node(xn, true, true)
@@ -548,7 +550,7 @@ module Kramdown
           delete_node(xn, true, true)
         when 'paragraph' == c
           # span.Paragraph -> span.pn
-          # TODO: confirm that we want the paragraph number text
+          # QUESTION: do we want the paragraph number text?
           text_el = Kramdown::ElementRt.new(:text, xn.text.gsub('E-', '').strip)
           em_el = Kramdown::ElementRt.new(:em, nil, { 'class' => 'pn' })
           em_el.add_child(text_el)
@@ -561,22 +563,24 @@ module Kramdown
           # TODO: implement this
         when 'questions' == c
           # span.Questions -> ** ** (bold). Set parent paragraph class to "q".
-          # TODO: should this be outside of case?
-          # TODO: implement this
+          strong_el = Kramdown::ElementRt.new(:strong)
+          @ke_context.get('current_text_container_element', xn).add_child(strong_el)
+          @ke_context.set('current_text_container_element', strong_el)
+          @ke_context.get('p', xn).add_class('q')
         when 'recordheading' == c
           # span.recordHeading -> pull
           pull_node(xn)
         when %[redletterscripturereading scripturereading].include?(c)
           # span.RedLetterScriptureReading, span.ScriptureReading -> markdown italics (*text*)
-          # TODO: should this be outside of case?
-          # TODO: implement this
+          em_el = Kramdown::ElementRt.new(:em)
+          @ke_context.get('current_text_container_element', xn).add_child(em_el)
+          @ke_context.set('current_text_container_element', em_el)
         when %[scripturecomments scriptureparaphrase].include?(c)
           # span.ScriptureComments, span.ScriptureParaphrase -> *no* italics.
           # Ensure no italics are applied, even if there is an overlap with
           # span.ScriptureReading or span.RedLetterScriptureReading. Use temporary
           # placeholder class that will prevent merging of overlapping elements
           # in second phase, then remove placeholder classes.
-          # TODO: should this be outside of case?
           # TODO: implement this
         when %[singing singingcomments zzpoems].include?(c)
           # span.Singing, span.SingingComments, span.zzPoems -> pull
@@ -584,8 +588,10 @@ module Kramdown
         when %[smcaps1 smcaps2 zvgrscripturesmallcaps].include?(c)
           # span.SmCaps1, span.SmCaps2, span.zVGRScriptureSmallCaps -> span.smcaps
           # (join subsequent elements, deduplicate classes).
-          # TODO: should this be outside of case?
-          # TODO: implement this
+          # TODO: do join/dedup in post processing
+          span_el = Kramdown::ElementRt.new(:em, nil, 'class' => 'smcaps')
+          @ke_context.get('current_text_container_element', xn).add_child(span_el)
+          @ke_context.set('current_text_container_element', span_el)
         when 'subsuperscript' == c
           # span.subsuperscript ->  pull
           pull_node(xn)
@@ -612,8 +618,9 @@ module Kramdown
           pull_node(xn)
         when 'zbold' == c
           # span.zBold type="highlighter" -> bold
-          # TODO: should this be outside of case?
-          # TODO: implement this
+          strong_el = Kramdown::ElementRt.new(:strong)
+          @ke_context.get('current_text_container_element', xn).add_child(strong_el)
+          @ke_context.set('current_text_container_element', strong_el)
         when 'zhelenindiscernible' == c
           # span.zhelenindiscernible -> pull
           pull_node(xn)
@@ -628,7 +635,6 @@ module Kramdown
           # (after Camel casing from all caps). Compare this to the one we get
           # from the first note.
           # NOTE: this is implemented in process_node_record (tape)
-          # TODO: implement comparison to first note
         when 'zlevelrecordtitleauxiliary' == c
           # span.zlevelrecordtitleauxiliary -> Delete (sending to both deleted text and editors notes)
           delete_node(xn, true, true)
@@ -637,24 +643,35 @@ module Kramdown
           delete_node(xn, true, true)
         when 'zunderlinedwords-prophetindicatedsuch' == c
           # span.zUnderlinedWords-prophetindicatedsuch -> span.underline
-          # TODO: should this be outside of case?
-          # TODO: implement
+          span_el = Kramdown::ElementRt.new(:em, nil, 'class' => 'underline')
+          @ke_context.get('current_text_container_element', xn).add_child(span_el)
+          @ke_context.set('current_text_container_element', span_el)
         when 'zvgreagle' == c
           # span.zVGREagle -> Verify contents includes one ` (backtick), replace
           # it with U+F6E1, and pull span tag.
-          # TODO: implement this
+          if xn.text != "`"
+            add_warning(xn, "zVGREagle contained unexpected chars: #{ xn.text.inspect }")
+          end
+          replace_string_inside_node!("`", "\uF6E1", xn)
         when 'zvgrhighorderbitword' == c
           # span.zVGRHighOrderBitWord -> pull. (used to indicate words with
           # codepoints > 128, perhaps warn?)
-          # TODO: should we warn?
+          # QUESTION: should we warn?
           pull_node(xn)
         when 'zvgritalics' == c
           # span.zVGRItalics -> markdown italics (*text*)
-          # TODO: implement this
+          em_el = Kramdown::ElementRt.new(:em)
+          @ke_context.get('current_text_container_element', xn).add_child(em_el)
+          @ke_context.set('current_text_container_element', em_el)
         when 'zvgrwingdings' == c
           # span.zVGRWingdings -> Ensure only contains « « « « « « « (Ux00AB)
           # and whitespace, replace with horizontal rule.
-          # TODO: implement this
+          if xn.text !~ /\A[\s«]+\z/
+            add_warning(xn, "zVGRWingdings contained unexpected chars: #{ xn.text.inspect }")
+          end
+          hr_el = Kramdown::ElementRt.new(:hr)
+          @ke_context.get('current_text_container_element', xn).add_child(hr_el)
+          @xn_context.process_children = false
         when 'zzzkpn' == c
           # span.zzzKPN -> Save trimmed text contents to record token
           # (IAL under 'kpn' attribute), then delete the node and any children.
@@ -669,7 +686,12 @@ module Kramdown
           # span.zzzPID -> Verify contents match the parent record recordID field,
           # then delete. Warn if there is a mismatch. Must happen before
           # p.referenceline(cab) is deleted.
-          # TODO: implement this
+          if xn.text != @ke_context.get('record_id', xn)
+            add_warning(
+              xn,
+              "span.zzzPID was different from parent record_id: #{ xn.text } != #{ @ke_context.get('record_id', xn) }"
+            )
+          end
         when c =~ /\Azz/
           # span[class=~zz] -> pull all other classes that start with 'zz'
           pull_node(xn)
@@ -714,6 +736,13 @@ module Kramdown
       # xn processing helper methods
       # ***********************************************************
 
+      # Capitalizes each word in string:
+      # 'this IS a string to CAPITALIZE' => 'This Is A String To Capitalize'
+      # @param[String] a_string
+      def capitalize_each_word_in_string(a_string)
+        a_string.split.map { |e| e.capitalize }.join(' ')
+      end
+
       # Delete xn, send to deleted_text, children won't be processed
       # @param[Nokogiri::XML::Node] xn
       # @param[Boolean] send_to_deleted_text whether to send node's text to deleted_text
@@ -721,7 +750,7 @@ module Kramdown
       def delete_node(xn, send_to_deleted_text, send_to_editors_notes)
         @xn_context.process_children = false
         add_deleted_text(xn, xn.text)  if send_to_deleted_text
-        add_editors_note(xn, xn.text)  if send_to_editors_notes
+        add_editors_notes(xn, xn.text)  if send_to_editors_notes
       end
 
       # Deletes a_string from xn and all its descendant nodes.
