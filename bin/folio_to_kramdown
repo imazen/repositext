@@ -32,6 +32,7 @@ Dir.glob(file_pattern).find_all { |e| e =~ /\.xml$/ }.each do |xml_file_name|
     docs = Kramdown::Parser::Folio.new(File.read(xml_file_name)).parse
     [
       'folio.at',
+      'folio.data.json',
       'folio.deleted_text.json',
       'folio.editors_notes.json',
       'folio.warnings.json',

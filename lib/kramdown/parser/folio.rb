@@ -66,9 +66,11 @@ module Kramdown
       #     * 'folio.at': kramdown file imported from folio.xml
       #     * 'folio.deleted_text.json': text that was deleted while importing folio.xml
       #     * 'folio.editors_notes.json': editors notes that were extracted while importing folio.xml
+      #     * 'folio.data.json': data that was extracted while importing folio.xml
       #     * 'folio.warnings.json': warnings that were raised while importing folio.xml
       def parse
         # Initialize processing i_vars
+        @data_output = {}
         @deleted_text_output = []
         @editors_notes_output = []
         @warnings_output = []
@@ -98,6 +100,7 @@ module Kramdown
         json_state = JSON::State.new(array_nl: "\n") # to format json output
         {
           'folio.at' => kramdown_string,
+          'folio.data.json' => @data_output.to_json(json_state),
           'folio.deleted_text.json' => @deleted_text_output.to_json(json_state),
           'folio.editors_notes.json' => @editors_notes_output.to_json(json_state),
           'folio.warnings.json' => @warnings_output.to_json(json_state),
@@ -105,6 +108,27 @@ module Kramdown
       end
 
       # @param[Nokogiri::XML::Node] xn the XML Node to process
+      # @param[String] key
+      # @param[Object] value
+      def add_data(xn, key, value)
+        key = key.to_s
+        case @data_output[key]
+        when nil
+          # Pristine key, just store value
+          @data_output[key] = {
+            'line' => xn.line,
+            'path' => xn_name_and_class_path(xn),
+            'value' => value
+          }
+        else
+          # Key already contains a value. Raise an exception.
+          # NOTE: I could store values as arrays and just append additional values
+          raise(
+            ArgumentError,
+            "Multipe assignments to data[#{ key }] (#{ xn_name_and_class_path(xn) }, line #{ xn.line }"
+          )
+        end
+      end
       # @param[String] message
       def add_warning(xn, message)
         if !message.nil? && '' != message
@@ -335,6 +359,31 @@ module Kramdown
         flag_match_found
       end
 
+      NOTE_DATA_TEXT_VAL_REGEXP = /[[:alnum:]\"\.\,\-\s]+[[:alnum:]\"\.\,\-]/
+      NOTE_DATA_REGEXP = /
+        \A
+        \s*
+        TAPE:\s?(?<tape>\d{2}-\d{4}\w?) # matches 47-0402 or 47-1100X
+        \s+
+        DATE:\s?(?<date>[[:alnum:],\s]+\d{4}) # matches NOVEMBER 17, 1947
+        \s+
+        QUOTES:\s*(?<quotes>\d+) # matches number of quotes
+        \s+
+        MINUTES:\s*(?<minutes>\d+) # matches number of questions
+        \s+
+        TITLE:\s?(?<title>#{ NOTE_DATA_TEXT_VAL_REGEXP }) # matches any text up to place
+        \s+
+        PLACE:\s?(?<place>#{ NOTE_DATA_TEXT_VAL_REGEXP }) # matches any text up to vee enn
+        \s+
+        (?<vee_enn>V-\s+N-) # matches hard coded string QUESTION do we need to record this?
+        \s+
+        NOTE:\s?(?<note>#{ NOTE_DATA_TEXT_VAL_REGEXP })? # matches any text up to tape quality
+        \s+
+        TAPE\sQUALITY:\s?(?<tape_quality>#{ NOTE_DATA_TEXT_VAL_REGEXP })
+        \s*
+        \z
+      /x
+
       def process_node_record(xn)
         update_record_ids_in_ke_context(xn) # do this first so that we have up-to-date context
         case [
@@ -357,6 +406,62 @@ module Kramdown
           )
           @ke_context.set('record_mark', tape_level_record_mark)
           @ke_context.get('root', xn).add_child(tape_level_record_mark)
+          # note (first note within record.tape ) -> Save to editors notes and
+          # json, parse using regex, put all attrs into array. Validate presence
+          # of expected fields. All other notes go to editors file, they are
+          # treated like popups.
+          # Example note xml:
+          # <note height="3in" title="Tape Note" width="5in">
+          #   <p>
+          #     TAPE: 47-1102
+          #     <br/>
+          #     DATE: SUNDAY AFTERNOON NOVEMBER 02, 1947
+          #     <br/>
+          #     QUOTES:
+          #     <span class="zzquotes" type="zz quotes">51</span>
+          #     <br/>
+          #     MINUTES:
+          #     <span class="Time" type="Time">71 </span>
+          #     <br/>
+          #     TITLE: THE ANGEL OF GOD
+          #     <br/>
+          #     PLACE: SHRINER TEMPLE, PHOENIX AZ
+          #     <br/>
+          #     V-   N-
+          #     <br/>
+          #     NOTE: CORRECTED FROM   47--1130
+          #     <br/>
+          #     TAPE QUALITY: Lots of static but mostly can be understood. Previously titled &quot;Angel and His Commission.&quot;
+          #   </p>
+          #   <p>VOGR.VGR</p>
+          # </note>
+          # TODO: validate presence of expected fields
+          title_from_first_note = '' # for comparison further down
+          xn.css('note').each_with_index do |note_xn, i|
+            note_data = note_xn.css('p').inject({}) { |nd, p_xn|
+              if(m1 = p_xn.content.match(NOTE_DATA_REGEXP))
+                # found data
+                %w[
+                  tape date quotes minutes title place vee_enn note tape_quality
+                ].each { |e| nd[e] = m1[e] }
+                title_from_first_note = nd['title']
+              elsif('VOGR.VGR' == p_xn.text.strip)
+                # found marker string
+                # QUESTION: what do we do with this?
+              else
+                # no match, raise warning
+                add_warning(xn, "Couldn't match note data: #{ p_xn.text }")
+              end
+              nd
+            }
+            if 0 == i
+              # Add first note to json
+              add_data(note_xn, 'tape_note', note_data)
+            end
+            # add all notes to editors_notes
+            add_editors_notes(note_xn, note_data.inspect)
+          end
+
           # span.zlevelrecordtitle (inside record[level=tape]) -> h1
           # (after Camel casing from all caps). Compare this to the one we get
           # from the first note.
@@ -372,6 +477,10 @@ module Kramdown
           # of expected fields. All other notes go to editors file, they are
           # treated like popups.
           # TODO: implement this
+          # p.levelrecordtitleauxiliary (inside record[level=tape]) -> json (alternate titles)
+          if(p_xn = xn.at_css('p.levelrecordtitleauxiliary')) && p_xn.text
+            add_data(xn, :alternate_title, p_xn.text.strip.gsub(/[\n\t ]+/, ' '))
+          end
           @xn_context.process_children = false
         when ['record', 'normallevel', '']
           # record.NormalLevel -> add :record_mark element
