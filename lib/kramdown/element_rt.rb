@@ -21,5 +21,22 @@ module Kramdown
       (attr['class'] || '').split(' ').any? { |e| e == a_class }
     end
 
+    # Adds class to self
+    # @param[String] a_class
+    def add_class(a_class)
+      return true  if has_class?(a_class)
+      if attr['class'] && attr['class'] != ''
+        self.attr['class'] << " #{ a_class }"
+      else
+        self.attr['class'] = a_class
+      end
+    end
+
+    # Removes class from self
+    # @param[String] a_class
+    def remove_class(a_class)
+      return true if !has_class?(a_class)
+      self.attr['class'] = attr['class'].gsub(a_class, '')
+    end
   end
 end
