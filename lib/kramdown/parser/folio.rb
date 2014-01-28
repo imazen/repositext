@@ -314,7 +314,7 @@ module Kramdown
           # p.QuoteSpacing -> Assert that only whitespace is present -
           # and delete it and any children.
           verify_only_whitespace_is_present(xn)
-          delete_node(xn, true, false)
+          delete_node(xn, false, false)
         when 'referenceline', 'referencelinecab'
           # p.referenceline and p.referencelinecab -> Delete nodes and all contents.
           # Text contents should be identical across all records in a tape (excluding zzPID).
@@ -397,7 +397,7 @@ module Kramdown
         \s+
         NOTE:\s?(?<note>#{ NOTE_DATA_TEXT_VAL_REGEXP })? # matches any text up to tape quality
         \s+
-        TAPE\sQUALITY:\s?(?<tape_quality>#{ NOTE_DATA_TEXT_VAL_REGEXP })
+        TAPE\sQUALITY:\s?(?<tape_quality>#{ NOTE_DATA_TEXT_VAL_REGEXP })?
         \s*
         \z
       /x
@@ -483,7 +483,7 @@ module Kramdown
               add_data(note_xn, 'tape_note', note_data)
             end
             # add all notes to editors_notes
-            add_editors_notes(note_xn, note_data.inspect)
+            add_editors_notes(note_xn, "Tape level notes: #{ note_data.inspect }")
           end
 
           # span.zlevelrecordtitle (inside record[level=tape]) -> h1
@@ -802,7 +802,7 @@ module Kramdown
       def delete_node(xn, send_to_deleted_text, send_to_editors_notes)
         @xn_context.process_children = false
         add_deleted_text(xn, xn.text)  if send_to_deleted_text
-        add_editors_notes(xn, xn.text)  if send_to_editors_notes
+        add_editors_notes(xn, "Deleted text: #{ xn.text }")  if send_to_editors_notes
       end
 
       # Deletes a_string from xn and all its descendant nodes.
