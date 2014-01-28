@@ -8,9 +8,9 @@ class Kramdown::Parser::Folio::KeContext
   #     we can trigger warnings
   def initialize(attrs, folio_parser)
     @cx = {
-      # Kramdown element into which to insert text content. Can be [p, span, header].
-      # Reset on every new one of those elements we add to tree.
-      'current_text_container_element' => nil,
+      # Stack of Kramdown elements into which to insert text content. Can be [p, span, header].
+      # Update stack around calls to process_xml_node.
+      'text_container_stack' => [],
       # Collect distinct text contents of p.reference_line, then when processing
       # each node, check against distinct and warn if different. Record number
       # of occurrences with each distinct value so that we can identify the
@@ -82,12 +82,12 @@ class Kramdown::Parser::Folio::KeContext
     @cx['p'].attr[attr_name] = attr_value
   end
 
-  # Adds the_text to current_text_container_element, creating a new text
+  # Adds the_text to current_text_container, creating a new text
   # element if necessary
   # @param[String] the_text
   # @param[Nokogiri::XML::Node] xn for warning location
-  def add_text_to_current_text_container_element(the_text, xn)
-    if(tce = get('current_text_container_element', xn))
+  def add_text_to_current_text_container(the_text, xn)
+    if(tce = get_current_text_container(xn))
       if tce.children.last && :text == tce.children.last.type
         tce.children.last.value << the_text
       elsif '' != the_text
@@ -121,6 +121,22 @@ class Kramdown::Parser::Folio::KeContext
     end
     # increment count
     @cx['distinct_p_referenceline_contents'][sanitized_content] += 1
+  end
+
+  # Manages the text_container_stack around processing of an XML node
+  # @param[Kramdown::ElementRt] new_text_container
+  # @param[OpenStruct] parent_xn_context
+  def with_text_container_stack(new_text_container_ke)
+    @cx['text_container_stack'].push(new_text_container_ke)
+    yield
+  ensure
+    @cx['text_container_stack'].pop
+  end
+
+  # Returns the current text container from stack
+  # @param[Nokogiri::XML::Node] xn for warning location
+  def get_current_text_container(xn)
+    get('text_container_stack', xn).last
   end
 
 end

@@ -185,7 +185,6 @@ module Kramdown
         if @xn_context.process_children
           xn.children.each { |xnc| process_xml_node(xnc) }
         end
-        @xn_context = nil
       end
 
       # Modifies kramdown_tree in place
@@ -212,9 +211,7 @@ module Kramdown
 
       def process_node_br(xn)
         # br -> markdown line_break
-        tc_ke = @ke_context.get('current_text_container_element', xn)
-        return false  if !tc_ke
-        tc_ke.add_child(Kramdown::ElementRt.new(:br))
+        @ke_context.get_current_text_container(xn).add_child(Kramdown::ElementRt.new(:br))
         flag_match_found
       end
 
@@ -294,8 +291,11 @@ module Kramdown
           return false  if !rm
           p = Kramdown::ElementRt.new(:p)
           rm.add_child(p)
-          @ke_context.set('current_text_container_element', p)
           @ke_context.set('p', p)
+          @ke_context.with_text_container_stack(p) do
+            xn.children.each { |xnc| process_xml_node(xnc) }
+          end
+          @xn_context.process_children = false
         when 'action'
           # p.ACTION -> Delete Node and all contents, verify only whitespace is
           # present.
@@ -325,8 +325,11 @@ module Kramdown
           return false  if !rm
           p = Kramdown::ElementRt.new(:p, nil, { 'class' => 'scr' })
           rm.add_child(p)
-          @ke_context.set('current_text_container_element', p)
           @ke_context.set('p', p)
+          @ke_context.with_text_container_stack(p) do
+            xn.children.each { |xnc| process_xml_node(xnc) }
+          end
+          @xn_context.process_children = false
         when 'singing'
           # p.singing -> p.song (if previous paragraph is a song), otherwise p.stanza
           rm = @ke_context.get('record_mark', xn)
@@ -338,8 +341,11 @@ module Kramdown
             { 'class' => (previous_p && previous_p.has_class?('song')) ? 'song' : 'stanza' }
           )
           rm.add_child(p)
-          @ke_context.set('current_text_container_element', p)
           @ke_context.set('p', p)
+          @ke_context.with_text_container_stack(p) do
+            xn.children.each { |xnc| process_xml_node(xnc) }
+          end
+          @xn_context.process_children = false
         else
           return false # return early without calling flag_match_found
         end
@@ -554,7 +560,7 @@ module Kramdown
           text_el = Kramdown::ElementRt.new(:text, xn.text.gsub('E-', '').strip)
           em_el = Kramdown::ElementRt.new(:em, nil, { 'class' => 'pn' })
           em_el.add_child(text_el)
-          @ke_context.get('current_text_container_element', xn).add_child(em_el)
+          @ke_context.get_current_text_container(xn).add_child(em_el)
           @xn_context.process_children = false
         when 'questioncomments' == c
           # span.QuestionComments -> *not* bold, even if overlapped with span.Questions
@@ -564,17 +570,23 @@ module Kramdown
         when 'questions' == c
           # span.Questions -> ** ** (bold). Set parent paragraph class to "q".
           strong_el = Kramdown::ElementRt.new(:strong)
-          @ke_context.get('current_text_container_element', xn).add_child(strong_el)
-          @ke_context.set('current_text_container_element', strong_el)
+          @ke_context.get_current_text_container(xn).add_child(strong_el)
           @ke_context.get('p', xn).add_class('q')
+          @ke_context.with_text_container_stack(strong_el) do
+            xn.children.each { |xnc| process_xml_node(xnc) }
+          end
+          @xn_context.process_children = false
         when 'recordheading' == c
           # span.recordHeading -> pull
           pull_node(xn)
         when %[redletterscripturereading scripturereading].include?(c)
           # span.RedLetterScriptureReading, span.ScriptureReading -> markdown italics (*text*)
           em_el = Kramdown::ElementRt.new(:em)
-          @ke_context.get('current_text_container_element', xn).add_child(em_el)
-          @ke_context.set('current_text_container_element', em_el)
+          @ke_context.get_current_text_container(xn).add_child(em_el)
+          @ke_context.with_text_container_stack(em_el) do
+            xn.children.each { |xnc| process_xml_node(xnc) }
+          end
+          @xn_context.process_children = false
         when %[scripturecomments scriptureparaphrase].include?(c)
           # span.ScriptureComments, span.ScriptureParaphrase -> *no* italics.
           # Ensure no italics are applied, even if there is an overlap with
@@ -590,8 +602,11 @@ module Kramdown
           # (join subsequent elements, deduplicate classes).
           # TODO: do join/dedup in post processing
           span_el = Kramdown::ElementRt.new(:em, nil, 'class' => 'smcaps')
-          @ke_context.get('current_text_container_element', xn).add_child(span_el)
-          @ke_context.set('current_text_container_element', span_el)
+          @ke_context.get_current_text_container(xn).add_child(span_el)
+          @ke_context.with_text_container_stack(span_el) do
+            xn.children.each { |xnc| process_xml_node(xnc) }
+          end
+          @xn_context.process_children = false
         when 'subsuperscript' == c
           # span.subsuperscript ->  pull
           pull_node(xn)
@@ -619,8 +634,11 @@ module Kramdown
         when 'zbold' == c
           # span.zBold type="highlighter" -> bold
           strong_el = Kramdown::ElementRt.new(:strong)
-          @ke_context.get('current_text_container_element', xn).add_child(strong_el)
-          @ke_context.set('current_text_container_element', strong_el)
+          @ke_context.get_current_text_container(xn).add_child(strong_el)
+          @ke_context.with_text_container_stack(strong_el) do
+            xn.children.each { |xnc| process_xml_node(xnc) }
+          end
+          @xn_context.process_children = false
         when 'zhelenindiscernible' == c
           # span.zhelenindiscernible -> pull
           pull_node(xn)
@@ -644,8 +662,11 @@ module Kramdown
         when 'zunderlinedwords-prophetindicatedsuch' == c
           # span.zUnderlinedWords-prophetindicatedsuch -> span.underline
           span_el = Kramdown::ElementRt.new(:em, nil, 'class' => 'underline')
-          @ke_context.get('current_text_container_element', xn).add_child(span_el)
-          @ke_context.set('current_text_container_element', span_el)
+          @ke_context.get_current_text_container(xn).add_child(span_el)
+          @ke_context.with_text_container_stack(span_el) do
+            xn.children.each { |xnc| process_xml_node(xnc) }
+          end
+          @xn_context.process_children = false
         when 'zvgreagle' == c
           # span.zVGREagle -> Verify contents includes one ` (backtick), replace
           # it with U+F6E1, and pull span tag.
@@ -661,8 +682,11 @@ module Kramdown
         when 'zvgritalics' == c
           # span.zVGRItalics -> markdown italics (*text*)
           em_el = Kramdown::ElementRt.new(:em)
-          @ke_context.get('current_text_container_element', xn).add_child(em_el)
-          @ke_context.set('current_text_container_element', em_el)
+          @ke_context.get_current_text_container(xn).add_child(em_el)
+          @ke_context.with_text_container_stack(em_el) do
+            xn.children.each { |xnc| process_xml_node(xnc) }
+          end
+          @xn_context.process_children = false
         when 'zvgrwingdings' == c
           # span.zVGRWingdings -> Ensure only contains « « « « « « « (Ux00AB)
           # and whitespace, replace with horizontal rule.
@@ -670,7 +694,7 @@ module Kramdown
             add_warning(xn, "zVGRWingdings contained unexpected chars: #{ xn.text.inspect }")
           end
           hr_el = Kramdown::ElementRt.new(:hr)
-          @ke_context.get('current_text_container_element', xn).add_child(hr_el)
+          @ke_context.get_current_text_container(xn).add_child(hr_el)
           @xn_context.process_children = false
         when 'zzzkpn' == c
           # span.zzzKPN -> Save trimmed text contents to record token
@@ -721,7 +745,7 @@ module Kramdown
       end
 
       def process_node_text(xn)
-        @ke_context.add_text_to_current_text_container_element(xn.text, xn)
+        @ke_context.add_text_to_current_text_container(xn.text, xn)
         flag_match_found
       end
 
