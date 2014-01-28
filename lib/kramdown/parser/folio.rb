@@ -72,6 +72,7 @@ module Kramdown
         # Initialize processing i_vars
         @data_output = {}
         @deleted_text_output = []
+        # QUESTION: What do we call editors_notes?
         @editors_notes_output = []
         @warnings_output = []
         @ke_context = Folio::KeContext.new(
@@ -266,7 +267,8 @@ module Kramdown
         # NOTE: this is implemented in process_node_record (tape)
 
         # All other notes go to editors_notes, they are treated like popups.
-        delete_node(xn, false, true)
+        add_editors_notes(xn, "Note: #{ xn.text }")
+        ignore_node(xn)
         flag_match_found
       end
 
@@ -377,30 +379,36 @@ module Kramdown
         flag_match_found
       end
 
-      NOTE_DATA_TEXT_VAL_REGEXP = /[[:alnum:]\"\.\,\-\s]+[[:alnum:]\"\.\,\-]/
-      NOTE_DATA_REGEXP = /
+      ND_CHARS = '[:alnum:]\"\\\'\.,;:\-#\?\!\(\)\/'
+      #ND_TEXT_VAL_REGEXP = /[#{ ND_CHARS }][#{ ND_CHARS }\s]*[#{ ND_CHARS }]/
+      ND_TEXT_VAL_REGEXP = /([#{ ND_CHARS }]|[^\S\n\t])*?/ # match ND_CHARS or whitespace that is not \n or \t (double negation)
+      ND_TEXT_VAL_REGEXP_MULTI_LINE = /[#{ ND_CHARS }\s]*?/ # match ND_CHARS and any whitespace
+      ND_RECORD_DEL = '[\n\t]+'
+      ND_LABEL_DEL = '\s*?' # non greedy match of whitespace (we want space character)
+      ND_REGEXP = /
         \A
-        \s*
-        TAPE:\s?(?<tape>\d{2}-\d{4}\w?) # matches 47-0402 or 47-1100X
-        \s+
-        DATE:\s?(?<date>[[:alnum:],\s]+\d{4}) # matches NOVEMBER 17, 1947
-        \s+
-        QUOTES:\s*(?<quotes>\d+) # matches number of quotes
-        \s+
-        MINUTES:\s*(?<minutes>\d+) # matches number of questions
-        \s+
-        TITLE:\s?(?<title>#{ NOTE_DATA_TEXT_VAL_REGEXP }) # matches any text up to place
-        \s+
-        PLACE:\s?(?<place>#{ NOTE_DATA_TEXT_VAL_REGEXP }) # matches any text up to vee enn
-        \s+
-        (?<vee_enn>V-\s+N-) # matches hard coded string QUESTION do we need to record this?
-        \s+
-        NOTE:\s?(?<note>#{ NOTE_DATA_TEXT_VAL_REGEXP })? # matches any text up to tape quality
-        \s+
-        TAPE\sQUALITY:\s?(?<tape_quality>#{ NOTE_DATA_TEXT_VAL_REGEXP })?
-        \s*
+        [\n\t]*
+        TAPE:#{ ND_LABEL_DEL }(?<tape>\d{2}-\d{4}\w?) # matches 47-0402 or 47-1100X
+        #{ ND_RECORD_DEL }
+        DATE:#{ ND_LABEL_DEL }(?<date>[[:alnum:],\s]*\d{4}) # matches NOVEMBER 17, 1947 or 1948
+        #{ ND_RECORD_DEL }
+        QUOTES:#{ ND_LABEL_DEL }(?<quotes>\d+\s*?) # matches number of quotes with optional trailing space char
+        #{ ND_RECORD_DEL }
+        MINUTES:#{ ND_LABEL_DEL }(?<minutes>\d+\s*?) # matches number of questions with optional trailing space char
+        #{ ND_RECORD_DEL }
+        TITLE:#{ ND_LABEL_DEL }(?<title>#{ ND_TEXT_VAL_REGEXP }) # matches any text up to place
+        #{ ND_RECORD_DEL }
+        PLACE:#{ ND_LABEL_DEL }(?<place>#{ ND_TEXT_VAL_REGEXP }) # matches any text up to vee enn
+        #{ ND_RECORD_DEL }
+        (?<vee_enn>#{ ND_TEXT_VAL_REGEXP }) # matches hard coded string QUESTION do we need to record this?
+        #{ ND_RECORD_DEL }
+        NOTE:#{ ND_LABEL_DEL }(?<note>#{ ND_TEXT_VAL_REGEXP_MULTI_LINE })? # matches any text up to tape quality, may not have a value
+        #{ ND_RECORD_DEL }
+        (TAPE\sQUALITY:#{ ND_LABEL_DEL }(?<tape_quality>#{ ND_TEXT_VAL_REGEXP_MULTI_LINE })?)? # tape quality is not present in all notes
+        [\n\t]*
         \z
       /x
+        # (?<vee_enn>V-\d*\s+N-(\d+\w?)?) # matches hard coded string QUESTION do we need to record this?
 
       def process_node_record(xn)
         # record groups - Excluding the Tape level record, the intersection of
@@ -460,30 +468,35 @@ module Kramdown
           #   <p>VOGR.VGR</p>
           # </note>
           # TODO: validate presence of expected fields
-          title_from_first_note = '' # for comparison further down
+          # QUESTION: which fields are required?
+          title_from_first_note = '' # initialize outside block for comparison further down
           xn.css('note').each_with_index do |note_xn, i|
-            note_data = note_xn.css('p').inject({}) { |nd, p_xn|
-              if(m1 = p_xn.content.match(NOTE_DATA_REGEXP))
-                # found data
-                %w[
-                  tape date quotes minutes title place vee_enn note tape_quality
-                ].each { |e| nd[e] = m1[e] }
-                title_from_first_note = nd['title']
-              elsif('VOGR.VGR' == p_xn.text.strip)
-                # found marker string
-                # QUESTION: what do we do with this?
-              else
-                # no match, raise warning
-                add_warning(xn, "Couldn't match note data: #{ p_xn.text }")
-              end
-              nd
-            }
             if 0 == i
+              note_data = note_xn.css('p').inject({}) { |nd, p_xn|
+                if(m1 = p_xn.content.match(ND_REGEXP))
+                  # found data
+                  # QUESTION: what should we call vee_enn?
+                  %w[
+                    tape date quotes minutes title place vee_enn note tape_quality
+                  ].each { |e| nd[e] = (m1[e] || '').strip.gsub(/\s+/, ' ') }
+                  title_from_first_note = nd['title']
+                elsif('VOGR.VGR' == p_xn.text.strip)
+                  # found marker string
+                  # QUESTION: what do we do with this?
+                else
+                  # no match, raise warning
+                  add_warning(xn, "Couldn't match note data: #{ p_xn.text }")
+                end
+                nd
+              }
               # Add first note to json
               add_data(note_xn, 'tape_note', note_data)
+              # add first tape level note to editors_notes
+              add_editors_notes(note_xn, "Tape level notes: #{ note_data.inspect }")
+            else
+              # add all other notes to editors_notes
+              add_editors_notes(note_xn, "Note: #{ note_xn.text }")
             end
-            # add all notes to editors_notes
-            add_editors_notes(note_xn, "Tape level notes: #{ note_data.inspect }")
           end
 
           # span.zlevelrecordtitle (inside record[level=tape]) -> h1
