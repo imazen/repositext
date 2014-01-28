@@ -78,11 +78,6 @@ module Kramdown
           { :root => Kramdown::ElementRt.new(:root, nil, nil, :encoding => 'UTF-8') },
           self
         )
-        # TODO outside of traversing XML tree (either before or after, don't know yet):
-        # * merge fragmented elements (caused by overlapping elements in Folio)
-        # * span.SmCaps1, span.SmCaps2, span.zVGRScriptureSmallCaps -> span.smcaps (join subsequent elements, deduplicate classes).
-        # * span.ScriptureComments, span.ScriptureParaphrase -> *no* italics. Ensure no italics are applied, even if there is an overlap with span.ScriptureReading or span.RedLetterScriptureReading. Use temporary placeholder class that will prevent merging of overlapping elements in second phase, then remove placeholder classes.
-        # * record groups - Excluding the Tape level record, the intersection of all groups on all records should be added to the 'json' file. The remainder can be piped to the editors file. groups is an attribute of record element. key in json is ‘folio-record-groups’. Put after everything else in editors file.
 
         # pre_process_xml_tree # not sure I need this...
         # Transform the XML tree
@@ -190,9 +185,10 @@ module Kramdown
       # Modifies kramdown_tree in place
       # @param[Kramdown::Element] kramdown_tree the root of the tree
       def post_process_kramdown_tree!(kramdown_tree)
-        # TODO: implement this
-        # p (with child element span.pn) -> p.normal_pn
-        # p (without child element span.pn) -> p.normal
+        # TODO: implement these
+        # merge fragmented elements (caused by overlapping elements in Folio)
+        # span.SmCaps1, span.SmCaps2, span.zVGRScriptureSmallCaps -> span.smcaps (join subsequent elements, deduplicate classes).
+        # span.ScriptureComments, span.ScriptureParaphrase -> *no* italics. Ensure no italics are applied, even if there is an overlap with span.ScriptureReading or span.RedLetterScriptureReading. Use temporary placeholder class that will prevent merging of overlapping elements in second phase, then remove placeholder classes.
       end
 
       # Performs post-processing on the kramdown string
@@ -202,6 +198,10 @@ module Kramdown
         # Collapse all whitespace to single spaces. Strip leading and trailing whitespace.
         kramdown_string.strip.gsub(/ +/, ' ') + "\n"
       end
+
+      # ***********************************************
+      # Node type specific processors
+      # ***********************************************
 
       def process_node_bookmark(xn)
         # bookmark -> pull [The translator link/bookmark should be recreatable]
@@ -288,9 +288,11 @@ module Kramdown
         case (xn['class'] || '').downcase
         when ''
           # p without class -> add regular p element
+          # p (without child element span.pn) -> p.normal (this is the default case,
+          # we may change p's class if we encounter a child span.pn)
           rm = @ke_context.get('record_mark', xn)
           return false  if !rm
-          p = Kramdown::ElementRt.new(:p)
+          p = Kramdown::ElementRt.new(:p, nil, 'class' => 'normal')
           rm.add_child(p)
           @ke_context.set('p', p)
           @ke_context.with_text_container_stack(p) do
@@ -361,13 +363,13 @@ module Kramdown
           # Export the anchor text to editor notes as well, which is defined by
           # the parent link type="popup" element. Perhaps bold the anchor text to
           # separate it from the context. Include the parent record element.
-          # Add a record group "DNE" to the record’s IAL (only popup.JMB).
           # TODO: implement this
+          # Add a record group "DNE" to the record’s IAL (only popup.JMB).
+          @ke_context.set_attr_on_record_mark(xn, 'DNE', true)  if 'jmbs' == c
           # call process_xml_node with special popup context so that we get into span(type=bold)?
           # @in_popup = true
           # process_xml_node(...)
           # @in_popup = false
-          @ke_context.set_attr_on_record_mark(xn, 'DNE', true)  if 'jmbs' == c
           @xn_context.process_children = false
         else
           return false # return early without calling flag_match_found
@@ -401,6 +403,12 @@ module Kramdown
       /x
 
       def process_node_record(xn)
+        # record groups - Excluding the Tape level record, the intersection of
+        # all groups on all records should be added to the 'json' file. The
+        # remainder can be piped to the editors file. groups is an attribute of
+        # record element. key in json is ‘folio-record-groups’. Put after
+        # everything else in editors file.
+        # TODO: implement this
         update_record_ids_in_ke_context(xn) # do this first so that we have up-to-date context
         case [
           xn.name.downcase,
@@ -535,9 +543,11 @@ module Kramdown
           pull_node(xn)
         when 'bold' == t
           # span[type=bold] -> bold (only used in popups/notes)
-          # TODO: implement this
-          # This occurs only in popups (and notes?). Those turn off recursion,
-          # so we have to call this manually to process contained spans with type bold
+          strong_el = Kramdown::ElementRt.new(:strong)
+          @ke_context.get_current_text_container(xn).add_child(strong_el)
+          @ke_context.with_text_container_stack(strong_el) do
+            xn.children.each { |xnc| process_xml_node(xnc) }
+          end
         when 'font-family' == t
           # span[type=font-family] -> pull
           pull_node(xn)
@@ -552,9 +562,12 @@ module Kramdown
           pull_node(xn)
         when 'italic' == t && '' == c
           # span[type=italic] -> markdown italics (*text*)
-          # TODO: implement this
-          # This occurs only in popups (and notes?). Those turn off recursion,
-          # so we have to call this manually to process contained spans with type bold
+          em_el = Kramdown::ElementRt.new(:em)
+          @ke_context.get_current_text_container(xn).add_child(em_el)
+          @ke_context.with_text_container_stack(em_el) do
+            xn.children.each { |xnc| process_xml_node(xnc) }
+          end
+          @xn_context.process_children = false
         when 'datecode' == c
           # span.DateCode -> Delete (sending to both deleted text and editors notes)
           delete_node(xn, true, true)
@@ -572,6 +585,11 @@ module Kramdown
           em_el = Kramdown::ElementRt.new(:em, nil, { 'class' => 'pn' })
           em_el.add_child(text_el)
           @ke_context.get_current_text_container(xn).add_child(em_el)
+          # p (with child element span.pn) -> p.normal_pn
+          # p (without child element span.pn) -> p.normal (this is the default case, we implement exception here)
+          parent_p = @ke_context.get('p', xn)
+          parent_p.remove_class('normal')
+          parent_p.add_class('normal_pn')
           @xn_context.process_children = false
         when 'questioncomments' == c
           # span.QuestionComments -> *not* bold, even if overlapped with span.Questions
@@ -767,7 +785,7 @@ module Kramdown
       end
 
       # ***********************************************************
-      # xn processing helper methods
+      # xml node processing helper methods
       # ***********************************************************
 
       # Capitalizes each word in string:
