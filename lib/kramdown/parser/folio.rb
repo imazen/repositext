@@ -234,6 +234,7 @@ module Kramdown
           # link.JMBs -> Export contents of the link and the contents of the
           # 'program' attribute to the editors file. Flag as "DO NOT EDIT" in
           # the editors note. Add a record group "DNE" to the record’s IAL.
+          # TODO: implement this
           @ke_context.set_attr_on_record_mark(xn, 'DNE', true)
         when 'program' == c
           # link.Program -> pull
@@ -361,6 +362,11 @@ module Kramdown
           # the parent link type="popup" element. Perhaps bold the anchor text to
           # separate it from the context. Include the parent record element.
           # Add a record group "DNE" to the record’s IAL (only popup.JMB).
+          # TODO: implement this
+          # call process_xml_node with special popup context so that we get into span(type=bold)?
+          # @in_popup = true
+          # process_xml_node(...)
+          # @in_popup = false
           @ke_context.set_attr_on_record_mark(xn, 'DNE', true)  if 'jmbs' == c
           @xn_context.process_children = false
         else
@@ -497,7 +503,6 @@ module Kramdown
           )
           @ke_context.set('record_mark', para_level_record_mark)
           @ke_context.get('root', xn).add_child(para_level_record_mark)
-          # QUESTION: remove immediate text nodes to eliminate "No current_text_container_element present" warnings?
         else
           return false # return early without calling flag_match_found
         end
@@ -505,6 +510,12 @@ module Kramdown
         if xn['groups'] && xn['groups'].downcase.index('jmbscans')
           # record[groups~=JMBscans] -> Add DNE flag.
           @ke_context.set_attr_on_record_mark(xn, 'DNE', true)
+        end
+        # QUESTION: remove immediate text nodes to eliminate "No text_container_stack present" warnings?
+        xn.xpath('text()').each do |text_xn|
+          if text_xn.content =~ /\A\s+\z/
+            text_xn.remove
+          end
         end
         flag_match_found
       end
@@ -565,7 +576,6 @@ module Kramdown
         when 'questioncomments' == c
           # span.QuestionComments -> *not* bold, even if overlapped with span.Questions
           # or another bold style. Treat like ScriptureComments.
-          # TODO: should this be outside of case?
           # TODO: implement this
         when 'questions' == c
           # span.Questions -> ** ** (bold). Set parent paragraph class to "q".
