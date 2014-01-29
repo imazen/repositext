@@ -1,8 +1,13 @@
 source 'http://rubygems.org'
-ruby "2.0.0"
 
 gemspec
 
-# While in development, use local kramdown with patches.
-gem 'kramdown', :path => '../kramdown' # NOTE: You need to check out the 'gemfile' branch to make it work.
+# Until we have released suspension, I need to put it here so that it can be
+# installed from a :path (gemspec doesn't handle this).
+# Once it is released and stable, we can remove this entry and rely on the
+# dependency in .gemspec.
 gem 'suspension', :path => '../suspension'
+
+# While we may have pending patches, use local kramdown with patches.
+# NOTE: You need to check out the 'gemfile' branch to make it work.
+gem 'kramdown', :path => '../kramdown'
