@@ -59,60 +59,12 @@ module Kramdown
 
       # @param[Kramdown::Element] el
       def convert_header(el)
-        case el.options[:level]
-        when 1
-          paragraph_style_range_tag(el, 'Title of Sermon')
-        when 3
-          paragraph_style_range_tag(el, 'Sub-title')
-        else
-          raise InvalidElementException, "IDML story converter can't output header with levels != 1 | 3"
-        end
+        paragraph_style_range_tag(el, 'Header')
       end
 
       # @param[Kramdown::Element] el
       def convert_p(el)
-        style = case el.attr['class']
-        when /\bnormal\b/
-          if((first_text_child = el.children.first) && :text == first_text_child.type)
-            # Find the first :text child element
-            # Remove leading space, prepend a single tab
-            first_text_child.value = "\t" + first_text_child.value.lstrip
-          end
-          # return style
-          'Normal'
-        when /\bnormal_pn\b/
-          if((pn_child = el.children.first) && :em == pn_child.type && pn_child.attr['class'] =~ /\bpn\b/)
-            # First child element is :em with class .pn
-            if((first_text_child = el.children[1]) && :text == first_text_child.type)
-              # Find the :text element immediately after
-              # Remove leading space, prepend a single tab
-              first_text_child.value = "\t" + first_text_child.value.lstrip
-            end
-          end
-          # return style
-          'Normal'
-        when /\bscr\b/ then 'Scripture'
-        when /\bstanza\b/ then 'Song stanza'
-        when /\bsong\b/ then 'Song'
-        when /\bid_title1\b/ then 'IDTitle1'
-        when /\bid_title2\b/ then 'IDTitle2'
-        when /\bid_paragraph\b/ then 'IDParagraph'
-        when /\breading\b/ then 'Reading'
-        when /\bq\b/
-          text_el = el.children.first
-          text_el = text_el.children.first while text_el && text_el.type != :text
-
-          raise InvalidElementException, "Paragraph with q class and no number at start of text" unless text_el
-
-          number = text_el.value.to_s.scan(/\A\d+/).first || ''
-          case number.length
-          when 0 then @para_last_style && @para_last_style =~ /\AQuestion/ ? @para_last_style : 'Question1'
-          when 1 then 'Question1'
-          when 2 then 'Question2'
-          when 3 then 'Question3'
-          end
-        end
-        paragraph_style_range_tag(el, style)
+        paragraph_style_range_tag(el, 'Normal')
       end
 
       # @param[Kramdown::Element] el
@@ -130,12 +82,8 @@ module Kramdown
         character_style_range_tag_for_el(el)
         # Transform text contents:
         #   * Remove line breaks from text nodes
-        #   * append single tab to first eagle
-        #   * prepend single tab to last eagle
-        t = el.value.gsub(/\n/, ' ') \
-                    .gsub(/\A\uF6E1\s*/, "\uF6E1\t") \
-                    .gsub(/\s*\uF6E1\z/, "\t\uF6E1")
-        content_tag(unescape_brackets(t))
+        t = el.value.gsub(/\n/, ' ')
+        content_tag(t)
       end
 
       # @param[Kramdown::Element] el

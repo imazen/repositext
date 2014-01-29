@@ -228,30 +228,7 @@ module Kramdown
       end
 
       def process_node_link(xn)
-        c = (xn['class'] || '').downcase
-        t = (xn['type'] || '').downcase
-        case
-        when 'jmbs' == c
-          # link.JMBs -> Export contents of the link and the contents of the
-          # 'program' attribute to the editors file. Flag as "DO NOT EDIT" in
-          # the editors note. Add a record group "DNE" to the record’s IAL.
-          # TODO: implement this
-          @ke_context.set_attr_on_record_mark(xn, 'DNE', true)
-        when 'program' == c
-          # link.Program -> pull
-          pull_node(xn)
-        when 'tls' == c
-          # link.TLS, span.TLS -> delete any instances of the † character (U+2020),
-          # then pull the element.
-          replace_string_inside_node!("†", '', xn)
-          pull_node(xn)
-        when 'popup' == t
-          # link[type=popup] -> pull
-          pull_node(xn)
-        else
-          # return without calling flag_match_found
-          return false
-        end
+        pull_node(xn)
         flag_match_found
       end
 
@@ -287,136 +264,27 @@ module Kramdown
       end
 
       def process_node_p(xn)
-        case (xn['class'] || '').downcase
-        when ''
-          # p without class -> add regular p element
-          # p (without child element span.pn) -> p.normal (this is the default case,
-          # we may change p's class if we encounter a child span.pn)
-          rm = @ke_context.get('record_mark', xn)
-          return false  if !rm
-          p = Kramdown::ElementRt.new(:p, nil, 'class' => 'normal')
-          rm.add_child(p)
-          @ke_context.set('p', p)
-          @ke_context.with_text_container_stack(p) do
-            xn.children.each { |xnc| process_xml_node(xnc) }
-          end
-          @xn_context.process_children = false
-        when 'action'
-          # p.ACTION -> Delete Node and all contents, verify only whitespace is
-          # present.
-          verify_only_whitespace_is_present(xn)
-          delete_node(xn, true, false)
-        when 'levelrecordspokenwordbook'
-          # p.levelrecordspokenwordbook -> Delete (sending to both deleted text and editors notes)
-          delete_node(xn, true, true)
-        when 'levelrecordtitleauxiliary'
-          # p.levelrecordtitleauxiliary (inside record[level=tape]) -> json (alternate titles)
-          # NOTE: this is implemented in process_node_record (tape)
-        when 'quotespacing'
-          # p.QuoteSpacing -> Assert that only whitespace is present -
-          # and delete it and any children.
-          verify_only_whitespace_is_present(xn)
-          delete_node(xn, false, false)
-        when 'referenceline', 'referencelinecab'
-          # p.referenceline and p.referencelinecab -> Delete nodes and all contents.
-          # Text contents should be identical across all records in a tape (excluding zzPID).
-          # Warn if there is a discrepancy. Send to deleted_text only if there
-          # is a discrepancy with siblings.
-          @ke_context.record_distinct_reference_line_contents(xn.text, xn)
-          delete_node(xn, false, false)
-        when 'scripturereading'
-          # p.scripturereading -> p.scr
-          rm = @ke_context.get('record_mark', xn)
-          return false  if !rm
-          p = Kramdown::ElementRt.new(:p, nil, { 'class' => 'scr' })
-          rm.add_child(p)
-          @ke_context.set('p', p)
-          @ke_context.with_text_container_stack(p) do
-            xn.children.each { |xnc| process_xml_node(xnc) }
-          end
-          @xn_context.process_children = false
-        when 'singing'
-          # p.singing -> p.song (if previous paragraph is a song), otherwise p.stanza
-          rm = @ke_context.get('record_mark', xn)
-          return false  if !rm
-          previous_p = @ke_context.get('p', xn) # we haven't updated ke_context.p yet, so it points to previous
-          p = Kramdown::ElementRt.new(
-            :p,
-            nil,
-            { 'class' => (previous_p && previous_p.has_class?('song')) ? 'song' : 'stanza' }
-          )
-          rm.add_child(p)
-          @ke_context.set('p', p)
-          @ke_context.with_text_container_stack(p) do
-            xn.children.each { |xnc| process_xml_node(xnc) }
-          end
-          @xn_context.process_children = false
-        else
-          return false # return early without calling flag_match_found
+        # p without class -> add regular p element
+        # p (without child element span.pn) -> p.normal (this is the default case,
+        # we may change p's class if we encounter a child span.pn)
+        rm = @ke_context.get('record_mark', xn)
+        return false  if !rm
+        p = Kramdown::ElementRt.new(:p, nil, 'class' => 'normal')
+        rm.add_child(p)
+        @ke_context.set('p', p)
+        @ke_context.with_text_container_stack(p) do
+          xn.children.each { |xnc| process_xml_node(xnc) }
         end
+        @xn_context.process_children = false
         flag_match_found
       end
 
       def process_node_popup(xn)
-        c = (xn['class'] || '').downcase
-        case c
-        when 'jmbs', 'popup'
-          # popup.JMBs, popup.popup -> Export to editor notes file, remove contents.
-          # Export the anchor text to editor notes as well, which is defined by
-          # the parent link type="popup" element. Perhaps bold the anchor text to
-          # separate it from the context. Include the parent record element.
-          # TODO: implement this
-          # Add a record group "DNE" to the record’s IAL (only popup.JMB).
-          @ke_context.set_attr_on_record_mark(xn, 'DNE', true)  if 'jmbs' == c
-          # call process_xml_node with special popup context so that we get into span(type=bold)?
-          # @in_popup = true
-          # process_xml_node(...)
-          # @in_popup = false
-          @xn_context.process_children = false
-        else
-          return false # return early without calling flag_match_found
-        end
+        pull_node(xn)
         flag_match_found
       end
 
-      ND_CHARS = '[:alnum:]\"\\\'\.,;:\-#\?\!\(\)\/'
-      #ND_TEXT_VAL_REGEXP = /[#{ ND_CHARS }][#{ ND_CHARS }\s]*[#{ ND_CHARS }]/
-      ND_TEXT_VAL_REGEXP = /([#{ ND_CHARS }]|[^\S\n\t])*?/ # match ND_CHARS or whitespace that is not \n or \t (double negation)
-      ND_TEXT_VAL_REGEXP_MULTI_LINE = /[#{ ND_CHARS }\s]*?/ # match ND_CHARS and any whitespace
-      ND_RECORD_DEL = '[\n\t]+'
-      ND_LABEL_DEL = '\s*?' # non greedy match of whitespace (we want space character)
-      ND_REGEXP = /
-        \A
-        [\n\t]*
-        TAPE:#{ ND_LABEL_DEL }(?<tape>\d{2}-\d{4}\w?) # matches 47-0402 or 47-1100X
-        #{ ND_RECORD_DEL }
-        DATE:#{ ND_LABEL_DEL }(?<date>[[:alnum:],\s]*\d{4}) # matches NOVEMBER 17, 1947 or 1948
-        #{ ND_RECORD_DEL }
-        QUOTES:#{ ND_LABEL_DEL }(?<quotes>\d+\s*?) # matches number of quotes with optional trailing space char
-        #{ ND_RECORD_DEL }
-        MINUTES:#{ ND_LABEL_DEL }(?<minutes>\d+\s*?) # matches number of questions with optional trailing space char
-        #{ ND_RECORD_DEL }
-        TITLE:#{ ND_LABEL_DEL }(?<title>#{ ND_TEXT_VAL_REGEXP }) # matches any text up to place
-        #{ ND_RECORD_DEL }
-        PLACE:#{ ND_LABEL_DEL }(?<place>#{ ND_TEXT_VAL_REGEXP }) # matches any text up to vee enn
-        #{ ND_RECORD_DEL }
-        (?<vee_enn>#{ ND_TEXT_VAL_REGEXP }) # matches hard coded string QUESTION do we need to record this?
-        #{ ND_RECORD_DEL }
-        NOTE:#{ ND_LABEL_DEL }(?<note>#{ ND_TEXT_VAL_REGEXP_MULTI_LINE })? # matches any text up to tape quality, may not have a value
-        #{ ND_RECORD_DEL }
-        (TAPE\sQUALITY:#{ ND_LABEL_DEL }(?<tape_quality>#{ ND_TEXT_VAL_REGEXP_MULTI_LINE })?)? # tape quality is not present in all notes
-        [\n\t]*
-        \z
-      /x
-        # (?<vee_enn>V-\d*\s+N-(\d+\w?)?) # matches hard coded string QUESTION do we need to record this?
-
       def process_node_record(xn)
-        # record groups - Excluding the Tape level record, the intersection of
-        # all groups on all records should be added to the 'json' file. The
-        # remainder can be piped to the editors file. groups is an attribute of
-        # record element. key in json is ‘folio-record-groups’. Put after
-        # everything else in editors file.
-        # TODO: implement this
         update_record_ids_in_ke_context(xn) # do this first so that we have up-to-date context
         case [
           xn.name.downcase,
@@ -438,79 +306,14 @@ module Kramdown
           )
           @ke_context.set('record_mark', tape_level_record_mark)
           @ke_context.get('root', xn).add_child(tape_level_record_mark)
-          # note (first note within record.tape ) -> Save to editors notes and
-          # json, parse using regex, put all attrs into array. Validate presence
-          # of expected fields. All other notes go to editors file, they are
-          # treated like popups.
-          # Example note xml:
-          # <note height="3in" title="Tape Note" width="5in">
-          #   <p>
-          #     TAPE: 47-1102
-          #     <br/>
-          #     DATE: SUNDAY AFTERNOON NOVEMBER 02, 1947
-          #     <br/>
-          #     QUOTES:
-          #     <span class="zzquotes" type="zz quotes">51</span>
-          #     <br/>
-          #     MINUTES:
-          #     <span class="Time" type="Time">71 </span>
-          #     <br/>
-          #     TITLE: THE ANGEL OF GOD
-          #     <br/>
-          #     PLACE: SHRINER TEMPLE, PHOENIX AZ
-          #     <br/>
-          #     V-   N-
-          #     <br/>
-          #     NOTE: CORRECTED FROM   47--1130
-          #     <br/>
-          #     TAPE QUALITY: Lots of static but mostly can be understood. Previously titled &quot;Angel and His Commission.&quot;
-          #   </p>
-          #   <p>VOGR.VGR</p>
-          # </note>
-          # TODO: validate presence of expected fields
-          # QUESTION: which fields are required?
-          title_from_first_note = '' # initialize outside block for comparison further down
-          xn.css('note').each_with_index do |note_xn, i|
-            if 0 == i
-              note_data = note_xn.css('p').inject({}) { |nd, p_xn|
-                if(m1 = p_xn.content.match(ND_REGEXP))
-                  # found data
-                  # QUESTION: what should we call vee_enn?
-                  %w[
-                    tape date quotes minutes title place vee_enn note tape_quality
-                  ].each { |e| nd[e] = (m1[e] || '').strip.gsub(/\s+/, ' ') }
-                  title_from_first_note = nd['title']
-                elsif('VOGR.VGR' == p_xn.text.strip)
-                  # found marker string
-                  # QUESTION: what do we do with this?
-                else
-                  # no match, raise warning
-                  add_warning(xn, "Couldn't match note data: #{ p_xn.text }")
-                end
-                nd
-              }
-              # Add first note to json
-              add_data(note_xn, 'tape_note', note_data)
-              # add first tape level note to editors_notes
-              add_editors_notes(note_xn, "Tape level notes: #{ note_data.inspect }")
-            else
-              # add all other notes to editors_notes
-              add_editors_notes(note_xn, "Note: #{ note_xn.text }")
-            end
-          end
 
           # span.zlevelrecordtitle (inside record[level=tape]) -> h1
-          # (after Camel casing from all caps). Compare this to the one we get
-          # from the first note.
           header_el = Kramdown::ElementRt.new(:header, nil, nil, :level => 1)
           tape_level_record_mark.add_child(header_el)
           title_text = xn.at_css('span.zlevelrecordtitle').text || ''
           title_text = capitalize_each_word_in_string(title_text)
           text_el = Kramdown::ElementRt.new(:text, title_text)
           header_el.add_child(text_el)
-          if(title_text.downcase != title_from_first_note.downcase)
-            add_warning(xn, "Discrepancy in tape title: '#{ title_text }' -> '#{ title_from_first_note }'")
-          end
           # p.levelrecordtitleauxiliary (inside record[level=tape]) -> json (alternate titles)
           if(p_xn = xn.at_css('p.levelrecordtitleauxiliary')) && p_xn.text
             add_data(xn, :alternate_title, p_xn.text.strip.gsub(/[\n\t ]+/, ' '))
@@ -527,11 +330,6 @@ module Kramdown
         else
           return false # return early without calling flag_match_found
         end
-        # Have to do this after I updated ke_context.record_mark
-        if xn['groups'] && xn['groups'].downcase.index('jmbscans')
-          # record[groups~=JMBscans] -> Add DNE flag.
-          @ke_context.set_attr_on_record_mark(xn, 'DNE', true)
-        end
         # QUESTION: remove immediate text nodes to eliminate "No text_container_stack present" warnings?
         xn.xpath('text()').each do |text_xn|
           if text_xn.content =~ /\A\s+\z/
@@ -545,34 +343,13 @@ module Kramdown
         c = (xn['class'] || '').downcase
         t = (xn['type'] || '').downcase
         case
-        when (xn['style'] || '') =~ /text-decoration:\s*underline/
-          # span[style="text-decoration:underline;"] -> span.underline
-          # (look at element style, some elements may have a type ‘underline’
-          # but style ‘text-decoration:normal’, style overrides type. This may
-          # also apply to italics and bold, ...)
-          # TODO: implement this
-        when 'background-color' == t
-          # span[type=background-color]  -> pull
-          pull_node(xn)
         when 'bold' == t
-          # span[type=bold] -> bold (only used in popups/notes)
+          # span[type=bold] -> bold
           strong_el = Kramdown::ElementRt.new(:strong)
           @ke_context.get_current_text_container(xn).add_child(strong_el)
           @ke_context.with_text_container_stack(strong_el) do
             xn.children.each { |xnc| process_xml_node(xnc) }
           end
-        when 'font-family' == t
-          # span[type=font-family] -> pull
-          pull_node(xn)
-        when 'font-size' == t
-          # span[type=font-size] -> pull
-          pull_node(xn)
-        when 'foreground-color' == t
-          # span[type=foreground-color] -> pull
-          pull_node(xn)
-        when 'highlighter' == t
-          # span[type=highlighter] -> pull
-          pull_node(xn)
         when 'italic' == t && '' == c
           # span[type=italic] -> markdown italics (*text*)
           em_el = Kramdown::ElementRt.new(:em)
@@ -581,185 +358,6 @@ module Kramdown
             xn.children.each { |xnc| process_xml_node(xnc) }
           end
           @xn_context.process_children = false
-        when 'datecode' == c
-          # span.DateCode -> Delete (sending to both deleted text and editors notes)
-          delete_node(xn, true, true)
-        when 'editorsnotes' == c
-          # span.EditorsNotes -> pull, after modifying the inner text
-          modify_editors_notes_inner_text!(xn)
-          pull_node(xn)
-        when 'location' == c
-          # span.Location -> Delete (sending to both deleted text and editors notes)
-          delete_node(xn, true, true)
-        when 'paragraph' == c
-          # span.Paragraph -> span.pn
-          # QUESTION: do we want the paragraph number text?
-          text_el = Kramdown::ElementRt.new(:text, xn.text.gsub('E-', '').strip)
-          em_el = Kramdown::ElementRt.new(:em, nil, { 'class' => 'pn' })
-          em_el.add_child(text_el)
-          @ke_context.get_current_text_container(xn).add_child(em_el)
-          # p (with child element span.pn) -> p.normal_pn
-          # p (without child element span.pn) -> p.normal (this is the default case, we implement exception here)
-          parent_p = @ke_context.get('p', xn)
-          parent_p.remove_class('normal')
-          parent_p.add_class('normal_pn')
-          @xn_context.process_children = false
-        when 'questioncomments' == c
-          # span.QuestionComments -> *not* bold, even if overlapped with span.Questions
-          # or another bold style. Treat like ScriptureComments.
-          # TODO: implement this
-        when 'questions' == c
-          # span.Questions -> ** ** (bold). Set parent paragraph class to "q".
-          strong_el = Kramdown::ElementRt.new(:strong)
-          @ke_context.get_current_text_container(xn).add_child(strong_el)
-          @ke_context.get('p', xn).add_class('q')
-          @ke_context.with_text_container_stack(strong_el) do
-            xn.children.each { |xnc| process_xml_node(xnc) }
-          end
-          @xn_context.process_children = false
-        when 'recordheading' == c
-          # span.recordHeading -> pull
-          pull_node(xn)
-        when %[redletterscripturereading scripturereading].include?(c)
-          # span.RedLetterScriptureReading, span.ScriptureReading -> markdown italics (*text*)
-          em_el = Kramdown::ElementRt.new(:em)
-          @ke_context.get_current_text_container(xn).add_child(em_el)
-          @ke_context.with_text_container_stack(em_el) do
-            xn.children.each { |xnc| process_xml_node(xnc) }
-          end
-          @xn_context.process_children = false
-        when %[scripturecomments scriptureparaphrase].include?(c)
-          # span.ScriptureComments, span.ScriptureParaphrase -> *no* italics.
-          # Ensure no italics are applied, even if there is an overlap with
-          # span.ScriptureReading or span.RedLetterScriptureReading. Use temporary
-          # placeholder class that will prevent merging of overlapping elements
-          # in second phase, then remove placeholder classes.
-          # TODO: implement this
-        when %[singing singingcomments zzpoems].include?(c)
-          # span.Singing, span.SingingComments, span.zzPoems -> pull
-          pull_node(xn)
-        when %[smcaps1 smcaps2 zvgrscripturesmallcaps].include?(c)
-          # span.SmCaps1, span.SmCaps2, span.zVGRScriptureSmallCaps -> span.smcaps
-          # (join subsequent elements, deduplicate classes).
-          # TODO: do join/dedup in post processing
-          span_el = Kramdown::ElementRt.new(:em, nil, 'class' => 'smcaps')
-          @ke_context.get_current_text_container(xn).add_child(span_el)
-          @ke_context.with_text_container_stack(span_el) do
-            xn.children.each { |xnc| process_xml_node(xnc) }
-          end
-          @xn_context.process_children = false
-        when 'subsuperscript' == c
-          # span.subsuperscript ->  pull
-          pull_node(xn)
-        when 'tapeleveldatecodeletter' == c
-          # span.tapeleveldatecodeletter -> Delete (sending to both deleted text and editors notes)
-          delete_node(xn, true, true)
-        when 'tapetitle' == c
-          # span.TapeTitle -> Delete (sending to both deleted text and editors notes)
-          delete_node(xn, true, true)
-          # span.TapeTitle (inside record[level=tape]) -> pull
-          # NOTE: this is handled in process_node_record (tape)
-        when 'time' == c
-          # span.Time -> Delete (sending to both deleted text and editors notes)
-          delete_node(xn, true, true)
-        when 'tls' == c
-          # link.TLS, span.TLS -> delete any instances of the † character (U+2020),
-          # then pull the element.
-          replace_string_inside_node!("†", '', xn)
-          pull_node(xn)
-        when %[vgrspeaker zvgrspeaker].include?(c)
-          # span.VGRSpeaker, span.zVGRSpeaker -> delete any instances of the
-          # character « (U+00AB) character, then pull the element
-          replace_string_inside_node!("«", '', xn)
-          pull_node(xn)
-        when 'zbold' == c
-          # span.zBold type="highlighter" -> bold
-          strong_el = Kramdown::ElementRt.new(:strong)
-          @ke_context.get_current_text_container(xn).add_child(strong_el)
-          @ke_context.with_text_container_stack(strong_el) do
-            xn.children.each { |xnc| process_xml_node(xnc) }
-          end
-          @xn_context.process_children = false
-        when 'zhelenindiscernible' == c
-          # span.zhelenindiscernible -> pull
-          pull_node(xn)
-        when 'zlevelrecordlocation' == c
-          # span.zlevelrecordlocation -> Delete (sending to both deleted text and editors notes)
-          delete_node(xn, true, true)
-        when 'zlevelrecordtapenumber' == c
-          # span.zlevelrecordtapenumber -> Delete (sending to both deleted text and editors notes)
-          delete_node(xn, true, true)
-        when 'zlevelrecordtitle' == c
-          # span.zlevelrecordtitle (inside record[level=tape]) -> h1
-          # (after Camel casing from all caps). Compare this to the one we get
-          # from the first note.
-          # NOTE: this is implemented in process_node_record (tape)
-        when 'zlevelrecordtitleauxiliary' == c
-          # span.zlevelrecordtitleauxiliary -> Delete (sending to both deleted text and editors notes)
-          delete_node(xn, true, true)
-        when 'zlevelrecordv-n-' == c
-          # span.zlevelrecordv-n- -> Delete (sending to both deleted text and editors notes)
-          delete_node(xn, true, true)
-        when 'zunderlinedwords-prophetindicatedsuch' == c
-          # span.zUnderlinedWords-prophetindicatedsuch -> span.underline
-          span_el = Kramdown::ElementRt.new(:em, nil, 'class' => 'underline')
-          @ke_context.get_current_text_container(xn).add_child(span_el)
-          @ke_context.with_text_container_stack(span_el) do
-            xn.children.each { |xnc| process_xml_node(xnc) }
-          end
-          @xn_context.process_children = false
-        when 'zvgreagle' == c
-          # span.zVGREagle -> Verify contents includes one ` (backtick), replace
-          # it with U+F6E1, and pull span tag.
-          if xn.text != "`"
-            add_warning(xn, "zVGREagle contained unexpected chars: #{ xn.text.inspect }")
-          end
-          replace_string_inside_node!("`", "\uF6E1", xn)
-        when 'zvgrhighorderbitword' == c
-          # span.zVGRHighOrderBitWord -> pull. (used to indicate words with
-          # codepoints > 128, perhaps warn?)
-          # QUESTION: should we warn?
-          pull_node(xn)
-        when 'zvgritalics' == c
-          # span.zVGRItalics -> markdown italics (*text*)
-          em_el = Kramdown::ElementRt.new(:em)
-          @ke_context.get_current_text_container(xn).add_child(em_el)
-          @ke_context.with_text_container_stack(em_el) do
-            xn.children.each { |xnc| process_xml_node(xnc) }
-          end
-          @xn_context.process_children = false
-        when 'zvgrwingdings' == c
-          # span.zVGRWingdings -> Ensure only contains « « « « « « « (Ux00AB)
-          # and whitespace, replace with horizontal rule.
-          if xn.text !~ /\A[\s«]+\z/
-            add_warning(xn, "zVGRWingdings contained unexpected chars: #{ xn.text.inspect }")
-          end
-          hr_el = Kramdown::ElementRt.new(:hr)
-          @ke_context.get_current_text_container(xn).add_child(hr_el)
-          @xn_context.process_children = false
-        when 'zzzkpn' == c
-          # span.zzzKPN -> Save trimmed text contents to record token
-          # (IAL under 'kpn' attribute), then delete the node and any children.
-          # Warn if there is more than one per record or if text contents is not just digits.
-          t = xn.text.strip
-          if t !~ /\A\d+\z/
-            add_warning(xn, "span.zzzKPN contains non-digit text: #{ tc.inspect }")
-          end
-          @ke_context.set_attr_on_record_mark(xn, 'kpn', t, true)
-          @xn_context.process_children = false
-        when 'zzzpid' == c
-          # span.zzzPID -> Verify contents match the parent record recordID field,
-          # then delete. Warn if there is a mismatch. Must happen before
-          # p.referenceline(cab) is deleted.
-          if xn.text != @ke_context.get('record_id', xn)
-            add_warning(
-              xn,
-              "span.zzzPID was different from parent record_id: #{ xn.text } != #{ @ke_context.get('record_id', xn) }"
-            )
-          end
-        when c =~ /\Azz/
-          # span[class=~zz] -> pull all other classes that start with 'zz'
-          pull_node(xn)
         else
           return false # return early without calling flag_match_found
         end
@@ -843,23 +441,6 @@ module Kramdown
       # @param[Nokogiri::XML::Node] xn
       def ignore_node(xn)
         @xn_context.process_children = false
-      end
-
-      def modify_editors_notes_inner_text!(xn)
-        if xn.text? && '' != xn.text && !xn.text.nil?
-          # [Blank.spot.on.tape--Ed.] -> [Blank spot on tape—Ed.]
-          # When removing periods from blank.spot.on.tape be aware that not all
-          # of them end with –Ed. Some are: [blank.spot.on.tape] most are
-          # [blank.spot.on.tape—Ed.]
-          xn.content = xn.text.gsub(/(\[)([\w\.]+)((—Ed\.)?\])/) { |s|
-            _full_match, br1, txt, br2 = *Regexp.last_match
-            br1 + txt.gsub(/\./, ' ') + br2
-          }
-        else
-          xn.children.each { |child_xn|
-            modify_editors_notes_inner_text!(child_xn)
-          }
-        end
       end
 
       # Pull xn, Replacing self with children. Xml tree recursion will process children.

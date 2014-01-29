@@ -97,18 +97,7 @@ module Kramdown
       # * element options (can contain a lambda for lazy execution, gets passed the para XML node)
       def paragraph_style_mappings
         {
-          "Title of Sermon"          => [:header, nil, nil                        , lambda { |para| {:level => 1, :raw_text => para.text} }],
-          "Sub-title"                => [:header, nil, nil                        , lambda { |para| {:level => 3, :raw_text => para.text} }],
-          "Scripture"                => [:p     , nil, {'class' => 'scr'}         , nil],
-          "Question1"                => [:p     , nil, {'class' => 'q'}           , nil],
-          "Question2"                => [:p     , nil, {'class' => 'q'}           , nil],
-          "Question3"                => [:p     , nil, {'class' => 'q'}           , nil],
-          "Song stanza"              => [:p     , nil, {'class' => 'stanza'}      , nil],
-          "Song"                     => [:p     , nil, {'class' => 'song'}        , nil],
-          "IDTitle1"                 => [:p     , nil, {'class' => 'id_title1'}   , nil],
-          "IDTitle2"                 => [:p     , nil, {'class' => 'id_title2'}   , nil],
-          "IDParagraph"              => [:p     , nil, {'class' => 'id_paragraph'}, nil],
-          "Reading"                  => [:p     , nil, {'class' => 'reading'}     , nil],
+          "Header"                   => [:header, nil, nil                        , lambda { |para| {:level => 1, :raw_text => para.text} }],
           "Normal"                   => [:p     , nil, {'class' => 'normal'}      , nil],
           "Horizontal rule"          => [:hr    , nil, nil                        , nil],
           "$ID/[No paragraph style]" => [:p     , nil, nil                        , nil]
