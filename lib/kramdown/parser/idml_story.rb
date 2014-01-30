@@ -37,6 +37,7 @@ module Kramdown
       #
       # @param[Kramdown::Element] kd_el the current Kramdown::Element.
       # @param[Nokogiri::Xml::Node] xml_node the current XML node.
+      # @param[Block]
       def with_stack(kd_el, xml_node)
         @stack.push([kd_el, xml_node])
         @tree = kd_el
@@ -57,6 +58,7 @@ module Kramdown
       end
 
       # Overrides method from Kramdown::Parser::Base to add location information
+      # TODO: do we still need this now that kramdown proper has location info?
       def add_text(text, tree = @tree, type = @text_type)
         if tree.children.last && tree.children.last.type == type
           tree.children.last.value << text
@@ -322,8 +324,6 @@ module Kramdown
       def update_tree
         @stack = [@root]
 
-#Kramdown::Converter::Graphviz.send(:new, @root, { :graphviz_output_file => 'before.png'}).convert(@root)
-
         iterate_over_children = nil
 
         ### lambda for managing whitespace
@@ -427,8 +427,6 @@ module Kramdown
               index -= 1
             end
           end
-
-#Kramdown::Converter::Graphviz.send(:new, @root, { :graphviz_output_file => 'after.png'}).convert(@root)
 
           index
         end
