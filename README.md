@@ -70,4 +70,4 @@ To run the entire spec suite:
 
 or to run a single file:
 
-    bundle exec ruby specs/kramdown/parser/idml_story/regression_spec.rb
+    bundle exec ruby spec/kramdown/parser/idml_story/regression_spec.rb
