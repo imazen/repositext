@@ -1,3 +1,5 @@
+require 'kramdown/element'
+
 module Kramdown
   class Element
 

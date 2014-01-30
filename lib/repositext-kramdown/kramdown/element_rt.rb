@@ -1,5 +1,7 @@
 # Adds behavior to Kramdown::Element that is required for Folio XML import (Repositext)
 #
+require 'kramdown/element'
+
 module Kramdown
   class ElementRt < Element
 
