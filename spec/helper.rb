@@ -5,4 +5,4 @@ require 'minitest/autorun'
 require 'kramdown/document'
 
 # Gem under test
-require_relative '../lib/repositext-kramdown'
+require 'repositext-kramdown'

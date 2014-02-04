@@ -16,7 +16,7 @@ describe Kramdown::Converter::Icml do
     output_io.rewind
     output_io.read.must_equal %(
       <Story>
-        <ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/">
+        <ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/Normal">
         <CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
           <Content>some text</Content>
         </CharacterStyleRange>

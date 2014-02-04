@@ -64,7 +64,12 @@ module Kramdown
 
       # @param[Kramdown::Element] el
       def convert_p(el)
-        paragraph_style_range_tag(el, 'Normal')
+        if 'test_class' == el.attr['class']
+          # This is an example for how to handle an element with a specific class
+          paragraph_style_range_tag(el, 'NormalTest')
+        else
+          paragraph_style_range_tag(el, 'Normal')
+        end
       end
 
       # @param[Kramdown::Element] el
@@ -83,7 +88,7 @@ module Kramdown
         # Transform text contents:
         #   * Remove line breaks from text nodes
         t = el.value.gsub(/\n/, ' ')
-        content_tag(t)
+        content_tag(unescape_brackets(t))
       end
 
       # @param[Kramdown::Element] el
@@ -201,9 +206,7 @@ module Kramdown
           char_st_rng_tag(orig_el, 'Bold', &block)
         elsif el.type == :em
           # We use :em to represent spans. Compute class for span:
-          style = if el.attr['class'] =~ /\bpn\b/
-                    'Paragraph number'
-                  elsif el.attr['class'] =~ /\bitalic\b/ && el.attr['class'] =~ /\bbold\b/
+          style = if el.attr['class'] =~ /\bitalic\b/ && el.attr['class'] =~ /\bbold\b/
                     'Bold Italic'
                   elsif el.attr['class'] =~ /\bbold\b/
                     'Bold'

@@ -41,17 +41,21 @@ module Kramdown
       # @param[String, optional] fall_back
       # @return[String] the title
       def compute_title(el, fall_back = 'No Title')
+        # first test if el is of type :header and return text
         if :header == el.type
           r = ::Kramdown::Document.new(
             el.options[:raw_text], { :input => 'kramdown' }
           ).to_plain_text
           return r  if '' != r
         end
+        # recurse over children
         title_from_header = el.children.map { |e| compute_title(e, fall_back) }.compact.first
+        # We're back in the :root element, return title value
         if :root == el.type && !title_from_header
-          # We're back in the :root element and no header was found, use fall_back.
+          # No :header was found, use fall_back.
           fall_back
         else
+          # Inner text from :header
           title_from_header
         end
       end

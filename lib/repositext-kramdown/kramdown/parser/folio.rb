@@ -186,10 +186,7 @@ module Kramdown
       # Modifies kramdown_tree in place
       # @param[Kramdown::Element] kramdown_tree the root of the tree
       def post_process_kramdown_tree!(kramdown_tree)
-        # TODO: implement these
-        # merge fragmented elements (caused by overlapping elements in Folio)
-        # span.SmCaps1, span.SmCaps2, span.zVGRScriptureSmallCaps -> span.smcaps (join subsequent elements, deduplicate classes).
-        # span.ScriptureComments, span.ScriptureParaphrase -> *no* italics. Ensure no italics are applied, even if there is an overlap with span.ScriptureReading or span.RedLetterScriptureReading. Use temporary placeholder class that will prevent merging of overlapping elements in second phase, then remove placeholder classes.
+        # override this to post process elements in the kramdown tree
       end
 
       # Performs post-processing on the kramdown string
@@ -205,7 +202,6 @@ module Kramdown
       # ***********************************************
 
       def process_node_bookmark(xn)
-        # bookmark -> pull [The translator link/bookmark should be recreatable]
         pull_node(xn)
         flag_match_found
       end
@@ -238,22 +234,11 @@ module Kramdown
       end
 
       def process_node_note(xn)
-        # note (first note within record.tape ) -> Save to editors notes and
-        # json, parse using regex, put all attrs into array. Validate presence
-        # of expected fields.
-        # NOTE: this is implemented in process_node_record (tape)
-
-        # All other notes go to editors_notes, they are treated like popups.
-        add_editors_notes(xn, "Note: #{ xn.text }")
         ignore_node(xn)
         flag_match_found
       end
 
       def process_node_object(xn)
-        # QUESTION: what to do with object?
-        # /vgr-english/import_folio/65/ENG65-1128e.xml
-        # line 4246:
-        # <object handler="Bitmap" name="eagles.bmp" src="MessageBeta all but 17 tapes.OB\FFF37.OB" style="width:1.0625in;height:0.677083in;" type="folio" />
         ignore_node(xn)
         flag_match_found
       end
@@ -265,11 +250,9 @@ module Kramdown
 
       def process_node_p(xn)
         # p without class -> add regular p element
-        # p (without child element span.pn) -> p.normal (this is the default case,
-        # we may change p's class if we encounter a child span.pn)
         rm = @ke_context.get('record_mark', xn)
         return false  if !rm
-        p = Kramdown::ElementRt.new(:p, nil, 'class' => 'normal')
+        p = Kramdown::ElementRt.new(:p)
         rm.add_child(p)
         @ke_context.set('p', p)
         @ke_context.with_text_container_stack(p) do
@@ -285,7 +268,6 @@ module Kramdown
       end
 
       def process_node_record(xn)
-        update_record_ids_in_ke_context(xn) # do this first so that we have up-to-date context
         case [
           xn.name.downcase,
           (xn['class'] || '').downcase,
@@ -294,47 +276,13 @@ module Kramdown
         when ['record', 'normallevel', 'root']
           # record[level=root] -> drop element
           ignore_node(xn)
-        when ['record', 'year', 'year']
-          # record[level=year] -> ?
-          # QUESTION: what to do with year level records?
-          ignore_node(xn)
-        when ['record', 'tape', 'tape']
-          # record.Tape[level=tape] -> Add :record_mark
-          tape_id = @ke_context.get('tape_id', xn)
-          tape_level_record_mark = Kramdown::ElementRt.new(
-            :record_mark, nil, { 'class' => 'rid', 'id' => "f-#{ tape_id }" }
-          )
-          @ke_context.set('record_mark', tape_level_record_mark)
-          @ke_context.get('root', xn).add_child(tape_level_record_mark)
-
-          # span.zlevelrecordtitle (inside record[level=tape]) -> h1
-          header_el = Kramdown::ElementRt.new(:header, nil, nil, :level => 1)
-          tape_level_record_mark.add_child(header_el)
-          title_text = xn.at_css('span.zlevelrecordtitle').text || ''
-          title_text = capitalize_each_word_in_string(title_text)
-          text_el = Kramdown::ElementRt.new(:text, title_text)
-          header_el.add_child(text_el)
-          # p.levelrecordtitleauxiliary (inside record[level=tape]) -> json (alternate titles)
-          if(p_xn = xn.at_css('p.levelrecordtitleauxiliary')) && p_xn.text
-            add_data(xn, :alternate_title, p_xn.text.strip.gsub(/[\n\t ]+/, ' '))
-          end
-          @xn_context.process_children = false
         when ['record', 'normallevel', '']
           # record.NormalLevel -> add :record_mark element
-          ri = @ke_context.get('record_id', xn)
-          para_level_record_mark = Kramdown::ElementRt.new(
-            :record_mark, nil, { 'class' => 'rid', 'id' => "f-#{ ri }" }
-          )
+          para_level_record_mark = Kramdown::ElementRt.new(:record_mark)
           @ke_context.set('record_mark', para_level_record_mark)
           @ke_context.get('root', xn).add_child(para_level_record_mark)
         else
           return false # return early without calling flag_match_found
-        end
-        # QUESTION: remove immediate text nodes to eliminate "No text_container_stack present" warnings?
-        xn.xpath('text()').each do |text_xn|
-          if text_xn.content =~ /\A\s+\z/
-            text_xn.remove
-          end
         end
         flag_match_found
       end
@@ -447,15 +395,6 @@ module Kramdown
       # @param[Nokogiri::XML::Node] xn
       def pull_node(xn)
         # nothing to do with node
-      end
-
-      # Update record ids every time we encounter a record-node.
-      # @param[Nokogiri::XML::Node] xn
-      def update_record_ids_in_ke_context(xn)
-        year_id, tape_id, record_id = xn['fullPath'].gsub(/\A\//, '').split('/').map(&:strip)
-        @ke_context.set('year_id', year_id)
-        @ke_context.set('tape_id', tape_id)
-        @ke_context.set('record_id', record_id)
       end
 
       # Raises a warning and returns false if xn contains any text content other

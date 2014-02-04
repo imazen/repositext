@@ -101,6 +101,7 @@ module Kramdown
         {
           "Header"                   => [:header, nil, nil                        , lambda { |para| {:level => 1, :raw_text => para.text} }],
           "Normal"                   => [:p     , nil, {'class' => 'normal'}      , nil],
+          "NormalTest"               => [:p     , nil, {'class' => 'normal_test'} , nil],
           "Horizontal rule"          => [:hr    , nil, nil                        , nil],
           "$ID/[No paragraph style]" => [:p     , nil, nil                        , nil]
         }
