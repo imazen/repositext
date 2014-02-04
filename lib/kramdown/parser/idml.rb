@@ -4,7 +4,7 @@ require 'zip'
 require 'nokogiri'
 require 'ostruct'
 require 'kramdown/document'
-require 'repositext-kramdown/kramdown/parser/idml_story'
+require 'kramdown/parser/idml_story'
 
 module Kramdown
   module Parser
