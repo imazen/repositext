@@ -27,13 +27,18 @@ module Kramdown
         @options = options
       end
 
-      # Writes an HTML file to IO (using @options[:output_file]).
+      # Override this method to change the HTML converter to be used
+      def html_converter_class
+        ::Kramdown::Converter::Html
+      end
+
+      # Returns an HTML string.
       # @param[Kramdown::Element] root the kramdown root element
       def convert(root)
         html_title = compute_title(root)
         html_body = compute_body(root)
         erb_template = options[:template_file].read
-        write_file(html_title, html_body, erb_template, options[:output_file])
+        render_output(html_title, html_body, erb_template)
       end
 
     protected
@@ -68,22 +73,21 @@ module Kramdown
       # @param[Kramdown::Element] root
       # @return[String] the title
       def compute_body(root)
-        html_body, _warnings = ::Kramdown::Converter::Html.convert(root, @options)
+        html_body, _warnings = html_converter_class.convert(root, @options)
         html_body
       end
 
-      # Write HTML to file on disk
+      # Returns an HTML string
       # @param[String] html_title Will be inserted into <title> tag.
       # @param[String] html_body Will be inserted into template's <body> tag.
       # @param[String] erb_template the erb template
-      # @param[IO] output_file an IO object to write to
-      def write_file(html_title, html_body, erb_template, output_file)
+      def render_output(html_title, html_body, erb_template)
         # assign i_vars referenced in template file
         @title = html_title
         @body = html_body
 
         erb = ERB.new(erb_template)
-        output_file.write(erb.result(binding))
+        erb.result(binding)
       end
 
     end
