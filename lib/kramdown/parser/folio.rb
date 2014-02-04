@@ -60,6 +60,12 @@ module Kramdown
         }.merge(kramdown_options)
       end
 
+      # Override this method to change the conversion method name used to
+      # generate the kramdown string.
+      def kramdown_conversion_method_name
+        :to_kramdown
+      end
+
       # Returns AT kramdown and other related documents as Hash of Strings
       # @return[Hash<String>] A hash with the following elements: Keys are the
       #     corresponding file names, values are each document as string.
@@ -90,7 +96,7 @@ module Kramdown
         post_process_kramdown_tree!(kramdown_doc.root)
 
         # Prepare return value
-        kramdown_string = kramdown_doc.to_kramdown
+        kramdown_string = kramdown_doc.send(kramdown_conversion_method_name)
         kramdown_string = post_process_kramdown_string(kramdown_string)
         json_state = JSON::State.new(array_nl: "\n") # to format json output
         {
