@@ -65,7 +65,8 @@ module Kramdown
       # @param[Kramdown::Element] el
       def convert_p(el)
         if 'test_class' == el.attr['class']
-          # This is an example for how to handle an element with a specific class
+          # This is an example for how to handle an element with a specific class.
+          # This class is also used for testing.
           paragraph_style_range_tag(el, 'NormalTest')
         else
           paragraph_style_range_tag(el, 'Normal')

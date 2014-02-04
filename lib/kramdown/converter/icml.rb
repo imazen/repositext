@@ -10,9 +10,8 @@ module Kramdown
       def initialize(root, options = {})
         super
         # NOTE: kramdown initializes all options with default values. So
-        # :output_file and :template_file are initialized to Nil. This breaks
-        # @options = { <defaults> }.merge(options), so I have to set them like below.
-        options[:output_file] ||= File.new("icml_output.icml", 'w')
+        # :template_file is initialized to Nil. This breaks
+        # @options = { <defaults> }.merge(options), so I have to set it like below.
         options[:template_file] ||= File.new(
           File.expand_path("../../../../templates/icml.erb", __FILE__),
           'r'
@@ -31,7 +30,7 @@ module Kramdown
       def convert(root)
         story_xml = compute_story_xml(root)
         erb_template = options[:template_file].read
-        write_file(story_xml, erb_template, options[:output_file])
+        render_output(story_xml, erb_template)
       end
 
     protected
@@ -44,16 +43,15 @@ module Kramdown
         xml_string
       end
 
-      # Write ICML to file on disk
+      # Return ICML as string
       # @param[String] story_xml the story xml. Will be inserted into template.
       # @param[String] erb_template the erb template
-      # @param[IO] output_file an IO object to write to
-      def write_file(story_xml, erb_template, output_file)
+      def render_output(story_xml, erb_template)
         # assign i_vars referenced in template file
         @story = story_xml
 
         erb = ERB.new(erb_template)
-        output_file.write(erb.result(binding))
+        erb.result(binding)
       end
 
     end
