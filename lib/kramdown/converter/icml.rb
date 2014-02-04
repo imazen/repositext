@@ -20,6 +20,10 @@ module Kramdown
         @options = options
       end
 
+      def idml_story_converter
+        ::Kramdown::Converter::IdmlStory
+      end
+
       # Writes an ICML file to IO (using @options[:output_file]).
       # Contains a single story that is based on root.
       # @param[Kramdown::Element] root the kramdown root element
@@ -36,7 +40,7 @@ module Kramdown
       # @param[Kramdown::Element] root the root element
       # @return[String] the story XML as string
       def compute_story_xml(root)
-        xml_string, _warnings = ::Kramdown::Converter::IdmlStory.convert(root, @options)
+        xml_string, _warnings = idml_story_converter.convert(root, @options)
         xml_string
       end
 
