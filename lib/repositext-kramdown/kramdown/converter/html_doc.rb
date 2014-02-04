@@ -3,6 +3,9 @@
 # Converts kramdown to complete HTML file, inserting the HTML body into a template.
 # Writes output to an IO object (File or StringIO).
 # Computes title from first :header element.
+
+# TODO: use kramdown's templating
+
 module Kramdown
   module Converter
     class HtmlDoc < Base
@@ -15,6 +18,7 @@ module Kramdown
         # NOTE: kramdown initializes all options with default values. So
         # :output_file and :template_file are initialized to Nil. This breaks
         # @options = { <defaults> }.merge(options), so I have to set them like below.
+        # TODO: when unifying class API, move files out of the classes into caller?
         options[:output_file] ||= File.new("html_output.html", 'w')
         options[:template_file] ||= File.new(
           File.expand_path("../../../../templates/html.erb", __FILE__),

@@ -15,3 +15,7 @@ module Kramdown
     end
   end
 end
+
+# TODO: use tilt for templating, override Kramdown::Converter::Base#apply_template
+# Look at hardwired's templating: has stack of templates
+# https://github.com/nathanaeljones/hardwired/blob/master/lib/hardwired/page.rb#L177
