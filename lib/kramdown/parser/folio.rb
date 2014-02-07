@@ -63,7 +63,7 @@ module Kramdown
       # Override this method to change the conversion method name used to
       # generate the kramdown string.
       def kramdown_conversion_method_name
-        :to_kramdown
+        :to_kramdown_repositext
       end
 
       # Returns AT kramdown and other related documents as Hash of Strings
