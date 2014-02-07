@@ -15,14 +15,14 @@ module Kramdown
       # NOTE: this regex needs to be synchronized with the one in
       # Kramdown::Parser::KramdownRepositext
       # original: ESCAPED_CHAR_RE = /(\$\$|[\\*_`\[\]\{"'|])|^[ ]{0,3}(:)/
-      ESCAPED_CHAR_RE = /(\$\$|[\\*_\{])|^[ ]{0,3}(:)/
+      ESCAPED_CHAR_RE_REPOSITEXT =  /(\$\$|[\\*_\[\]\{])|^[ ]{0,3}(:)/
       def convert_text(el, opts)
         if opts[:raw_text]
           el.value
         else
           el.value.gsub(/\A\n/) do
             opts[:prev] && opts[:prev].type == :br ? '' : "\n"
-          end.gsub(/\s+/, ' ').gsub(ESCAPED_CHAR_RE) { "\\#{$1 || $2}" }
+          end.gsub(/\s+/, ' ').gsub(ESCAPED_CHAR_RE_REPOSITEXT) { "\\#{$1 || $2}" }
         end
       end
 
