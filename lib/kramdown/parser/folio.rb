@@ -3,22 +3,6 @@
 Importing Folio XML files to AT
 ===============================
 
-Workflow
---------
-
-* validation:
-  * check that text contents of all p.referenceline are identical
-* first pass:
-  * convert xml_nodes to kramdown_elements
-    * add kramdown_element to kd
-    * run through transforms, passing both xml_node + kd_el to matcher and transformer
-* second pass:
-  * walk entire kd_tree
-    * merge disconnected elements
-    * remove placeholder classes
-    * set p.normal_pn etc. depending on an element's children
-  * run tree-wide checks
-
 Naming conventions
 ------------------
 
@@ -28,18 +12,9 @@ Naming conventions
 * ke: l_var that refers to a kramdown element
 * xn: l_var that refers to an XML node
 
-Items
------
-
-* css is case insensitive
-* 4 output sinks: AT, editors_notes, warnings, deleted_text
-* make sure that every p-tag is a separate paragraph
-
 =end
 
 # Converts folio per tape XML files to AT kramdown files
-#
-# Parsing rules are documented here: https://docs.google.com/document/d/1vVVZ6HmRpr8c6WRpwCvQ9OXJzkKrc_AgzWQURHRSLX4/edit
 #
 require 'nokogiri'
 require 'kramdown/document'
