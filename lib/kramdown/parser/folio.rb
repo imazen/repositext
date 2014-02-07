@@ -56,7 +56,7 @@ module Kramdown
         @folio_xml = folio_xml
         @kramdown_options = {
           :line_width => 100000, # set to very large value so that each para is on a single line
-          :input => :repositext # that is what we generate as string below
+          :input => 'KramdownRepositext' # that is what we generate as string below
         }.merge(kramdown_options)
       end
 

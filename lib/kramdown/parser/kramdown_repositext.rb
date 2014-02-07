@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
-require 'kramdown/parser'
+require 'kramdown/parser/kramdown'
 
 module Kramdown
   module Parser
 
-    class Repositext < Kramdown
+    class KramdownRepositext < Kramdown
 
       # Create a new Kramdown parser object with the given +options+.
       def initialize(source, options)
