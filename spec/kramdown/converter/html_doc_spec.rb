@@ -7,17 +7,14 @@ describe Kramdown::Converter::HtmlDoc do
       %(<html>\n  <head><title><%= @title %></title></head>\n  <body><%= @body %></body></html>),
       'r'
     )
-    output_io = StringIO.new('', 'w+')
-    Kramdown::Document.new(
+    r = Kramdown::Document.new(
       "# The Title\n\nThe Body",
       {
-        :output_file => output_io,
         :input => 'KramdownRepositext',
         :template_file => template_io
       }
     ).to_html_doc
-    output_io.rewind
-    output_io.read.must_equal %(
+    r.must_equal %(
       <html>
         <head><title>The Title</title></head>
         <body><h1 id=\"the-title\">The Title</h1>
@@ -35,33 +32,27 @@ describe Kramdown::Converter::HtmlDoc do
     ].each_with_index do |(doc, exp), idx|
       it "uses the first :header element (Example #{ idx + 1 }" do
         template_io = StringIO.new('<%= @title %>', 'r')
-        output_io = StringIO.new('', 'w+')
-        Kramdown::Document.new(
+        r = Kramdown::Document.new(
           doc,
           {
-            :output_file => output_io,
             :input => 'KramdownRepositext',
             :template_file => template_io
           }
         ).to_html_doc
-        output_io.rewind
-        output_io.read.must_equal exp
+        r.must_equal exp
       end
     end
 
     it "falls back to 'No Title' if no header is present" do
       template_io = StringIO.new('<%= @title %>', 'r')
-      output_io = StringIO.new('', 'w+')
-      Kramdown::Document.new(
+      r = Kramdown::Document.new(
         "The Body",
         {
-          :output_file => output_io,
           :input => 'KramdownRepositext',
           :template_file => template_io
         }
       ).to_html_doc
-      output_io.rewind
-      output_io.read.must_equal %(No Title)
+      r.must_equal %(No Title)
     end
 
   end

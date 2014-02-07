@@ -4,17 +4,14 @@ describe Kramdown::Converter::Icml do
 
   it 'computes the story xml and inserts it into the template' do
     template_io = StringIO.new("<Story>\n  <%= @story %>\n</Story>", 'r')
-    output_io = StringIO.new('', 'w+')
-    Kramdown::Document.new(
+    r = Kramdown::Document.new(
       "some text",
       {
-        :output_file => output_io,
         :input => 'KramdownRepositext',
         :template_file => template_io
       }
     ).to_icml
-    output_io.rewind
-    output_io.read.must_equal %(
+    r.must_equal %(
       <Story>
         <ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/Normal">
         <CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
