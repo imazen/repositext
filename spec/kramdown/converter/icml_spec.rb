@@ -8,8 +8,8 @@ describe Kramdown::Converter::Icml do
     Kramdown::Document.new(
       "some text",
       {
-        :input => :repositext,
         :output_file => output_io,
+        :input => 'KramdownRepositext',
         :template_file => template_io
       }
     ).to_icml

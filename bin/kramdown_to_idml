@@ -25,7 +25,7 @@ Dir.glob(file_pattern).each do |kramdown_file_name|
     Kramdown::Document.new(
       File.read(kramdown_file_name),
       {
-        :input => :repositext,
+        :input => 'KramdownRepositext',
         :output_file => File.new(idml_file_name, 'w')
       }
     ).to_idml

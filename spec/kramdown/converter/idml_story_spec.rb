@@ -23,7 +23,7 @@ describe Kramdown::Converter::IdmlStory do
   end
 
   it "wraps text in paragraph and character style ranges" do
-    doc = Kramdown::Document.new("the text", :input => 'repositext')
+    doc = Kramdown::Document.new("the text", :input => 'KramdownRepositext')
     doc.to_idml_story.must_equal psr_node({})
   end
 
@@ -36,7 +36,7 @@ describe Kramdown::Converter::IdmlStory do
     ].each do |test_attrs|
       desc, test_string, expect = *test_attrs
       it desc do
-        doc = Kramdown::Document.new(test_string, :input => 'repositext')
+        doc = Kramdown::Document.new(test_string, :input => 'KramdownRepositext')
         doc.to_idml_story.must_equal psr_node(expect)
       end
     end
@@ -51,7 +51,7 @@ describe Kramdown::Converter::IdmlStory do
     ].each do |test_attrs|
       desc, test_string, expect = *test_attrs
       it desc do
-        doc = Kramdown::Document.new(test_string, :input => 'repositext')
+        doc = Kramdown::Document.new(test_string, :input => 'KramdownRepositext')
         doc.to_idml_story.must_equal psr_node(expect)
       end
     end
@@ -59,7 +59,7 @@ describe Kramdown::Converter::IdmlStory do
   end
 
   it "converts :hr" do
-    doc = Kramdown::Document.new("the text\n\n***", :input => 'repositext')
+    doc = Kramdown::Document.new("the text\n\n***", :input => 'KramdownRepositext')
     doc.to_idml_story.must_equal %(
       <ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/Normal">
         <CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
@@ -77,7 +77,7 @@ describe Kramdown::Converter::IdmlStory do
   end
 
   it "converts :br" do
-    doc = Kramdown::Document.new("first  \nsecond", :input => 'repositext')
+    doc = Kramdown::Document.new("first  \nsecond", :input => 'KramdownRepositext')
     doc.to_idml_story.must_equal %(
       <ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/Normal">
         <CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
@@ -92,7 +92,7 @@ describe Kramdown::Converter::IdmlStory do
   describe '#paragraph_style_range_tag' do
 
     it "handles adjacent paragraphs with different attrs" do
-      doc = Kramdown::Document.new("para 1\n{:.style1}\n\npara 2\n{:.test_class}", :input => 'repositext')
+      doc = Kramdown::Document.new("para 1\n{:.style1}\n\npara 2\n{:.test_class}", :input => 'KramdownRepositext')
       doc.to_idml_story.must_equal %(
         <ParagraphStyleRange AppliedParagraphStyle=\"ParagraphStyle/Normal\">
           <CharacterStyleRange AppliedCharacterStyle=\"CharacterStyle/Regular\">
@@ -109,7 +109,7 @@ describe Kramdown::Converter::IdmlStory do
     end
 
     it "merges text from adjacent paragraphs with identical attrs" do
-      doc = Kramdown::Document.new("para 1\n{:.style1}\n\npara 2\n{:.style1}", :input => 'repositext')
+      doc = Kramdown::Document.new("para 1\n{:.style1}\n\npara 2\n{:.style1}", :input => 'KramdownRepositext')
       # NOTE: because we insert leading tabs before we merge paras, there are two tabs here.
       # I consider this a pretty edge case, however it may be an issue that
       # needs to be addressed.
@@ -129,7 +129,7 @@ describe Kramdown::Converter::IdmlStory do
   describe '#character_style_range_tag_for_el' do
 
     it 'Handles :em inside :strong' do
-      doc = Kramdown::Document.new('**strong *em* strong**', :input => 'repositext')
+      doc = Kramdown::Document.new('**strong *em* strong**', :input => 'KramdownRepositext')
       doc.to_idml_story.must_equal %(
         <ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/Normal">
           <CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Bold">
@@ -146,7 +146,7 @@ describe Kramdown::Converter::IdmlStory do
     end
 
     it 'Handles :strong inside :em' do
-      doc = Kramdown::Document.new('*em **strong** em*', :input => 'repositext')
+      doc = Kramdown::Document.new('*em **strong** em*', :input => 'KramdownRepositext')
       doc.to_idml_story.must_equal %(
         <ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/Normal">
           <CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Italic">
@@ -163,7 +163,7 @@ describe Kramdown::Converter::IdmlStory do
     end
 
     it 'Handles :strong' do
-      doc = Kramdown::Document.new('**the text**', :input => 'repositext')
+      doc = Kramdown::Document.new('**the text**', :input => 'KramdownRepositext')
       doc.to_idml_story.must_equal psr_node(:cs => 'Bold')
     end
 
@@ -175,13 +175,13 @@ describe Kramdown::Converter::IdmlStory do
       ].each do |test_attrs|
         desc, test_string, expect = *test_attrs
         it desc do
-          doc = Kramdown::Document.new(test_string, :input => 'repositext')
+          doc = Kramdown::Document.new(test_string, :input => 'KramdownRepositext')
           doc.to_idml_story.must_equal psr_node(expect)
         end
       end
 
       it 'Handles .underline' do
-        doc = Kramdown::Document.new('*the text*{:.underline}', :input => 'repositext')
+        doc = Kramdown::Document.new('*the text*{:.underline}', :input => 'KramdownRepositext')
         doc.to_idml_story.must_equal %(
           <ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/Normal">
             <CharacterStyleRange Underline="true" AppliedCharacterStyle="CharacterStyle/Regular">
@@ -192,7 +192,7 @@ describe Kramdown::Converter::IdmlStory do
       end
 
       it 'Handles .smcaps' do
-        doc = Kramdown::Document.new('*the text*{:.smcaps}', :input => 'repositext')
+        doc = Kramdown::Document.new('*the text*{:.smcaps}', :input => 'KramdownRepositext')
         doc.to_idml_story.must_equal %(
           <ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/Normal">
             <CharacterStyleRange Capitalization="SmallCaps" AppliedCharacterStyle="CharacterStyle/Regular">
@@ -209,7 +209,7 @@ describe Kramdown::Converter::IdmlStory do
   describe 'escaped chars' do
 
     it "doesn't escape brackets" do
-      doc = Kramdown::Document.new("some text with \\[escaped brackets\\]", :input => 'repositext')
+      doc = Kramdown::Document.new("some text with \\[escaped brackets\\]", :input => 'KramdownRepositext')
       doc.to_idml_story.must_equal psr_node({ :content => 'some text with [escaped brackets]' })
     end
 

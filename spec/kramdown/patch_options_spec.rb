@@ -14,7 +14,7 @@ describe Kramdown::Options do
     ].each do |test_attrs|
       option_name, option_value = test_attrs
       it "handles #{ option_name }" do
-        doc = Kramdown::Document.new("text", { :input => :repositext, option_name => option_value })
+        doc = Kramdown::Document.new("text", { :input => 'KramdownRepositext', option_name => option_value })
         doc.options[option_name].must_equal option_value
       end
     end

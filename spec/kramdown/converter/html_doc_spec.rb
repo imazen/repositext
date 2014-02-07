@@ -11,8 +11,8 @@ describe Kramdown::Converter::HtmlDoc do
     Kramdown::Document.new(
       "# The Title\n\nThe Body",
       {
-        :input => :repositext,
         :output_file => output_io,
+        :input => 'KramdownRepositext',
         :template_file => template_io
       }
     ).to_html_doc
@@ -39,8 +39,8 @@ describe Kramdown::Converter::HtmlDoc do
         Kramdown::Document.new(
           doc,
           {
-            :input => :repositext,
             :output_file => output_io,
+            :input => 'KramdownRepositext',
             :template_file => template_io
           }
         ).to_html_doc
@@ -55,8 +55,8 @@ describe Kramdown::Converter::HtmlDoc do
       Kramdown::Document.new(
         "The Body",
         {
-          :input => :repositext,
           :output_file => output_io,
+          :input => 'KramdownRepositext',
           :template_file => template_io
         }
       ).to_html_doc

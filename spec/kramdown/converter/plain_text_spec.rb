@@ -19,7 +19,7 @@ describe Kramdown::Converter::PlainText do
   ].each_with_index do |(kramdown, expected), idx|
     it "converts example #{ idx + 1 } to plain text" do
       doc = Kramdown::Document.new(
-        kramdown, { :input => 'repositext' }
+        kramdown, { :input => 'KramdownRepositext' }
       )
       doc.to_plain_text.must_equal expected
     end

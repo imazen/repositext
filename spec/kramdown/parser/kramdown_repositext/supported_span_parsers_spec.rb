@@ -8,7 +8,7 @@ describe 'Supported span parsers' do
   ].each do |parser_attrs|
     parser_name, kramdown_in, html_out = parser_attrs
     it "parses #{ parser_name }" do
-      doc = Kramdown::Document.new(kramdown_in, { :input => :repositext })
+      doc = Kramdown::Document.new(kramdown_in, { :input => 'KramdownRepositext' })
       doc.to_html.must_equal html_out
     end
   end
