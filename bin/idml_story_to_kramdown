@@ -5,4 +5,4 @@
 require 'repositext-kramdown'
 
 doc = Kramdown::Document.new(ARGF.read, :input => 'IdmlStory')
-puts doc.to_kramdown
+puts doc.to_kramdown_repositext

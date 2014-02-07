@@ -58,7 +58,7 @@ describe Kramdown::Parser::IdmlStory do
         doc = Kramdown::Document.new(
           plain_text_as_idml_story(plain_text, options), { :input => 'IdmlStory' }
         )
-        doc.to_kramdown.must_equal expected
+        doc.to_kramdown_repositext.must_equal expected
       end
     end
   end
@@ -229,7 +229,7 @@ describe Kramdown::Parser::IdmlStory do
         doc = Kramdown::Document.new(
           char_as_idml_story(character_style_range, options), { :input => 'IdmlStory' }
         )
-        doc.to_kramdown.must_equal expected
+        doc.to_kramdown_repositext.must_equal expected
       end
     end
   end
