@@ -177,7 +177,7 @@ module Kramdown
         # peeled away and the problem is a lot easier to solve
         # @param[Kramdown::Element] ke the element to transform
         transformer = Proc.new { |ke|
-          if [:em].include?(ke.type) && ke.children.any?
+          if [:em, :strong].include?(ke.type) && ke.children.any?
             if :text == ke.children.first.type && ke.children.first.value =~ /\A[ \n\t]+/
               # push out leading whitespace
               ke.children.first.value.lstrip!
