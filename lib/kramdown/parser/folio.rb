@@ -232,6 +232,7 @@ module Kramdown
 
       def process_node_p(xn)
         # p without class -> add regular p element
+        push_out_leading_whitespace!(xn)
         rm = @ke_context.get('record_mark', xn)
         return false  if !rm
         p = Kramdown::ElementRt.new(:p)
@@ -272,6 +273,7 @@ module Kramdown
       def process_node_span(xn)
         c = (xn['class'] || '').downcase
         t = (xn['type'] || '').downcase
+        push_out_leading_whitespace!(xn)
         case
         when 'bold' == t
           # span[type=bold] -> bold
@@ -344,6 +346,22 @@ module Kramdown
         @xn_context.process_children = false
         add_deleted_text(xn, xn.text)  if send_to_deleted_text
         add_editors_notes(xn, "Deleted text: #{ xn.text }")  if send_to_editors_notes
+      end
+
+      # Pushes leading whitespace in xn to sibling before xn
+      # NOTE: We may want to push out trailing whitespace, too. It doesn't seem
+      # necessary right now, so we'll skip it until needed.
+      # @param[Nokogiri::XML::Node] xn
+      def push_out_leading_whitespace!(xn)
+        if(c = xn.children.first) && c.text? && c.content =~ /\A +/ #/\A[[:space:]]+/
+          c.content = c.content.lstrip!
+          # Add the leading space to the kramdown tree (if I were to add it to
+          # XML, it would never get transformed since we have moved past
+          # that location already)
+          @ke_context.get_current_text_container(xn).add_child(
+            ElementRt.new(:text, ' ')
+          )
+        end
       end
 
       # Deletes a_string from xn and all its descendant nodes.
