@@ -169,6 +169,45 @@ module Kramdown
       # @param[Kramdown::Element] kramdown_tree the root of the tree
       def post_process_kramdown_tree!(kramdown_tree)
         # override this to post process elements in the kramdown tree
+        # NOTE: It's important to call super if you override this method
+        # for pushing out whitespace.
+
+        # Recursively pushes out whitespace from :em
+        # We do it here since all the layers of folio XML elements have been
+        # peeled away and the problem is a lot easier to solve
+        # @param[Kramdown::Element] ke the element to transform
+        transformer = Proc.new { |ke|
+          if [:em].include?(ke.type) && ke.children.any?
+            if :text == ke.children.first.type && ke.children.first.value =~ /\A[ \n\t]+/
+              # push out leading whitespace
+              ke.children.first.value.lstrip!
+              if(prev_sib = ke.previous_sibling).nil? || (:text != prev_sib.type)
+                # previous sibling doesn't exist or is something other than :text
+                # Insert a :text el as previous sibling
+                ke.insert_sibling_before(Kramdown::ElementRt.new(:text, ' '))
+              else
+                # previous sibling is :text el
+                # Append leading whitespace
+                prev_sib.value << ' '
+              end
+            end
+            if :text == ke.children.last.type && ke.children.last.value =~ /[ \n\t]+\z/
+              # push out trailing whitespace
+              ke.children.first.value.rstrip!
+              if(foll_sib = ke.following_sibling).nil? || (:text != foll_sib.type)
+                # following sibling doesn't exist or is something other than :text
+                # Insert a :text el as followings sibling
+                ke.insert_sibling_after(Kramdown::ElementRt.new(:text, ' '))
+              else
+                # following sibling is :text el
+                # Prepend trailing whitespace
+                foll_sib.value = ' ' + foll_sib.value
+              end
+            end
+          end
+          ke.children.each { |cke| transformer.call(cke) }
+        }
+        transformer.call(kramdown_tree)
       end
 
       # Performs post-processing on the kramdown string
@@ -232,7 +271,6 @@ module Kramdown
 
       def process_node_p(xn)
         # p without class -> add regular p element
-        push_out_leading_whitespace!(xn)
         rm = @ke_context.get('record_mark', xn)
         return false  if !rm
         p = Kramdown::ElementRt.new(:p)
@@ -273,7 +311,6 @@ module Kramdown
       def process_node_span(xn)
         c = (xn['class'] || '').downcase
         t = (xn['type'] || '').downcase
-        push_out_leading_whitespace!(xn)
         case
         when 'bold' == t
           # span[type=bold] -> bold
@@ -346,22 +383,6 @@ module Kramdown
         @xn_context.process_children = false
         add_deleted_text(xn, xn.text)  if send_to_deleted_text
         add_editors_notes(xn, "Deleted text: #{ xn.text }")  if send_to_editors_notes
-      end
-
-      # Pushes leading whitespace in xn to sibling before xn
-      # NOTE: We may want to push out trailing whitespace, too. It doesn't seem
-      # necessary right now, so we'll skip it until needed.
-      # @param[Nokogiri::XML::Node] xn
-      def push_out_leading_whitespace!(xn)
-        if(c = xn.children.first) && c.text? && c.content =~ /\A +/ #/\A[[:space:]]+/
-          c.content = c.content.lstrip!
-          # Add the leading space to the kramdown tree (if I were to add it to
-          # XML, it would never get transformed since we have moved past
-          # that location already)
-          @ke_context.get_current_text_container(xn).add_child(
-            ElementRt.new(:text, ' ')
-          )
-        end
       end
 
       # Deletes a_string from xn and all its descendant nodes.
