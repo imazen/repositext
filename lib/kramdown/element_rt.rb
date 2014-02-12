@@ -7,29 +7,17 @@ module Kramdown
 
     attr_accessor :parent # points to parent Kramdown::Element or nil for root
 
-    # API to add children to self. This takes care of setting each child's
-    # parent attr to self.
-    # @param[Array<Kramdown::Element>] the_children
-    def add_children(the_children)
-      the_children.each { |e| add_child(e) }
-    end
-    # @param[Kramdown::Element] the_child
-    def add_child(the_child, position = :last)
-      case position
-      when :last
-        self.children << the_child
-      when Integer
-        self.children.insert(position, the_child)
-      else
-        raise(ArgumentError, "Unexpected position: #{ position.inspect }")
+    # Add child_or_children at_index as child to self
+    # @param[Array<Kramdown::Element>, Kramdown::Element] child_or_children as scalar or array
+    # @param[Integer, optional] at_index
+    def add_child(child_or_children, at_index = -1)
+      the_children = [*child_or_children]
+      the_children.each do |the_child|
+        raise ArgumentError.new('You tried to add self as child to self')  if self == the_child
+        the_child.detach_from_parent # first remove from any previous parent
+        the_child.parent = self # assign new parent
       end
-      the_child.parent = self
-    end
-
-    # Returns true if self has a_class
-    # @param[String] a_class
-    def has_class?(a_class)
-      (attr['class'] || '').split(' ').any? { |e| e == a_class }
+      children.insert(at_index, *the_children) # insert as children of new parent
     end
 
     # Adds class to self
@@ -43,30 +31,14 @@ module Kramdown
       end
     end
 
-    # Removes class from self
-    # @param[String] a_class
-    def remove_class(a_class)
-      return true if !has_class?(a_class)
-      self.attr['class'] = attr['class'].gsub(a_class, '')
-    end
-
-    # Returns the previous sibling or nil
-    def previous_sibling
-      return nil  if parent.nil? # self is root
-      return nil  if 1 == parent.children.size # self is parent's only child
-      if 0 == own_child_index
-        return nil # self is first child
-      else
-        # return previous sibling
-        parent.children[own_child_index - 1]
-      end
-    end
-
-    # Inserts el as sibling before self
-    # @param[Kramdown::Element] el
-    def insert_sibling_before(el)
-      return false  if parent.nil? # self is root
-      parent.add_child(el, own_child_index)
+    # Detaches self as child from parent, returns own child index or nil
+    # @return[Integer, nil] own child position or nil if root
+    def detach_from_parent
+      return nil  if parent.nil? # root
+      ocp = own_child_index
+      parent.children.delete_at(ocp)
+      self.parent = nil
+      ocp
     end
 
     def following_sibling
@@ -80,9 +52,30 @@ module Kramdown
       end
     end
 
+    # Returns true if self has a_class
+    # @param[String] a_class
+    def has_class?(a_class)
+      (attr['class'] || '').split(' ').any? { |e| e == a_class }
+    end
+
     def insert_sibling_after(el)
-      return false  if parent.nil? # self is root
+      raise ArgumentError.new('You tried to insert self after self')  if self == el
+      return nil  if parent.nil? # self is root
       parent.add_child(el, own_child_index + 1)
+    end
+
+    # Inserts el as sibling before self
+    # @param[Kramdown::Element] el
+    def insert_sibling_before(el)
+      raise ArgumentError.new('You tried to insert self before self')  if self == el
+      return nil  if parent.nil? # self is root
+      parent.add_child(el, own_child_index)
+    end
+
+    # Returns true if self is parent's only child
+    def is_only_child?
+      return false  if parent.nil? # root
+      1 == parent.children.size
     end
 
     # Returns self's child position, zero based, or nil if no parent exists
@@ -99,17 +92,39 @@ module Kramdown
       own_index
     end
 
+    # Returns the previous sibling or nil
+    def previous_sibling
+      return nil  if parent.nil? # self is root
+      return nil  if 1 == parent.children.size # self is parent's only child
+      if 0 == own_child_index
+        return nil # self is first child
+      else
+        # return previous sibling
+        parent.children[own_child_index - 1]
+      end
+    end
+
+    # Removes class from self
+    # @param[String] a_class
+    def remove_class(a_class)
+      return true if !has_class?(a_class)
+      self.attr['class'] = attr['class'].gsub(a_class, '')
+    end
+
+    # Replaces self with replacement_kes (in same child position)
+    # @param[Array<Kramdown::Element] replacement_kes
+    def replace_with(replacement_kes)
+      if replacement_kes.any? { |e| self == e }
+        raise ArgumentError.new('You tried to replace self with self')
+      end
+      # insert self's children at oci
+      parent.add_child(children, own_child_index)
+      # detach self from parent
+      detach_from_parent
+    end
+
     # Below are sketches of methods we may want to add in the future. Don't
     # need them right now
-
-    # # API to remove children from self. This takes care of removing self's children
-    # # references to the_children.
-    # # @param[Array<Kramdown::Element>] the_children
-    # def remove_children(the_children)
-    #   self.children = children - the_children
-    # end
-    # # @param[Kramdown::Element] the_child
-    # def remove_child(the_child); remove_children([the_child]); end
 
     # # Traverses ancestry until it finds an element that matches criteria.
     # # Returns that ancestor or nil if none found.
