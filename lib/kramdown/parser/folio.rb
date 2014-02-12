@@ -60,10 +60,11 @@ module Kramdown
           { :root => Kramdown::ElementRt.new(:root, nil, nil, :encoding => 'UTF-8') },
           self
         )
+        @xml_document = Nokogiri::XML(@folio_xml) # Can't do { |config| config.noblanks }, it breaks parsing
 
         # pre_process_xml_tree # not sure I need this...
         # Transform the XML tree
-        Nokogiri::XML(@folio_xml).css('record').each do |record_xn|
+        @xml_document.css('record').each do |record_xn|
           process_xml_node(record_xn)
         end
         kramdown_doc = Kramdown::Document.new('', @kramdown_options)
