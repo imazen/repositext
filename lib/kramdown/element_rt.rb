@@ -50,6 +50,55 @@ module Kramdown
       self.attr['class'] = attr['class'].gsub(a_class, '')
     end
 
+    # Returns the previous sibling or nil
+    def previous_sibling
+      return nil  if parent.nil? # self is root
+      return nil  if 1 == parent.children.size # self is parent's only child
+      if 0 == own_child_index
+        return nil # self is first child
+      else
+        # return previous sibling
+        parent.children[own_child_index - 1]
+      end
+    end
+
+    # Inserts el as sibling before self
+    # @param[Kramdown::Element] el
+    def insert_sibling_before(el)
+      return false  if parent.nil? # self is root
+      parent.add_child(el, own_child_index)
+    end
+
+    def following_sibling
+      return nil  if parent.nil? # self is root
+      return nil  if 1 == parent.children.size # self is parent's only child
+      if (parent.children.size - 1) == own_child_index
+        return nil # self is last child
+      else
+        # return following sibling
+        parent.children[own_child_index + 1]
+      end
+    end
+
+    def insert_sibling_after(el)
+      return false  if parent.nil? # self is root
+      parent.add_child(el, own_child_index + 1)
+    end
+
+    # Returns self's child position, zero based, or nil if no parent exists
+    # @return[Integer, nil]
+    def own_child_index
+      return nil  if parent.nil? # self is root
+      own_index = nil
+      parent.children.each_with_index { |c,i|
+        if self == c
+          own_index = i
+          break
+        end
+      }
+      own_index
+    end
+
     # Below are sketches of methods we may want to add in the future. Don't
     # need them right now
 
