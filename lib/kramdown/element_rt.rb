@@ -11,11 +11,20 @@ module Kramdown
     # parent attr to self.
     # @param[Array<Kramdown::Element>] the_children
     def add_children(the_children)
-      the_children.each { |e| e.parent = self }
-      self.children += the_children
+      the_children.each { |e| add_child(e) }
     end
     # @param[Kramdown::Element] the_child
-    def add_child(the_child); add_children([the_child]); end
+    def add_child(the_child, position = :last)
+      case position
+      when :last
+        self.children << the_child
+      when Integer
+        self.children.insert(position, the_child)
+      else
+        raise(ArgumentError, "Unexpected position: #{ position.inspect }")
+      end
+      the_child.parent = self
+    end
 
     # Returns true if self has a_class
     # @param[String] a_class
