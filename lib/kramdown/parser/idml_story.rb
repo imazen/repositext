@@ -300,8 +300,10 @@ module Kramdown
             @stack.push([char_el || @tree, char_level.last])
             @tree = char_el || @tree
           when 'HyperlinkTextDestination',
-               'HyperlinkTextSource',
-               'Note',
+               'HyperlinkTextSource'
+            # pull node, process children
+            parse_char_children(child.children)
+          when 'Note',
                'Properties'
             # ignore this
           else
