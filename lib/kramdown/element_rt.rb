@@ -35,10 +35,10 @@ module Kramdown
     # @return[Integer, nil] own child position or nil if root
     def detach_from_parent
       return nil  if parent.nil? # root
-      ocp = own_child_index
-      parent.children.delete_at(ocp)
+      oci = own_child_index
+      parent.children.delete_at(oci)  if oci
       self.parent = nil
-      ocp
+      oci
     end
 
     def following_sibling
