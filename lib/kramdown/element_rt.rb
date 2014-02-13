@@ -114,11 +114,12 @@ module Kramdown
     # Replaces self with replacement_kes (in same child position)
     # @param[Array<Kramdown::Element] replacement_kes
     def replace_with(replacement_kes)
+      replacement_kes = [*replacement_kes] # cast to array
       if replacement_kes.any? { |e| self == e }
         raise ArgumentError.new('You tried to replace self with self')
       end
-      # insert self's children at oci
-      parent.add_child(children, own_child_index)
+      # insert replacement_kes at oci
+      parent.add_child(replacement_kes, own_child_index)
       # detach self from parent
       detach_from_parent
     end
