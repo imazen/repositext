@@ -393,7 +393,7 @@ module Kramdown
           if el.type == :hr
             el.children.clear
           elsif el.type == :p && (el.attr['class'] =~ /\bnormal\b/ || el.attr['class'] =~ /\bq\b/) &&
-              el.children.first.type == :text
+              el.children.any? && el.children.first.type == :text
             # remove leading tab from 'normal' and 'q' paragraphs
             el.children.first.value.sub!(/\A\t/, '')
           elsif (el.type == :em || el.type == :strong) && el.children.length == 0
@@ -402,13 +402,13 @@ module Kramdown
             index -= 1
           elsif (el.type == :em || el.type == :strong)
             # manage whitespace
-            if el.children.first.type == :text && el.children.first.value =~ /\A[[:space:]]+/
+            if el.children.any? && el.children.first.type == :text && el.children.first.value =~ /\A[[:space:]]+/
               # First child is text and has leading whitespace. Move leading
               # whitespace as sibling before el.
               index = add_whitespace.call(@stack.last, index, Regexp.last_match(0), true)
               el.children.first.value.lstrip!
             end
-            if el.children.last.type == :text && el.children.last.value =~ /[[:space:]]+\Z/
+            if el.children.any? && el.children.last.type == :text && el.children.last.value =~ /[[:space:]]+\Z/
               # Last child is text and has trailing whitespace. Move trailing
               # whitespace to parent of el.
               index = add_whitespace.call(@stack.last, index + 1, Regexp.last_match(0), false)
