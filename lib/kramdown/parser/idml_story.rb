@@ -57,16 +57,6 @@ module Kramdown
         update_tree
       end
 
-      # Overrides method from Kramdown::Parser::Base to add location information
-      # TODO: do we still need this now that kramdown proper has location info?
-      def add_text(text, tree = @tree, type = @text_type)
-        if tree.children.last && tree.children.last.type == type
-          tree.children.last.value << text
-        elsif !text.empty?
-          tree.children << Element.new(type, text, nil, :location => tree.options[:location])
-        end
-      end
-
       # @param[Nokogiri::Xml::Node] story the root node of the story xml
       def parse_story(story)
         @story_name = story['Self']
