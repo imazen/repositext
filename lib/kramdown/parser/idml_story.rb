@@ -402,6 +402,9 @@ module Kramdown
             index -= 1
           elsif (el.type == :em || el.type == :strong)
             # manage whitespace
+            # TODO: If we convert this parser from a stack based approach to the
+            # DOM traversal one we use in Kramdown::Parser::Folio, then we can
+            # use the Kramdown::Mixins::WhitespaceOutPusher module here.
             if el.children.any? && el.children.first.type == :text && el.children.first.value =~ /\A[[:space:]]+/
               # First child is text and has leading whitespace. Move leading
               # whitespace as sibling before el.

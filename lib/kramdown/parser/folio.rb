@@ -25,6 +25,8 @@ module Kramdown
     # Open a per tape Folio XML file and parse all record entries to kramdown.
     class Folio
 
+      include Kramdown::WhitespaceOutPusher
+
       # @param[String] folio_xml
       # @param[Hash, optional] kramdown_options these will be passed to Kramdown::Parser
       def initialize(folio_xml, kramdown_options = {})
@@ -170,44 +172,8 @@ module Kramdown
       def post_process_kramdown_tree!(kramdown_tree)
         # override this to post process elements in the kramdown tree
         # NOTE: It's important to call super if you override this method
-        # for pushing out whitespace.
-
-        # Recursively pushes out whitespace from :em
-        # We do it here since all the layers of folio XML elements have been
-        # peeled away and the problem is a lot easier to solve
-        # @param[Kramdown::Element] ke the element to transform
-        transformer = Proc.new { |ke|
-          if [:em, :strong].include?(ke.type) && ke.children.any?
-            if :text == ke.children.first.type && ke.children.first.value =~ /\A[ \n\t]+/
-              # push out leading whitespace
-              ke.children.first.value.lstrip!
-              if(prev_sib = ke.previous_sibling).nil? || (:text != prev_sib.type)
-                # previous sibling doesn't exist or is something other than :text
-                # Insert a :text el as previous sibling
-                ke.insert_sibling_before(Kramdown::ElementRt.new(:text, ' '))
-              else
-                # previous sibling is :text el
-                # Append leading whitespace
-                prev_sib.value << ' '
-              end
-            end
-            if :text == ke.children.last.type && ke.children.last.value =~ /[ \n\t]+\z/
-              # push out trailing whitespace
-              ke.children.first.value.rstrip!
-              if(foll_sib = ke.following_sibling).nil? || (:text != foll_sib.type)
-                # following sibling doesn't exist or is something other than :text
-                # Insert a :text el as followings sibling
-                ke.insert_sibling_after(Kramdown::ElementRt.new(:text, ' '))
-              else
-                # following sibling is :text el
-                # Prepend trailing whitespace
-                foll_sib.value = ' ' + foll_sib.value
-              end
-            end
-          end
-          ke.children.each { |cke| transformer.call(cke) }
-        }
-        transformer.call(kramdown_tree)
+        # to get merging of adjacent elements and pushing out whitespace.
+        recursively_push_out_whitespace!(kramdown_tree)
       end
 
       # Performs post-processing on the kramdown string
