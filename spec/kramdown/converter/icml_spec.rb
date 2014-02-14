@@ -18,7 +18,6 @@ describe Kramdown::Converter::Icml do
           <Content>some text</Content>
         </CharacterStyleRange>
       </ParagraphStyleRange>
-
       </Story>
     ).strip.gsub(/      /, '')
   end
