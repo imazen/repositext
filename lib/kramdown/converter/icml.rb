@@ -23,6 +23,16 @@ module Kramdown
         ::Kramdown::Converter::IdmlStory
       end
 
+      def paragraph_style_names
+        ::Kramdown::Parser::IdmlStory.paragraph_style_mappings.keys
+      end
+
+      def character_style_names
+        ::Kramdown::Parser::IdmlStory::HANDLED_CHARACTER_STYLES.map { |e|
+          e.gsub('CharacterStyle/', '')
+        }
+      end
+
       # Writes an ICML file to IO (using @options[:output_file]).
       # Contains a single story that is based on root.
       # @param[Kramdown::Element] root the kramdown root element
@@ -49,8 +59,10 @@ module Kramdown
       def render_output(story_xml, erb_template)
         # assign i_vars referenced in template file
         @story = story_xml
+        @character_style_names = character_style_names
+        @paragraph_style_names = paragraph_style_names
 
-        erb = ERB.new(erb_template)
+        erb = ERB.new(erb_template, 0, '>')
         erb.result(binding)
       end
 

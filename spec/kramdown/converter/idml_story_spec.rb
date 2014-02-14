@@ -58,22 +58,27 @@ describe Kramdown::Converter::IdmlStory do
 
   end
 
-  it "converts :hr" do
-    doc = Kramdown::Document.new("the text\n\n***", :input => 'KramdownRepositext')
-    doc.to_idml_story.must_equal %(
-      <ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/Normal">
-        <CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
-          <Content>the text</Content>
-          <Br />
-        </CharacterStyleRange>
-      </ParagraphStyleRange>
-      <ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/Horizontal rule">
-        <CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
-          <Content>* * *</Content>
-          <Br />
-        </CharacterStyleRange>
-      </ParagraphStyleRange>
-    ).strip.gsub(/      /, '') + "\n"
+  [
+    "the text\n\n***",
+    "the text\n\n* * *"
+  ].each do |source_kramdown|
+    it "converts :hr" do
+      doc = Kramdown::Document.new(source_kramdown, :input => 'KramdownRepositext')
+      doc.to_idml_story.must_equal %(
+        <ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/Normal">
+          <CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+            <Content>the text</Content>
+            <Br />
+          </CharacterStyleRange>
+        </ParagraphStyleRange>
+        <ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/Horizontal rule">
+          <CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+            <Content>* * *</Content>
+            <Br />
+          </CharacterStyleRange>
+        </ParagraphStyleRange>
+      ).strip.gsub(/        /, '') + "\n"
+    end
   end
 
   it "converts :br" do

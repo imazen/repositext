@@ -13,6 +13,23 @@ module Kramdown
 
       class InvalidElementException < RuntimeError; end
 
+      # Maps IDML paragraph styles to kramdown elements
+      # @return[Hash] hash with paragraph styles as keys and arrays with the
+      # following items as values:
+      # * element type: a supported Kramdown::Element type
+      # * element value: String or nil
+      # * element attr: Hash or nil.
+      # * element options (can contain a lambda for lazy execution, gets passed the para XML node)
+      def self.paragraph_style_mappings
+        {
+          "Header"                   => [:header, nil, nil                        , lambda { |para| {:level => 1, :raw_text => para.text} }],
+          "Normal"                   => [:p     , nil, {'class' => 'normal'}      , nil],
+          "NormalTest"               => [:p     , nil, {'class' => 'normal_test'} , nil],
+          "Horizontal rule"          => [:hr    , nil, nil                        , nil],
+          "$ID/[No paragraph style]" => [:p     , nil, nil                        , nil]
+        }
+      end
+
       # @param[String] source the story's XML as string
       # @param[Hash] options
       def initialize(source, options)
@@ -80,25 +97,8 @@ module Kramdown
         validation_hook_during_parsing(el, para)
       end
 
-      # Maps IDML paragraph styles to kramdown elements
-      # @return[Hash] hash with paragraph styles as keys and arrays with the
-      # following items as values:
-      # * element type: a supported Kramdown::Element type
-      # * element value: String or nil
-      # * element attr: Hash or nil.
-      # * element options (can contain a lambda for lazy execution, gets passed the para XML node)
-      def paragraph_style_mappings
-        {
-          "Header"                   => [:header, nil, nil                        , lambda { |para| {:level => 1, :raw_text => para.text} }],
-          "Normal"                   => [:p     , nil, {'class' => 'normal'}      , nil],
-          "NormalTest"               => [:p     , nil, {'class' => 'normal_test'} , nil],
-          "Horizontal rule"          => [:hr    , nil, nil                        , nil],
-          "$ID/[No paragraph style]" => [:p     , nil, nil                        , nil]
-        }
-      end
-
       # Adds a new :p element as child to @tree, depending on the style of para.
-      # You can override the style mappings via the #paragraph_style_mappings
+      # You can override the style mappings via the `paragraph_style_mappings`
       # method.
       # @param[Nokogiri::Xml::Node] para the xml node for the ParagraphStyleRange
       # @return[Kramdown::Element] the new kramdown element
@@ -456,6 +456,10 @@ module Kramdown
         # override this method in validating subclass of self
       end
 
+      # Delegate instance method to class method
+      def paragraph_style_mappings
+        self.class.paragraph_style_mappings
+      end
     end
 
   end
