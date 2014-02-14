@@ -25,6 +25,7 @@ module Kramdown
     # Open a per tape Folio XML file and parse all record entries to kramdown.
     class Folio
 
+      include Kramdown::AdjacentElementMerger
       include Kramdown::WhitespaceOutPusher
 
       # @param[String] folio_xml
@@ -173,6 +174,7 @@ module Kramdown
         # override this to post process elements in the kramdown tree
         # NOTE: It's important to call super if you override this method
         # to get merging of adjacent elements and pushing out whitespace.
+        recursively_merge_adjacent_elements!(kramdown_tree)
         recursively_push_out_whitespace!(kramdown_tree)
       end
 

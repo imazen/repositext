@@ -11,6 +11,8 @@ module Kramdown
 
     class IdmlStory < Base
 
+      include Kramdown::AdjacentElementMerger
+
       class InvalidElementException < RuntimeError; end
 
       # Maps IDML paragraph styles to kramdown elements
@@ -346,46 +348,6 @@ module Kramdown
           end
         end
 
-        ### join adjacent :em/:strong elements
-        # parent - the parent element
-        # index - index of the element that should be joined
-        # → return modified index of last processed element
-        try_join_elements = lambda do |el|
-          index = 0
-          while index < el.children.length - 1
-            cur_el = el.children[index]
-            next_el = el.children[index + 1]
-            next_next_el = el.children[index + 2]
-            if(
-              cur_el.type == next_el.type &&
-              cur_el.attr == next_el.attr &&
-              cur_el.options.select {|k,v| :location != k } == next_el.options.select {|k,v| :location != k }
-            )
-              if cur_el.type == :text
-                cur_el.value += next_el.value
-              else
-                cur_el.children.concat(next_el.children)
-              end
-              el.children.delete_at(index + 1)
-            elsif(
-              next_next_el && [:em, :strong].include?(next_next_el.type) &&
-              next_el.type == :text && next_el.value.strip.empty? &&
-              next_next_el.type == cur_el.type && next_next_el.attr == cur_el.attr &&
-              cur_el.options.select {|k,v| :location != k } == next_el.options.select {|k,v| :location != k }
-            )
-              cur_el.children.push(next_el)
-              cur_el.children.concat(next_next_el.children)
-              # Important: delete_at index+2 first, so that the other element is still
-              # at index+1. If we delete index+1 first, then the other element
-              # we want to delete is not at index+2 any more, but has moved up to index+1
-              el.children.delete_at(index + 2)
-              el.children.delete_at(index + 1)
-            else
-              index += 1
-            end
-          end
-        end
-
         ### postfix iteration
         # - ensures that whitespace from inner elements is pushed outside first
         process_child = lambda do |el, index|
@@ -428,7 +390,7 @@ module Kramdown
         end
 
         iterate_over_children = lambda do |el|
-          try_join_elements.call(el) if el.children.first && ::Kramdown::Element.category(el.children.first) == :span
+          merge_adjacent_child_elements!(el)
 
           @stack.push(el)
           index = 0
