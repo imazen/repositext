@@ -362,6 +362,13 @@ module Kramdown
             # element is empty and can be completely deleted
             @stack.last.children.delete_at(index)
             index -= 1
+          elsif :header == el.type && el.children.all? { |e| :text == e.type && '' == (e.value || '').strip }
+            # remove empty headers
+            # TODO: find out why eng62-1104m.idml line# 6600 produces two :header kramdown
+            # elements when importing IDML. We're just removing the symptom here.
+            # The cause is that we get two :header elements from a single XML node.
+            @stack.last.children.delete_at(index)
+            index -= 1
           elsif (el.type == :em || el.type == :strong)
             # manage whitespace
             # TODO: If we convert this parser from a stack based approach to the
