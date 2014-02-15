@@ -26,6 +26,7 @@ module Kramdown
     class Folio
 
       include Kramdown::AdjacentElementMerger
+      include Kramdown::TreeCleaner
       include Kramdown::WhitespaceOutPusher
 
       # @param[String] folio_xml
@@ -176,6 +177,7 @@ module Kramdown
         # to get merging of adjacent elements and pushing out whitespace.
         recursively_merge_adjacent_elements!(kramdown_tree)
         recursively_push_out_whitespace!(kramdown_tree)
+        recursively_clean_up_tree!(kramdown_tree)
       end
 
       # Performs post-processing on the kramdown string
