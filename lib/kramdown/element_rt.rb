@@ -20,6 +20,21 @@ module Kramdown
       children.insert(at_index, *the_children) # insert as children of new parent
     end
 
+    # Adds child_ke as child, and returns it, or discards child_ke and returns
+    # self if self and child_ke can be merged. This helps avoid nested :ems
+    # @param[Kramdown::Element] child_ke
+    # @return[Kramdown::Element] child_ke or self
+    def add_child_or_reuse_if_same(child_ke)
+      if is_of_same_type_as?(child_ke)
+        # use self
+        self
+      else
+        # Add child_ke as child to self and use child_ke
+        add_child(child_ke)
+        child_ke
+      end
+    end
+
     # Adds class to self
     # @param[String] a_class
     def add_class(a_class)
@@ -29,6 +44,7 @@ module Kramdown
       else
         self.attr['class'] = a_class
       end
+
     end
 
     # Detaches self as child from parent, returns own child index or nil
@@ -123,6 +139,7 @@ module Kramdown
       # detach self from parent
       detach_from_parent
     end
+
 
     # Below are sketches of methods we may want to add in the future. Don't
     # need them right now

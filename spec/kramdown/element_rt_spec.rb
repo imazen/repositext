@@ -50,6 +50,28 @@ describe Kramdown::ElementRt do
     end
   end
 
+  describe '#add_child_or_reuse_if_same' do
+    it "uses other if different" do
+      p = Kramdown::ElementRt.new(:em)
+      c = Kramdown::ElementRt.new(:strong)
+      r = p.add_child_or_reuse_if_same(c)
+      r.must_equal c
+    end
+    it "adds other as child to self if different" do
+      p = Kramdown::ElementRt.new(:em)
+      c = Kramdown::ElementRt.new(:strong)
+      r = p.add_child_or_reuse_if_same(c)
+      c.parent.must_equal p
+      p.children.must_equal [c]
+    end
+    it "reuses self is same" do
+      em1 = Kramdown::ElementRt.new(:em)
+      em2 = Kramdown::ElementRt.new(:em)
+      r = em1.add_child_or_reuse_if_same(em2)
+      r.must_equal em1
+    end
+  end
+
   describe "#add_class" do
     it "adds a new class" do
       e = Kramdown::ElementRt.new(:text, nil, 'class' => 'class1 class2')
