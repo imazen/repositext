@@ -81,5 +81,14 @@ module Kramdown
       end
     end
 
+    # Returns true if self is of same element type as other_ke.
+    # This is used e.g., to merge adjacent siblings
+    # @param[Kramdown::Element] other_ke
+    def is_of_same_type_as?(other_ke)
+      type == other_ke.type &&
+      attr == other_ke.attr &&
+      options.reject { |k,v| :location == k } == other_ke.options.reject { |k,v| :location == k }
+    end
+
   end
 end

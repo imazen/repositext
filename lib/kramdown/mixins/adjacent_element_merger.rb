@@ -30,11 +30,7 @@ module Kramdown
         cur_ke = ke.children[index]
         next_ke = ke.children[index + 1]
         next_next_ke = ke.children[index + 2]
-        if(
-          cur_ke.type == next_ke.type &&
-          cur_ke.attr == next_ke.attr &&
-          cur_ke.options.select {|k,v| :location != k } == next_ke.options.select {|k,v| :location != k }
-        )
+        if cur_ke.is_of_same_type_as?(next_ke)
           if cur_ke.type == :text
             cur_ke.value += next_ke.value
           else
@@ -44,8 +40,7 @@ module Kramdown
         elsif(
           next_next_ke && [:em, :strong].include?(next_next_ke.type) &&
           next_ke.type == :text && next_ke.value.strip.empty? &&
-          next_next_ke.type == cur_ke.type && next_next_ke.attr == cur_ke.attr &&
-          cur_ke.options.select {|k,v| :location != k } == next_ke.options.select {|k,v| :location != k }
+          cur_ke.is_of_same_type_as?(next_next_ke)
         )
           cur_ke.children.push(next_ke)
           cur_ke.children.concat(next_next_ke.children)

@@ -19,4 +19,23 @@ describe Kramdown::Element do
     end
   end
 
+  describe '#is_of_same_type_as?' do
+    [
+      [[:em], [:em], true],
+      [[:em], [:strong], false],
+      [[:em, nil, { 'class' => 'class1' }], [:em, nil, { 'class' => 'class1' }], true],
+      [[:em, nil, { 'class' => 'class1' }], [:em, nil, { 'class' => 'class2' }], false],
+      [[:em, nil, nil, { :location => 'loc1' }], [:em, nil, nil, { :location => 'loc2' }], true],
+      [[:em, nil, nil, { :input => 'in1' }], [:em, nil, nil, { :input => 'in2' }], false],
+      [[:text, 'text1'], [:text, 'text2'], true]
+    ].each_with_index do |(first_params, second_params, xpect), i|
+      it "handles scenario #{ i + 1 }" do
+        ke1 = Kramdown::ElementRt.new(*first_params)
+        ke2 = Kramdown::ElementRt.new(*second_params)
+        ke1.is_of_same_type_as?(ke2).must_equal xpect
+        ke2.is_of_same_type_as?(ke1).must_equal xpect
+      end
+    end
+  end
+
 end
