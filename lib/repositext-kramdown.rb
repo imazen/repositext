@@ -1,3 +1,5 @@
+# NOTE: None of the CLI code is required here. It's required in lib/rt/cli.rb
+
 require 'awesome_print'
 require 'erb'
 require 'json'
