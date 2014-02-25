@@ -1,0 +1,8 @@
+# This is an example Rtfile with default settings that run out of the box.
+# Modify the DSL methods below to suit your repository layout.
+
+dsl_method :name, 1, :two, 'three'
+
+dsl_method_with_block(:arg1, :arg2) do
+  STDERR.puts "  Hello from inside block"
+end

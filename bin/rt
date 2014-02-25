@@ -1,0 +1,13 @@
+#!/usr/bin/env ruby
+
+require 'repositext-kramdown'
+require 'repositext/rt'
+
+rtfile = Repositext::Rt.find_rtfile
+
+if 'init' == ARGV.first || rtfile
+  # We always have to add the --rtfile option, even for `init` since it is a required option. Note that it can be nil
+  Repositext::Rt.start(ARGV + ['--rtfile', rtfile])
+else
+  STDERR.puts "No Rtfile found! Please use `rt init` to create an Rtfile in the current working directory."
+end

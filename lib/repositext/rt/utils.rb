@@ -1,8 +1,11 @@
-module Rt
-  module Cli
-    class Utils
+class Repositext
+  class Rt
+    module Utils
+
+      # Utils module provides methods commonly used by the rt commands
 
       # Changes files in place, updating their contents
+      # @param: See #process_files below for param description
       def self.change_files_in_place(file_pattern, file_filter, description, &block)
         # Use input file path
         output_path_lambda = lambda do |input_filename, output_file_attrs|
@@ -12,6 +15,7 @@ module Rt
       end
 
       # Converts files from one format to another
+      # @param: See #process_files below for param description
       def self.convert_files(file_pattern, file_filter, description, &block)
         # Change file extension only.
         output_path_lambda = lambda do |input_filename, output_file_attrs|
@@ -22,6 +26,8 @@ module Rt
       end
 
       # Exports files to another format and location
+      # @param: See #process_files below for param description
+      # @param[String] out_dir the output base directory
       def self.export_files(file_pattern, out_dir, file_filter, description, &block)
         # Change output file path
         output_path_lambda = lambda do |input_filename, output_file_attrs|
@@ -34,47 +40,17 @@ module Rt
         process_files(file_pattern, file_filter, description, output_path_lambda, &block)
       end
 
-      # Prints out debug information about the process.
-      def self.inspect_process(file_pattern, file_filter, description, &block)
-        # use input filename
+      # Does a dry-run of the process. Printing out all debug and logging info
+      # but not saving any changes to disk.
+      # @param: See #process_files below for param description
+      # @param[String] out_dir the output base directory
+      def self.inspect_process(file_pattern, out_dir, file_filter, description, &block)
+        # Always return empty string to skip writing to disk
         output_path_lambda = lambda do |input_filename, output_file_attrs|
-          input_filename
+          ''
         end
 
-        STDERR.puts "#{ description } at #{ file_pattern }."
-        STDERR.puts '-' * 80
-        start_time = Time.now
-        total_count = 0
-        success_count = 0
-        updated_count = 0
-        unchanged_count = 0
-        created_count = 0
-        errors_count = 0
-
-        Dir.glob(file_pattern).each do |filename|
-
-          if file_filter && !(file_filter === filename) # file_filter has to be LHS of `===`
-            STDERR.puts " - Skipping #{ filename }"
-            next
-          end
-
-          begin
-            STDERR.puts " - Processing #{ filename }"
-            contents = File.read(filename).freeze
-            outcomes = block.call(contents, filename)
-          rescue => e
-            STDERR.puts " x  Error: #{ e.class.name } - #{ e.message } - #{errors_count == 0 ? e.backtrace : ''}"
-            errors_count += 1
-          end
-          total_count += 1
-        end
-
-        STDERR.puts '-' * 80
-        STDERR.puts "Finished processing #{ success_count } of #{ total_count } files in #{ Time.now - start_time } seconds."
-        STDERR.puts "* #{ created_count } files created"  if created_count > 0
-        STDERR.puts "* #{ updated_count } files updated"  if updated_count > 0
-        STDERR.puts "* #{ unchanged_count } files left unchanged"  if unchanged_count > 0
-        STDERR.puts "* #{ errors_count } errors"  if errors_count > 0
+        process_files(file_pattern, file_filter, description, output_path_lambda, &block)
       end
 
       # Processes files
@@ -90,7 +66,8 @@ module Rt
       #     See here for more info on ===: http://ruby.about.com/od/control/a/The-Case-Equality-Operator.htm
       # @param[String] description A description of the operation, used for logging.
       # @param[Proc] output_path_lambda A proc that computes the output file
-      #     path, given the input file path and output file attrs.
+      #     path as string. It is given the input file path and output file attrs.
+      #     If output_path_lambda returns '' (empty string), no files will be written.
       # @param[Proc] block A Proc that performs the desired operation on each file.
       #     Arguments to the proc are each file's name and contents.
       #     Calling block is expected to return an Outcome object with
@@ -123,22 +100,24 @@ module Rt
             outcomes.each do |outcome|
               if outcome.success
                 output_file_attrs = outcome.result
-                newpath = output_path_lambda.call(filename, output_file_attrs)
-                existing_contents = File.exist?(newpath) ? File.read(newpath) : nil
+                new_path = output_path_lambda.call(filename, output_file_attrs)
+                # new_path is either a file path or the empty string (in which
+                # case we don't write anything to the file system).
+                existing_contents = File.exist?(new_path) ? File.read(new_path) : nil
                 new_contents = output_file_attrs[:contents]
                 message = outcome.messages.join("\n")
 
                 if(nil == existing_contents)
-                  File.write(newpath, new_contents)
+                  write_file_unless_path_is_blank(new_path, new_contents)
                   created_count += 1
-                  STDERR.puts " * Created #{ newpath }. #{ message }"
+                  STDERR.puts " * Created #{ new_path }. #{ message }"
                 elsif(existing_contents != new_contents)
-                  File.write(newpath, new_contents)
+                  write_file_unless_path_is_blank(new_path, new_contents)
                   updated_count += 1
-                  STDERR.puts " * Changed #{ newpath }. #{ message }"
+                  STDERR.puts " * Changed #{ new_path }. #{ message }"
                 else
                   unchanged_count += 1
-                  STDERR.puts "   No change #{ newpath }. #{ message }"
+                  STDERR.puts "   No change #{ new_path }. #{ message }"
                 end
                 success_count += 1
               else
@@ -169,6 +148,19 @@ module Rt
         basepath = filename[0...-File.extname(filename).length]
         new_extension = '.' + new_extension.sub(/\A\./, '')
         basepath + new_extension
+      end
+
+      # Writes file_contents to file at file_path. Overwrites existing file.
+      # Doesn't write to file if file_path is blank (nil, empty string, or string
+      # with only whitespace)
+      # @param[String] file_path
+      # @param[String] file_contents
+      def self.write_file_unless_path_is_blank(file_path, file_contents)
+        if '' == file_path.to_s.strip
+          STDERR.puts "- skip writing #{ file_contents.size } bytes to #{ file_path }"
+        else
+          File.write(file_path, file_contents)
+        end
       end
 
     end
