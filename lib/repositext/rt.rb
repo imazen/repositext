@@ -8,6 +8,7 @@ class Repositext
   end
 end
 
+require 'repositext/rt/config'
 require 'repositext/rt/long_descriptions_for_commands'
 require 'repositext/rt/patch_thor_with_rtfile'
 require 'repositext/rt/rtfile_dsl'
@@ -128,12 +129,17 @@ class Repositext
       self.send("export_#{ command }", options)
     end
 
-
     desc 'import SPEC', 'Imports files and merges changes into master'
     long_desc long_description_for_import
     # @param[String] command Specification of the operation
     def import(command)
       self.send("import_#{ command }", options)
+    end
+
+  private
+
+    def config
+      @config ||= Rt::Config.new(self)
     end
 
   end
