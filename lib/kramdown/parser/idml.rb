@@ -14,8 +14,7 @@ module Kramdown
 
       class Exception < RuntimeError; end
 
-      # The name of the file from which the data was read.
-      attr_reader :filename, :stories
+      attr_reader :stories
 
       # Override this to use different default options
       def default_options
@@ -25,10 +24,10 @@ module Kramdown
         }
       end
 
-      # @param[String] the_filename
+      # @param[String] zip_file_contents
       # @param[Hash, optional] options these will be passed to Kramdown::Parser
-      def initialize(the_filename, options = {})
-        @filename = the_filename
+      def initialize(zip_file_contents, options = {})
+        @zip_file_contents = zip_file_contents
         @options = default_options.merge(options)
         @stories = extract_stories
       end
@@ -55,11 +54,11 @@ module Kramdown
 
     private
 
-      # Extracts story names from @filename
+      # Extracts story names from @zip_file_contents
       # @return[Array<OpenStruct>] an array with story objects. See `get_story` for details.
       def extract_stories
         stories = []
-        Zip::File.open(@filename, false) do |zipped_files|
+        Zip::File.open_buffer(@zip_file_contents) do |zipped_files|
           design_map_data = zipped_files.get_entry('designmap.xml').get_input_stream.read
           design_map_xml = Nokogiri::XML(design_map_data) { |cfg| cfg.noblanks }
           design_map_xml.xpath('/Document/idPkg:Story').each do |design_map_story_xml|

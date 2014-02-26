@@ -94,7 +94,7 @@ class Repositext
 
           begin
             STDERR.puts " - Processing #{ filename }"
-            contents = File.read(filename).freeze
+            contents = File.binread(filename).freeze
             outcomes = block.call(contents, filename)
 
             outcomes.each do |outcome|

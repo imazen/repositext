@@ -1,3 +1,10 @@
+GIT
+  remote: https://github.com/rubyzip/rubyzip.git
+  revision: 09ac194540e03a99419a7f48cbba92b8a9069b39
+  ref: 09ac194540e03a99419a7f48cbba92b8a9069b39
+  specs:
+    rubyzip (1.1.0)
+
 PATH
   remote: .
   specs:
@@ -39,7 +46,6 @@ GEM
     rake (10.1.1)
     rice (1.6.0)
     ruby-graphviz (1.0.9)
-    rubyzip (1.1.0)
     thor (0.18.1)
 
 PLATFORMS
@@ -52,4 +58,5 @@ DEPENDENCIES
   minitest-spec-expect
   rake
   repositext-kramdown!
+  rubyzip!
   suspension!
