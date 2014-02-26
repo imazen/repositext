@@ -5,8 +5,11 @@ require 'repositext/rt'
 
 rtfile = Repositext::Rt.find_rtfile
 
-if 'init' == ARGV.first || rtfile
-  # We always have to add the --rtfile option, even for `init` since it is a required option. Note that it can be nil
+if 'init' == ARGV.first
+  # Ignore any exising rtfile as it may be invalid
+  Repositext::Rt.start(ARGV + ['--rtfile', nil])
+elsif rtfile
+  # Execute command after loading rtfile
   Repositext::Rt.start(ARGV + ['--rtfile', rtfile])
 else
   STDERR.puts "No Rtfile found! Please use `rt init` to create an Rtfile in the current working directory."
