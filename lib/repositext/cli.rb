@@ -27,7 +27,7 @@ require 'repositext/cli/import'
 
 class Repositext
 
-  class ClifileError < RuntimeError; end
+  class RtfileError < RuntimeError; end
 
   class Cli < Thor
 
