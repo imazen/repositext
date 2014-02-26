@@ -53,6 +53,10 @@ class Repositext
         config.add_file_pattern(name, block)
       end
 
+      def parser(name, class_name)
+        config.add_parser(name, class_name)
+      end
+
       def method_missing(name, *args)
         location = caller[0].split(':')[0..1].join(':')
         raise RtfileError, "Undefined local variable or method `#{ name }' for Rtfile\n" \
