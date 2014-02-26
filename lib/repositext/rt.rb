@@ -8,10 +8,10 @@ class Repositext
   end
 end
 
+require 'repositext/rt/long_descriptions_for_commands'
 require 'repositext/rt/patch_thor_with_rtfile'
 require 'repositext/rt/rtfile_dsl'
 require 'repositext/rt/utils'
-require 'repositext/rt/long_descriptions_for_commands'
 
 require 'repositext/rt/compare'
 require 'repositext/rt/convert'

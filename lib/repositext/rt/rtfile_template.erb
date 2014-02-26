@@ -1,8 +1,10 @@
 # This is an example Rtfile with default settings that run out of the box.
 # Modify the DSL methods below to suit your repository layout.
 
-dsl_method :name, 1, :two, 'three'
+file_pattern :convert_folio_xml_to_at do
+  File.join(Dir.getwd, "import_folio/**/*.xml")
+end
 
-dsl_method_with_block(:arg1, :arg2) do
-  STDERR.puts "  Hello from inside block"
+file_pattern :convert_idml_to_at do
+  File.join(Dir.getwd, "import_idml/**/*.idml")
 end

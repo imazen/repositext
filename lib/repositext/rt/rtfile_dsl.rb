@@ -46,20 +46,11 @@ class Repositext
 
       # DSL methods
 
-      # Example for simple dsl method
-      def dsl_method(name, *args)
-        STDERR.puts " from dsl_method:"
-        STDERR.puts "  - name = #{ name.inspect }"
-        STDERR.puts "  - args = #{ args.inspect }"
-      end
-
-      # Example for a dsl method with a block
-      def dsl_method_with_block(*args, &block)
-        STDERR.puts " from dsl_method_with_block:"
-        STDERR.puts "  - args = #{ args.inspect }"
-        yield # anything we need to yield to the block?
-      ensure
-        # any cleanup that needs to be done
+      # Used to define a file pattern to be used by Dir.glob
+      # @param[String, Symbol] name the name of the pattern by which it will be referenced
+      # @param[Proc] block a block that returns the file pattern as string
+      def file_pattern(name, &block)
+        config.add_file_pattern(name, block)
       end
 
       def method_missing(name, *args)
