@@ -3,15 +3,22 @@
 
 # File patterns
 
-file_pattern :convert_folio_xml_to_at do
+file_pattern :import_folio_xml do
   File.join(Dir.getwd, "import_folio/**/*.xml")
 end
 
-file_pattern :convert_idml_to_at do
+file_pattern :import_idml do
   File.join(Dir.getwd, "import_idml/**/*.idml")
 end
 
-# Parsers
+# Kramdown Parsers
 
-parser :folio, 'Kramdown::Parser::Folio'
-parser :idml,  'Kramdown::Parser::Idml'
+kramdown_parser :folio_xml, 'Kramdown::Parser::Folio'
+kramdown_parser :idml,      'Kramdown::Parser::Idml'
+
+# Kramdown Converter Methods
+
+kramdown_converter_method :to_at,         :to_kramdown
+kramdown_converter_method :to_icml,       :to_icml
+kramdown_converter_method :to_idml_story, :to_icml_story
+kramdown_converter_method :to_plain_text, :to_plain_text

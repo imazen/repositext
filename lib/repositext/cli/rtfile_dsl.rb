@@ -46,15 +46,25 @@ class Repositext
 
       # DSL methods
 
-      # Used to define a file pattern to be used by Dir.glob
+      # Used in Rtfile to define a file pattern to be used by Dir.glob
       # @param[String, Symbol] name the name of the pattern by which it will be referenced
       # @param[Proc] block a block that returns the file pattern as string
       def file_pattern(name, &block)
         config.add_file_pattern(name, block)
       end
 
-      def parser(name, class_name)
-        config.add_parser(name, class_name)
+      # Used in Rtfile to define a kramdown parser
+      # @param[String, Symbol] name the name of the kramdown parser by which it will be referenced
+      # @param[String] class_name the full class name of the parser to be used
+      def kramdown_parser(name, class_name)
+        config.add_kramdown_parser(name, class_name)
+      end
+
+      # Used in Rtfile to define a kramdown converter method
+      # @param[String, Symbol] name the name of the kramdown converter method by which it will be referenced
+      # @param[Symbol] method_name the name of the converter method, e.g., :to_kramdown
+      def kramdown_converter_method(name, method_name)
+        config.add_kramdown_converter_method(name, method_name)
       end
 
       def method_missing(name, *args)

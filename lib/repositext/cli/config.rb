@@ -7,7 +7,8 @@ class Repositext
       def initialize(cli_instance)
         @cli_instance = cli_instance
         @file_patterns = {}
-        @parsers = {}
+        @kramdown_parsers = {}
+        @kramdown_converter_methods = {}
       end
 
       # Use this method in DSL methods to add a file pattern to config
@@ -21,12 +22,20 @@ class Repositext
         @file_patterns[name.to_sym] = block.call
       end
 
+      # Use this method in DSL methods to add a kramdown converter method to config
+      # @param[String, Symbol] name the name of the kramdown converter method under which it
+      #     will be referenced
+      # @param[Symbol] method_name the name of the method
+      def add_kramdown_converter_method(name, method_name)
+        @kramdown_converter_methods[name.to_sym] = method_name.to_sym
+      end
+
       # Use this method in DSL methods to add a parser to config
       # @param[String, Symbol] name the name of the parser under which it
       #     will be referenced
       # @param[String] class_name the complete name of the parser class. Will be constantized.
-      def add_parser(name, class_name)
-        @parsers[name.to_sym] = Object.const_get(class_name)
+      def add_kramdown_parser(name, class_name)
+        @kramdown_parsers[name.to_sym] = Object.const_get(class_name)
       end
 
       # Retrieve a file pattern
@@ -35,10 +44,16 @@ class Repositext
         @file_patterns[name.to_sym]
       end
 
-      # Retrieve a parser
+      # Retrieve a kramdown converter method
       # @param[String, Symbol] name
-      def parser(name)
-        @parsers[name.to_sym]
+      def kramdown_converter_method(name)
+        @kramdown_converter_methods[name.to_sym]
+      end
+
+      # Retrieve a kramdown parser
+      # @param[String, Symbol] name
+      def kramdown_parser(name)
+        @kramdown_parsers[name.to_sym]
       end
 
     end

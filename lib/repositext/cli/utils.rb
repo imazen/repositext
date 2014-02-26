@@ -110,14 +110,14 @@ class Repositext
                 if(nil == existing_contents)
                   write_file_unless_path_is_blank(new_path, new_contents)
                   created_count += 1
-                  STDERR.puts " * Created #{ new_path }. #{ message }"
+                  STDERR.puts " * Created #{ new_path } #{ message }"
                 elsif(existing_contents != new_contents)
                   write_file_unless_path_is_blank(new_path, new_contents)
                   updated_count += 1
-                  STDERR.puts " * Changed #{ new_path }. #{ message }"
+                  STDERR.puts " * Changed #{ new_path } #{ message }"
                 else
                   unchanged_count += 1
-                  STDERR.puts "   No change #{ new_path }. #{ message }"
+                  STDERR.puts "   No change #{ new_path } #{ message }"
                 end
                 success_count += 1
               else
