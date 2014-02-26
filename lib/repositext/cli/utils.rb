@@ -1,5 +1,5 @@
 class Repositext
-  class Rt
+  class Cli
     module Utils
 
       # Utils module provides methods commonly used by the rt commands

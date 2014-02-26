@@ -1,6 +1,6 @@
 # Defines the DSL that can be used in Rtfiles
 class Repositext
-  class Rt
+  class Cli
     module RtfileDsl
 
       def self.included(base)

@@ -1,5 +1,5 @@
 class Repositext
-  class Rt
+  class Cli
     module Fix
 
     private

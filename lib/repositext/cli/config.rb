@@ -1,11 +1,11 @@
-# Manages configuration of Rt instance (via Rtfile)
+# Manages configuration of Cli instance (via Rtfile)
 class Repositext
-  class Rt
+  class Cli
     class Config
 
-      # @param[Repositext::Rt] rt_instance
-      def initialize(rt_instance)
-        @rt_instance = rt_instance
+      # @param[Repositext::Cli] cli_instance
+      def initialize(cli_instance)
+        @cli_instance = cli_instance
         @file_patterns = {}
         @parsers = {}
       end

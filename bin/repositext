@@ -1,16 +1,16 @@
 #!/usr/bin/env ruby
 
 require 'repositext-kramdown'
-require 'repositext/rt'
+require 'repositext/cli'
 
-rtfile = Repositext::Rt.find_rtfile
+rtfile = Repositext::Cli.find_rtfile
 
 if 'init' == ARGV.first
   # Ignore any exising rtfile as it may be invalid
-  Repositext::Rt.start(ARGV + ['--rtfile', nil])
+  Repositext::Cli.start(ARGV + ['--rtfile', nil])
 elsif rtfile
   # Execute command after loading rtfile
-  Repositext::Rt.start(ARGV + ['--rtfile', rtfile])
+  Repositext::Cli.start(ARGV + ['--rtfile', rtfile])
 else
   STDERR.puts "No Rtfile found! Please use `rt init` to create an Rtfile in the current working directory."
 end

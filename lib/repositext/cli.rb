@@ -1,50 +1,50 @@
 require 'thor'
 
 # Establish namespace and class inheritance before we require nested classes
-# Otherwise we get a subclass mismatch error because Rt is initialized as
+# Otherwise we get a subclass mismatch error because Cli is initialized as
 # standalone class (not inheriting from Thor)
 class Repositext
-  class Rt < Thor
+  class Cli < Thor
   end
 end
 
-require 'repositext/rt/config'
-require 'repositext/rt/long_descriptions_for_commands'
-require 'repositext/rt/patch_thor_with_rtfile'
-require 'repositext/rt/rtfile_dsl'
-require 'repositext/rt/utils'
+require 'repositext/cli/config'
+require 'repositext/cli/long_descriptions_for_commands'
+require 'repositext/cli/patch_thor_with_rtfile'
+require 'repositext/cli/rtfile_dsl'
+require 'repositext/cli/utils'
 
-require 'repositext/rt/compare'
-require 'repositext/rt/convert'
-require 'repositext/rt/fix'
-require 'repositext/rt/init'
-require 'repositext/rt/merge'
-require 'repositext/rt/sync'
-require 'repositext/rt/validate'
+require 'repositext/cli/compare'
+require 'repositext/cli/convert'
+require 'repositext/cli/fix'
+require 'repositext/cli/init'
+require 'repositext/cli/merge'
+require 'repositext/cli/sync'
+require 'repositext/cli/validate'
 
-require 'repositext/rt/export'
-require 'repositext/rt/import'
+require 'repositext/cli/export'
+require 'repositext/cli/import'
 
 class Repositext
 
-  class RtfileError < RuntimeError; end
+  class ClifileError < RuntimeError; end
 
-  class Rt < Thor
+  class Cli < Thor
 
     include Thor::Actions
-    include Rt::RtfileDsl
-    include Rt::LongDescriptionsForCommands
+    include Cli::RtfileDsl
+    include Cli::LongDescriptionsForCommands
 
-    include Rt::Compare
-    include Rt::Convert
-    include Rt::Fix
-    include Rt::Init
-    include Rt::Merge
-    include Rt::Sync
-    include Rt::Validate
+    include Cli::Compare
+    include Cli::Convert
+    include Cli::Fix
+    include Cli::Init
+    include Cli::Merge
+    include Cli::Sync
+    include Cli::Validate
 
-    include Rt::Export
-    include Rt::Import
+    include Cli::Export
+    include Cli::Import
 
     # For rtfile template loading
     def self.source_root
@@ -139,7 +139,7 @@ class Repositext
   private
 
     def config
-      @config ||= Rt::Config.new(self)
+      @config ||= Cli::Config.new(self)
     end
 
   end

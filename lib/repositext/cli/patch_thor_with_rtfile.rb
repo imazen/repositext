@@ -9,7 +9,7 @@ class Thor
         current << command.name
 
         # Added JH start
-        # NOTE: `self` is an instance of Repositext::Rt
+        # NOTE: `self` is an instance of Repositext::Cli
         if options['rtfile']
           eval_rtfile(options['rtfile'])
         end
