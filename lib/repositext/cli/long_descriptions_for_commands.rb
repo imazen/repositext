@@ -66,6 +66,8 @@ class Repositext
           %(
             Generates a default Rtfile in the current working directory if it doesn't
             exist already. Can be forced to overwrite an existing Rtfile.
+
+            This command ignores the '--input' option.
           )
         end
 

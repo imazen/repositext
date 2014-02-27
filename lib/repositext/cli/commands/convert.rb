@@ -5,8 +5,7 @@ class Repositext
     private
 
       def convert_folio_xml_to_at(options)
-        # TODO: we could allow overriding the input file pattern via an --input option
-        input_file_pattern = config.file_pattern(:import_folio_xml)
+        input_file_pattern = options[:input] || config.file_pattern(:import_folio_xml)
         Repositext::Cli::Utils.convert_files(
           input_file_pattern,
           /\.xml\Z/i,
@@ -27,7 +26,7 @@ class Repositext
 
       # Convert IDML files in /import_idml to AT
       def convert_idml_to_at(options)
-        input_file_pattern = config.file_pattern(:import_idml)
+        input_file_pattern = options[:input] || config.file_pattern(:import_idml)
         Repositext::Cli::Utils.convert_files(
           input_file_pattern,
           /\.idml\Z/i,
@@ -37,6 +36,11 @@ class Repositext
           at = doc.send(config.kramdown_converter_method(:to_at))
           [Outcome.new(true, { extension: 'at', contents: at })]
         end
+      end
+
+      def convert_test(options)
+        # dummy method for testing
+        puts 'convert_test'
       end
 
     end

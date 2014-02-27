@@ -15,6 +15,11 @@ class Repositext
         end
       end
 
+      def init_test(options)
+        # dummy method for testing
+        puts 'init_test'
+      end
+
     end
   end
 end

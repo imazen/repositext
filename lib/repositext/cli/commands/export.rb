@@ -8,6 +8,11 @@ class Repositext
       def export_to_icml(options)
       end
 
+      def export_test(options)
+        # dummy method for testing
+        puts 'export_test'
+      end
+
     end
   end
 end

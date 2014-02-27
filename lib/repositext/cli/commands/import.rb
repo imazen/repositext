@@ -10,6 +10,11 @@ class Repositext
         # copy to master
       end
 
+      def import_test(options)
+        # dummy method for testing
+        puts 'import_test'
+      end
+
     end
   end
 end
