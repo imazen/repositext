@@ -12,6 +12,11 @@ Naming conventions
 * ke: l_var that refers to a kramdown element
 * xn: l_var that refers to an XML node
 
+NOTE: The Kramdown::Folio parser is an exception in that it returns a set
+of multiple files from the parse method. On other parsers we have
+to call `to_...` to get the output. On this parser it's enough to call the .parse
+method.
+
 =end
 
 # Converts folio per tape XML files to AT kramdown files
