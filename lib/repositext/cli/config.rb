@@ -3,9 +3,7 @@ class Repositext
   class Cli
     class Config
 
-      # @param[Repositext::Cli] cli_instance
-      def initialize(cli_instance)
-        @cli_instance = cli_instance
+      def initialize
         @file_patterns = {}
         @kramdown_parsers = {}
         @kramdown_converter_methods = {}
