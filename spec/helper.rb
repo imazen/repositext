@@ -1,8 +1,8 @@
 # dependencies
 require 'rubygems'
+require 'fakefs/safe'
 require 'minitest'
 require 'minitest/autorun'
-require 'kramdown/document'
 
 # Gem under test
 require 'repositext-kramdown'
