@@ -2,21 +2,29 @@
 # Modify the DSL methods below to suit your repository layout.
 
 # File patterns
+# -------------
 
-file_pattern :import_folio_xml do
-  File.join(Dir.getwd, "import_folio/**/*.xml")
-end
+# Provide a name and a file pattern string (or block that returns a string) for
+# each file pattern.
+# It is recommended to expand paths relative to the location of this Rtfile
+# so that they work independently of the user's current working directory.
+# (Rather than using the current working directory).
 
-file_pattern :import_idml do
-  File.join(Dir.getwd, "import_idml/**/*.idml")
-end
+file_pattern :import_folio_xml, File.expand_path("initial_folio_import/folio/**/*.xml", __FILE__)
+file_pattern :import_idml,      File.expand_path("initial_idml_import/idml/**/*.idml", __FILE__)
 
 # Kramdown Parsers
+# ----------------
+
+# Provide a name and a Parser's class name as string
 
 kramdown_parser :folio_xml, 'Kramdown::Parser::Folio'
 kramdown_parser :idml,      'Kramdown::Parser::Idml'
 
 # Kramdown Converter Methods
+# --------------------------
+
+# Provide a name and a method name to be used for conversion.
 
 kramdown_converter_method :to_at,         :to_kramdown
 kramdown_converter_method :to_icml,       :to_icml

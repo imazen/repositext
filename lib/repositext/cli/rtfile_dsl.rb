@@ -46,11 +46,19 @@ class Repositext
 
       # DSL methods
 
-      # Used in Rtfile to define a file pattern to be used by Dir.glob
+      # Used in Rtfile to define a file pattern to be used by Dir.glob. Requires
+      # either pattern_string or pattern_block
       # @param[String, Symbol] name the name of the pattern by which it will be referenced
+      # @param[String, optional] pattern_string the file pattern as string
       # @param[Proc] block a block that returns the file pattern as string
-      def file_pattern(name, &block)
-        config.add_file_pattern(name, block)
+      def file_pattern(name, pattern_string = nil, &pattern_block)
+        if block_given?
+          config.add_file_pattern(name, pattern_block.call)
+        elsif pattern_string
+          config.add_file_pattern(name, pattern_string)
+        else
+          raise(RtfileError, "You must provide either pattern_string or pattern_block arguments to file_pattern")
+        end
       end
 
       # Used in Rtfile to define a kramdown parser

@@ -12,12 +12,10 @@ class Repositext
       # Use this method in DSL methods to add a file pattern to config
       # @param[String, Symbol] name the name of the file pattern under which it
       #     will be referenced
-      # @param[Proc] block the block that is called to compute the file pattern.
-      #     Block has to return a string that can be passed to Dir.glob
-      def add_file_pattern(name, block)
-        # TODO: currently we evaluate blocks at DSL load time. We could further
-        # delay evaluation to when a file_pattern is read (via #file_pattern reader)
-        @file_patterns[name.to_sym] = block.call
+      # @param[String] pattern_string A string with an absolute file path that can be
+      #     passed to Dir.glob
+      def add_file_pattern(name, pattern_string)
+        @file_patterns[name.to_sym] = pattern_string.to_s
       end
 
       # Use this method in DSL methods to add a kramdown converter method to config
