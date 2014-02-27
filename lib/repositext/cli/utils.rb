@@ -140,12 +140,19 @@ class Repositext
         STDERR.puts "* #{ errors_count } errors"  if errors_count > 0
       end
 
-      # Replaces filename's extension with new_extension
+      # Replaces filename's extension with new_extension. If filename doesn't have
+      # an extension, adds new_extension.
       # @param[String] filename the source filename with old extension
       # @param[String] new_extension the new extension to use, e.g., '.idml'
       # @return[String] filename with new_extension
       def self.replace_file_extension(filename, new_extension)
-        basepath = filename[0...-File.extname(filename).length]
+        filename = filename.gsub(/\.\z/, '') # remove dot at end if filename ends with dot
+        existing_ext = File.extname(filename)
+        basepath = if '' == existing_ext
+          filename
+        else
+          filename[0...-existing_ext.length]
+        end
         new_extension = '.' + new_extension.sub(/\A\./, '')
         basepath + new_extension
       end
@@ -155,9 +162,11 @@ class Repositext
       # with only whitespace)
       # @param[String] file_path
       # @param[String] file_contents
+      # @return[Integer, Nil] the number of bytes written or false if nothing was written
       def self.write_file_unless_path_is_blank(file_path, file_contents)
         if '' == file_path.to_s.strip
           STDERR.puts "- skip writing #{ file_contents.size } bytes to #{ file_path }"
+          false
         else
           File.write(file_path, file_contents)
         end
