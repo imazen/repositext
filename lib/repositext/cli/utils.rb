@@ -70,7 +70,8 @@ class Repositext
       #     If output_path_lambda returns '' (empty string), no files will be written.
       # @param[Proc] block A Proc that performs the desired operation on each file.
       #     Arguments to the proc are each file's name and contents.
-      #     Calling block is expected to return an Outcome object with
+      #     Calling block is expected to return an Array of Outcome objects, one
+      #     for each file, with the following attrs:
       #       * success:  Boolean
       #       * result:   A hash with :contents and :extension keys
       #       * messages: An array of message strings.
@@ -103,7 +104,14 @@ class Repositext
                 new_path = output_path_lambda.call(filename, output_file_attrs)
                 # new_path is either a file path or the empty string (in which
                 # case we don't write anything to the file system).
-                existing_contents = File.exist?(new_path) ? File.read(new_path) : nil
+                # NOTE: it's not enough to just check File.exist?(new_path) for
+                # empty string in testing as FakeFS returns true. So I also
+                # need to check for empty string separately to make tests work.
+                existing_contents = if ('' != new_path && File.exist?(new_path))
+                  File.read(new_path)
+                else
+                  nil
+                end
                 new_contents = output_file_attrs[:contents]
                 message = outcome.messages.join("\n")
 
@@ -168,6 +176,10 @@ class Repositext
           $stderr.puts %(  - Skip writing "#{ file_contents.truncate_in_the_middle(60) }" to blank file_path)
           false
         else
+          dir = File.dirname(file_path)
+          unless File.directory?(dir)
+            FileUtils.mkdir_p(dir)
+          end
           File.write(file_path, file_contents)
         end
       end
