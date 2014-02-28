@@ -53,11 +53,7 @@ module Kramdown
       case el_value
       when String, Symbol
         # Print  element's value (e.g., type :text)
-        if el_value.length > el_options[:max_value_length]
-          # long string, truncate in the middle, preserve start and end.
-          half_len = el_options[:max_value_length]/2
-          el_value = "#{ el_value[0..half_len] } [...] #{ el_value[-half_len..-1] }"
-        end
+        el_value = el_value.truncate_in_the_middle(el_options[:max_value_length])
         el_value = el_value.length > 0 ? el_value.inspect : nil
         [
           el_indent,

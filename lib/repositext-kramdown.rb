@@ -6,6 +6,8 @@ require 'json'
 require 'kramdown/document'
 require 'suspension'
 
+require 'patch_string'
+
 require 'kramdown/converter/graphviz'
 require 'kramdown/converter/html_doc'
 require 'kramdown/converter/icml'
