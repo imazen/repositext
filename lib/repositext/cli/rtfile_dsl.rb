@@ -40,7 +40,7 @@ class Repositext
         raise RtfileError, "Rtfile syntax error #{ syntax_msg }"
       rescue ScriptError, RegexpError, NameError, ArgumentError => e
         e.backtrace[0] = "#{ e.backtrace[0] }: #{ e.message } (#{ e.class })"
-        STDERR.puts e.backtrace.join("\n       ")
+        $stderr.puts e.backtrace.join("\n       ")
         raise RtfileError, "There was an error in your Rtfile."
       end
 

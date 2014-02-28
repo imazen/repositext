@@ -11,15 +11,15 @@
 require 'repositext-kramdown'
 
 file_pattern = ARGV.shift
-STDERR.puts "Batch importing all kramdown files at #{ file_pattern }."
-STDERR.puts '-' * 80
+$stderr.puts "Batch importing all kramdown files at #{ file_pattern }."
+$stderr.puts '-' * 80
 start_time = Time.now
 total_count = 0
 success_count = 0
 errors_count = 0
 
 Dir.glob(file_pattern).each do |kramdown_file_name|
-  STDERR.puts " - importing #{ kramdown_file_name }"
+  $stderr.puts " - importing #{ kramdown_file_name }"
   begin
     idml_file_name = kramdown_file_name.gsub(/\.[^\.]+$/, '.idml')
     Kramdown::Document.new(
@@ -34,5 +34,5 @@ Dir.glob(file_pattern).each do |kramdown_file_name|
   total_count += 1
 end
 
-STDERR.puts '-' * 80
-STDERR.puts "Finished converting #{ success_count } of #{ total_count } kramdown files in #{ Time.now - start_time } seconds. There were #{ errors_count } errors."
+$stderr.puts '-' * 80
+$stderr.puts "Finished converting #{ success_count } of #{ total_count } kramdown files in #{ Time.now - start_time } seconds. There were #{ errors_count } errors."

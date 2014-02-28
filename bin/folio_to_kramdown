@@ -13,8 +13,8 @@
 require 'repositext-kramdown'
 
 file_pattern = ARGV.shift
-STDERR.puts "Batch importing all Folio XML files at #{ file_pattern }."
-STDERR.puts '-' * 80
+$stderr.puts "Batch importing all Folio XML files at #{ file_pattern }."
+$stderr.puts '-' * 80
 start_time = Time.now
 total_count = 0
 success_count = 0
@@ -23,12 +23,12 @@ errors_count = 0
 regex_search = ARGV.shift
 regex_replace = ARGV.shift
 
-STDERR.puts "Using regex " + Regexp.new(regex_search).to_s + "   ->   #{regex_replace}" if regex_search && regex_replace
+$stderr.puts "Using regex " + Regexp.new(regex_search).to_s + "   ->   #{regex_replace}" if regex_search && regex_replace
 
 Dir.glob(file_pattern).find_all { |e| e =~ /\.xml$/ }.each do |xml_file_name|
 
   begin
-    STDERR.puts " - importing #{ xml_file_name }"
+    $stderr.puts " - importing #{ xml_file_name }"
     docs = Kramdown::Parser::Folio.new(File.read(xml_file_name)).parse
     [
       'folio.at',
@@ -43,11 +43,11 @@ Dir.glob(file_pattern).find_all { |e| e =~ /\.xml$/ }.each do |xml_file_name|
     end
     success_count += 1
   # rescue Exception => e
-  #   STDERR.puts "   Error: #{ e.class.name } - #{ e.message }"
+  #   $stderr.puts "   Error: #{ e.class.name } - #{ e.message }"
   #   errors_count += 1
   end
   total_count += 1
 end
 
-STDERR.puts '-' * 80
-STDERR.puts "Finished importing #{ success_count } of #{ total_count } IDML files in #{ Time.now - start_time } seconds. There were #{ errors_count } errors."
+$stderr.puts '-' * 80
+$stderr.puts "Finished importing #{ success_count } of #{ total_count } IDML files in #{ Time.now - start_time } seconds. There were #{ errors_count } errors."

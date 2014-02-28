@@ -15,7 +15,7 @@ begin
   cli = Repositext::Cli::ConverterHtmlDoc.new(ARGV)
   cli.run
 rescue => e
-  STDERR.puts e.message
-  STDERR.puts e.backtrace.join("\n")
+  $stderr.puts e.message
+  $stderr.puts e.backtrace.join("\n")
   exit 1
 end

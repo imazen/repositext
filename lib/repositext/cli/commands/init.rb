@@ -11,7 +11,7 @@ class Repositext
         if !File.exist?(rtfile_path) || options['force']
           template('rt/rtfile_template.erb', rtfile_path)
         else
-          STDERR.puts "An Rtfile already exists in the given location. Use the --force flag to overwrite it."
+          $stderr.puts "An Rtfile already exists in the given location. Use the --force flag to overwrite it."
         end
       end
 

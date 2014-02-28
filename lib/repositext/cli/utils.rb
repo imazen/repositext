@@ -75,8 +75,8 @@ class Repositext
       #       * result:   A hash with :contents and :extension keys
       #       * messages: An array of message strings.
       def self.process_files(file_pattern, file_filter, description, output_path_lambda, &block)
-        STDERR.puts "#{ description } at #{ file_pattern }."
-        STDERR.puts '-' * 80
+        $stderr.puts "#{ description } at #{ file_pattern }."
+        $stderr.puts '-' * 80
         start_time = Time.now
         total_count = 0
         success_count = 0
@@ -88,12 +88,12 @@ class Repositext
         Dir.glob(file_pattern).each do |filename|
 
           if file_filter && !(file_filter === filename) # file_filter has to be LHS of `===`
-            STDERR.puts " - Skipping #{ filename }"
+            $stderr.puts " - Skipping #{ filename }"
             next
           end
 
           begin
-            STDERR.puts " - Processing #{ filename }"
+            $stderr.puts " - Processing #{ filename }"
             contents = File.binread(filename).freeze
             outcomes = block.call(contents, filename)
 
@@ -110,34 +110,34 @@ class Repositext
                 if(nil == existing_contents)
                   write_file_unless_path_is_blank(new_path, new_contents)
                   created_count += 1
-                  STDERR.puts " * Created #{ new_path } #{ message }"
+                  $stderr.puts "  * Create: #{ new_path } #{ message }"
                 elsif(existing_contents != new_contents)
                   write_file_unless_path_is_blank(new_path, new_contents)
                   updated_count += 1
-                  STDERR.puts " * Changed #{ new_path } #{ message }"
+                  $stderr.puts "  * Update: #{ new_path } #{ message }"
                 else
                   unchanged_count += 1
-                  STDERR.puts "   No change #{ new_path } #{ message }"
+                  $stderr.puts "    Leave as is: #{ new_path } #{ message }"
                 end
                 success_count += 1
               else
-                STDERR.puts " x  Error: #{ message }"
+                $stderr.puts "  x  Error: #{ message }"
                 errors_count += 1
               end
             end
           rescue => e
-            STDERR.puts " x  Error: #{ e.class.name } - #{ e.message } - #{errors_count == 0 ? e.backtrace : ''}"
+            $stderr.puts "  x  Error: #{ e.class.name } - #{ e.message } - #{errors_count == 0 ? e.backtrace : ''}"
             errors_count += 1
           end
           total_count += 1
         end
 
-        STDERR.puts '-' * 80
-        STDERR.puts "Finished processing #{ success_count } of #{ total_count } files in #{ Time.now - start_time } seconds."
-        STDERR.puts "* #{ created_count } files created"  if created_count > 0
-        STDERR.puts "* #{ updated_count } files updated"  if updated_count > 0
-        STDERR.puts "* #{ unchanged_count } files left unchanged"  if unchanged_count > 0
-        STDERR.puts "* #{ errors_count } errors"  if errors_count > 0
+        $stderr.puts '-' * 80
+        $stderr.puts "Finished processing #{ success_count } of #{ total_count } files in #{ Time.now - start_time } seconds."
+        $stderr.puts "* #{ created_count } files created"  if created_count > 0
+        $stderr.puts "* #{ updated_count } files updated"  if updated_count > 0
+        $stderr.puts "* #{ unchanged_count } files left unchanged"  if unchanged_count > 0
+        $stderr.puts "* #{ errors_count } errors"  if errors_count > 0
       end
 
       # Replaces filename's extension with new_extension. If filename doesn't have
@@ -165,7 +165,7 @@ class Repositext
       # @return[Integer, Nil] the number of bytes written or false if nothing was written
       def self.write_file_unless_path_is_blank(file_path, file_contents)
         if '' == file_path.to_s.strip
-          STDERR.puts "- skip writing #{ file_contents.size } bytes to #{ file_path }"
+          $stderr.puts %(  - Skip writing "#{ file_contents.truncate_in_the_middle(60) }" to blank file_path)
           false
         else
           File.write(file_path, file_contents)

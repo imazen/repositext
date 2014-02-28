@@ -6,5 +6,5 @@ require 'repositext-kramdown'
 
 kd_doc = Kramdown::Parser::Idml.new(ARGV.shift).parse
 kd_doc.to_graphviz
-STDOUT.puts '-' * 80
-STDOUT.puts "Wrote 'kramdown_parse_tree.png' file."
+$stdout.puts '-' * 80
+$stdout.puts "Wrote 'kramdown_parse_tree.png' file."
