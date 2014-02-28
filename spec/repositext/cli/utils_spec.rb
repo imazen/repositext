@@ -31,18 +31,34 @@ describe Repositext::Cli::Utils do
     # TODO: flesh out specs
   end
 
-  describe '.inspect_process' do
-    it 'responds' do
-      out = capture_subprocess_io { mod.inspect_process('', '', '', '') { '' } }.join
-      out.must_match /Finished processing 0 of 0 files/
     end
-    # TODO: flesh out specs
-  end
 
   describe '.process_files' do
     it 'responds' do
       out = capture_subprocess_io { mod.process_files('', '', '', '') { '' } }.join
       out.must_match /Finished processing 0 of 0 files/
+    describe '.dry_run_process' do
+
+      let(:out_dir) { '/directory2' }
+
+      it 'does not write any new files' do
+        mod.dry_run_process(in_file_pattern, out_dir, in_file_filter, desc) do |contents, filename|
+          [Outcome.new(true, { :contents => out_cont, :extension => 'out' }, ['msg'])]
+        end
+        File.directory?(out_dir).must_equal false
+        Dir.glob(in_file_pattern).must_equal in_file_names
+      end
+
+      it 'prints console output' do
+        out, err = capture_io {
+          mod.dry_run_process(in_file_pattern, out_dir, in_file_filter, desc) do |contents, filename|
+            [Outcome.new(true, { :contents => out_cont, :extension => 'out' }, ['msg'])]
+          end
+        }
+        err.must_match /\n  - Skip writing/
+      end
+    end
+
     end
     # TODO: flesh out specs
   end

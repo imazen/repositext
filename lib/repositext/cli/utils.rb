@@ -44,7 +44,7 @@ class Repositext
       # but not saving any changes to disk.
       # @param: See #process_files below for param description
       # @param[String] out_dir the output base directory
-      def self.inspect_process(file_pattern, out_dir, file_filter, description, &block)
+      def self.dry_run_process(file_pattern, out_dir, file_filter, description, &block)
         # Always return empty string to skip writing to disk
         output_path_lambda = lambda do |input_filename, output_file_attrs|
           ''
