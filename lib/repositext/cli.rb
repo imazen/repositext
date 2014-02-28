@@ -1,3 +1,4 @@
+require 'outcome'
 require 'thor'
 
 # Establish namespace and class inheritance before we require nested classes
@@ -50,7 +51,6 @@ class Repositext
     def self.source_root
       File.dirname(__FILE__)
     end
-
 
     class_option :rtfile,
                  :aliases => '-rt',
@@ -151,6 +151,10 @@ class Repositext
 
     def config
       @config ||= Cli::Config.new
+    end
+    # This writer is used for testing to inject a mock config
+    def config=(a_config)
+      @config = a_config
     end
 
   end

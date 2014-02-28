@@ -23,6 +23,7 @@ class Repositext
             return filename  if File.file?(filename)
             current, previous = File.expand_path("..", current), current
           end
+          nil
         end
 
       end
@@ -59,6 +60,7 @@ class Repositext
         else
           raise(RtfileError, "You must provide either pattern_string or pattern_block arguments to file_pattern")
         end
+        nil
       end
 
       # Used in Rtfile to define a kramdown parser
@@ -73,6 +75,13 @@ class Repositext
       # @param[Symbol] method_name the name of the converter method, e.g., :to_kramdown
       def kramdown_converter_method(name, method_name)
         config.add_kramdown_converter_method(name, method_name)
+      end
+
+      # A method stub for testing this module
+      def test
+        # If 'test' is the last command in Rtfile, then eval_rtfile will return
+        # the string below
+        'test successful'
       end
 
       def method_missing(name, *args)
