@@ -12,7 +12,7 @@ class Repositext
           %(
             Compares files for consistency.
 
-            Available commands:
+            Available SPECs:
 
             [TBD]
           )
@@ -24,17 +24,14 @@ class Repositext
             Converters. Has sensible defaults for input file patterns.
             Stores output files in same directory as input files.
 
-            Available commands:
+            Available SPECs:
 
-            folio_xml_to_at
+            folio_xml_to_at - Converts Folio XML files in import_folio to AT
+            kramdown files, storing the output files in the same directory as
+            the input files.
 
-            Converts Folio XML files in import_folio to AT kramdown files, storing the
-            output files in the same directory as the input files.
-
-            idml_to_at
-
-            Converts IDML files in import_idml to AT kramdown files, storing the output
-            files in the same directory as the input files.
+            idml_to_at - Converts IDML files in import_idml to AT kramdown files,
+            storing the output files in the same directory as the input files.
 
             Examples:
 
@@ -46,7 +43,7 @@ class Repositext
           %(
             Modifies files in place. Updates contents of existing files.
 
-            Available commands:
+            Available SPECs:
 
             adjust_merged_record_mark_positions - move :record_marks to the right
             spot after merging them into IDML AT.
@@ -74,9 +71,10 @@ class Repositext
             first and second file (if the second file exists), or we just use
             the first file if the second file doesn't exist.
 
-            Available commands:
+            Available SPECs:
 
-            record_marks_from_folio_xml_at_into_idml_at
+            record_marks_from_folio_xml_at_into_idml_at - merges :record_marks
+            from FOLIO XML imported AT into IDML imported AT.
           )
         end
 
@@ -84,7 +82,7 @@ class Repositext
           %(
             Moves files from one location to another.
 
-            Available commands:
+            Available SPECs:
 
             staging_to_master - moves AT files from staging to master
           )
@@ -95,7 +93,7 @@ class Repositext
             Syncs data between different file types in master.
             Applies a suspension-based operation between files of different types.
 
-            Available commands:
+            Available SPECs:
 
             [TBD]
           )
@@ -105,7 +103,7 @@ class Repositext
           %(
             Validates files.
 
-            Available commands:
+            Available SPECs:
 
             [TBD]
           )
@@ -116,7 +114,7 @@ class Repositext
             Exports files from /master, performing all steps required to generate
             files of the desired output file type.
 
-            Available commands:
+            Available SPECs:
 
             [TBD]
           )
@@ -127,7 +125,7 @@ class Repositext
             Imports files from a source, performs all steps required to merge changes
             into master
 
-            Available commands:
+            Available SPECs:
 
             all - Imports from all sources (FOLIO XML, IDML) and merges updates
             into master.
