@@ -10,8 +10,16 @@
 # so that they work independently of the user's current working directory.
 # (Rather than using the current working directory).
 
-file_pattern :import_folio_xml, File.expand_path("initial_folio_import/folio/**/*.xml", __FILE__)
-file_pattern :import_idml,      File.expand_path("initial_idml_import/idml/**/*.idml", __FILE__)
+# Matches all FOLIO XML files in the import directory
+file_pattern :import_folio_xml, File.expand_path("initial_folio_import/folio/**/*.xml", File.dirname(__FILE__))
+# Matches all AT files in the FOLIO XML import directory
+file_pattern :import_folio_xml_at_files, File.expand_path("initial_folio_import/folio/**/*.at", File.dirname(__FILE__))
+# Matches all IDML files in the import directory
+file_pattern :import_idml, File.expand_path("initial_idml_import/idml/**/*.idml", File.dirname(__FILE__))
+# Matches all AT files in the IDML import directory
+file_pattern :import_idml_at_files, File.expand_path("initial_idml_import/idml/**/*.at", File.dirname(__FILE__))
+# Matches all AT files in the staging directory
+file_pattern :staging_at, File.expand_path("staging/**/*.at", File.dirname(__FILE__))
 
 # Kramdown Parsers
 # ----------------
