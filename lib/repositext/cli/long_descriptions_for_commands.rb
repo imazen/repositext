@@ -14,9 +14,7 @@ class Repositext
 
             Available commands:
 
-            compare_idml_roundtrip
-
-            [Describe the command here]
+            [TBD]
           )
         end
 
@@ -27,10 +25,6 @@ class Repositext
             Stores output files in same directory as input files.
 
             Available commands:
-
-            at_to_html
-
-            Converts AT files in master to HTML, storing the output files in /export_html.
 
             folio_xml_to_at
 
@@ -44,9 +38,7 @@ class Repositext
 
             Examples:
 
-            * rt convert idml_to_at -i='../import_idml/idml/**/*.idml'
-
-            * rt convert at_to_html
+            * bundle exec rt convert idml_to_at
           )
         end
 
@@ -56,9 +48,11 @@ class Repositext
 
             Available commands:
 
-            renumber_paragraphs
+            adjust_merged_record_mark_positions - move :record_marks to the right
+            spot after merging them into IDML AT.
 
-            adjust_position_of_record_marks
+            folio_typographical_chars - changes double dashes, triple periods
+            and double quotes to the correct typographical symbols.
           )
         end
 
@@ -83,8 +77,16 @@ class Repositext
             Available commands:
 
             record_marks_from_folio_xml_at_into_idml_at
+          )
+        end
 
-            [Describe command]
+        def long_description_for_move
+          %(
+            Moves files from one location to another.
+
+            Available commands:
+
+            staging_to_master - moves AT files from staging to master
           )
         end
 
@@ -95,14 +97,7 @@ class Repositext
 
             Available commands:
 
-            from_txt
-
-            Replays text changes from TXT to AT and PT files in master.
-
-            from_at
-
-            Replays text and some token changes from AT to PT. Replays text changes from
-            AT to TXT.
+            [TBD]
           )
         end
 
@@ -112,9 +107,7 @@ class Repositext
 
             Available commands:
 
-            utf8_encoding
-
-            Validates that all text files (AT, PT, and TXT) are UTF8 encoded.
+            [TBD]
           )
         end
 
@@ -123,9 +116,9 @@ class Repositext
             Exports files from /master, performing all steps required to generate
             files of the desired output file type.
 
-            Examples:
+            Available commands:
 
-            * Export PT to ICML
+            [TBD]
           )
         end
 
@@ -136,9 +129,12 @@ class Repositext
 
             Available commands:
 
-            from_docx
+            all - Imports from all sources (FOLIO XML, IDML) and merges updates
+            into master.
 
-            Imports changes from DOCX files in /import_docx to master.
+            folio_xml - Imports from FOLIO XML and merges updates into master.
+
+            idml - Imports from IDML and merges updates into master.
           )
         end
 
