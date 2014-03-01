@@ -103,62 +103,67 @@ class Repositext
       #       * result:   A hash with :contents and :extension keys
       #       * messages: An array of message strings.
       def self.process_files(file_pattern, file_filter, description, output_path_lambda, options, &block)
-        $stderr.puts "#{ description } at #{ file_pattern }."
-        $stderr.puts '-' * 80
-        start_time = Time.now
-        total_count = 0
-        success_count = 0
-        updated_count = 0
-        unchanged_count = 0
-        created_count = 0
-        errors_count = 0
+        with_console_output(description, file_pattern) do |counts|
+          Dir.glob(file_pattern).each do |filename|
 
-        Dir.glob(file_pattern).each do |filename|
-
-          if file_filter && !(file_filter === filename) # file_filter has to be LHS of `===`
-            $stderr.puts " - Skipping #{ filename }"
-            next
-          end
-
-          begin
-            $stderr.puts " - Processing #{ filename }"
-            contents = if options[:input_is_binary]
-              File.binread(filename).freeze
-            else
-              File.read(filename).freeze
+            if file_filter && !(file_filter === filename) # file_filter has to be LHS of `===`
+              $stderr.puts " - Skipping #{ filename }"
+              next
             end
-            outcomes = block.call(contents, filename)
 
-            outcomes.each do |outcome|
-              if outcome.success
-                output_file_attrs = outcome.result
-                new_path = output_path_lambda.call(filename, output_file_attrs)
-                # new_path is either a file path or the empty string (in which
-                # case we don't write anything to the file system).
-                # NOTE: it's not enough to just check File.exist?(new_path) for
-                # empty string in testing as FakeFS returns true. So I also
-                # need to check for empty string separately to make tests work.
-                existing_contents = if ('' != new_path && File.exist?(new_path))
-                  options[:output_is_binary] ? File.binread(new_path) : File.read(new_path)
-                else
-                  nil
-                end
-                new_contents = output_file_attrs[:contents]
-                message = outcome.messages.join("\n")
+            begin
+              $stderr.puts " - Processing #{ filename }"
+              contents = if options[:input_is_binary]
+                File.binread(filename).freeze
+              else
+                File.read(filename).freeze
+              end
+              outcomes = block.call(contents, filename)
 
-                if(nil == existing_contents)
-                  write_file_unless_path_is_blank(new_path, new_contents)
-                  created_count += 1
-                  $stderr.puts "  * Create: #{ new_path } #{ message }"
-                elsif(existing_contents != new_contents)
-                  write_file_unless_path_is_blank(new_path, new_contents)
-                  updated_count += 1
-                  $stderr.puts "  * Update: #{ new_path } #{ message }"
+              outcomes.each do |outcome|
+                if outcome.success
+                  output_file_attrs = outcome.result
+                  new_path = output_path_lambda.call(filename, output_file_attrs)
+                  # new_path is either a file path or the empty string (in which
+                  # case we don't write anything to the file system).
+                  # NOTE: it's not enough to just check File.exist?(new_path) for
+                  # empty string in testing as FakeFS returns true. So I also
+                  # need to check for empty string separately to make tests work.
+                  existing_contents = if ('' != new_path && File.exist?(new_path))
+                    options[:output_is_binary] ? File.binread(new_path) : File.read(new_path)
+                  else
+                    nil
+                  end
+                  new_contents = output_file_attrs[:contents]
+                  message = outcome.messages.join("\n")
+
+                  if(nil == existing_contents)
+                    write_file_unless_path_is_blank(new_path, new_contents)
+                    counts[:created] += 1
+                    $stderr.puts "  * Create: #{ new_path } #{ message }"
+                  elsif(existing_contents != new_contents)
+                    write_file_unless_path_is_blank(new_path, new_contents)
+                    counts[:updated] += 1
+                    $stderr.puts "  * Update: #{ new_path } #{ message }"
+                  else
+                    counts[:unchanged] += 1
+                    $stderr.puts "    Leave as is: #{ new_path } #{ message }"
+                  end
+                  counts[:success] += 1
                 else
-                  unchanged_count += 1
-                  $stderr.puts "    Leave as is: #{ new_path } #{ message }"
+                  $stderr.puts "  x  Error: #{ message }"
+                  counts[:errors] += 1
                 end
-                success_count += 1
+              end
+            rescue => e
+              $stderr.puts %(  x  Error: #{ e.class.name } - #{ e.message } - #{errors_count == 0 ? e.backtrace.join("\n") : ''})
+              counts[:errors] += 1
+            end
+            counts[:total] += 1
+          end
+        end
+      end
+
       # Moves files
       # @param[String] file_pattern A Dir.glob file pattern that describes
       #     the file set to be operated on. This is typically provided by either
@@ -215,12 +220,24 @@ class Repositext
         end
       end
 
+      # Wraps operations with log output
+      # @param[String] description the text to print on the first line of console
+      # @param[String] file_pattern the file pattern to print on first line of console
+      # @param[Block] the operation for which to print console output
+      def self.with_console_output(description, file_pattern, &block)
+        $stderr.puts "#{ description } at #{ file_pattern }."
         $stderr.puts '-' * 80
-        $stderr.puts "Finished processing #{ success_count } of #{ total_count } files in #{ Time.now - start_time } seconds."
-        $stderr.puts "* #{ created_count } files created"  if created_count > 0
-        $stderr.puts "* #{ updated_count } files updated"  if updated_count > 0
-        $stderr.puts "* #{ unchanged_count } files left unchanged"  if unchanged_count > 0
-        $stderr.puts "* #{ errors_count } errors"  if errors_count > 0
+        start_time = Time.now
+        counts = Hash.new(0)
+
+        yield(counts)
+
+        $stderr.puts '-' * 80
+        $stderr.puts "Finished processing #{ counts[:success] } of #{ counts[:total] } files in #{ Time.now - start_time } seconds."
+        $stderr.puts "* #{ counts[:created] } new files created"  if counts[:created] > 0
+        $stderr.puts "* #{ counts[:updated] } existing files updated"  if counts[:updated] > 0
+        $stderr.puts "* #{ counts[:unchanged] } files left unchanged"  if counts[:unchanged] > 0
+        $stderr.puts "* #{ counts[:errors] } errors"  if counts[:errors] > 0
       end
 
       # Replaces filename's extension with new_extension. If filename doesn't have
