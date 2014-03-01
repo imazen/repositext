@@ -46,6 +46,22 @@ class Repositext
         )
       end
 
+      # Moves files to another location
+      # @param: See #process_files below for param description
+      # @param[String] out_dir the output base directory
+      def self.move_files(file_pattern, out_dir, file_filter, description, options)
+        input_base_dir = Repositext::Cli::Utils.base_dir_from_glob_pattern(file_pattern)
+
+        # Change output file path to destination
+        output_path_lambda = lambda do |input_filename|
+          input_filename.gsub(input_base_dir, out_dir)
+        end
+
+        move_files_helper(
+          file_pattern, file_filter, output_path_lambda, description, options
+        )
+      end
+
       # Does a dry-run of the process. Printing out all debug and logging info
       # but not saving any changes to disk.
       # @param: See #process_files below for param description
@@ -143,17 +159,61 @@ class Repositext
                   $stderr.puts "    Leave as is: #{ new_path } #{ message }"
                 end
                 success_count += 1
-              else
-                $stderr.puts "  x  Error: #{ message }"
-                errors_count += 1
-              end
+      # Moves files
+      # @param[String] file_pattern A Dir.glob file pattern that describes
+      #     the file set to be operated on. This is typically provided by either
+      #     Rtfile or as command line argument by the user.
+      # @param[Trequal] file_filter Each file's name (and path) is compared with
+      #     file_filter using ===. The file will be processed if the comparison
+      #     evaluates to true. file_filter can be anything that responds to
+      #     #===, e.g., a Regexp, a Proc, or a String.
+      #     This is provided by the callling command, limiting the files to be
+      #     operated on to valid file types.
+      #     See here for more info on ===: http://ruby.about.com/od/control/a/The-Case-Equality-Operator.htm
+      # @param[Proc] output_path_lambda A proc that computes the output file
+      #     path as string. It is given the input file path and output file attrs.
+      #     If output_path_lambda returns '' (empty string), no files will be written.
+      # @param[Hash] options
+      #     :input_is_binary to force File.binread where required
+      #     :output_is_binary
+      def self.move_files_helper(file_pattern, file_filter, output_path_lambda, description, options)
+        with_console_output(description, file_pattern) do |counts|
+          Dir.glob(file_pattern).each do |filename|
+
+            if file_filter && !(file_filter === filename) # file_filter has to be LHS of `===`
+              $stderr.puts " - Skipping #{ filename }"
+              next
             end
-          rescue => e
-            $stderr.puts "  x  Error: #{ e.class.name } - #{ e.message } - #{errors_count == 0 ? e.backtrace : ''}"
-            errors_count += 1
+
+            begin
+              $stderr.puts " - Moving #{ filename }"
+
+              new_path = output_path_lambda.call(filename)
+              # new_path is either a file path or the empty string (in which
+              # case we don't write anything to the file system).
+              # NOTE: it's not enough to just check File.exist?(new_path) for
+              # empty string in testing as FakeFS returns true. So I also
+              # need to check for empty string separately to make tests work.
+              exists_already = ('' != new_path && File.exist?(new_path))
+
+              if exists_already
+                move_file_unless_path_is_blank(filename, new_path)
+                counts[:updated] += 1
+                $stderr.puts "  * Update: #{ new_path }"
+              else
+                move_file_unless_path_is_blank(filename, new_path)
+                counts[:created] += 1
+                $stderr.puts "  * Create: #{ new_path }"
+              end
+              counts[:success] += 1
+            rescue => e
+              $stderr.puts %(  x  Error: #{ e.class.name } - #{ e.message } - #{counts[:errors] == 0 ? e.backtrace.join("\n") : ''})
+              counts[:errors] += 1
+            end
+            counts[:total] += 1
           end
-          total_count += 1
         end
+      end
 
         $stderr.puts '-' * 80
         $stderr.puts "Finished processing #{ success_count } of #{ total_count } files in #{ Time.now - start_time } seconds."
@@ -178,6 +238,22 @@ class Repositext
         end
         new_extension = '.' + new_extension.sub(/\A\./, '')
         basepath + new_extension
+      end
+
+      # Moves file_path to new_path. Overwrites existing files.
+      # Doesn't move file if file_path is blank (nil, empty string, or string
+      # with only whitespace)
+      # @param[String] file_path
+      # @param[String] new_path
+      # @return[Bool] true if it moved file, false if not.
+      def self.move_file_unless_path_is_blank(file_path, new_path)
+        if '' == file_path.to_s.strip
+          $stderr.puts %(  - Skip moving blank file_path)
+          false
+        else
+          FileUtils.move(file_path, new_path)
+          true
+        end
       end
 
       # Writes file_contents to file at file_path. Overwrites existing file.

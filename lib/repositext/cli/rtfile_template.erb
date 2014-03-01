@@ -18,6 +18,8 @@ file_pattern :import_folio_xml_at_files, File.expand_path("initial_folio_import/
 file_pattern :import_idml, File.expand_path("initial_idml_import/idml/**/*.idml", File.dirname(__FILE__))
 # Matches all AT files in the IDML import directory
 file_pattern :import_idml_at_files, File.expand_path("initial_idml_import/idml/**/*.at", File.dirname(__FILE__))
+# Matches all files in master directory
+file_pattern :master, File.expand_path("master/**/*", File.dirname(__FILE__))
 # Matches all AT files in the staging directory
 file_pattern :staging_at, File.expand_path("staging/**/*.at", File.dirname(__FILE__))
 

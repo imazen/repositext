@@ -20,6 +20,7 @@ require 'repositext/cli/commands/convert'
 require 'repositext/cli/commands/fix'
 require 'repositext/cli/commands/init'
 require 'repositext/cli/commands/merge'
+require 'repositext/cli/commands/move'
 require 'repositext/cli/commands/sync'
 require 'repositext/cli/commands/validate'
 
@@ -41,6 +42,7 @@ class Repositext
     include Cli::Fix
     include Cli::Init
     include Cli::Merge
+    include Cli::Move
     include Cli::Sync
     include Cli::Validate
 
@@ -118,6 +120,14 @@ class Repositext
     # @param[String] command_spec Specification of the operation
     def merge(command_spec)
       self.send("merge_#{ command_spec }", options)
+    end
+
+
+    desc 'move SPEC', 'Moves files to another location'
+    long_desc long_description_for_move
+    # @param[String] command_spec Specification of the operation
+    def move(command_spec)
+      self.send("move_#{ command_spec }", options)
     end
 
 
