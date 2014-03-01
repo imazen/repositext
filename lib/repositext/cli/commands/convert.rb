@@ -36,7 +36,7 @@ class Repositext
         ) do |contents, filename|
           doc = config.kramdown_parser(:idml).new(contents).parse
           at = doc.send(config.kramdown_converter_method(:to_at))
-          [Outcome.new(true, { extension: 'at', contents: at })]
+          [Outcome.new(true, { contents: at, extension: 'idml.at' })]
         end
       end
 
