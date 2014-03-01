@@ -16,7 +16,8 @@ class Repositext
         Repositext::Cli::Utils.change_files_in_place(
           input_file_pattern,
           /\.at\z/i,
-          "Adjusting merged :record_mark positions"
+          "Adjusting merged :record_mark positions",
+          options
         ) do |contents, filename|
           # prepend \n\n to satisfy two leading \n for :record_mark on first line in file
           old_at = "\n\n" + contents
@@ -77,7 +78,8 @@ class Repositext
         Repositext::Cli::Utils.change_files_in_place(
           input_file_pattern,
           /\.(at|pt|txt)\z/i,
-          "Changing typographical characters in files"
+          "Changing typographical characters in files",
+          options
         ) do |contents, filename|
           text, message = Vgr::FolioConvertTypographicalMarks.new.convert(contents)
           [Outcome.new(

@@ -9,7 +9,8 @@ class Repositext
         Repositext::Cli::Utils.convert_files(
           input_file_pattern,
           /\.xml\Z/i,
-          "Converting folio xml files to AT kramdown and json"
+          "Converting folio xml files to AT kramdown and json",
+          options
         ) do |contents, filename|
           # The Kramdown::Folio parser is an exception in that it returns a set
           # of multiple files from the parse method. On other parsers we have
@@ -29,8 +30,9 @@ class Repositext
         input_file_pattern = options[:input] || config.file_pattern(:import_idml)
         Repositext::Cli::Utils.convert_files(
           input_file_pattern,
-          /\.idml\Z/i,
-          "Converting IDML files to AT kramdown"
+          /\.idml\z/i,
+          "Converting IDML files to AT kramdown",
+          options.merge(input_is_binary: true)
         ) do |contents, filename|
           doc = config.kramdown_parser(:idml).new(contents).parse
           at = doc.send(config.kramdown_converter_method(:to_at))

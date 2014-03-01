@@ -6,29 +6,33 @@ class Repositext
 
       # Changes files in place, updating their contents
       # @param: See #process_files below for param description
-      def self.change_files_in_place(file_pattern, file_filter, description, &block)
+      def self.change_files_in_place(file_pattern, file_filter, description, options, &block)
         # Use input file path
         output_path_lambda = lambda do |input_filename, output_file_attrs|
           input_filename
         end
-        process_files(file_pattern, file_filter, description, output_path_lambda, &block)
+        process_files(
+          file_pattern, file_filter, description, output_path_lambda, options, &block
+        )
       end
 
       # Converts files from one format to another
       # @param: See #process_files below for param description
-      def self.convert_files(file_pattern, file_filter, description, &block)
+      def self.convert_files(file_pattern, file_filter, description, options, &block)
         # Change file extension only.
         output_path_lambda = lambda do |input_filename, output_file_attrs|
           replace_file_extension(input_filename, output_file_attrs[:extension])
         end
 
-        process_files(file_pattern, file_filter, description, output_path_lambda, &block)
+        process_files(
+          file_pattern, file_filter, description, output_path_lambda, options, &block
+        )
       end
 
       # Exports files to another format and location
       # @param: See #process_files below for param description
       # @param[String] out_dir the output base directory
-      def self.export_files(file_pattern, out_dir, file_filter, description, &block)
+      def self.export_files(file_pattern, out_dir, file_filter, description, options, &block)
         # Change output file path
         output_path_lambda = lambda do |input_filename, output_file_attrs|
           File.join(
@@ -37,20 +41,24 @@ class Repositext
           )
         end
 
-        process_files(file_pattern, file_filter, description, output_path_lambda, &block)
+        process_files(
+          file_pattern, file_filter, description, output_path_lambda, options, &block
+        )
       end
 
       # Does a dry-run of the process. Printing out all debug and logging info
       # but not saving any changes to disk.
       # @param: See #process_files below for param description
       # @param[String] out_dir the output base directory
-      def self.dry_run_process(file_pattern, out_dir, file_filter, description, &block)
+      def self.dry_run_process(file_pattern, out_dir, file_filter, description, options, &block)
         # Always return empty string to skip writing to disk
         output_path_lambda = lambda do |input_filename, output_file_attrs|
           ''
         end
 
-        process_files(file_pattern, file_filter, description, output_path_lambda, &block)
+        process_files(
+          file_pattern, file_filter, description, output_path_lambda, options, &block
+        )
       end
 
       # Processes files
@@ -68,6 +76,9 @@ class Repositext
       # @param[Proc] output_path_lambda A proc that computes the output file
       #     path as string. It is given the input file path and output file attrs.
       #     If output_path_lambda returns '' (empty string), no files will be written.
+      # @param[Hash] options
+      #     :input_is_binary to force File.binread where required
+      #     :output_is_binary
       # @param[Proc] block A Proc that performs the desired operation on each file.
       #     Arguments to the proc are each file's name and contents.
       #     Calling block is expected to return an Array of Outcome objects, one
@@ -75,7 +86,7 @@ class Repositext
       #       * success:  Boolean
       #       * result:   A hash with :contents and :extension keys
       #       * messages: An array of message strings.
-      def self.process_files(file_pattern, file_filter, description, output_path_lambda, &block)
+      def self.process_files(file_pattern, file_filter, description, output_path_lambda, options, &block)
         $stderr.puts "#{ description } at #{ file_pattern }."
         $stderr.puts '-' * 80
         start_time = Time.now
@@ -95,7 +106,11 @@ class Repositext
 
           begin
             $stderr.puts " - Processing #{ filename }"
-            contents = File.binread(filename).freeze
+            contents = if options[:input_is_binary]
+              File.binread(filename).freeze
+            else
+              File.read(filename).freeze
+            end
             outcomes = block.call(contents, filename)
 
             outcomes.each do |outcome|
@@ -108,7 +123,7 @@ class Repositext
                 # empty string in testing as FakeFS returns true. So I also
                 # need to check for empty string separately to make tests work.
                 existing_contents = if ('' != new_path && File.exist?(new_path))
-                  File.read(new_path)
+                  options[:output_is_binary] ? File.binread(new_path) : File.read(new_path)
                 else
                   nil
                 end
