@@ -76,10 +76,13 @@ class Repositext
             Merges the contents of two files and writes the result to an output
             file, typically using a suspension-based operation.
             Each of the two input files contributes a different kind of data.
+            This is the equivalent of a SQL left outer join where we merge the
+            first and second file (if the second file exists), or we just use
+            the first file if the second file doesn't exist.
 
             Available commands:
 
-            merge_record_marks
+            record_marks_from_folio_xml_at_into_idml_at
 
             [Describe command]
           )
