@@ -5,6 +5,13 @@ describe Repositext::Cli::Config do
 
   let(:config) { Repositext::Cli::Config.new }
 
+  describe '#rtfile_dir' do
+    it "has an accessor" do
+      config.rtfile_dir = '123'
+      config.rtfile_dir.must_equal '123'
+    end
+  end
+
   describe '#add_file_pattern' do
     it "adds a file pattern" do
       config.add_file_pattern(:test, 'test')

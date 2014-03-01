@@ -44,8 +44,9 @@ describe Repositext::Cli::RtfileDsl do
 
   describe '#eval_rtfile' do
     it "evaluates a valid Rtfile" do
+      instance_with_config.config = Repositext::Cli::Config.new
       File.open('Rtfile', 'w') { |f| f.write('test') }
-      instance.eval_rtfile('Rtfile').must_equal 'test successful'
+      instance_with_config.eval_rtfile('Rtfile').must_equal 'test successful'
     end
 
     it "evaluates a string instead of a file" do

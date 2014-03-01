@@ -3,6 +3,8 @@ class Repositext
   class Cli
     class Config
 
+      attr_accessor :rtfile_dir
+
       def initialize
         @file_patterns = {}
         @kramdown_parsers = {}

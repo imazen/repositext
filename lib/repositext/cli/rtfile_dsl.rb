@@ -31,10 +31,11 @@ class Repositext
       # Evaluates contents of Rtfile. Rtfile can call the DSL methods defined
       # below.
       # NOTE: This code is inspired by Bundler's eval_gemfile
-      # @param[String] rtfile_path
+      # @param[String] rtfile the path to the rtfile
       # @param[String, optional] contents allows passing of Rtfile contents as string, for testing.
       def eval_rtfile(rtfile, contents = nil)
         contents ||= File.open(rtfile, "rb") { |f| f.read }
+        config.rtfile_dir = rtfile ? File.dirname(rtfile) : ''
         instance_eval(contents, rtfile.to_s, 1)
       rescue SyntaxError => e
         syntax_msg = e.message.gsub("#{ rtfile.to_s }:", 'on line ')
