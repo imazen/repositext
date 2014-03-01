@@ -73,7 +73,7 @@ class Repositext
 
       # Convert -- and ... and " to typographically correct characters
       def fix_folio_typographical_chars(options)
-        input_file_pattern = options[:input] || config.file_pattern(:fix_import_folio_xml)
+        input_file_pattern = options[:input] || config.file_pattern(:import_folio_xml_at_files)
         Repositext::Cli::Utils.change_files_in_place(
           input_file_pattern,
           /\.(at|pt|txt)\z/i,
