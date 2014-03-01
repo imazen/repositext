@@ -184,6 +184,27 @@ class Repositext
         end
       end
 
+      # Computes a base_dir from glob_pattern
+      # @param[String] glob_pattern
+      # @return[String] the base dir
+      def self.base_dir_from_glob_pattern(glob_pattern)
+        if glob_pattern !~ /\A\//
+          raise ArgumentError.new("Please provide an absolute path.")
+        end
+        # split into path segments
+        # then build up until we hit the first asterisk or the file name
+        glob_pattern.split(File::SEPARATOR)
+                    .find_all { |e| '' != e }
+                    .inject('/') { |m,e|
+                      if e =~ /\*|\w\.\w/
+                        break(m)
+                      else
+                        m << e
+                        m << File::SEPARATOR
+                      end
+                      m
+                    }
+      end
     end
   end
 end

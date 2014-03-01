@@ -244,4 +244,32 @@ describe Repositext::Cli::Utils do
     end
   end
 
+  describe 'base_dir_from_glob_pattern' do
+    [
+      ['/', '/'],
+      ['/path1/filename.ext', '/path1/'],
+      ['/path1/path2/*.ext', '/path1/path2/'],
+      ['/path1/**/*', '/path1/'],
+      ['/path1/path2/path3/*.at', '/path1/path2/path3/'],
+    ].each do |(glob_pattern, base_dir)|
+      it "handles #{ glob_pattern.inspect }" do
+        mod.base_dir_from_glob_pattern(glob_pattern).must_equal base_dir
+      end
+    end
+
+    [
+      '',
+      '~/path1/filename.ext',
+      'path1.ext',
+      'path1/**/*',
+    ].each do |glob_pattern|
+      it "raises on #{ glob_pattern.inspect }" do
+        proc {
+          mod.base_dir_from_glob_pattern(glob_pattern).must_equal base_dir
+        }.must_raise ArgumentError
+      end
+    end
+
+  end
+
 end
