@@ -50,7 +50,8 @@ describe Repositext::Cli::RtfileDsl do
     end
 
     it "evaluates a string instead of a file" do
-      instance.eval_rtfile(nil, 'test').must_equal 'test successful'
+      instance_with_config.config = Repositext::Cli::Config.new
+      instance_with_config.eval_rtfile(nil, 'test').must_equal 'test successful'
     end
     # TODO: spec handling of errors
   end

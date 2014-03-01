@@ -66,6 +66,9 @@ describe Repositext::Cli::Config do
       config.add_file_pattern(:test, :test)
       config.file_pattern('test').must_equal 'test'
     end
+    it "raises on unknown name" do
+      proc { config.file_pattern(:unknown_key) }.must_raise ArgumentError
+    end
   end
 
   describe '#kramdown_converter_method' do
@@ -77,6 +80,9 @@ describe Repositext::Cli::Config do
       config.add_kramdown_converter_method(:test, :test)
       config.kramdown_converter_method('test').must_equal :test
     end
+    it "raises on unknown name" do
+      proc { config.kramdown_converter_method(:unknown_key) }.must_raise ArgumentError
+    end
   end
 
   describe '#kramdown_parser' do
@@ -87,6 +93,18 @@ describe Repositext::Cli::Config do
     it "converts name to symbol" do
       config.add_kramdown_parser(:test, 'Kramdown::Parser::Kramdown')
       config.kramdown_parser('test').must_equal Kramdown::Parser::Kramdown
+    end
+    it "raises on unknown name" do
+      proc { config.add_kramdown_parser(:unknown_key) }.must_raise ArgumentError
+    end
+  end
+
+  describe '#get_config_val' do
+    it "raises on unknown name by default" do
+      proc { config.send(:get_config_val, {}, :unknown_key) }.must_raise ArgumentError
+    end
+    it "doesn't raise if told so" do
+      config.send(:get_config_val, {}, :unknown_key, false).must_equal nil
     end
   end
 

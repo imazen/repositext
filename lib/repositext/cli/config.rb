@@ -39,19 +39,33 @@ class Repositext
       # Retrieve a file pattern
       # @param[String, Symbol] name
       def file_pattern(name)
-        @file_patterns[name.to_sym]
+        get_config_val(@file_patterns, name)
       end
 
       # Retrieve a kramdown converter method
       # @param[String, Symbol] name
       def kramdown_converter_method(name)
-        @kramdown_converter_methods[name.to_sym]
+        get_config_val(@kramdown_converter_methods, name)
       end
 
       # Retrieve a kramdown parser
       # @param[String, Symbol] name
       def kramdown_parser(name)
-        @kramdown_parsers[name.to_sym]
+        get_config_val(@kramdown_parsers, name)
+      end
+
+    private
+
+      # Returns a key's value from container. Raises if an unknown key is requested.
+      # @param[Hash] container the Hash that contains the key
+      # @param[Symbol] key
+      # @param[Boolean, optional] raise_on_unknown_key
+      def get_config_val(container, key, raise_on_unknown_key = true)
+        key = key.to_sym
+        if raise_on_unknown_key && !container.keys.include?(key)
+          raise ArgumentError.new("You requested an unknown key: #{ key.inspect }")
+        end
+        container[key]
       end
 
     end
