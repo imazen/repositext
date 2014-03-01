@@ -109,6 +109,12 @@ class Repositext
 
     desc 'merge SPEC', 'Merges the contents of two files'
     long_desc long_description_for_merge
+    method_option :input_1,
+                  :type => :string,
+                  :desc => 'Specifies the input file pattern for the first file. Expects an absolute path pattern that can be used with Dir.glob.'
+    method_option :input_2,
+                  :type => :string,
+                  :desc => 'Specifies the base directory for the second file. Expects an absolute path to a directory.'
     # @param[String] command_spec Specification of the operation
     def merge(command_spec)
       self.send("merge_#{ command_spec }", options)
