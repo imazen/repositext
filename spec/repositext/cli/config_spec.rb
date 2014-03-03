@@ -90,6 +90,9 @@ describe Repositext::Cli::Config do
     it "raises on unknown name" do
       proc { config.base_dir(:unknown_key) }.must_raise ArgumentError
     end
+    it "raises an ArgumentError if name does not end with '_dir'" do
+      proc{ config.base_dir(:test) }.must_raise ArgumentError
+    end
   end
 
   describe '#file_pattern' do
@@ -103,6 +106,9 @@ describe Repositext::Cli::Config do
     end
     it "raises on unknown name" do
       proc { config.file_pattern(:unknown_key) }.must_raise ArgumentError
+    end
+    it "raises an ArgumentError if name does not end with '_dir'" do
+      proc{ config.file_pattern(:test) }.must_raise ArgumentError
     end
   end
 

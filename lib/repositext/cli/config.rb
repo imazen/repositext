@@ -54,12 +54,18 @@ class Repositext
       # Retrieve a base dir
       # @param[String, Symbol] name
       def base_dir(name)
+        if name.to_s !~ /_dir\z/
+          raise ArgumentError.new("A base dir name must end with '_dir'")
+        end
         get_config_val(@base_dirs, name)
       end
 
       # Retrieve a file pattern
       # @param[String, Symbol] name
       def file_pattern(name)
+        if name.to_s !~ /_files\z/
+          raise ArgumentError.new("A file pattern name must end with '_files'")
+        end
         get_config_val(@file_patterns, name)
       end
 
