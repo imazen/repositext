@@ -49,13 +49,12 @@ class Repositext
       # Moves files to another location
       # @param: See #process_files below for param description
       # @param[String] out_dir the output base directory
-      def self.move_files(file_pattern, out_dir, file_filter, description, options)
-        input_base_dir = Repositext::Cli::Utils.base_dir_from_glob_pattern(file_pattern)
-
+      def self.move_files(input_dir, input_file_pattern, output_dir, file_filter, description, options)
         # Change output file path to destination
         output_path_lambda = lambda do |input_filename|
-          input_filename.gsub(input_base_dir, out_dir)
+          input_filename.gsub(input_dir, output_dir)
         end
+        file_pattern = input_dir + input_file_pattern
 
         move_files_helper(
           file_pattern, file_filter, output_path_lambda, description, options

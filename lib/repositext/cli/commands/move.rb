@@ -5,14 +5,17 @@ class Repositext
     private
 
       def move_staging_to_master(options)
-        input_file_pattern = options[:input] || config.file_pattern(:staging_at)
-        output_file_pattern = options[:output] || config.file_pattern(:master)
-        output_base_dir = Repositext::Cli::Utils.base_dir_from_glob_pattern(output_file_pattern)
-        file_filter = /\.at\z/
-        description = "Moving AT files from staging to master"
+        input_file_spec = options[:input] || 'staging_dir.at_files'
+        output_base_dir = options[:output] || config.base_dir(:master_dir)
+        input_base_dir, input_file_pattern = input_file_spec.split('.')
 
         Repositext::Cli::Utils.move_files(
-          input_file_pattern, output_base_dir, file_filter, description, options
+          input_base_dir,
+          input_file_pattern,
+          output_base_dir,
+          /\.at\z/,
+          "Moving AT files from staging to master",
+          options
         )
       end
 
