@@ -1,27 +1,54 @@
-# This is an example Rtfile with default settings that run out of the box.
-# Modify the DSL methods below to suit your repository layout.
+=begin
+
+This is an example Rtfile with default settings that run out of the box.
+Modify the DSL methods below to suit your repository layout.
+
+Base directories and file patterns are used in combination to specify file sets.
+The convention is to chain them together, separated by dots, just like Active
+Record scopes in rails:
+
+<base_dir>.<file_pattern>
+
+Examples:
+
+* import_folio_dir.at_files
+* import_idml_dir.at_files
+* staging_dir.all_files
+* staging_dir.all_text_files
+
+=end
+
+# Base directories
+# ----------------
+
+# Provide a name and a base directory for each file set.
+# Append '_dir' to the name so that it can be resolved unambiguously.
+# It is recommended to expand paths relative to the location of this Rtfile
+# so that they work independently of the user's current working directory.
+# (Rather than using the current working directory).
+
+base_dir :import_folio_xml_dir, File.expand_path("initial_folio_import/folio/", File.dirname(__FILE__))
+base_dir :import_idml_dir, File.expand_path("initial_idml_import/idml/", File.dirname(__FILE__))
+base_dir :master_dir, File.expand_path("master/", File.dirname(__FILE__))
+base_dir :staging_dir, File.expand_path("staging/", File.dirname(__FILE__))
 
 # File patterns
 # -------------
 
 # Provide a name and a file pattern string (or block that returns a string) for
-# each file pattern.
-# It is recommended to expand paths relative to the location of this Rtfile
-# so that they work independently of the user's current working directory.
-# (Rather than using the current working directory).
+# each file pattern. These file patterns will be joined with base_dirs to
+# get a Dir.glob pattern for matching the desired file set.
 
-# Matches all FOLIO XML files in the import directory
-file_pattern :import_folio_xml, File.expand_path("initial_folio_import/folio/**/*.xml", File.dirname(__FILE__))
-# Matches all AT files in the FOLIO XML import directory
-file_pattern :import_folio_xml_at_files, File.expand_path("initial_folio_import/folio/**/*.at", File.dirname(__FILE__))
-# Matches all IDML files in the import directory
-file_pattern :import_idml, File.expand_path("initial_idml_import/idml/**/*.idml", File.dirname(__FILE__))
-# Matches all AT files in the IDML import directory
-file_pattern :import_idml_at_files, File.expand_path("initial_idml_import/idml/**/*.at", File.dirname(__FILE__))
-# Matches all files in master directory
-file_pattern :master, File.expand_path("master/**/*", File.dirname(__FILE__))
-# Matches all AT files in the staging directory
-file_pattern :staging_at, File.expand_path("staging/**/*.at", File.dirname(__FILE__))
+file_pattern :all_files, '**/*'
+file_pattern :at_files, '**/*.at'
+file_pattern :docx_files, '**/*.docx'
+file_pattern :icml_files, '**/*.icml'
+file_pattern :idml_files, '**/*.idml'
+file_pattern :json_files, '**/*.json'
+file_pattern :pt_files, '**/*.md'
+file_pattern :repositext_files, '**/*.[at|json|md|txt]'
+file_pattern :txt_files, '**/*.txt'
+file_pattern :xml_files, '**/*.xml'
 
 # Kramdown Parsers
 # ----------------

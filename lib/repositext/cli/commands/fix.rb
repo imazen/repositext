@@ -12,9 +12,9 @@ class Repositext
         # :record_marks without IALs.
         record_mark_rx = /\n\^\^\^\s#{ ial_rx }\n/
 
-        input_file_pattern = options[:input] || config.file_pattern(:staging_at)
+        input_file_spec = options[:input] || 'staging_dir.at_files'
         Repositext::Cli::Utils.change_files_in_place(
-          input_file_pattern,
+          config.compute_glob_pattern(input_file_spec),
           /\.at\z/i,
           "Adjusting merged :record_mark positions",
           options
@@ -74,9 +74,9 @@ class Repositext
 
       # Convert -- and ... and " to typographically correct characters
       def fix_folio_typographical_chars(options)
-        input_file_pattern = options[:input] || config.file_pattern(:import_folio_xml_at_files)
+        input_file_spec = options[:input] || 'import_folio_xml_dir.at_files'
         Repositext::Cli::Utils.change_files_in_place(
-          input_file_pattern,
+          config.compute_glob_pattern(input_file_spec),
           /\.(at|pt|txt)\z/i,
           "Changing typographical characters in files",
           options

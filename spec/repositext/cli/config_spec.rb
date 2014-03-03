@@ -7,23 +7,44 @@ describe Repositext::Cli::Config do
 
   describe '#rtfile_dir' do
     it "has an accessor" do
-      config.rtfile_dir = '123'
-      config.rtfile_dir.must_equal '123'
+      config.rtfile_dir = '/rtfile/dir/'
+      config.rtfile_dir.must_equal '/rtfile/dir/'
+    end
+  end
+
+  describe '#add_base_dir' do
+    it "adds a base dir" do
+      config.add_base_dir(:test_dir, 'test')
+      config.base_dir(:test_dir).must_equal 'test'
+    end
+    it "converts name to symbol" do
+      config.add_base_dir('test_dir', 'test')
+      config.base_dir(:test_dir).must_equal 'test'
+    end
+    it "converts base_dir to string" do
+      config.add_base_dir(:test_dir, :test)
+      config.base_dir(:test_dir).must_equal 'test'
+    end
+    it "raises an ArgumentError if name does not end with '_dir'" do
+      proc{ config.add_base_dir(:test, :test) }.must_raise ArgumentError
     end
   end
 
   describe '#add_file_pattern' do
     it "adds a file pattern" do
-      config.add_file_pattern(:test, 'test')
-      config.file_pattern(:test).must_equal 'test'
+      config.add_file_pattern(:test_files, 'test')
+      config.file_pattern(:test_files).must_equal 'test'
     end
     it "converts name to symbol" do
-      config.add_file_pattern('test', 'test')
-      config.file_pattern(:test).must_equal 'test'
+      config.add_file_pattern('test_files', 'test')
+      config.file_pattern(:test_files).must_equal 'test'
     end
     it "converts file_pattern to string" do
-      config.add_file_pattern(:test, :test)
-      config.file_pattern(:test).must_equal 'test'
+      config.add_file_pattern(:test_files, :test)
+      config.file_pattern(:test_files).must_equal 'test'
+    end
+    it "raises an ArgumentError if name does not end with '_dir'" do
+      proc{ config.add_file_pattern(:test, :test) }.must_raise ArgumentError
     end
   end
 
@@ -57,14 +78,28 @@ describe Repositext::Cli::Config do
     end
   end
 
-  describe '#file_pattern' do
-    it "returns a specified file_pattern" do
-      config.add_file_pattern(:test, 'test')
-      config.file_pattern(:test).must_equal 'test'
+  describe '#base_dir' do
+    it "returns a specified base_dir" do
+      config.add_base_dir(:test_dir, 'test')
+      config.base_dir(:test_dir).must_equal 'test'
     end
     it "converts name to symbol" do
-      config.add_file_pattern(:test, :test)
-      config.file_pattern('test').must_equal 'test'
+      config.add_base_dir(:test_dir, :test)
+      config.base_dir('test_dir').must_equal 'test'
+    end
+    it "raises on unknown name" do
+      proc { config.base_dir(:unknown_key) }.must_raise ArgumentError
+    end
+  end
+
+  describe '#file_pattern' do
+    it "returns a specified file_pattern" do
+      config.add_file_pattern(:test_files, 'test')
+      config.file_pattern(:test_files).must_equal 'test'
+    end
+    it "converts name to symbol" do
+      config.add_file_pattern(:test_files, :test)
+      config.file_pattern('test_files').must_equal 'test'
     end
     it "raises on unknown name" do
       proc { config.file_pattern(:unknown_key) }.must_raise ArgumentError
@@ -96,6 +131,24 @@ describe Repositext::Cli::Config do
     end
     it "raises on unknown name" do
       proc { config.add_kramdown_parser(:unknown_key) }.must_raise ArgumentError
+    end
+  end
+
+  describe '#compute_glob_pattern' do
+    before do
+      config.add_base_dir(:one_dir, '/dir/1/')
+      config.add_base_dir(:two_dir, '/dir/2/')
+      config.add_file_pattern(:one_files, '**/*.ext1')
+      config.add_file_pattern(:two_files, '**/*.ext2')
+    end
+    [
+      ['one_dir.one_files', '/dir/1/**/*.ext1'],
+      ['two_dir.two_files', '/dir/2/**/*.ext2'],
+      ['one_dir', '/dir/1/'],
+    ].each do |(file_spec, xpect)|
+      it "handles '#{ file_spec }'" do
+        config.compute_glob_pattern(file_spec).must_equal xpect
+      end
     end
   end
 

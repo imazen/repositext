@@ -8,13 +8,11 @@ class Repositext
       # Uses IDML as authority for text and all tokens except record_marks.
       # If no IDML file is present, uses FOLIO XML as authority for everything.
       def merge_record_marks_from_folio_xml_at_into_idml_at(options)
-        input_file_pattern_folio_xml = options[:input_1] || \
-                                       config.file_pattern(:import_folio_xml_at_files)
-        folio_xml_base_path = Repositext::Cli::Utils.base_dir_from_glob_pattern(input_file_pattern_folio_xml)
-        idml_base_path = options[:input_2] ||
-                         File.join(config.rtfile_dir, "initial_idml_import/idml/")
-        output_base_path = options[:output] ||
-                         File.join(config.rtfile_dir, "staging/")
+        input_file_spec_folio_xml = options[:input_1] || 'import_folio_xml_dir.at_files'
+        input_file_pattern_folio_xml = config.compute_glob_pattern(input_file_spec_folio_xml)
+        import_folio_xml_base_dir = config.base_dir(:import_folio_xml_dir)
+        import_idml_base_dir = options[:input_2] || config.base_dir(:import_idml_dir)
+        output_base_dir = options[:output] || config.base_dir(:staging_dir)
 
         $stderr.puts "Merging :record_mark tokens from folio_at into idml_at"
         $stderr.puts '-' * 80
@@ -34,8 +32,8 @@ class Repositext
           total_count += 1
 
           # prepare paths
-          at_idml_file_name = at_folio_file_name.gsub(folio_xml_base_path, idml_base_path).gsub(/folio\.at\z/, 'idml.at')
-          output_file_name = at_folio_file_name.gsub(folio_xml_base_path, output_base_path).gsub(/folio\.at\z/, 'at')
+          at_idml_file_name = at_folio_file_name.gsub(import_folio_xml_base_dir, import_idml_base_dir).gsub(/folio\.at\z/, 'idml.at')
+          output_file_name = at_folio_file_name.gsub(import_folio_xml_base_dir, output_base_dir).gsub(/folio\.at\z/, 'at')
 
           if File.exists?(at_idml_file_name)
             # IDML file is present
