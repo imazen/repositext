@@ -16,4 +16,3 @@ include FakeFS
 # after do
 #   FakeFS.deactivate!
 # end
-
