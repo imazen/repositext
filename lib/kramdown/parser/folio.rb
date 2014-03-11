@@ -55,15 +55,14 @@ module Kramdown
       #     corresponding file names, values are each document as string.
       #     * 'folio.at': kramdown file imported from folio.xml
       #     * 'folio.deleted_text.json': text that was deleted while importing folio.xml
-      #     * 'folio.editors_notes.json': editors notes that were extracted while importing folio.xml
+      #     * 'folio.notes.json': editors notes that were extracted while importing folio.xml
       #     * 'folio.data.json': data that was extracted while importing folio.xml
       #     * 'folio.warnings.json': warnings that were raised while importing folio.xml
       def parse
         # Initialize processing i_vars
         @data_output = {}
         @deleted_text_output = []
-        # QUESTION: What do we call editors_notes?
-        @editors_notes_output = []
+        @notes_output = []
         @warnings_output = []
         @ke_context = Folio::KeContext.new(
           { :root => Kramdown::ElementRt.new(:root, nil, nil, :encoding => 'UTF-8') },
@@ -88,7 +87,7 @@ module Kramdown
           'folio.at' => kramdown_string,
           'folio.data.json' => @data_output.to_json(json_state),
           'folio.deleted_text.json' => @deleted_text_output.to_json(json_state),
-          'folio.editors_notes.json' => @editors_notes_output.to_json(json_state),
+          'folio.notes.json' => @notes_output.to_json(json_state),
           'folio.warnings.json' => @warnings_output.to_json(json_state),
         }
       end
@@ -128,9 +127,9 @@ module Kramdown
       end
       # @param[Nokogiri::XML::Node] xn the XML Node to process
       # @param[String] message
-      def add_editors_notes(xn, message)
+      def add_notes(xn, message)
         if !message.nil? && '' != message
-          @editors_notes_output << {
+          @notes_output << {
             message: message,
             line: xn.line,
             path: xn_name_and_class_path(xn)
@@ -353,11 +352,11 @@ module Kramdown
       # Delete xn, send to deleted_text, children won't be processed
       # @param[Nokogiri::XML::Node] xn
       # @param[Boolean] send_to_deleted_text whether to send node's text to deleted_text
-      # @param[Boolean] send_to_editors_notes whether to send node's text to editors_notes
-      def delete_node(xn, send_to_deleted_text, send_to_editors_notes)
+      # @param[Boolean] send_to_notes whether to send node's text to notes
+      def delete_node(xn, send_to_deleted_text, send_to_notes)
         @xn_context.process_children = false
         add_deleted_text(xn, xn.text)  if send_to_deleted_text
-        add_editors_notes(xn, "Deleted text: #{ xn.text }")  if send_to_editors_notes
+        add_notes(xn, "Deleted text: #{ xn.text }")  if send_to_notes
       end
 
       # Deletes a_string from xn and all its descendant nodes.

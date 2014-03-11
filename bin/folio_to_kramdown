@@ -34,7 +34,7 @@ Dir.glob(file_pattern).find_all { |e| e =~ /\.xml$/ }.each do |xml_file_name|
       'folio.at',
       'folio.data.json',
       'folio.deleted_text.json',
-      'folio.editors_notes.json',
+      'folio.notes.json',
       'folio.warnings.json',
     ].each do |file_type|
       ft_file_name = xml_file_name.gsub(/\.xml\z/, ".#{ file_type }")
