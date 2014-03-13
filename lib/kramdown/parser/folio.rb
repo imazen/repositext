@@ -372,6 +372,21 @@ module Kramdown
         @xn_context.process_children = false
       end
 
+      # Lowercases text contents of xn: 'TestString ALLCAPS' => 'teststrings allcaps'
+      # @param[Nokogiri::XML::Node] xn
+      def lowercase_node_text_contents!(xn)
+        xn.children.each { |xnc|
+          if xnc.text?
+            xnc.content = xnc.content.downcase
+          else
+            add_warning(
+              xn,
+              "lowercase_node_text_contents was called on node that contained non-text children: #{ xn_name_and_class(xn) }"
+            )
+          end
+        }
+      end
+
       # Pull xn, Replacing self with children. Xml tree recursion will process children.
       # @param[Nokogiri::XML::Node] xn
       def pull_node(xn)
