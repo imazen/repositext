@@ -180,7 +180,7 @@ module Kramdown
         }
         return el  unless char_has_non_whitespace_content
 
-        if char['AppliedCharacterStyle'] == 'CharacterStyle/Bold Italic'
+        if char['AppliedCharacterStyle'] == 'CharacterStyle/Bold Italic' || char['FontStyle'] == 'Bold Italic'
           # Create pair of nested elements to include both bold and italic styles.
           parent_el = Element.new(:strong, nil, nil, :location => l)
           el = Element.new(:em, nil, nil, :location => l)
