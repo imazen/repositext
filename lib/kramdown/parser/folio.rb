@@ -359,20 +359,6 @@ module Kramdown
         add_notes(xn, "Deleted text: #{ xn.text }")  if send_to_notes
       end
 
-      # Deletes a_string from xn and all its descendant nodes.
-      # @param[String, Regexp] search_string_or_regex a string or regex for finding
-      # @param[String] replace_string the replacement string
-      # @param[Nokogiri::XML::Node] xn
-      def replace_string_inside_node!(search_string_or_regex, replace_string, xn)
-        if xn.text? && '' != xn.text && !xn.text.nil?
-          xn.content = xn.text.gsub(search_string_or_regex, replace_string)
-        else
-          xn.children.each { |child_xn|
-            replace_string_inside_node!(search_string_or_regex, replace_string, child_xn)
-          }
-        end
-      end
-
       # Call this from xn processing methods where we want to record that a match
       # has been found. This is used so that we can raise a warning for any
       # unhandled XML nodes.
@@ -390,6 +376,20 @@ module Kramdown
       # @param[Nokogiri::XML::Node] xn
       def pull_node(xn)
         # nothing to do with node
+      end
+
+      # Deletes a_string from xn and all its descendant nodes.
+      # @param[String, Regexp] search_string_or_regex a string or regex for finding
+      # @param[String] replace_string the replacement string
+      # @param[Nokogiri::XML::Node] xn
+      def replace_string_inside_node!(search_string_or_regex, replace_string, xn)
+        if xn.text? && '' != xn.text && !xn.text.nil?
+          xn.content = xn.text.gsub(search_string_or_regex, replace_string)
+        else
+          xn.children.each { |child_xn|
+            replace_string_inside_node!(search_string_or_regex, replace_string, child_xn)
+          }
+        end
       end
 
       # Raises a warning and returns false if xn contains any text content other
