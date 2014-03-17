@@ -55,26 +55,20 @@ module Kramdown
         # Print  element's value (e.g., type :text)
         el_value = el_value.truncate_in_the_middle(el_options[:max_value_length])
         el_value = el_value.length > 0 ? el_value.inspect : nil
-        [
-          el_indent,
-          ":#{ type }",
-          (attr.inspect  if attr && attr.any?),
-          (options.inspect  if options && options.any?),
-          el_value
-        ].compact.join(" - ")
       when Kramdown::Utils::Entities::Entity
         # Print :entity's code_point
-        [
-          el_indent,
-          ":#{ type }",
-          (attr.inspect  if attr && attr.any?),
-          (options.inspect  if options && options.any?),
-          "code_point: #{ el_value.code_point }"
-        ].compact.join(" - ")
+        el_value = "code_point: #{ el_value.code_point }"
       else
         # Raise on any other cases
         raise el_value.inspect
       end
+      [
+        el_indent,
+        ":#{ type }",
+        (attr.inspect  if attr && attr.any?),
+        (options.inspect  if options && options.any?),
+        el_value
+      ].compact.join(" - ")
     end
 
     # Returns true if self is of same element type as other_ke.
