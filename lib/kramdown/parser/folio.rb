@@ -177,8 +177,10 @@ module Kramdown
       # @param[Kramdown::Element] kramdown_tree the root of the tree
       def post_process_kramdown_tree!(kramdown_tree)
         # override this to post process elements in the kramdown tree
-        # NOTE: It's important to call super if you override this method
-        # to get merging of adjacent elements and pushing out whitespace.
+        # NOTE: It's important to call the methods below for correct results.
+        # You have two options:
+        # 1. call super if you override this method
+        # 2. copy the methods below into your own method if you need different sequence
         recursively_merge_adjacent_elements!(kramdown_tree)
         recursively_push_out_whitespace!(kramdown_tree)
         recursively_clean_up_tree!(kramdown_tree)

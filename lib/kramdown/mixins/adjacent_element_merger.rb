@@ -8,7 +8,7 @@ module Kramdown
     # @param[Kramdown::Element] ke
     def recursively_merge_adjacent_elements!(ke)
       # Work from the bottom up so that tree mutations don't interfere with
-      # iteration of children.
+      # iteration over children.
       # First iterate over children
       ke.children.each { |cke| recursively_merge_adjacent_elements!(cke) }
       # Then do mutation on current ke at the end
@@ -37,6 +37,7 @@ module Kramdown
             cur_ke.children.concat(next_ke.children)
           end
           ke.children.delete_at(index + 1)
+          # don't increment index since we deleted element at index+1 position
         elsif(
           next_next_ke && [:em, :strong].include?(next_next_ke.type) &&
           next_ke.type == :text && next_ke.value.strip.empty? &&
@@ -49,6 +50,7 @@ module Kramdown
           # we want to delete is not at index+2 any more, but has moved up to index+1
           ke.children.delete_at(index + 2)
           ke.children.delete_at(index + 1)
+          # don't increment index since we deleted elements at index+1 and index+2 positions
         else
           index += 1
         end
