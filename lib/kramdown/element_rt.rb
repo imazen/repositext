@@ -140,6 +140,14 @@ module Kramdown
       detach_from_parent
     end
 
+    # Finds self's root element
+    def find_root_element
+      if parent
+        parent.find_root_element
+      else
+        self
+      end
+    end
 
     # Below are sketches of methods we may want to add in the future. Don't
     # need them right now
