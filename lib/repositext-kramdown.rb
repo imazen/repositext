@@ -25,3 +25,7 @@ require 'kramdown/parser/idml'
 require 'kramdown/parser/idml_story'
 require 'kramdown/parser/kramdown_repositext'
 require 'kramdown/patch_element'
+
+require 'repositext/fix/adjust_merged_record_mark_positions'
+require 'repositext/fix/convert_abbreviations_to_lower_case'
+require 'repositext/fix/convert_folio_typographical_chars'
