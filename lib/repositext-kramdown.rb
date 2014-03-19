@@ -1,9 +1,14 @@
 # NOTE: None of the CLI code is required here. It's required in lib/rt/cli.rb
 
+# TODO: look at this for configuration:
+# http://brandonhilkert.com/blog/ruby-gem-configuration-patterns/
+# https://news.ycombinator.com/item?id=7428051
+
 require 'awesome_print'
 require 'erb'
 require 'json'
 require 'kramdown/document'
+require 'outcome'
 require 'suspension'
 
 require 'patch_string'
