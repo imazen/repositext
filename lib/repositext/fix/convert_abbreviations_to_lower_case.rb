@@ -9,8 +9,9 @@ class Repositext
       # @return[Outcome]
       def self.fix(text)
         t = text.dup
-        t.gsub!(/A\.M\.|P\.M\.|A\.D\.|B\.C\./) { |abbr| "*#{ abbr.downcase }*{: .smcaps}" }
-        Outcome.new(true, { contents: text }, [])
+        # NOTE: We need negative lookahead 'D' for B.C. to avoid replacement in A.B.C.D.E...
+        t.gsub!(/A\.M\.|P\.M\.|A\.D\.|(B\.C\.(?!D))/) { |abbr| "*#{ abbr.downcase }*{: .smcaps}" }
+        Outcome.new(true, { contents: t }, [])
       end
 
     end
