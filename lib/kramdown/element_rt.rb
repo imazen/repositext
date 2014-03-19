@@ -21,12 +21,18 @@ module Kramdown
     end
 
     # Adds child_ke as child, and returns it, or discards child_ke and returns
-    # self if self and child_ke can be merged. This helps avoid nested :ems
+    # self if self and child_ke can be merged. This helps avoid nested :ems.
+    # If child_ke is reused: Adopts child_ke's children and detaches child_ke from parent.
+    # This method can be used any time a tree is modified and elements are
+    # moved around to avoid nested ems.
     # @param[Kramdown::Element] child_ke
     # @return[Kramdown::Element] child_ke or self
     def add_child_or_reuse_if_same(child_ke)
       if is_of_same_type_as?(child_ke)
         # use self
+        # adopt child_ke's children
+        self.add_child(child_ke.children)
+        child_ke.detach_from_parent
         self
       else
         # Add child_ke as child to self and use child_ke
@@ -74,6 +80,8 @@ module Kramdown
       (attr['class'] || '').split(' ').any? { |e| e == a_class }
     end
 
+    # Inserts el as sibling after self
+    # @param[Kramdown::Element] el
     def insert_sibling_after(el)
       raise ArgumentError.new('You tried to insert self after self')  if self == el
       return nil  if parent.nil? # self is root
@@ -147,6 +155,23 @@ module Kramdown
       else
         self
       end
+    end
+
+    # Clones self and all children (if recursive is true)
+    # @param[Bool, optional] recursive will deep clone children if true
+    def clone(recursive = true)
+      new_self = Kramdown::ElementRt.new(
+        type,
+        value,
+        attr,
+        options
+      )
+      if recursive
+        children.each do |child|
+          new_self.add_child(child.clone)
+        end
+      end
+      new_self
     end
 
     # Below are sketches of methods we may want to add in the future. Don't
