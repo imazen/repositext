@@ -31,6 +31,8 @@ module Kramdown
     class Folio
 
       include Kramdown::AdjacentElementMerger
+      include Kramdown::NestedEmsProcessor
+      include Kramdown::TmpEmClassProcessor
       include Kramdown::TreeCleaner
       include Kramdown::WhitespaceOutPusher
 
@@ -181,7 +183,10 @@ module Kramdown
         # You have two options:
         # 1. call super if you override this method
         # 2. copy the methods below into your own method if you need different sequence
+        process_temp_em_class!(kramdown_tree, 'tmpNoBold')
+        process_temp_em_class!(kramdown_tree, 'tmpNoItalics')
         recursively_merge_adjacent_elements!(kramdown_tree)
+        clean_up_nested_ems!(kramdown_tree) # has to be called after process_temp_em_class
         recursively_push_out_whitespace!(kramdown_tree)
         recursively_clean_up_tree!(kramdown_tree)
       end
