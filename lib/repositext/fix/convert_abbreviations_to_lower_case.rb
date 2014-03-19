@@ -4,7 +4,11 @@ class Repositext
 
       # Finds all instances of A.M., P.M., A.D. and B.C., downcases the text
       # and surrounds it with '*' and adds {: .smcaps}, like so: *a.d.*{: .smcaps}
-      # TODO: make sure that none of these are nested inside an :em
+      # NOTE: this breaks if the replaced abbreviation is nested inside an :em.
+      # Example:
+      #      *outer em *a.d.*{: .smcaps} outer again*
+      #   => <p><em class="smcaps">outer em *a.d.</em> outer again*</p>
+      # We will catch this with our validation that looks for leftover kramdown characters.
       # @param[String] text
       # @return[Outcome]
       def self.fix(text)
