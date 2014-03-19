@@ -76,7 +76,7 @@ module Kramdown
     # @param[Kramdown::Element] other_ke
     def is_of_same_type_as?(other_ke)
       type == other_ke.type &&
-      attr == other_ke.attr &&
+      attr.reject { |k,v| 'id' == k } == other_ke.attr.reject { |k,v| 'id' == k } &&
       options.reject { |k,v| :location == k } == other_ke.options.reject { |k,v| :location == k }
     end
 

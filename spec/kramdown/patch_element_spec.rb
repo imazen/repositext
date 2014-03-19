@@ -23,6 +23,8 @@ describe Kramdown::Element do
     [
       [[:em], [:em], true],
       [[:em], [:strong], false],
+      [[:em, nil, { 'id' => 'id1' }], [:em, nil, { 'id' => 'id1' }], true],
+      [[:em, nil, { 'id' => 'id1' }], [:em, nil, { 'id' => 'id2' }], true],
       [[:em, nil, { 'class' => 'class1' }], [:em, nil, { 'class' => 'class1' }], true],
       [[:em, nil, { 'class' => 'class1' }], [:em, nil, { 'class' => 'class2' }], false],
       [[:em, nil, nil, { :location => 'loc1' }], [:em, nil, nil, { :location => 'loc2' }], true],
