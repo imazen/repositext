@@ -3,7 +3,7 @@ require_relative '../parser/folio/helper.rb'
 
 describe ::Kramdown::TmpEmClassProcessor do
 
-  describe 'process_temp_em_class' do
+  describe 'process_temp_em_class!' do
 
     em1 = Kramdown::ElementRt.new(:em, nil, 'id' => 'em1')
     em2 = Kramdown::ElementRt.new(:em, nil, 'id' => 'em2')
