@@ -7,7 +7,7 @@ class Repositext
       # @return[Outcome]
       def self.fix(text)
         #Abbreviations are valid instances we need to handle
-        text = text.gsub /(Mrs?\.)\.\.\./i, "\1…"
+        text = text.gsub /(Mrs?\.)\.\.\./i, '\1…'
         #Replace 3, but not 4 dots with ellipsis
         text.gsub! /\.{3}(?!\.)/, "…"
 
