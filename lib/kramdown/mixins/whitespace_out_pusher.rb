@@ -26,30 +26,40 @@ module Kramdown
     # @param[Kramdown::Element] ke
     def push_out_whitespace!(ke)
       if [:em, :strong].include?(ke.type) && ke.children.any?
-        if :text == ke.children.first.type && ke.children.first.value =~ /\A[ \n\t]+/
+        fc = ke.children.first
+        if :text == fc.type && fc.value =~ /\A[ \n\t]+/
           # push out leading whitespace
-          ke.children.first.value.lstrip!
-          if(prev_sib = ke.previous_sibling).nil? || (:text != prev_sib.type)
+          fc.value.lstrip!
+          if(prev_sib = ke.previous_sibling) && (:text == prev_sib.type)
+            # previous sibling is :text el
+            # Append whitespace
+            prev_sib.value << ' '
+          else
             # previous sibling doesn't exist or is something other than :text
             # Insert a :text el as previous sibling
             ke.insert_sibling_before(Kramdown::ElementRt.new(:text, ' '))
-          else
-            # previous sibling is :text el
-            # Append leading whitespace
-            prev_sib.value << ' '
+          end
+          # remove text node if it is now empty
+          if ['', nil].include?(fc.value)
+            fc.detach_from_parent
           end
         end
-        if :text == ke.children.last.type && ke.children.last.value =~ /[ \n\t]+\z/
+        lc = ke.children.last
+        if lc && :text == lc.type && lc.value =~ /[ \n\t]+\z/
           # push out trailing whitespace
-          ke.children.last.value.rstrip!
-          if(foll_sib = ke.following_sibling).nil? || (:text != foll_sib.type)
+          lc.value.rstrip!
+          if(foll_sib = ke.following_sibling) && (:text == foll_sib.type)
+            # following sibling is :text el
+            # Prepend trailing whitespace
+            foll_sib.value.prepend(' ')
+          else
             # following sibling doesn't exist or is something other than :text
             # Insert a :text el as followings sibling
             ke.insert_sibling_after(Kramdown::ElementRt.new(:text, ' '))
-          else
-            # following sibling is :text el
-            # Prepend trailing whitespace
-            foll_sib.value = ' ' + foll_sib.value
+          end
+          # remove text node if it is now empty
+          if ['', nil].include?(lc.value)
+            lc.detach_from_parent
           end
         end
       end
