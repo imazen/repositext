@@ -32,12 +32,12 @@ module Kramdown
       elsif(
         :p == ke.type &&
         (ke.children.none? || ke.children.all? { |ke_c|
-          :text == ke_c.type && ['', nil].include?(ke_c.value.to_s.strip)
+          :text == ke_c.type && '' == ke_c.value.to_s.strip
         })
       )
         # para is empty or contains whitespace only and can be completely deleted
         ke.detach_from_parent
-      elsif :text == ke.type && ['', nil].include?(ke.value)
+      elsif :text == ke.type && ['', nil].include?(ke.value) # NOTE: don't strip. We want to preserve whitespace.
         # remove node
         ke.detach_from_parent
       end
