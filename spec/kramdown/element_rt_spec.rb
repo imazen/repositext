@@ -103,7 +103,7 @@ describe Kramdown::ElementRt do
       t1.detach_from_parent
       t1.parent.must_equal nil
     end
-    it "removes ke from parents children collection" do
+    it "removes ke from parent's children collection" do
       r = Kramdown::ElementRt.new(:root)
       t1 = Kramdown::ElementRt.new(:text, 'text1')
       t2 = Kramdown::ElementRt.new(:text, 'text2')
