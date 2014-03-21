@@ -3,7 +3,7 @@ require_relative '../parser/folio/helper.rb'
 
 describe ::Kramdown::TmpEmClassProcessor do
 
-  describe 'process_temp_em_class!' do
+  describe 'recursively_process_temp_em_class!' do
 
     em1 = Kramdown::ElementRt.new(:em, nil, 'id' => 'em1')
     em2 = Kramdown::ElementRt.new(:em, nil, 'id' => 'em2')
@@ -288,7 +288,7 @@ describe ::Kramdown::TmpEmClassProcessor do
     ].each do |desc, kt, xpect|
       it desc do
         parser = Kramdown::Parser::Folio.new("")
-        parser.send(:process_temp_em_class!, kt, 'tmpNoItalics')
+        parser.send(:recursively_process_temp_em_class!, kt, 'tmpNoItalics')
         kt.inspect_tree.must_equal xpect.gsub(/\n          /, "\n")
       end
     end

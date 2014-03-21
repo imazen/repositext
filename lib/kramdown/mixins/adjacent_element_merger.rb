@@ -9,8 +9,12 @@ module Kramdown
     def recursively_merge_adjacent_elements!(ke)
       # Work from the bottom up so that tree mutations don't interfere with
       # iteration over children.
-      # First iterate over children
-      ke.children.each { |cke| recursively_merge_adjacent_elements!(cke) }
+      # First iterate over children, use queue to decouple it from a parent's children
+      # collection. This is important to make recursion work.
+      ke_processing_queue = ke.children.dup # duplicate list with references to same objects
+      while(ke_child = ke_processing_queue.shift) do
+        recursively_merge_adjacent_elements!(ke_child)
+      end
       # Then do mutation on current ke at the end
       merge_adjacent_child_elements!(ke)
     end

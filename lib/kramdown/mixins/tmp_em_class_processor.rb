@@ -8,9 +8,13 @@ module Kramdown
     # remove bold or italic from a span.
     # @param[Kramdown::Element] ke the root node of a kramdown tree
     # @param[String] tmp_class_name the name of the tmp class
-    def process_temp_em_class!(ke, tmp_class_name)
-      # Recurse over ke.children
-      ke.children.each { |e| process_temp_em_class!(e, tmp_class_name) }
+    def recursively_process_temp_em_class!(ke, tmp_class_name)
+      # First iterate over children, use queue to decouple it from a parent's children
+      # collection. This is important to make recursion work.
+      ke_processing_queue = ke.children.dup # duplicate list with references to same objects
+      while(ke_child = ke_processing_queue.shift) do
+        recursively_process_temp_em_class!(ke_child, tmp_class_name)
+      end
       # Then process ke
       if [:em, :strong].include?(ke.type)
         # Inside em, with possibility of nested tmp_classes
@@ -77,7 +81,7 @@ module Kramdown
         end
       end
       # Process any new siblings we added to ke
-      ke_sibling_processing_queue.each { |e| process_temp_em_class!(e, tmp_class_name) }
+      ke_sibling_processing_queue.each { |e| recursively_process_temp_em_class!(e, tmp_class_name) }
       # Delete all elements marked for deletion
       ke_s_to_delete.each { |e| e.detach_from_parent }
     end

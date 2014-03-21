@@ -11,8 +11,12 @@ module Kramdown
     def recursively_clean_up_tree!(ke)
       # Work from the bottom up so that tree mutations don't interfere with
       # iteration of children.
-      # First iterate over children
-      ke.children.each { |cke| recursively_clean_up_tree!(cke) }
+      # First iterate over children, use queue to decouple it from a parent's children
+      # collection. This is important to make recursion work.
+      ke_processing_queue = ke.children.dup # duplicate list with references to same objects
+      while(ke_child = ke_processing_queue.shift) do
+        recursively_clean_up_tree!(ke_child)
+      end
       # Then do mutation on current ke at the end
       clean_up_tree_element!(ke)
     end
