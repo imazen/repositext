@@ -10,6 +10,7 @@ module Kramdown
     # Add child_or_children at_index as child to self
     # @param[Array<Kramdown::Element>, Kramdown::Element] child_or_children as scalar or array
     # @param[Integer, optional] at_index
+    # @return[Array] self's children
     def add_child(child_or_children, at_index = -1)
       the_children = [*child_or_children]
       the_children.each do |the_child|
@@ -160,11 +161,12 @@ module Kramdown
     # Clones self and all children (if recursive is true)
     # @param[Bool, optional] recursive will deep clone children if true
     def clone(recursive = true)
+      # have to dup value, attr, options, otherwise two elements will share same instance
       new_self = Kramdown::ElementRt.new(
-        type,
-        value,
-        attr,
-        options
+        type, # this is a symbol, can't be duped
+        (value.dup  if value),
+        (attr.dup  if attr),
+        (options.dup  if options)
       )
       if recursive
         children.each do |child|
