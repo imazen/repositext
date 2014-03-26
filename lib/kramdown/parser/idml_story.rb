@@ -413,6 +413,11 @@ module Kramdown
           # After whitespace is pushed out, the \t will be a direct :text child
           # of :p and first char will be easy to detect.
           recursively_sanitize_whitespace_during_import!(el)
+
+          # merge again since we may have new identical siblings after all the
+          # other processing.
+          merge_adjacent_child_elements!(el)
+
           validation_hook_during_update_tree(el)
         end
 

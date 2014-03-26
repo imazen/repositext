@@ -203,6 +203,9 @@ module Kramdown
         # After whitespace is pushed out, the \t will be a direct :text child
         # of :p and first char will be easy to detect.
         recursively_sanitize_whitespace_during_import!(kramdown_tree)
+        # merge again since we may have new identical siblings after all the
+        # other processing.
+        recursively_merge_adjacent_elements!(kramdown_tree)
         recursively_clean_up_tree!(kramdown_tree)
       end
 
