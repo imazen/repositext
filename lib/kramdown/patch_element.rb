@@ -80,5 +80,46 @@ module Kramdown
       options.reject { |k,v| :location == k } == other_ke.options.reject { |k,v| :location == k }
     end
 
+    # Compares self recursively with other_ke
+    # @param[Kramdown::Element] other_ke
+    # @param[Array, optional] diffs a collector that is used during recursion to collect diffs
+    # @param[Hash, optional] options
+    # @return[Array<String>] an array with differences between the two
+    def compare_with(other_ke, diffs = [], options = {})
+      options = {
+        :recursive => true
+      }.merge(options)
+      # compare type, value and attr. Ignore options
+      if(
+        type != other_ke.type ||
+        attr != other_ke.attr ||
+        value != other_ke.value
+      )
+        diffs << "different element: #{ element_summary } => #{ other_ke.element_summary }"
+      end
+      if options[:recursive]
+        # remove blanks and other empty elements
+        child_selector = lambda { |child_ke|
+          !(
+            :blank == child_ke.type ||
+            (:text == child_ke.type && [nil, ''].include?(child_ke.value))
+          )
+        }
+        own_children = children.find_all(&child_selector)
+        other_children = other_ke.children.find_all(&child_selector)
+        if own_children.size == other_children.size
+          # compare each child
+          matched_children = own_children.zip(other_children)
+          matched_children.each do |(own_child, other_child)|
+            own_child.compare_with(other_child, diffs, options)
+          end
+        else
+          # record the fact that children are different, stop recursing
+          diffs << "different children: #{ element_summary } has #{ own_children.size } children, other_ke has #{ other_children.size }"
+        end
+      end
+      diffs
+    end
+
   end
 end
