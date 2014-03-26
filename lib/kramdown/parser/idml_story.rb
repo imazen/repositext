@@ -355,19 +355,12 @@ module Kramdown
           iterate_over_children.call(el)
           if el.type == :hr
             el.children.clear
-          elsif el.type == :p && (el.attr['class'] =~ /\bnormal\b/ || el.attr['class'] =~ /\bq\b/) &&
-              el.children.any? && el.children.first.type == :text
-            # remove leading tab from 'normal' and 'q' paragraphs
-            el.children.first.value.sub!(/\A\t/, '')
-          elsif (el.type == :em || el.type == :strong) && el.children.length == 0
-            # element is empty and can be completely deleted
+          elsif [:em, :strong].include?(el.type) && el.children.empty?
+            # span element is empty and can be completely deleted
             @stack.last.children.delete_at(index)
             index -= 1
-          elsif :header == el.type && el.children.all? { |e| :text == e.type && '' == (e.value || '').strip }
-            # remove empty headers
-            # TODO: find out why eng62-1104m.idml line# 6600 produces two :header kramdown
-            # elements when importing IDML. We're just removing the symptom here.
-            # The cause is that we get two :header elements from a single XML node.
+          elsif [:header, :p].include?(el.type) && el.children.all? { |e| :text == e.type && '' == e.value.to_s.strip }
+            # block element is empty or contains whitespace only and can be removed
             @stack.last.children.delete_at(index)
             index -= 1
           elsif (el.type == :em || el.type == :strong)
@@ -392,6 +385,10 @@ module Kramdown
               @stack.last.children.delete(el)
               index -= 1
             end
+          elsif :text == el.type && ['', nil].include?(el.value)
+            # element is empty and can be completely deleted
+            @stack.last.children.delete_at(index)
+            index -= 1
           end
 
           index
