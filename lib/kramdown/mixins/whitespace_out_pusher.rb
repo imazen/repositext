@@ -4,6 +4,11 @@
 # NOTE: This requires the tree traversal and manipulation methods defined in
 # Kramdown::ElementRt
 
+# TODO: if we were to adopt the code used in idml_story parser which operates
+# on ke's parent, then we could get away without the tree traversal methods
+# used here. And then we could unify the code used for pushing out whitespace
+# in folio and idml parsers.
+
 module Kramdown
   module WhitespaceOutPusher
 

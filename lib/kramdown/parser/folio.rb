@@ -191,14 +191,6 @@ module Kramdown
         recursively_clean_up_tree!(kramdown_tree)
       end
 
-      # Performs post-processing on the kramdown string
-      # @param[String] kramdown_string
-      # @return[String] a modified copy of kramdown_string
-      def post_process_kramdown_string(kramdown_string)
-        # Collapse all whitespace to single spaces. Strip leading and trailing whitespace.
-        kramdown_string.strip.gsub(/ +/, ' ') + "\n"
-      end
-
       # ***********************************************
       # Node type specific processors
       # ***********************************************

@@ -40,6 +40,7 @@ module Kramdown
       end
 
       # @param[Array<Story>] stories the stories to import. Defaults to story_to_import.
+      # @return[Kramdown::Document]
       def parse(stories = self.stories_to_import)
         data = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
         data << '<idPkg:Story xmlns:idPkg="http://ns.adobe.com/AdobeInDesign/idml/1.0/packaging" DOMVersion="8.0">'
