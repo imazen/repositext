@@ -12,6 +12,7 @@ module Kramdown
     class IdmlStory < Base
 
       include Kramdown::AdjacentElementMerger
+      include Kramdown::ImportWhitespaceSanitizer
 
       class InvalidElementException < RuntimeError; end
 
@@ -407,6 +408,11 @@ module Kramdown
           end
           @stack.pop
 
+          # needs to run after whitespace has been pushed out so that we won't
+          # have a leading \t inside an :em that is the first child in a para.
+          # After whitespace is pushed out, the \t will be a direct :text child
+          # of :p and first char will be easy to detect.
+          recursively_sanitize_whitespace_during_import!(el)
           validation_hook_during_update_tree(el)
         end
 

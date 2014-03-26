@@ -31,6 +31,7 @@ module Kramdown
     class Folio
 
       include Kramdown::AdjacentElementMerger
+      include Kramdown::ImportWhitespaceSanitizer
       include Kramdown::NestedEmsProcessor
       include Kramdown::TmpEmClassProcessor
       include Kramdown::TreeCleaner
@@ -188,6 +189,11 @@ module Kramdown
         recursively_merge_adjacent_elements!(kramdown_tree)
         recursively_clean_up_nested_ems!(kramdown_tree) # has to be called after process_temp_em_class
         recursively_push_out_whitespace!(kramdown_tree)
+        # needs to run after whitespace has been pushed out so that we won't
+        # have a leading \t inside an :em that is the first child in a para.
+        # After whitespace is pushed out, the \t will be a direct :text child
+        # of :p and first char will be easy to detect.
+        recursively_sanitize_whitespace_during_import!(kramdown_tree)
         recursively_clean_up_tree!(kramdown_tree)
       end
 
