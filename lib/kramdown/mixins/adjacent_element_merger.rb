@@ -25,7 +25,7 @@ module Kramdown
     # @param[Kramdown::Element] ke
     # @return[Integer] index of the last processed element
     def merge_adjacent_child_elements!(ke)
-      if ke.children.first.nil? || :span != ::Kramdown::Element.category(ke.children.first)
+      if ke.children.first.nil?
         # No merging is possible, early exit
         return nil
       end
