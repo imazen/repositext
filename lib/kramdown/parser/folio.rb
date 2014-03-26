@@ -62,11 +62,31 @@ module Kramdown
       #     * 'folio.data.json': data that was extracted while importing folio.xml
       #     * 'folio.warnings.json': warnings that were raised while importing folio.xml
       def parse
+        kramdown_doc = parse_to_kramdown_document
+
+        # Prepare return value
+        kramdown_string = kramdown_doc.send(kramdown_conversion_method_name)
+        json_state = JSON::State.new(array_nl: "\n") # to format json output
+        {
+          'folio.at' => kramdown_string,
+          'folio.data.json' => @data_output.to_json(json_state),
+          'folio.deleted_text.json' => @deleted_text_output.to_json(json_state),
+          'folio.notes.json' => @notes_output.to_json(json_state),
+          'folio.warnings.json' => @warnings_output.to_json(json_state),
+        }
+      end
+
+      # Returns just the kramdown document and not the other files. This is used
+      # for round_trip validations where we need access to the parsed kramdown
+      # tree.
+      # @return[Kramdown::Document]
+      def parse_to_kramdown_document
         # Initialize processing i_vars
         @data_output = {}
         @deleted_text_output = []
         @notes_output = []
         @warnings_output = []
+        # Parse
         @ke_context = Folio::KeContext.new(
           { :root => Kramdown::ElementRt.new(:root, nil, nil, :encoding => 'UTF-8') },
           self
@@ -81,18 +101,7 @@ module Kramdown
         kramdown_doc = Kramdown::Document.new('', @kramdown_options)
         kramdown_doc.root = @ke_context.get('root', nil)
         post_process_kramdown_tree!(kramdown_doc.root)
-
-        # Prepare return value
-        kramdown_string = kramdown_doc.send(kramdown_conversion_method_name)
-        kramdown_string = post_process_kramdown_string(kramdown_string)
-        json_state = JSON::State.new(array_nl: "\n") # to format json output
-        {
-          'folio.at' => kramdown_string,
-          'folio.data.json' => @data_output.to_json(json_state),
-          'folio.deleted_text.json' => @deleted_text_output.to_json(json_state),
-          'folio.notes.json' => @notes_output.to_json(json_state),
-          'folio.warnings.json' => @warnings_output.to_json(json_state),
-        }
+        kramdown_doc
       end
 
       # @param[Nokogiri::XML::Node] xn the XML Node to process
