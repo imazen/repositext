@@ -12,10 +12,19 @@ module Kramdown
       # to kramdown. And we don't want to monkey patch Kramdown::Converter::Kramdown.
       # So we redefine the regex and the method that uses it.
       # The #convert_text method didn't change, just the regex.
-      # NOTE: this regex needs to be synchronized with the one in
-      # Kramdown::Parser::KramdownRepositext
       # original: ESCAPED_CHAR_RE = /(\$\$|[\\*_`\[\]\{"'|])|^[ ]{0,3}(:)/
-      ESCAPED_CHAR_RE_REPOSITEXT =  /(\$\$|[\\*_\[\]\{])|^[ ]{0,3}(:)/
+      # Differences of new regex:
+      # * don't escape '`', '[', ']', '"', '''
+      # * don't escape a line's leading colon ':'. This is used for definition
+      #   lists (which are not supported yet by repositext).
+      #   The problem is that the original regex looks at a colon at the beginning
+      #   of a line. However this kramdown: '*this*: that' will have a text element
+      #   in the parse tree where the text starts with a colon (after the em).
+      #   So converting this to kramdown would escape the colon.
+      #   If we ever decide to support definition lists, we may have to revisit
+      #   this and look at el's previous sibling to decide if we want to escape
+      #   the colon or not.
+      ESCAPED_CHAR_RE_REPOSITEXT =  /(\$\$|[\\*_\{])/
       def convert_text(el, opts)
         if opts[:raw_text]
           el.value
