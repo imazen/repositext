@@ -36,7 +36,7 @@ module Kramdown
       # the longest story in the IDML file.
       # @return[Array<OpenStruct>] array of story objects to be imported
       def stories_to_import
-        [@stories.max_by { |e| e.length }]
+        [@stories.max_by { |e| length_of_story_text_without_markup(e.body) }]
       end
 
       # @param[Array<Story>] stories the stories to import. Defaults to story_to_import.
@@ -69,13 +69,20 @@ module Kramdown
             pkg_story_xml.xpath('/idPkg:Story/Story').each do |story_xml|
               name = story_xml['Self']
               body = story_xml.to_s
-              stories << OpenStruct.new(:name => name, :body => body, :length => body.length)
+              stories << OpenStruct.new(:name => name, :body => body)
             end
           end
         end
         stories
       rescue
         raise Exception.new($!)
+      end
+
+      # Returns text only for story_xml. Used to find primary story.
+      # @[String] story_xml
+      def length_of_story_text_without_markup(story_xml)
+        xml_doc = Nokogiri::XML(story_xml) { |cfg| cfg.noblanks }
+        xml_doc.inner_text.gsub(/[[:space:]]+/, ' ').length
       end
 
     end
