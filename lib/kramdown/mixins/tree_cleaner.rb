@@ -26,6 +26,10 @@ module Kramdown
     def clean_up_tree_element!(ke)
       if :hr == ke.type
         ke.children.clear
+        # :hr is a block level el that shouldn't be nested inside a :p, so
+        # we insert it as sibling before its parent :p. This same method will
+        # then remove the empty :p if :hr was the only child.
+        ke.parent.insert_sibling_before(ke)  if :p == ke.parent.type
       elsif [:em, :strong].include?(ke.type) && ke.children.none?
         # span element is empty and can be completely deleted
         ke.detach_from_parent

@@ -25,8 +25,11 @@ module Kramdown
     # @param[Kramdown::Element] ke
     # @return[Integer] index of the last processed element
     def merge_adjacent_child_elements!(ke)
-      if ke.children.first.nil?
-        # No merging is possible, early exit
+      if(
+        ke.children.empty? || # nothing to merge
+        :block == ::Kramdown::Element.category(ke.children.first) || # can't merge paras or headers
+        :root == ke.type
+      )
         return nil
       end
       index = 0
@@ -44,7 +47,8 @@ module Kramdown
           # don't increment index since we deleted element at index+1 position
         elsif(
           next_next_ke && [:em, :strong].include?(next_next_ke.type) &&
-          next_ke.type == :text && next_ke.value.strip.empty? &&
+          next_ke.type == :text &&
+          next_ke.value.strip.empty? &&
           cur_ke.is_of_same_type_as?(next_next_ke)
         )
           cur_ke.children.push(next_ke)
