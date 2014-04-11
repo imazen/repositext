@@ -17,6 +17,9 @@ class Repositext
         new_at = move_gap_marks_to_beginning_of_words(text)
         new_at = fix_standard_chars(new_at)
         new_at = fix_elipsis(new_at) # do this after fixing standard chars
+        # run again at the end to fix any in-word gap_marks that may have been
+        # created by the previous steps.
+        new_at = move_gap_marks_to_beginning_of_words(new_at)
         Outcome.new(true, { contents: new_at }, [])
       end
 
