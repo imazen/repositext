@@ -14,15 +14,16 @@ class Repositext
       # @param[String] text
       # @return[Outcome]
       def self.fix(text)
-        new_at = fix_two_gap_marks_in_one_word(text)
+        new_at = move_gap_marks_to_beginning_of_words(text)
         new_at = fix_standard_chars(new_at)
         new_at = fix_elipsis(new_at) # do this after fixing standard chars
         Outcome.new(true, { contents: new_at }, [])
       end
 
-      # Removes second gap mark inside a word if word is already preceded by a gap_mark
-      def self.fix_two_gap_marks_in_one_word(text)
-        text.gsub(/(%)([[:alpha:]]+)%([[:alpha:]]+)/, '%\2\3')
+      # Moves a gap mark inside or at the end of a word to the beginning of the
+      # word. Replaces any gap_marks that are already at the beginning of the word.
+      def self.move_gap_marks_to_beginning_of_words(text)
+        text.gsub(/%?\b([[:alpha:]]+)%/, '%\1')
       end
 
       # Fixes gap_marks in invalid positions after the standard characters
