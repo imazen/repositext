@@ -12,8 +12,9 @@ class Repositext
       # If % directly follows an elipsis, move to the front of the ellipsis
       # (unless where elipsis and % are between two words like so: word…%word)
       # @param[String] text
+      # @param[String] filename
       # @return[Outcome]
-      def self.fix(text)
+      def self.fix(text, filename)
         new_at = move_gap_marks_to_beginning_of_words(text)
         new_at = fix_standard_chars(new_at)
         new_at = fix_elipsis(new_at) # do this after fixing standard chars

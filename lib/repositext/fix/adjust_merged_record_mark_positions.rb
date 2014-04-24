@@ -5,8 +5,9 @@ class Repositext
       # Moves :record_marks that are in invalid positions to a position symmetrically
       # between two paragraphs.
       # @param[String] text
+      # @param[String] filename
       # @return[Outcome]
-      def self.fix(text)
+      def self.fix(text, filename)
         # Specify regexes
         ald_any_chars_rx = /\\\}|[^\}]/
         ial_rx = /\{:#{ ald_any_chars_rx }*?\}/
@@ -36,7 +37,8 @@ class Repositext
           new_at.gsub!(/\n\n(#{ record_mark_rx })([^\n])/, "\n\\1\n\\2")
         end
 
-        new_at.gsub!(/\A\n\n/, '') # remove temporary leading \n\n
+        new_at = new_at.gsub(/\A\n\n/, '') # remove temporary leading \n\n
+        new_at = apply_custom_fixes(new_at, filename)
         Outcome.new(true, { contents: new_at }, [])
       end
 
@@ -132,6 +134,14 @@ class Repositext
       def self.distance_to_first_para_break(txt)
         v = txt.index("\n\n")
         v.nil? ? Float::INFINITY : v + 1
+      end
+
+      # Override this method for any custom fixes in sub classes
+      # @param[String] txt the text to fix
+      # @param[String] filename
+      # @return[String] the fixed text
+      def self.apply_custom_fixes(txt, filename)
+        txt
       end
 
     end

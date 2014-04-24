@@ -4,8 +4,9 @@ class Repositext
 
       # Converts certain characters in text to proper typographical marks.
       # @param[String] text
+      # @param[String] filename
       # @return[Outcome]
-      def self.fix(text)
+      def self.fix(text, filename)
         # Elipses
         # Abbreviations are valid instances we need to handle
         text = text.gsub /(Mrs?\.)\.\.\./i, '\1…'
