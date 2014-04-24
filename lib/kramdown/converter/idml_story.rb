@@ -78,7 +78,6 @@ module Kramdown
         paragraph_style_range_tag(nil, 'Horizontal rule') do
           char_st_rng_tag(nil, 'Regular') do
             content_tag('* * *')
-            br_tag
           end
         end
       end
