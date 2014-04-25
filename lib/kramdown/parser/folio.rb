@@ -428,13 +428,17 @@ module Kramdown
       # than whitespace.
       # @param[Nokogiri::XML::Node] xn
       def verify_only_whitespace_is_present(xn)
+        verify_text_matches_regex(xn, /\A[ \n]*\z/, 'contained non-whitespace')
+      end
+
+      def verify_text_matches_regex(xn, regex, warning_text)
         t = xn.text.strip
-        if(t =~ /\A[ \n]*\z/)
+        if(t =~ regex)
           true
         else
           add_warning(
             xn,
-            "#{ xn_name_and_class(xn) } contained non-whitespace: #{ t.inspect }"
+            "#{ xn_name_and_class(xn) } #{ warning_text }: #{ t.inspect }"
           )
           false
         end
