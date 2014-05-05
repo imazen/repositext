@@ -181,7 +181,10 @@ module Kramdown
         }
         return el  unless char_has_non_whitespace_content
 
-        if char['AppliedCharacterStyle'] == 'CharacterStyle/Bold Italic' || char['FontStyle'] == 'Bold Italic'
+        if (
+          'CharacterStyle/Bold Italic' == char['AppliedCharacterStyle'] ||
+          'Bold Italic' == char['FontStyle']
+        )
           # Create pair of nested elements to include both bold and italic styles.
           parent_el = Element.new(:strong, nil, nil, :location => l)
           el = Element.new(:em, nil, nil, :location => l)
@@ -190,12 +193,18 @@ module Kramdown
         else
           # TODO: assignment of char_style depends on code execution: if both are present, it will always be 'Italic' and never 'Bold'
           #       Is this ok or intended?
-          if char['AppliedCharacterStyle'] == 'CharacterStyle/Bold' || char['FontStyle'] == 'Bold'
+          if (
+            'CharacterStyle/Bold' == char['AppliedCharacterStyle'] ||
+            'Bold' == char['FontStyle']
+          )
             el = parent_el = Element.new(:strong, nil, nil, :location => l)
             char_style = :bold
           end
 
-          if char['AppliedCharacterStyle'] == 'CharacterStyle/Italic' || char['FontStyle'] == 'Italic'
+          if (
+            'CharacterStyle/Italic' == char['AppliedCharacterStyle'] ||
+            'Italic' == char['FontStyle']
+          )
             if parent_el
               el = Element.new(:em, nil, nil, :location => l)
               parent_el.children << el
@@ -207,7 +216,7 @@ module Kramdown
 
         end
 
-        if char['AppliedCharacterStyle'] == 'CharacterStyle/$ID/[No character style]'
+        if 'CharacterStyle/$ID/[No character style]' == char['AppliedCharacterStyle']
           # Preserve FontStyles
           if 'Italic' == char['FontStyle']
             el = parent_el = Element.new(:em, nil, nil, :location => l)
@@ -232,14 +241,14 @@ module Kramdown
                                      end
         end
 
-        add_class.call('underline') if char['Underline'] == 'true'
-        add_class.call('smcaps') if char['Capitalization'] == 'SmallCaps'
+        add_class.call('underline') if 'true' == char['Underline']
+        add_class.call('smcaps') if 'SmallCaps' == char['Capitalization']
 
-        if char['FillColor'] == "Color/GAP RED"
+        if "Color/GAP RED" == char['FillColor']
           (el.nil? ? @tree : el).children << Element.new(:gap_mark, nil, nil, :location => l)
         end
 
-        if char['AppliedCharacterStyle'] == 'CharacterStyle/Paragraph number'
+        if 'CharacterStyle/Paragraph number' == char['AppliedCharacterStyle']
           @tree.attr['class'].sub!(/\bnormal\b/, 'normal_pn') if @tree.attr['class'] =~ /\bnormal\b/
           add_class.call('pn')
         end
