@@ -248,6 +248,20 @@ module Kramdown
           (el.nil? ? @tree : el).children << Element.new(:gap_mark, nil, nil, :location => l)
         end
 
+        if "Color/TRANSLATORS OMIT" == char['FillColor']
+          containing_para_ke = @stack.last.first
+          if (
+            containing_para_ke &&
+            :p == containing_para_ke.type &&
+            (klass = containing_para_ke.attr['class'].to_s) &&
+            '' != klass &&
+            klass !~ /_omit\z/
+          )
+            # append _omit to class
+            containing_para_ke.attr['class'] = klass + '_omit'
+          end
+        end
+
         if 'CharacterStyle/Paragraph number' == char['AppliedCharacterStyle']
           @tree.attr['class'].sub!(/\bnormal\b/, 'normal_pn') if @tree.attr['class'] =~ /\bnormal\b/
           add_class.call('pn')
