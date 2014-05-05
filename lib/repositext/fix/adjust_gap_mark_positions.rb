@@ -34,7 +34,7 @@ class Repositext
       def self.fix_standard_chars(text)
         old_at = text.dup
         new_at = ''
-        standard_chars_regex = /[\*\"\'\(\[]+/
+        standard_chars_regex = /[\*“‘’\(\[]+/ # double open quote, single open quote, and apostrophe
         standard_chars_and_gap_mark_regex = /#{ standard_chars_regex }\%/
 
         s = StringScanner.new(old_at)
