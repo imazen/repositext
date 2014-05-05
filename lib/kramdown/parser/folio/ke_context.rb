@@ -35,8 +35,9 @@ class Kramdown::Parser::Folio::KeContext
   # Returns value of attr_name, aises warning if attr_name returns nil
   # @param[String] attr_name
   # @param[Nokogiri::XML::Node] xn for warning location info
-  def get(attr_name, xn)
-    if (v = @cx[attr_name.to_s]).nil?
+  # @param[Boolean, optional] warn_if_nil generate warning if desired attr is nil
+  def get(attr_name, xn, warn_if_nil=true)
+    if (v = @cx[attr_name.to_s]).nil? && warn_if_nil
       @folio_parser.add_warning(xn, "#{ attr_name } is nil.")
     end
     v
