@@ -111,11 +111,18 @@ class Kramdown::Parser::Folio::KeContext
     if 0 == @cx['distinct_p_referenceline_contents'][sanitized_content]
       # First occurrence of this distinct content
       if @cx['distinct_p_referenceline_contents'].keys.any?
-        # We already have other contents, create warning
-        @folio_parser.add_warning(
-          xn,
-          "Inconsistent text contents of p.reference_line: #{ sanitized_content }"
-        )
+        # We already have other contents. We used to raise a warning,
+        # however we anticipate differences, so we're not adding warnings.
+        # @folio_parser.add_warning(
+        #   xn,
+        #   [
+        #     "Inconsistent text contents of p.reference_line:",
+        #     "sanitized_content:",
+        #     sanitized_content.inspect,
+        #     "existing referenceline_contents:",
+        #     @cx['distinct_p_referenceline_contents'].inspect
+        #   ].join(' ')
+        # )
         # and send to deleted text
         @folio_parser.add_deleted_text(xn, sanitized_content)
       end
