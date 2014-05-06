@@ -115,7 +115,7 @@ module Kramdown
         attr != other_ke.attr ||
         value != other_ke.value
       )
-        diffs << "different element: #{ element_summary } => #{ other_ke.element_summary }"
+        diffs << "different element: #{ inspect_tree }\n=> #{ other_ke.inspect_tree }"
       end
       if options[:recursive]
         # remove blanks and other empty elements
@@ -135,7 +135,7 @@ module Kramdown
           end
         else
           # record the fact that children are different, stop recursing
-          diffs << "different children: #{ element_summary } has #{ own_children.size } children, other_ke has #{ other_children.size }"
+          diffs << "different children: #{ inspect_tree } \n=> #{ other_ke.inspect_tree }"
         end
       end
       diffs
