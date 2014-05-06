@@ -15,19 +15,20 @@ class Repositext
       # @param[String] filename
       # @return[Outcome]
       def self.fix(text, filename)
-        new_at = move_gap_marks_to_beginning_of_words(text)
-        new_at = fix_standard_chars(new_at)
-        new_at = fix_elipsis(new_at) # do this after fixing standard chars
+        new_at = text.dup
+        move_gap_marks_to_beginning_of_words!(new_at)
+        new_at = fix_standard_chars(new_at) # can't do in-place
+        new_at = fix_elipsis(new_at) # do this after fixing standard chars, can't do in-place
         # run again at the end to fix any in-word gap_marks that may have been
         # created by the previous steps.
-        new_at = move_gap_marks_to_beginning_of_words(new_at)
+        move_gap_marks_to_beginning_of_words!(new_at)
         Outcome.new(true, { contents: new_at }, [])
       end
 
       # Moves a gap mark inside or at the end of a word to the beginning of the
       # word. Replaces any gap_marks that are already at the beginning of the word.
-      def self.move_gap_marks_to_beginning_of_words(text)
-        text.gsub(/%?\b([[:alpha:]]+)%/, '%\1')
+      def self.move_gap_marks_to_beginning_of_words!(text)
+        text.gsub!(/%?\b([[:alpha:]]+)%/, '%\1')
       end
 
       # Fixes gap_marks in invalid positions after the standard characters
