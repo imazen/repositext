@@ -1,0 +1,6 @@
+This file contains an invalid utf8 byte sequence
+================================================
+
+invalid bytes 2
+
+Á

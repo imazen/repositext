@@ -6,12 +6,19 @@
 
 require 'awesome_print'
 require 'erb'
+require 'find'
 require 'json'
-require 'kramdown/document'
+require 'kramdown'
+require 'logging'
 require 'outcome'
 require 'suspension'
 
+require 'patch_array'
 require 'patch_string'
+require 'recursive_data_hash'
+
+# The requires are grouped by levels of dependencies, where lower groups depend on
+# higher level groups.
 
 require 'kramdown/converter/graphviz'
 require 'kramdown/converter/html_doc'
@@ -32,7 +39,18 @@ require 'kramdown/parser/folio/ke_context'
 require 'kramdown/parser/idml'
 require 'kramdown/parser/idml_story'
 require 'kramdown/parser/kramdown_repositext'
+require 'kramdown/parser/kramdown_validation'
 require 'kramdown/patch_element'
+require 'repositext/validation'
+require 'repositext/validation/utils/config'
+require 'repositext/validation/utils/logger'
+require 'repositext/validation/utils/logger_test'
+require 'repositext/validation/utils/reportable'
+require 'repositext/validation/utils/reporter'
+require 'repositext/validation/utils/reporter_test'
+require 'repositext/validation/validator'
+
+# Dependency boundary
 
 require 'repositext/fix/adjust_gap_mark_positions'
 require 'repositext/fix/adjust_merged_record_mark_positions'
@@ -40,3 +58,22 @@ require 'repositext/fix/convert_abbreviations_to_lower_case'
 require 'repositext/fix/convert_folio_typographical_chars'
 require 'repositext/fix/remove_underscores_inside_folio_paragraph_numbers'
 require 'repositext/merge/record_marks_from_folio_xml_at_into_idml_at'
+require 'repositext/validation/content'
+require 'repositext/validation/folio_xml_post_import'
+require 'repositext/validation/folio_xml_pre_import'
+require 'repositext/validation/idml_post_import'
+require 'repositext/validation/idml_pre_import'
+require 'repositext/validation/test'
+require 'repositext/validation/validator/folio_import_round_trip'
+require 'repositext/validation/validator/idml_import_round_trip'
+require 'repositext/validation/validator/idml_import_syntax'
+require 'repositext/validation/validator/kramdown_syntax'
+require 'repositext/validation/validator/kramdown_syntax_at'
+require 'repositext/validation/validator/kramdown_syntax_pt'
+require 'repositext/validation/validator/utf8_encoding'
+# NOTE: Don't require the custom validator examples as they interfere with specs
+# require 'repositext/validation/a_custom_example'
+# require 'repositext/validation/validator/a_custom_example'
+
+# Dependency boundary
+
