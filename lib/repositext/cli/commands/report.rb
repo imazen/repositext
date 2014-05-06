@@ -101,6 +101,7 @@ class Repositext
         d_quote_open = %(“)
         apostrophe = %(’)
         straight_quotes = %("')
+        newline = %(\n)
         all_quotes = [s_quote_open_and_d_quote_close, d_quote_open, apostrophe, straight_quotes].join
         invalid_quotes_rx = /
           (?:                                       # this non-capturing group handles s-quote-open and d-quote-close
