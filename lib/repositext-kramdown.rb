@@ -1,9 +1,3 @@
-# NOTE: None of the CLI code is required here. It's required in lib/rt/cli.rb
-
-# TODO: look at this for configuration:
-# http://brandonhilkert.com/blog/ruby-gem-configuration-patterns/
-# https://news.ycombinator.com/item?id=7428051
-
 require 'awesome_print'
 require 'erb'
 require 'find'
@@ -12,6 +6,15 @@ require 'kramdown'
 require 'logging'
 require 'outcome'
 require 'suspension'
+require 'thor'
+
+# Establish namespace and class inheritance before we require nested classes
+# Otherwise we get a subclass mismatch error because Cli is initialized as
+# standalone class (not inheriting from Thor)
+class Repositext
+  class Cli < Thor
+  end
+end
 
 require 'patch_array'
 require 'patch_string'
@@ -52,6 +55,11 @@ require 'repositext/validation/validator'
 
 # Dependency boundary
 
+require 'repositext/cli/config'
+require 'repositext/cli/long_descriptions_for_commands'
+require 'repositext/cli/patch_thor_with_rtfile'
+require 'repositext/cli/rtfile_dsl'
+require 'repositext/cli/utils'
 require 'repositext/fix/adjust_gap_mark_positions'
 require 'repositext/fix/adjust_merged_record_mark_positions'
 require 'repositext/fix/convert_abbreviations_to_lower_case'
@@ -77,3 +85,21 @@ require 'repositext/validation/validator/utf8_encoding'
 
 # Dependency boundary
 
+require 'repositext/cli/commands/compare'
+require 'repositext/cli/commands/convert'
+require 'repositext/cli/commands/fix'
+require 'repositext/cli/commands/init'
+require 'repositext/cli/commands/merge'
+require 'repositext/cli/commands/move'
+require 'repositext/cli/commands/report'
+require 'repositext/cli/commands/sync'
+require 'repositext/cli/commands/validate'
+
+# Dependency boundary
+
+require 'repositext/cli/commands/export'
+require 'repositext/cli/commands/import'
+
+# Dependency boundary
+
+require 'repositext/cli'
