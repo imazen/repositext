@@ -72,24 +72,6 @@ describe Kramdown::ElementRt do
     end
   end
 
-  describe "#add_class" do
-    it "adds a new class" do
-      e = Kramdown::ElementRt.new(:text, nil, 'class' => 'class1 class2')
-      e.add_class('class3')
-      e.has_class?('class3').must_equal true
-    end
-    it "doesn't add an existing class" do
-      e = Kramdown::ElementRt.new(:text, nil, 'class' => 'class1 class2')
-      e.add_class('class1')
-      e.attr['class'].must_equal 'class1 class2'
-    end
-    it "adds class to element that has no classes yet" do
-      e = Kramdown::ElementRt.new(:text)
-      e.add_class('class1')
-      e.attr['class'].must_equal 'class1'
-    end
-  end
-
   describe '#detach_from_parent' do
     it "returns nil if ke has no parent" do
       r = Kramdown::ElementRt.new(:root)
@@ -146,17 +128,6 @@ describe Kramdown::ElementRt do
       t2 = Kramdown::ElementRt.new(:text, 'text2')
       r.add_child([t1, t2])
       t2.following_sibling.must_equal nil
-    end
-  end
-
-  describe "#has_class?" do
-    it "returns true if it has class" do
-      e = Kramdown::ElementRt.new(:text, nil, 'class' => 'class1 class2')
-      e.has_class?('class2').must_equal true
-    end
-    it "returns false if it doesn't have class" do
-      e = Kramdown::ElementRt.new(:text, nil, 'class' => 'class1 class2')
-      e.has_class?('class3').must_equal false
     end
   end
 
@@ -259,19 +230,6 @@ describe Kramdown::ElementRt do
       t2 = Kramdown::ElementRt.new(:text, 'text2')
       r.add_child([t1, t2])
       t1.previous_sibling.must_equal nil
-    end
-  end
-
-  describe "#remove_class" do
-    it "removes an existing class" do
-      e = Kramdown::ElementRt.new(:text, nil, 'class' => 'class1 class2')
-      e.remove_class('class2')
-      e.has_class?('class2').must_equal false
-    end
-    it "doesn't remove a non-existing class" do
-      e = Kramdown::ElementRt.new(:text, nil, 'class' => 'class1 class2')
-      e.remove_class('class3')
-      e.attr['class'].must_equal 'class1 class2'
     end
   end
 

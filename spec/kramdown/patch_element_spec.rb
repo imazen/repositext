@@ -2,6 +2,54 @@ require_relative '../helper'
 
 describe Kramdown::Element do
 
+  describe "#add_class" do
+    it "adds a new class" do
+      e = Kramdown::Element.new(:text, nil, 'class' => 'class1 class2')
+      e.add_class('class3')
+      e.has_class?('class3').must_equal true
+    end
+    it "doesn't add an existing class" do
+      e = Kramdown::Element.new(:text, nil, 'class' => 'class1 class2')
+      e.add_class('class1')
+      e.attr['class'].must_equal 'class1 class2'
+    end
+    it "adds class to element that has no classes yet" do
+      e = Kramdown::Element.new(:text)
+      e.add_class('class1')
+      e.attr['class'].must_equal 'class1'
+    end
+    it "strips whitespace from new class" do
+      e = Kramdown::Element.new(:text)
+      e.add_class('class1 ')
+      e.attr['class'].must_equal 'class1'
+    end
+    it "orders classes alphabetically" do
+      e = Kramdown::Element.new(:text, nil, 'class' => 'class2 class1')
+      e.add_class('class3')
+      e.attr['class'].must_equal 'class1 class2 class3'
+    end
+    it "ignores an empty added class" do
+      e = Kramdown::Element.new(:text, nil, 'class' => 'class1')
+      e.add_class(' ')
+      e.attr['class'].must_equal 'class1'
+    end
+  end
+
+  describe "#has_class?" do
+    it "returns true if it has class" do
+      e = Kramdown::Element.new(:text, nil, 'class' => 'class1 class2')
+      e.has_class?('class2').must_equal true
+    end
+    it "returns false if it doesn't have class" do
+      e = Kramdown::Element.new(:text, nil, 'class' => 'class1 class2')
+      e.has_class?('class3').must_equal false
+    end
+    it "strips whitepace from test class" do
+      e = Kramdown::Element.new(:text, nil, 'class' => 'class1 class2')
+      e.has_class?(' class1 ').must_equal true
+    end
+  end
+
   describe "#inspect_tree" do
     it "prints a representation of element's tree" do
       doc = Kramdown::Document.new("para *one*{: .klass}\n\npara _two_", { :input => 'KramdownRepositext' })
@@ -37,6 +85,24 @@ describe Kramdown::Element do
         ke1.is_of_same_type_as?(ke2).must_equal xpect
         ke2.is_of_same_type_as?(ke1).must_equal xpect
       end
+    end
+  end
+
+  describe "#remove_class" do
+    it "removes an existing class" do
+      e = Kramdown::Element.new(:text, nil, 'class' => 'class1 class2')
+      e.remove_class('class2')
+      e.has_class?('class2').must_equal false
+    end
+    it "doesn't remove a non-existing class" do
+      e = Kramdown::Element.new(:text, nil, 'class' => 'class1 class2')
+      e.remove_class('class3')
+      e.attr['class'].must_equal 'class1 class2'
+    end
+    it "strips whitespace from removed class" do
+      e = Kramdown::Element.new(:text, nil, 'class' => 'class1 class2')
+      e.remove_class(' class2 ')
+      e.has_class?('class2').must_equal false
     end
   end
 

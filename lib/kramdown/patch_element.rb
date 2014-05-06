@@ -3,6 +3,26 @@ require 'kramdown/element'
 module Kramdown
   class Element
 
+    # Adds class to self
+    # @param[String] a_class
+    def add_class(a_class)
+      a_class = a_class.to_s.strip
+      return true  if('' == a_class || has_class?(a_class))
+      self.attr['class'] = attr['class'].to_s
+                                        .split(' ')
+                                        .map(&:strip)
+                                        .push(a_class)
+                                        .uniq
+                                        .sort
+                                        .join(' ')
+    end
+
+    # Returns true if self has a_class
+    # @param[String] a_class
+    def has_class?(a_class)
+      (attr['class'] || '').split(' ').any? { |e| e == a_class.strip }
+    end
+
     # Returns a tree representation of self and its descendants.
     #   * One element per line
     #   * Indents nested elements
@@ -119,6 +139,12 @@ module Kramdown
         end
       end
       diffs
+    end
+
+    # Removes class from self
+    # @param[String] a_class
+    def remove_class(a_class)
+      self.attr['class'].gsub!(/\s*#{ a_class.strip }\s*/, '')
     end
 
   end

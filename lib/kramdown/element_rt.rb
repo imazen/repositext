@@ -42,18 +42,6 @@ module Kramdown
       end
     end
 
-    # Adds class to self
-    # @param[String] a_class
-    def add_class(a_class)
-      return true  if has_class?(a_class)
-      if attr['class'] && attr['class'] != ''
-        self.attr['class'] << " #{ a_class }"
-      else
-        self.attr['class'] = a_class
-      end
-
-    end
-
     # Detaches self as child from parent, returns own child index or nil
     # @return[Integer, nil] own child position or nil if root
     def detach_from_parent
@@ -73,12 +61,6 @@ module Kramdown
         # return following sibling
         parent.children[own_child_index + 1]
       end
-    end
-
-    # Returns true if self has a_class
-    # @param[String] a_class
-    def has_class?(a_class)
-      (attr['class'] || '').split(' ').any? { |e| e == a_class }
     end
 
     # Inserts el as sibling after self
@@ -127,13 +109,6 @@ module Kramdown
         # return previous sibling
         parent.children[own_child_index - 1]
       end
-    end
-
-    # Removes class from self
-    # @param[String] a_class
-    def remove_class(a_class)
-      return true if !has_class?(a_class)
-      self.attr['class'] = attr['class'].gsub(a_class, '')
     end
 
     # Replaces self with replacement_kes (in same child position)
