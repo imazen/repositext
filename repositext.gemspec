@@ -2,12 +2,12 @@
 $:.push File.expand_path("../lib", __FILE__)
 
 Gem::Specification.new do |s|
-  s.name        = "repositext-kramdown"
+  s.name        = "repositext"
   s.version     = '0.0.1'
   s.platform    = Gem::Platform::RUBY
-  s.authors     = ["Nathanael Jones"]
+  s.authors     = ["Nathanael Jones", "Jo Hund"]
   s.email       = ["nathanael.jones@gmail.com"]
-  s.homepage    = "http://github.com/imazen/repositext-kramdown"
+  s.homepage    = "http://github.com/imazen/repositext"
   s.summary     = %q{Customized parser/converter for repositext}
   s.description = ""
 
