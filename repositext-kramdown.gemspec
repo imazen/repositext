@@ -16,8 +16,10 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 
+  s.add_runtime_dependency('awesome_print')
   s.add_runtime_dependency('builder')
   s.add_runtime_dependency('kramdown')
+  s.add_runtime_dependency('logging')
   s.add_runtime_dependency('nokogiri')
   s.add_runtime_dependency('outcome')
   s.add_runtime_dependency('ruby-graphviz')
@@ -26,7 +28,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency('thor')
 
   # Test libraries
-  s.add_development_dependency('awesome_print')
+  s.add_development_dependency "bundler", "~> 1.3"
   s.add_development_dependency('fakefs')
   s.add_development_dependency('rake')
   s.add_development_dependency('minitest')
