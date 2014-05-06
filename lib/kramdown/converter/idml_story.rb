@@ -64,7 +64,7 @@ module Kramdown
 
       # @param[Kramdown::Element] el
       def convert_p(el)
-        if 'test_class' == el.attr['class']
+        if el.has_class?('test_class')
           # This is an example for how to handle an element with a specific class.
           # This class is also used for testing.
           paragraph_style_range_tag(el, 'NormalTest')
@@ -206,18 +206,18 @@ module Kramdown
           char_st_rng_tag(orig_el, 'Bold', &block)
         elsif el.type == :em
           # We use :em to represent spans. Compute class for span:
-          style = if el.attr['class'] =~ /\bitalic\b/ && el.attr['class'] =~ /\bbold\b/
-                    'Bold Italic'
-                  elsif el.attr['class'] =~ /\bbold\b/
-                    'Bold'
-                  elsif el.attr['class'] =~ /\bitalic\b/ || el.attr['class'].to_s.empty?
-                    'Italic'
-                  else
-                    'Regular'
-                  end
+          style = if el.has_class?('italic') && el.has_class?('bold')
+            'Bold Italic'
+          elsif el.has_class?('bold')
+            'Bold'
+          elsif el.has_class?('italic') || '' == el.attr['class'].to_s
+            'Italic'
+          else
+            'Regular'
+          end
           attr = {}
-          attr['Underline'] = 'true' if el.attr['class'] =~ /\bunderline\b/
-          attr['Capitalization'] = 'SmallCaps' if el.attr['class'] =~ /\bsmcaps\b/
+          attr['Underline'] = 'true' if el.has_class?('underline')
+          attr['Capitalization'] = 'SmallCaps' if el.has_class?('smcaps')
           char_st_rng_tag(orig_el, style, attr, &block)
         else
           char_st_rng_tag(orig_el, 'Regular', &block)

@@ -230,19 +230,21 @@ module Kramdown
           end
         end
 
-        add_class = lambda do |css_class|
+        add_class_to_self_or_parent = lambda do |css_class|
           parent_el = el = Element.new(:em, nil, nil, :location => l) if el.nil?
-          parent_el.attr['class'] = ((parent_el.attr['class'] || '') << " #{css_class}").lstrip
-          parent_el.attr['class'] += case char_style
-                                     when :regular then ''
-                                     when :italic then ' italic'
-                                     when :bold then ' bold'
-                                     when :bold_italic then ' bold italic'
-                                     end
+          parent_el.add_class(css_class)
+          parent_el.add_class(
+            case char_style
+            when :regular then ''
+            when :italic then ' italic'
+            when :bold then ' bold'
+            when :bold_italic then ' bold italic'
+            end
+          )
         end
 
-        add_class.call('underline') if 'true' == char['Underline']
-        add_class.call('smcaps') if 'SmallCaps' == char['Capitalization']
+        add_class_to_self_or_parent.call('underline') if 'true' == char['Underline']
+        add_class_to_self_or_parent.call('smcaps') if 'SmallCaps' == char['Capitalization']
 
         if "Color/GAP RED" == char['FillColor']
           (el.nil? ? @tree : el).children << Element.new(:gap_mark, nil, nil, :location => l)
@@ -252,23 +254,23 @@ module Kramdown
           containing_para_ke = @stack.last.first
           if (
             containing_para_ke &&
-            :p == containing_para_ke.type &&
-            (klass = containing_para_ke.attr['class'].to_s) &&
-            '' != klass &&
-            klass !~ /_omit\z/
+            :p == containing_para_ke.type
           )
-            # append _omit to class
-            containing_para_ke.attr['class'] = klass + '_omit'
+            # append omit class
+            containing_para_ke.add_class('omit')
           end
         end
 
         if 'CharacterStyle/Paragraph number' == char['AppliedCharacterStyle']
-          @tree.attr['class'].sub!(/\bnormal\b/, 'normal_pn') if @tree.attr['class'] =~ /\bnormal\b/
-          add_class.call('pn')
+          if @tree.has_class?('normal')
+            @tree.remove_class('normal')
+            @tree.add_class('normal_pn')
+          end
+          add_class_to_self_or_parent.call('pn')
         end
 
         if !HANDLED_CHARACTER_STYLES.include?(char['AppliedCharacterStyle'])
-          add_class.call(normalize_style_name(char['AppliedCharacterStyle']))
+          add_class_to_self_or_parent.call(normalize_style_name(char['AppliedCharacterStyle']))
         end
 
         @tree.children << parent_el if !parent_el.nil?
