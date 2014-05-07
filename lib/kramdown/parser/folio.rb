@@ -21,7 +21,6 @@ method.
 
 # Converts folio per tape XML files to AT kramdown files
 #
-require 'nokogiri'
 require 'kramdown/document'
 
 module Kramdown

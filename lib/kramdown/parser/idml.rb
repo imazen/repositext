@@ -1,11 +1,5 @@
 # -*- coding: utf-8 -*-
 
-require 'zip'
-require 'nokogiri'
-require 'ostruct'
-require 'kramdown/document'
-require 'kramdown/parser/idml_story'
-
 module Kramdown
   module Parser
 

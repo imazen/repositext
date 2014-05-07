@@ -3,9 +3,6 @@
 # Added validation hooks
 # Added position information to each Element's options [:line, :story]
 
-require 'kramdown/parser'
-require 'nokogiri'
-
 module Kramdown
   module Parser
 

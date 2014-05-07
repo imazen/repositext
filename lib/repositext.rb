@@ -5,9 +5,11 @@ require 'json'
 require 'kramdown'
 require 'logging'
 require 'nokogiri'
+require 'ostruct'
 require 'outcome'
 require 'suspension'
 require 'thor'
+require 'zip'
 
 # Establish namespace and class inheritance before we require nested classes
 # Otherwise we get a subclass mismatch error because Cli is initialized as
@@ -17,9 +19,9 @@ class Repositext
   end
 end
 
-require 'patch_array'
-require 'patch_string'
+require 'patches/array'
 require 'patches/nokogiri_xml_node'
+require 'patches/string'
 require 'recursive_data_hash'
 
 # The requires are grouped by levels of dependencies, where lower groups depend on
