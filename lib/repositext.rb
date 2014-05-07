@@ -4,6 +4,7 @@ require 'find'
 require 'json'
 require 'kramdown'
 require 'logging'
+require 'nokogiri'
 require 'outcome'
 require 'suspension'
 require 'thor'
@@ -18,6 +19,7 @@ end
 
 require 'patch_array'
 require 'patch_string'
+require 'patches/nokogiri_xml_node'
 require 'recursive_data_hash'
 
 # The requires are grouped by levels of dependencies, where lower groups depend on

@@ -114,7 +114,7 @@ module Kramdown
           # Pristine key, just store value
           @data_output[key] = {
             'line' => xn.line,
-            'path' => xn_name_and_class_path(xn),
+            'path' => xn.name_and_class_path,
             'value' => value
           }
         else
@@ -122,7 +122,7 @@ module Kramdown
           # NOTE: I could store values as arrays and just append additional values
           raise(
             ArgumentError,
-            "Multipe assignments to data[#{ key }] (#{ xn_name_and_class_path(xn) }, line #{ xn.line }"
+            "Multipe assignments to data[#{ key }] (#{ xn.name_and_class_path }, line #{ xn.line }"
           )
         end
       end
@@ -133,7 +133,7 @@ module Kramdown
           @deleted_text_output << {
             message: message,
             line: xn.line,
-            path: xn_name_and_class_path(xn)
+            path: xn.name_and_class_path
           }
         end
       end
@@ -144,7 +144,7 @@ module Kramdown
           @notes_output << {
             message: message,
             line: xn.line,
-            path: xn_name_and_class_path(xn)
+            path: xn.name_and_class_path
           }
         end
       end
@@ -155,7 +155,7 @@ module Kramdown
           @warnings_output << {
             message: message,
             line: xn.line,
-            path: xn_name_and_class_path(xn)
+            path: xn.name_and_class_path
           }
         end
       end
@@ -398,7 +398,7 @@ module Kramdown
           else
             add_warning(
               xn,
-              "lowercase_node_text_contents was called on node that contained non-text children: #{ xn_name_and_class(xn) }"
+              "lowercase_node_text_contents was called on node that contained non-text children: #{ xn.name_and_class }"
             )
           end
         }
@@ -438,26 +438,9 @@ module Kramdown
         else
           add_warning(
             xn,
-            "#{ xn_name_and_class(xn) } #{ warning_text }: #{ t.inspect }"
+            "#{ xn.name_and_class } #{ warning_text }: #{ t.inspect }"
           )
           false
-        end
-      end
-
-      # Returns name and class of xn in CSS notation
-      # @param[Nokogiri::XML::Element] el
-      def xn_name_and_class(xn)
-        [xn.name, xn['class']].compact.join('.')
-      end
-
-      def xn_name_and_class_path(xn, downstream_path = '')
-        downstream_path = xn_name_and_class(xn) + downstream_path
-        if xn.parent && !xn.parent.xml?
-          # Recurse to parent unless it's the top level XML Document node (.xml?)
-          xn_name_and_class_path(xn.parent, ' > ' + downstream_path)
-        else
-          # This is the top level node
-          return downstream_path
         end
       end
 
