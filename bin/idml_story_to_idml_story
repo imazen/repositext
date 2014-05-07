@@ -2,7 +2,7 @@
 # Convert IDMLStory to IDMLStory
 #
 # For testing and development
-require 'repositext-kramdown'
+require 'repositext'
 
 template = File.expand_path('../templates/idml_story.erb', __FILE__)
 doc = Kramdown::Document.new(ARGF.read, :input => 'IdmlStory', :template => template)

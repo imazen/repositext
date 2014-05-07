@@ -14,12 +14,12 @@ repositext.org elements.
 Installation (while in development)
 -----------------------------------
 
-Follow these steps to install repositext-kramdown:
+Follow these steps to install repositext:
 
 * Install Ruby 2.0 using rbenv or rvm.
 * Install the bundler gem: `gem install bundler`
 * Clone the repository from github.com
-* Switch into the repositext-kramdown directory: `cd repositext-kramdown`
+* Switch into the repositext directory: `cd repositext`
 * Install the required gems: `bundle install`
 
 Usage

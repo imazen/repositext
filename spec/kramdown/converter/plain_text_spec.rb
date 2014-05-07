@@ -2,9 +2,9 @@ require_relative '../../helper'
 
 describe Kramdown::Converter::PlainText do
 
-  # Specs that run with repositext-kramdown because :
-  # a) repositext-kramdown can handle the element type OR
-  # b) repositext-kramdown's behavior is different from kramdown proper
+  # Specs that run with repositext because :
+  # a) repositext can handle the element type OR
+  # b) repositext's behavior is different from kramdown proper
   [
     [%(the body), %(the body)],
     [%(# the header), %(the header)],
@@ -25,7 +25,7 @@ describe Kramdown::Converter::PlainText do
     end
   end
 
-  # Specs that need to run with kramdown proper (because repositext-kramdown
+  # Specs that need to run with kramdown proper (because repositext
   # doesn't support these elements (yet).)
   [
     [%([the link](link.html)), %(the link)],

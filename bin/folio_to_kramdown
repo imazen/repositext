@@ -10,7 +10,7 @@
 #     bundle exec bin/folio_to_kramdown '../vgr-english/import_folio/47/*.xml'
 #
 # NOTE: Make sure to wrap the file pattern in single quotes!
-require 'repositext-kramdown'
+require 'repositext'
 
 file_pattern = ARGV.shift
 $stderr.puts "Batch importing all Folio XML files at #{ file_pattern }."

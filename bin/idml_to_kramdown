@@ -9,7 +9,7 @@
 #     bundle exec idml_to_kramdown '../idml_docs/*'
 #
 # NOTE: Make sure to wrap the file pattern in single quotes!
-require 'repositext-kramdown'
+require 'repositext'
 
 file_pattern = ARGV.shift
 $stderr.puts "Batch importing all IDML files at #{ file_pattern }."

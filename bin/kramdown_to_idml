@@ -8,7 +8,7 @@
 # Use like so:
 #     bundle exec kramdown_to_idml '../kramdown_docs/*.at'
 #
-require 'repositext-kramdown'
+require 'repositext'
 
 file_pattern = ARGV.shift
 $stderr.puts "Batch importing all kramdown files at #{ file_pattern }."

@@ -8,7 +8,7 @@
 # Use like so:
 #     bundle exec kramdown_to_html_doc '../kramdown_docs/*.at'
 #
-require 'repositext-kramdown'
+require 'repositext'
 require 'repositext/cli/converter_html_doc'
 
 begin

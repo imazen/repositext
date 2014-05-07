@@ -2,7 +2,7 @@
 # Convert IDML files to AT files
 #
 # For testing and development
-require 'repositext-kramdown'
+require 'repositext'
 
 doc = Kramdown::Document.new(ARGF.read, :input => 'IdmlStory')
 puts doc.to_kramdown_repositext

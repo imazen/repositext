@@ -1,7 +1,5 @@
 #!/usr/bin/env ruby
-
-require 'repositext-kramdown'
-require 'repositext-cli'
+require 'repositext'
 
 rtfile = Repositext::Cli.find_rtfile
 
