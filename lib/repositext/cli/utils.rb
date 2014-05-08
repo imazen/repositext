@@ -70,10 +70,14 @@ class Repositext
       # Reads files
       # @param[String] input_base_dir the base_dir path
       # @param[String] input_file_pattern the input file pattern
+      # @param[Proc, nil] paired_filename_proc A proc that computes the filename of
+      #     a paired file. It receives the name of the first filename as a single
+      #     argument and is expected to return the full path to the second file.
+      #     Pass nil if no paired file is desired.
       # @param: See #process_files_helper below for param description
-      def self.read_files(file_pattern, file_filter, description, options, &block)
+      def self.read_files(file_pattern, file_filter, paired_filename_proc, description, options, &block)
         read_files_helper(
-          file_pattern, file_filter, description, options, &block
+          file_pattern, file_filter, paired_filename_proc, description, options, &block
         )
       end
 
@@ -271,6 +275,9 @@ class Repositext
       #     This is provided by the callling command, limiting the files to be
       #     operated on to valid file types.
       #     See here for more info on ===: http://ruby.about.com/od/control/a/The-Case-Equality-Operator.htm
+      # @param[Proc, nil] paired_filename_proc A proc that computes the filename of
+      #     a paired file. It receives the name of the first filename as a single
+      #     argument and is expected to return the full path to the second file.
       # @param[String] description A description of the operation, used for logging.
       # @param[Hash] options
       #     :input_is_binary to force File.binread where required
@@ -278,7 +285,7 @@ class Repositext
       #     :changed_only
       # @param[Proc] block A Proc that performs the desired operation on each file.
       #     Arguments to the proc are each file's name and contents.
-      def self.read_files_helper(file_pattern, file_filter, description, options, &block)
+      def self.read_files_helper(file_pattern, file_filter, paired_filename_proc, description, options, &block)
 
         with_console_output(description, file_pattern) do |counts|
           changed_files = compute_list_of_changed_files(options[:changed_only])
@@ -304,7 +311,17 @@ class Repositext
                 File.read(filename).freeze
               end
               counts[:success] += 1
-              block.call(contents, filename)
+              if paired_filename_proc
+                paired_filename = paired_filename_proc.call(filename)
+                paired_contents = if options[:input_is_binary]
+                  File.binread(paired_filename).freeze
+                else
+                  File.read(paired_filename).freeze
+                end
+                block.call(contents, filename, paired_contents, paired_filename)
+              else
+                block.call(contents, filename)
+              end
             rescue StandardError => e
               counts[:errors] += 1
               $stderr.puts %(  x  Error: #{ e.class.name } - #{ e.message } - #{ e.backtrace.join("\n") })
@@ -313,6 +330,7 @@ class Repositext
             counts[:total] += 1
           end
         end
+
       end
 
 

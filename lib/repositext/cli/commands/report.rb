@@ -11,6 +11,7 @@ class Repositext
         Repositext::Cli::Utils.read_files(
           config.compute_glob_pattern(input_file_spec),
           /\.folio.warnings\.json\Z/i,
+          nil,
           "Reading folio import warnings",
           options
         ) do |contents, filename|
@@ -123,6 +124,7 @@ class Repositext
         Repositext::Cli::Utils.read_files(
           config.compute_glob_pattern(input_file_spec),
           /\.at\Z/i,
+          nil,
           "Reading folio at files",
           options
         ) do |contents, filename|
@@ -173,6 +175,7 @@ class Repositext
         Repositext::Cli::Utils.read_files(
           config.compute_glob_pattern(input_file_spec),
           /\.folio\.at\Z/i,
+          nil,
           "Reading folio at files",
           options
         ) do |contents, filename|
@@ -244,6 +247,7 @@ class Repositext
         Repositext::Cli::Utils.read_files(
           config.compute_glob_pattern(input_file_spec),
           /\.at\Z/i,
+          nil,
           "Reading folio at files",
           options
         ) do |contents, filename|
