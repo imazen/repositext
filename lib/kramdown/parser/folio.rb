@@ -92,7 +92,6 @@ module Kramdown
         )
         @xml_document = Nokogiri::XML(@folio_xml) # Can't do { |config| config.noblanks }, it breaks parsing
 
-        # pre_process_xml_tree # not sure I need this...
         # Transform the XML tree
         @xml_document.css('record').each do |record_xn|
           process_xml_node(record_xn)
@@ -125,6 +124,7 @@ module Kramdown
           )
         end
       end
+
       # @param[Nokogiri::XML::Node] xn the XML Node to process
       # @param[String] message
       def add_deleted_text(xn, message)
@@ -169,14 +169,20 @@ module Kramdown
           :match_found => false,
           :process_children => true,
         )
-        method_name = "process_node_#{ xn.name.downcase.gsub('-', '_') }"
-        if respond_to?(method_name, true)
-          self.send(method_name, xn)
+        if xn.duplicate_of?(xn.parent)
+          # xn is duplicate of its parent, pull it
+          pull_node(xn)
+          @xn_context.match_found = true
         else
-          raise "Unexpected element type #{ xn.name } on line #{ xn.line }. Requires method #{ method_name.inspect }."
+          method_name = "process_node_#{ xn.name.downcase.gsub('-', '_') }"
+          if respond_to?(method_name, true)
+            self.send(method_name, xn)
+          else
+            raise "Unexpected element type #{ xn.name } on line #{ xn.line }. Requires method #{ method_name.inspect }."
+          end
         end
         if !@xn_context.match_found
-          add_warning(xn, "Unhandled XML node #{ xn_name_and_class(xn) }")
+          add_warning(xn, "Unhandled XML node #{ xn.name_and_class }")
         end
         # recurse over child XML Nodes
         if @xn_context.process_children
