@@ -75,6 +75,19 @@ class Repositext
         end
       end
 
+      def fix_normalize_editors_notes(options)
+        input_file_spec = options['input'] || 'folio_import_dir/at_files'
+        Repositext::Cli::Utils.change_files_in_place(
+          config.compute_glob_pattern(input_file_spec),
+          /\.at\z/i,
+          "Normalizing editors notes",
+          options
+        ) do |contents, filename|
+          outcome = Repositext::Fix::NormalizeEditorsNotes.fix(contents, filename)
+          [outcome]
+        end
+      end
+
       def fix_remove_underscores_inside_folio_paragraph_numbers(options)
         input_file_spec = options['input'] || 'folio_import_dir/at_files'
         Repositext::Cli::Utils.change_files_in_place(

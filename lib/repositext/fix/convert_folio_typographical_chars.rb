@@ -139,10 +139,7 @@ class Repositext
           quote_replacer.call(text, before, after, quote_spec, :substitute_close)
 
           # Editors notes
-          text.gsub!(
-            /#{ quote_spec[:char] }[—\-]? ?Ed\.?\]/,
-            %(#{ quote_spec[:substitute_close] }—Ed.])
-          )
+          text.gsub!(/#{ quote_spec[:char] }(?=—Ed\.\])/, quote_spec[:substitute_close])
 
           before = [close_, punctuation_, separator_].join
           after = [close_, newline_, punctuation_, space_].join
