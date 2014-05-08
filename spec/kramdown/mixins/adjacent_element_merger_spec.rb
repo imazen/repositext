@@ -3,6 +3,7 @@ require_relative '../parser/folio/helper.rb'
 
 describe ::Kramdown::AdjacentElementMerger do
 
+# TODO: add spec for parallel strings of mergable elements several levels deep
   describe "recursively_merge_adjacent_elements!" do
 
     em_a1 = Kramdown::ElementRt.new(:em, nil, 'class' => 'a', 'id' => 'em_a1')

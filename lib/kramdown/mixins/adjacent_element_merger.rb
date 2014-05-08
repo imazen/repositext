@@ -33,17 +33,22 @@ module Kramdown
         return nil
       end
       index = 0
+      merge_children_again = false # if we merge elements, we have to process them again
       while index < ke.children.length - 1 # only need to go to second to last child
         cur_ke = ke.children[index]
         next_ke = ke.children[index + 1]
         next_next_ke = ke.children[index + 2]
         if cur_ke.is_of_same_type_as?(next_ke)
+          # We found two siblings that can be merged
           if cur_ke.type == :text
+            # For text elements we concatenate value
             cur_ke.value += next_ke.value
           else
+            # For other element types we append them as children to parent
             cur_ke.children.concat(next_ke.children)
+            merge_children_again = true
           end
-          ke.children.delete_at(index + 1)
+          ke.children.delete_at(index + 1) # delete the later sibling
           # don't increment index since we deleted element at index+1 position
         elsif(
           next_next_ke && [:em, :strong].include?(next_next_ke.type) &&
@@ -51,6 +56,7 @@ module Kramdown
           next_ke.value.strip.empty? &&
           cur_ke.is_of_same_type_as?(next_next_ke)
         )
+          # We found two :em or :strong siblings that are separated by space and can be merged
           cur_ke.children.push(next_ke)
           cur_ke.children.concat(next_next_ke.children)
           # Important: delete_at index+2 first, so that the other element is still
@@ -59,8 +65,13 @@ module Kramdown
           ke.children.delete_at(index + 2)
           ke.children.delete_at(index + 1)
           # don't increment index since we deleted elements at index+1 and index+2 positions
+          merge_children_again = true
         else
           index += 1
+        end
+        if merge_children_again
+          # We merged ke's children. This may provide an opportunity for additional merging
+          recursively_merge_adjacent_elements!(ke)
         end
       end
 
