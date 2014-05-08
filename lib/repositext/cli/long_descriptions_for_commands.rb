@@ -123,7 +123,7 @@ class Repositext
 
             Example:
 
-            bundle exec repositext validate utf8_encoding --input=import_folio_xml_dir/at_files
+            bundle exec repositext validate utf8_encoding --input=folio_import_dir/at_files
           )
         end
 
