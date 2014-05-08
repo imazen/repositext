@@ -54,7 +54,7 @@ class Repositext
     long_desc long_description_for_compare
     # @param[String] command_spec Specification of the operation
     def compare(command_spec)
-      self.send("compare_#{ command_spec }", options)
+      invoke_repositext_command('compare', command_spec, options)
     end
 
 
@@ -62,7 +62,7 @@ class Repositext
     long_desc long_description_for_convert
     # @param[String] command_spec Specification of the operation
     def convert(command_spec)
-      self.send("convert_#{ command_spec }", options)
+      invoke_repositext_command('convert', command_spec, options)
     end
 
 
@@ -70,7 +70,7 @@ class Repositext
     long_desc long_description_for_fix
     # @param[String] command_spec Specification of the operation
     def fix(command_spec)
-      self.send("fix_#{ command_spec }", options)
+      invoke_repositext_command('fix', command_spec, options)
     end
 
 
@@ -84,7 +84,7 @@ class Repositext
     #     is used for testing (pass 'test' as command_spec)
     def init(command_spec = nil)
       if command_spec
-        self.send("init_#{ command_spec }", options)
+        invoke_repositext_command('init', command_spec, options)
       else
         generate_rtfile(options)
       end
@@ -101,7 +101,7 @@ class Repositext
                   :desc => 'Specifies the base directory for the second file. Expects an absolute path to a directory.'
     # @param[String] command_spec Specification of the operation
     def merge(command_spec)
-      self.send("merge_#{ command_spec }", options)
+      invoke_repositext_command('merge', command_spec, options)
     end
 
 
@@ -109,7 +109,7 @@ class Repositext
     long_desc long_description_for_move
     # @param[String] command_spec Specification of the operation
     def move(command_spec)
-      self.send("move_#{ command_spec }", options)
+      invoke_repositext_command('move', command_spec, options)
     end
 
 
@@ -117,7 +117,7 @@ class Repositext
     long_desc long_description_for_report
     # @param[String] command_spec Specification of the operation
     def report(command_spec)
-      self.send("report_#{ command_spec }", options)
+      invoke_repositext_command('report', command_spec, options)
     end
 
 
@@ -125,7 +125,7 @@ class Repositext
     long_desc long_description_for_sync
     # @param[String] command_spec Specification of the operation
     def sync(command_spec)
-      self.send("sync_#{ command_spec }", options)
+      invoke_repositext_command('sync', command_spec, options)
     end
 
     desc 'validate SPEC', 'Validates files'
@@ -154,7 +154,7 @@ class Repositext
       else
         new_options = options
       end
-      self.send("validate_#{ command_spec }", new_options)
+      invoke_repositext_command('validate', command_spec, options)
     end
 
 
@@ -165,14 +165,14 @@ class Repositext
     long_desc long_description_for_export
     # @param[String] command_spec Specification of the operation
     def export(command_spec)
-      self.send("export_#{ command_spec }", options)
+      invoke_repositext_command('export', command_spec, options)
     end
 
     desc 'import SPEC', 'Imports files and merges changes into /content'
     long_desc long_description_for_import
     # @param[String] command_spec Specification of the operation
     def import(command_spec)
-      self.send("import_#{ command_spec }", options)
+      invoke_repositext_command('import', command_spec, options)
     end
 
   private
@@ -184,6 +184,19 @@ class Repositext
     def config=(a_config)
       @config = a_config
     end
+
+    # Invokes the command derived from main_command and command_spec
+    # @param[String] main_command
+    # @param[String] command_spec
+    def invoke_repositext_command(main_command, command_spec, options)
+      method_name = "#{ main_command }_#{ command_spec }"
+      if respond_to?(method_name, true)
+        self.send(method_name, options)
+      else
+        raise("The command you entered is not implemented. Missing method: #{ method_name.inspect }")
+      end
+    end
+
 
   end
 end
