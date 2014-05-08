@@ -5,7 +5,7 @@ class Repositext
     private
 
       def convert_folio_xml_to_at(options)
-        input_file_spec = options['input'] || 'import_folio_xml_dir/xml_files'
+        input_file_spec = options['input'] || 'folio_import_dir/xml_files'
         Repositext::Cli::Utils.convert_files(
           config.compute_glob_pattern(input_file_spec),
           /\.xml\Z/i,
@@ -27,7 +27,7 @@ class Repositext
 
       # Convert IDML files in /import_idml to AT
       def convert_idml_to_at(options)
-        input_file_spec = options['input'] || 'import_idml_dir/idml_files'
+        input_file_spec = options['input'] || 'idml_import_dir/idml_files'
         Repositext::Cli::Utils.convert_files(
           config.compute_glob_pattern(input_file_spec),
           /\.idml\z/i,

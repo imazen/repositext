@@ -46,7 +46,7 @@ class Repositext
 
       def import_folio_xml_specific_steps(options)
         options['report_file'] = config.compute_glob_pattern(
-          'import_folio_xml_dir/validation_report_file'
+          'folio_import_dir/validation_report_file'
         )
         options['append_to_validation_report'] = false
         reset_validation_report(options, 'import_folio_xml_specific_steps')
@@ -60,7 +60,7 @@ class Repositext
 
       def import_idml_specific_steps(options)
         options['report_file'] = config.compute_glob_pattern(
-          'import_idml_dir/validation_report_file'
+          'idml_import_dir/validation_report_file'
         )
         options['append_to_validation_report'] = false
         reset_validation_report(options, 'import_idml_specific_steps')

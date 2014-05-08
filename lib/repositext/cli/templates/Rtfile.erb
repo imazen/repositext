@@ -11,7 +11,7 @@ The convention is to chain them together, separated by a slash:
 Examples:
 
 * import_folio_dir/at_files
-* import_idml_dir/at_files
+* idml_import_dir/at_files
 * staging_dir/all_files
 * staging_dir/all_text_files
 
@@ -29,9 +29,9 @@ Examples:
 #  * Base dirs do NOT include the trailing '/'.
 
 base_dir :content_dir, File.expand_path("content/", File.dirname(__FILE__))
-base_dir :export_icml_dir, File.expand_path("export_icml/", File.dirname(__FILE__))
-base_dir :import_folio_xml_dir, File.expand_path("initial_folio_import/folio/", File.dirname(__FILE__))
-base_dir :import_idml_dir, File.expand_path("initial_idml_import/idml/", File.dirname(__FILE__))
+base_dir :folio_import_dir, File.expand_path("initial_folio_import/folio/", File.dirname(__FILE__))
+base_dir :icml_export_dir, File.expand_path("export_icml/", File.dirname(__FILE__))
+base_dir :idml_import_dir, File.expand_path("initial_idml_import/idml/", File.dirname(__FILE__))
 base_dir :rtfile_dir, File.dirname(__FILE__)
 base_dir :staging_dir, File.expand_path("staging/", File.dirname(__FILE__))
 

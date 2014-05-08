@@ -27,14 +27,14 @@ class Repositext
       # Validates all files related to folio xml import
       def validate_folio_xml_import(options)
         options['report_file'] ||= config.compute_glob_pattern(
-          'import_folio_xml_dir/validation_report_file'
+          'folio_import_dir/validation_report_file'
         )
         reset_validation_report(options, 'validate_folio_xml_import')
         file_specs = config.compute_validation_file_specs(
-          primary: 'import_folio_xml_dir/all_files', # for reporting only
-          folio_xml_sources: options['input'] || 'import_folio_xml_dir/xml_files',
-          imported_at_files: 'import_folio_xml_dir/at_files',
-          imported_repositext_files: 'import_folio_xml_dir/repositext_files',
+          primary: 'folio_import_dir/all_files', # for reporting only
+          folio_xml_sources: options['input'] || 'folio_import_dir/xml_files',
+          imported_at_files: 'folio_import_dir/at_files',
+          imported_repositext_files: 'folio_import_dir/repositext_files',
         )
         validation_options = {
           'folio_xml_parser_class' => config.kramdown_parser(:folio_xml),
@@ -59,14 +59,14 @@ class Repositext
       # Validates all files related to idml import
       def validate_idml_import(options)
         options['report_file'] ||= config.compute_glob_pattern(
-          'import_idml_dir/validation_report_file'
+          'idml_import_dir/validation_report_file'
         )
         reset_validation_report(options, 'validate_idml_import')
         file_specs = config.compute_validation_file_specs(
-          primary: 'import_idml_dir/all_files', # for reporting only
-          idml_sources: options['input'] || 'import_idml_dir/idml_files',
-          imported_at_files: 'import_idml_dir/at_files',
-          imported_repositext_files: 'import_idml_dir/repositext_files',
+          primary: 'idml_import_dir/all_files', # for reporting only
+          idml_sources: options['input'] || 'idml_import_dir/idml_files',
+          imported_at_files: 'idml_import_dir/at_files',
+          imported_repositext_files: 'idml_import_dir/repositext_files',
         )
         validation_options = {
           'idml_parser_class' => config.kramdown_parser(:idml),

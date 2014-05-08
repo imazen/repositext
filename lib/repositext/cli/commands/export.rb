@@ -5,12 +5,12 @@ class Repositext
     private
 
       # Export PT files in /content to ICML
-      def export_to_icml(options)
+      def export_icml(options)
         input_file_spec = options['input'] || 'content_dir/pt_files'
         input_base_dir_name, input_file_pattern_name = input_file_spec.split(
           Repositext::Cli::FILE_SPEC_DELIMITER
         )
-        output_base_dir = options['output'] || config.base_dir('export_icml_dir')
+        output_base_dir = options['output'] || config.base_dir('icml_export_dir')
         Repositext::Cli::Utils.export_files(
           config.base_dir(input_base_dir_name),
           config.file_pattern(input_file_pattern_name),

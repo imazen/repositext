@@ -14,7 +14,7 @@ class Repositext
       # If % directly follows an elipsis, move to the front of the ellipsis
       # (unless where elipsis and % are between two words like so: word…%word)
       def fix_adjust_gap_mark_positions(options)
-        input_file_spec = options['input'] || 'import_idml_dir/at_files'
+        input_file_spec = options['input'] || 'idml_import_dir/at_files'
         Repositext::Cli::Utils.change_files_in_place(
           config.compute_glob_pattern(input_file_spec),
           /\.at\z/i,
@@ -63,7 +63,7 @@ class Repositext
 
       # Convert -- and ... and " to typographically correct characters
       def fix_convert_folio_typographical_chars(options)
-        input_file_spec = options['input'] || 'import_folio_xml_dir/at_files'
+        input_file_spec = options['input'] || 'folio_import_dir/at_files'
         Repositext::Cli::Utils.change_files_in_place(
           config.compute_glob_pattern(input_file_spec),
           /\.(at|pt|txt)\z/i,
@@ -76,7 +76,7 @@ class Repositext
       end
 
       def fix_remove_underscores_inside_folio_paragraph_numbers(options)
-        input_file_spec = options['input'] || 'import_folio_xml_dir/at_files'
+        input_file_spec = options['input'] || 'folio_import_dir/at_files'
         Repositext::Cli::Utils.change_files_in_place(
           config.compute_glob_pattern(input_file_spec),
           /\.at\z/i,

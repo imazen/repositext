@@ -6,7 +6,7 @@ class Repositext
 
       # Generate summary of folio import warnings
       def report_folio_import_warnings(options)
-        input_file_spec = options['input'] || 'import_folio_xml_dir/json_files'
+        input_file_spec = options['input'] || 'folio_import_dir/json_files'
         uniq_warnings = Hash.new(0)
         Repositext::Cli::Utils.read_files(
           config.compute_glob_pattern(input_file_spec),
@@ -166,7 +166,7 @@ class Repositext
 
       def report_words_starting_with_apostrophe(options)
         # TODO: add report that shows all words starting with apostrophe that have only one character
-        input_file_spec = options['input'] || 'import_folio_xml_dir/at_files'
+        input_file_spec = options['input'] || 'folio_import_dir/at_files'
         apostrophe_at_beginning = {}
         apostrophe_in_the_middle = {}
         other = {}

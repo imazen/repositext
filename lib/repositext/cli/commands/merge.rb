@@ -8,10 +8,10 @@ class Repositext
       # Uses IDML as authority for text and all tokens except record_marks.
       # If no IDML file is present, uses FOLIO XML as authority for everything.
       def merge_record_marks_from_folio_xml_at_into_idml_at(options)
-        input_file_spec_folio_xml = options['input_1'] || 'import_folio_xml_dir/at_files'
+        input_file_spec_folio_xml = options['input_1'] || 'folio_import_dir/at_files'
         input_file_pattern_folio_xml = config.compute_glob_pattern(input_file_spec_folio_xml)
-        import_folio_xml_base_dir = config.base_dir(:import_folio_xml_dir)
-        import_idml_base_dir = options['input_2'] || config.base_dir(:import_idml_dir)
+        import_folio_xml_base_dir = config.base_dir(:folio_import_dir)
+        import_idml_base_dir = options['input_2'] || config.base_dir(:idml_import_dir)
         output_base_dir = options['output'] || config.base_dir(:staging_dir)
 
         $stderr.puts "Merging :record_mark tokens from folio_at into idml_at"
