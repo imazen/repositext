@@ -23,12 +23,18 @@ describe Repositext::Fix::ConvertFolioTypographicalChars do
       [%(word 'kinis word), %(word ’kinis word)],
       [%(word 'less word), %(word ’less word)],
       [%(word 'till word), %(word ’till word)],
+      [%(word 1's word), %(word 1’s word)],
       [%(word '77 word), %(word ’77 word)],
       [%(word 80's word), %(word 80’s word)],
       [%(word 80'word), %(word 80'word)],
       [%(word word's word), %(word word’s word)],
       [%(P's and Q's), %(P’s and Q’s)],
       [%(word ma'am word), %(word ma’am word)],
+      [%(word. I'm word), %(word. I’m word)],
+      [%(word, you're word.), %(word, you’re word.)],
+      [%(word that's word), %(word that’s word)],
+      [%(word that's word), %(word that’s word)],
+      [%(word ABC's?”), %(word ABC’s?”)],
       [%(word o'clock word), %(word o’clock word)],
       [%(word he'd word), %(word he’d word)],
       [%(word i'd word), %(word i’d word)],
@@ -101,6 +107,7 @@ describe Repositext::Fix::ConvertFolioTypographicalChars do
       [%(word, "word don't…"—Ed.]), %(word, “word don’t…”—Ed.])],
       [%(word, "word word", word), %(word, “word word”, word)],
       [%( ["Word."] ), %( [“Word.”] )],
+      [%(word, "’cause), %(word, “’cause)],
       [%([word word, "Word word, word word…?…"—Ed.]), %([word word, “Word word, word word…?…”—Ed.])],
       [%([Word word,"Word."—Ed.]), %([Word word,“Word.”—Ed.])],
       [%(word, "Word [Word word—Ed.]" Word), %(word, “Word [Word word—Ed.]” Word)],
@@ -117,4 +124,14 @@ describe Repositext::Fix::ConvertFolioTypographicalChars do
     end
   end
 
+  describe '.unconvert_quotes_in_ials!' do
+    [
+      [%(^^^ {: .rid #63410019 DNE="true" kpn="001"}), %(^^^ {: .rid #63410019 DNE="true" kpn="001"})],
+    ].each do |(txt, xpect)|
+      it "handles #{ txt.inspect }" do
+        o = Repositext::Fix::ConvertFolioTypographicalChars.fix(txt, '_')
+        o.result[:contents].must_equal(xpect)
+      end
+    end
+  end
 end

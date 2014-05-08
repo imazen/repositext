@@ -22,6 +22,7 @@ class Repositext
         convert_em_dashes!(text)
         convert_apostrophes!(text)
         convert_quotes!(text)
+        unconvert_quotes_in_ials!(text)
         Outcome.new(true, { contents: text }, [])
       end
 
@@ -63,7 +64,7 @@ class Repositext
         text.gsub!(/(?<=\W)'(cause|course|fore|kinis|less|till)\b/i, APOSTROPHE + '\1')
         # time period references (`'77`, `80's`, `1800's`)
         text.gsub!(/'(?=\d\d\b)/, APOSTROPHE)
-        text.gsub!(/\b(\d{2,4})'(?=s\b)/i, '\1' + APOSTROPHE)
+        text.gsub!(/\b(\d{1,4})'(?=s\b)/i, '\1' + APOSTROPHE)
         # all words with apostrophes inside (this one is a fairly generic rule that may affect unwanted places)
         text.gsub!(/(?<=[[:alpha:]])'(?=[[:alpha:]])/, APOSTROPHE)
       end
@@ -128,6 +129,10 @@ class Repositext
           after = [open_, punctuation_, separator_, space_].join
           quote_replacer.call(text, before, after, quote_spec, :substitute_open)
 
+          before = [space_].join
+          after = APOSTROPHE # Words like ’cause at beginning of a quote
+          quote_replacer.call(text, before, after, quote_spec, :substitute_open)
+
           # Closing quotes
           before =  alnum_
           after = [close_, newline_, open_, punctuation_, separator_, space_].join
@@ -168,6 +173,13 @@ class Repositext
             quote_spec[:substitute_close]
           )
         }
+      end
+
+      # During the above steps we convert some straight double quotes inside IALs
+      # to typographic ones. We need to undo that here.
+      # @param[String] text
+      def self.unconvert_quotes_in_ials!(text)
+        text.gsub!(/(?<=\{)([^\{\}]*)[#{ D_QUOTE_CLOSE + D_QUOTE_OPEN }]([^\{\}]*)(?=\})/, '\1"\2')
       end
 
     end
