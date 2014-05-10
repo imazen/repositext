@@ -34,7 +34,7 @@ class Repositext
     class_option :input,
                  :type => :string,
                  :desc => 'Specifies the input file pattern. Expects an absolute path pattern that can be used with Dir.glob.'
-    class_option :changed_only,
+    class_option :'changed-only',
                  :type => :boolean,
                  :default => true,
                  :desc => 'If true, only files that have been changed or added will be processed.'

@@ -70,14 +70,14 @@ class Repositext
       # Reads files
       # @param[String] input_base_dir the base_dir path
       # @param[String] input_file_pattern the input file pattern
-      # @param[Proc, nil] paired_filename_proc A proc that computes the filename of
-      #     a paired file. It receives the name of the first filename as a single
+      # @param[Proc, nil] file_name_2_proc A proc that computes the filename of
+      #     a second file. It receives the name of the first file as a single
       #     argument and is expected to return the full path to the second file.
-      #     Pass nil if no paired file is desired.
+      #     Pass nil if no second file is desired.
       # @param: See #process_files_helper below for param description
-      def self.read_files(file_pattern, file_filter, paired_filename_proc, description, options, &block)
+      def self.read_files(file_pattern, file_filter, file_name_2_proc, description, options, &block)
         read_files_helper(
-          file_pattern, file_filter, paired_filename_proc, description, options, &block
+          file_pattern, file_filter, file_name_2_proc, description, options, &block
         )
       end
 
@@ -275,7 +275,7 @@ class Repositext
       #     This is provided by the callling command, limiting the files to be
       #     operated on to valid file types.
       #     See here for more info on ===: http://ruby.about.com/od/control/a/The-Case-Equality-Operator.htm
-      # @param[Proc, nil] paired_filename_proc A proc that computes the filename of
+      # @param[Proc, nil] file_name_2_proc A proc that computes the filename of
       #     a paired file. It receives the name of the first filename as a single
       #     argument and is expected to return the full path to the second file.
       # @param[String] description A description of the operation, used for logging.
@@ -285,42 +285,42 @@ class Repositext
       #     :changed_only
       # @param[Proc] block A Proc that performs the desired operation on each file.
       #     Arguments to the proc are each file's name and contents.
-      def self.read_files_helper(file_pattern, file_filter, paired_filename_proc, description, options, &block)
+      def self.read_files_helper(file_pattern, file_filter, file_name_2_proc, description, options, &block)
 
         with_console_output(description, file_pattern) do |counts|
           changed_files = compute_list_of_changed_files(options[:changed_only])
-          Dir.glob(file_pattern).each do |filename|
+          Dir.glob(file_pattern).each do |filename_1|
 
-            if file_filter && !(file_filter === filename) # file_filter has to be LHS of `===`
-              $stderr.puts " - Skipping #{ filename } - doesn't match file_filter"
+            if file_filter && !(file_filter === filename_1) # file_filter has to be LHS of `===`
+              $stderr.puts " - Skipping #{ filename_1 } - doesn't match file_filter"
               next
             end
 
             if changed_files && !changed_files.any? { |changed_file_rel_path|
-              Regexp.new(changed_file_rel_path + "\\z") =~ filename
+              Regexp.new(changed_file_rel_path + "\\z") =~ filename_1
             }
-              $stderr.puts " - Skipping #{ filename } - has no changes"
+              $stderr.puts " - Skipping #{ filename_1 } - has no changes"
               next
             end
 
             begin
-              $stderr.puts " - Reading #{ filename }"
-              contents = if options[:input_is_binary]
-                File.binread(filename).freeze
+              $stderr.puts " - Reading #{ filename_1 }"
+              contents_1 = if options[:input_is_binary]
+                File.binread(filename_1).freeze
               else
-                File.read(filename).freeze
+                File.read(filename_1).freeze
               end
               counts[:success] += 1
-              if paired_filename_proc
-                paired_filename = paired_filename_proc.call(filename)
-                paired_contents = if options[:input_is_binary]
-                  File.binread(paired_filename).freeze
+              if file_name_2_proc
+                filename_2 = file_name_2_proc.call(filename_1)
+                contents_2 = if options[:input_is_binary]
+                  File.binread(filename_2).freeze
                 else
-                  File.read(paired_filename).freeze
+                  File.read(filename_2).freeze
                 end
-                block.call(contents, filename, paired_contents, paired_filename)
+                block.call(contents_1, filename_1, contents_2, filename_2)
               else
-                block.call(contents, filename)
+                block.call(contents_1, filename_1)
               end
             rescue StandardError => e
               counts[:errors] += 1

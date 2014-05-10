@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title><%= @title || 'Repositext Report' %></title>
+  <link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+  <!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+</head>
+
+<body>
+  <div class="container">
+    <div class="page-header">
+      <h1>Diff report</h1>
+    </div>
+    <p><a href="<%= @path_to_index %>" class="btn btn-default">Back to Index</a></p>
+    <p>There are <%= @diffs_count %> different records between</p>
+    <div class="row">
+      <div class="col-md-5"><h4><%= @filename_1 %></h4></div>
+      <div class="col-md-2">and</div>
+      <div class="col-md-5"><h4><%= @filename_2 %></h4></div>
+    </div>
+    <%= @diffs %>
+    <p><a href="<%= @path_to_index %>" class="btn btn-default">Back to Index</a></p>
+  </div>
+</body>
+</html>
