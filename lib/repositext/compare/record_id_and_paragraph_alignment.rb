@@ -147,12 +147,13 @@ class Repositext
         @title = 'Compare Record id and paragraph alignment'
         @diffs = diffs.map { |e|
           sim_percent = (e[:similarity] * 100).round
-          sim_class = if sim_percent < 50
+          sim_class = case sim_percent
+          when 0..50
             'label-danger'
-          elsif sim_percent < 90
+          when 50..90
             'label-warning'
           else
-            'label-default'
+            'label-default' # collapsed by default
           end
           similarity_widget = %(<span class="label #{ sim_class }">#{ sim_percent }%</span>)
           %(
