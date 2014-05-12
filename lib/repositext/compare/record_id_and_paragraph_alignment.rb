@@ -4,7 +4,6 @@ class Repositext
 
 # TODO:
 
-# * remove id-title and para (at the end)
 # * make a pair collapsible if its below a certain similarity threshold
 
       # Compares the alignment of record ids and paragraphs between contents_1
@@ -36,7 +35,10 @@ class Repositext
           {
             html_report_filename: html_report_filename,
             html_report: html_report,
-            number_of_diffs: diffs.length,
+            number_of_diffs: diffs.each_with_object({}) { |e,m|
+              m[e[:css_class]] ||= 0
+              m[e[:css_class]] += 1
+            },
           },
           []
         )
@@ -70,6 +72,7 @@ class Repositext
             text_1: token_1[:text],
             text_2: '',
             similarity: nil,
+            css_class: nil,
           }
         }
         tokens_2.each { |token_2|
@@ -81,6 +84,7 @@ class Repositext
               text_1: '',
               text_2: token_2[:text],
               similarity: nil,
+              css_class: nil,
             }
             combined_tokens << entry
           else
@@ -94,7 +98,9 @@ class Repositext
 
       def self.compute_diffs(combined_tokens)
         combined_tokens.each { |e|
-          e[:similarity] = compute_string_similarity(e[:text_1], e[:text_2])
+          s = compute_string_similarity(e[:text_1], e[:text_2])
+          e[:similarity] = s
+          e[:css_class] = compute_css_class(s)
         }
         combined_tokens.find_all { |e| e[:similarity] < 1.0 }
       end
@@ -145,30 +151,27 @@ class Repositext
           "../../cli/templates/html_diff_report.html.erb", __FILE__
         )
         @title = 'Compare Record id and paragraph alignment'
-        @diffs = diffs.map { |e|
+        @diffs = diffs.each_with_index.map { |e,idx|
           sim_percent = (e[:similarity] * 100).round
-          sim_class = case sim_percent
-          when 0..50
-            'label-danger'
-          when 50..90
-            'label-warning'
+          similarity_widget = %(<span class="label #{ e[:css_class] }">#{ sim_percent }%</span>)
+          collapse_css_class = if e[:css_class].index('label-default')
+            "record-#{ idx } collapse"
           else
-            'label-default' # collapsed by default
+            "record-#{ idx } collapse in"
           end
-          similarity_widget = %(<span class="label #{ sim_class }">#{ sim_percent }%</span>)
           %(
-            <div class="row">
-              <div class="col-md-5">
-                <p>#{ e[:text_1] }</p>
-              </div>
-              <div class="col-md-2">
-                <p>#{ e[:record_id] }</p>
-                <p title="Similarity between the two record texts">#{ similarity_widget }</p>
-              </div>
-              <div class="col-md-5">
-                <p>#{ e[:text_2] }</p>
-              </div>
-            </div>
+            <tr>
+              <td style="width: 40%">
+                <p class="#{ collapse_css_class }">#{ e[:text_1] }</p>
+              </td>
+              <td style="width: 20%">
+                <button data-toggle="collapse" data-target=".record-#{ idx }">#{ e[:record_id] }</button>
+                #{ similarity_widget }
+              </td>
+              <td style="width: 40%">
+                <p class="#{ collapse_css_class }">#{ e[:text_2] }</p>
+              </td>
+            </tr>
           )
         }.join
         @diffs_count = diffs.length
@@ -177,6 +180,19 @@ class Repositext
         @path_to_index = path_to_index
         erb_template = ERB.new(File.read(template_path))
         erb_template.result(binding)
+      end
+
+      # Computes the css class for the given similarity
+      # @param[Float] similarity from 0.0 to 1.0
+      def self.compute_css_class(similarity)
+        case similarity
+        when 0.0..0.5
+          'label-danger'
+        when 0.5..0.9
+          'label-warning'
+        else
+          'label-default'
+        end
       end
 
     end

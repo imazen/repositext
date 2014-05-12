@@ -15,13 +15,6 @@ class Repositext
       # Generates a diff view of folio source vs. /content where record ids
       # and paragraph alignment is analyzed.
       def compare_record_id_and_paragraph_alignment(options)
-        # iterate over files to compare
-          # compare/content/with_folio_source
-          # compare/folio_source/with_content
-          # each file-pair
-            # compute paragraph level diff, prepare for display
-            # generate html file with diff info
-            # collect name of file and how many diffs
         # generate diff index
         $stderr.puts "Generating diff report for record_id and paragraph alignment"
         $stderr.puts '-' * 80
@@ -84,12 +77,15 @@ class Repositext
         @title = 'Compare Record id and paragraph alignment index'
         @diff_html_files = diff_html_files.map { |e|
           filename = e[:filename].gsub(base_dir, '')
+          diffs = e[:number_of_diffs].map { |k,v|
+            %(<span class="label #{ k }">#{ 1 == v ? '1 record' : " #{ v } records" }</span>)
+          }.join(' ')
           %(
             <tr>
               <td>
                 <a href="#{ filename }">#{ filename.split('/').last }</a>
               </td>
-              <td>#{ e[:number_of_diffs] }</td>
+              <td>#{ diffs }</td>
             </tr>
           )
         }.join
