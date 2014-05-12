@@ -191,12 +191,22 @@ class Repositext
     def invoke_repositext_command(main_command, command_spec, options)
       method_name = "#{ main_command }_#{ command_spec }"
       if respond_to?(method_name, true)
-        self.send(method_name, options)
+        with_timer do
+          self.send(method_name, options)
+        end
       else
         raise("The command you entered is not implemented. Missing method: #{ method_name.inspect }")
       end
     end
 
+    # Wrap code you want to time inside a block. Returns duration in seconds.
+    def with_timer(&block)
+      start_time = Time.now
+      block.call
+      end_time = Time.now
+      duration_in_seconds = (end_time - start_time).to_i
+      $stderr.puts "Total duration: #{ duration_in_seconds } seconds."
+    end
 
   end
 end
