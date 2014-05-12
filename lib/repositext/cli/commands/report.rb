@@ -252,7 +252,9 @@ class Repositext
           options
         ) do |contents, filename|
           # iterate over all straight quotes
-          contents.scan(/(.{0,20})((?<!\=)#{ quote_char }(?!\}))(.{0,20})/m) { |(pre, quote, post)|
+          # Don't include straight quotes inside IALs
+          contents.gsub(/\{[^\{\}]*\}/, ' ') # remove all ials
+                  .scan(/(.{0,20})((?<!\=)#{ quote_char }(?!\}))(.{0,20})/m) { |(pre, quote, post)|
             # add to array
             instances << { :pre => pre, :post => post, :filename => filename }
           }
