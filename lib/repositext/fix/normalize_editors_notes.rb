@@ -14,9 +14,9 @@ class Repositext
         text = text.dup
         text.gsub!(/[—\-]* ?Ed\.?\]/, %(#{ separator_char }Ed.]))
         # Handle a case like this where an asterisk is in the wrong spot: `—*Ed` => `—*—Ed`
-        # Drop the first emdash
+        # Drop the first emdash or double hyphen
         text.gsub!(
-          /(#{ separator_char })(\*+)(?=#{ separator_char }Ed\.\])/,
+          /(—|\-\-)(\*+)(?=#{ separator_char }Ed\.\])/,
           '\2'
         )
         Outcome.new(true, { contents: text }, [])
