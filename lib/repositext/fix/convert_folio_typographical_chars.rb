@@ -67,6 +67,7 @@ class Repositext
         text.gsub!(/\b(\d{1,4})'(?=s\b)/i, '\1' + APOSTROPHE)
         # all words with apostrophes inside (this one is a fairly generic rule that may affect unwanted places)
         text.gsub!(/(?<=[[:alpha:]])'(?=[[:alpha:]])/, APOSTROPHE)
+        text.gsub!(/(?<=\.)'(?=s)/, APOSTROPHE) # e.g., `M.D.'s`
       end
 
       # Converts quotes in text in place
@@ -117,7 +118,7 @@ class Repositext
 
         [double_quote_spec, single_quote_spec].each { |quote_spec|
           # Opening quotes
-          before = [close_, newline_, open_, punctuation_, separator_, space_].join
+          before = [close_, newline_, open_, separator_, space_].join
           after = alnum_
           quote_replacer.call(text, before, after, quote_spec, :substitute_open)
 
