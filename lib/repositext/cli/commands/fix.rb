@@ -76,7 +76,12 @@ class Repositext
       end
 
       def fix_normalize_editors_notes(options)
-        input_file_spec = options['input'] || 'folio_import_dir/at_files'
+        # Don't set default file_spec since this gets called both in folio
+        # and idml.
+        if options['input'].nil?
+          raise(ArgumentError.new("'input' option is required for this command"))
+        end
+        input_file_spec = options['input']
         Repositext::Cli::Utils.change_files_in_place(
           config.compute_glob_pattern(input_file_spec),
           /\.at\z/i,

@@ -53,7 +53,9 @@ class Repositext
         validate_folio_xml_import(options.merge('run_options' => %w[pre_import]))
         convert_folio_xml_to_at(options)
         fix_remove_underscores_inside_folio_paragraph_numbers(options)
-        fix_normalize_editors_notes(options) # has to be invoked before fix_convert_folio_typographical_chars
+        fix_normalize_editors_notes(
+          options.merge({ 'input' => 'folio_import_dir/at_files' })
+        ) # has to be invoked before fix_convert_folio_typographical_chars
         fix_convert_folio_typographical_chars(options)
         options['append_to_validation_report'] = true
         validate_folio_xml_import(options.merge('run_options' => %w[post_import]))
@@ -68,7 +70,9 @@ class Repositext
         validate_idml_import(options.merge('run_options' => %w[pre_import]))
         convert_idml_to_at(options)
         fix_adjust_gap_mark_positions(options)
-        fix_normalize_editors_notes(options)
+        fix_normalize_editors_notes(
+          options.merge({ 'input' => 'idml_import_dir/at_files' })
+        )
         options['append_to_validation_report'] = true
         validate_idml_import(options.merge('run_options' => %w[post_import]))
       end
