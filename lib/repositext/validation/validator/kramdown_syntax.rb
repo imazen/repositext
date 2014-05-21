@@ -49,17 +49,25 @@ class Repositext
               break
             end
           end
-          # Detect gap marks inside of words, asterisks, quotes (primary or secondary),
-          # parentheses, or brackets
+          # Detect gap_marks (%) and subtitle_marks (@) inside of words,
+          # asterisks, quotes (straight or typographic), parentheses, or brackets.
           str_sc = Kramdown::Utils::StringScanner.new(source)
           while !str_sc.eos? do
-            if (match = str_sc.scan_until(/(?<=[[:alpha:]\*\"\'\(\[])%/))
+            if (match = str_sc.scan_until(/(?<=[[:alpha:]\*\"\“\'\‘\(\[])[%@]/))
+              msg = case match[-1]
+              when '%'
+                ':gap_mark (%) at invalid position'
+              when '@'
+                ':subtitle_mark (@) at invalid position'
+              else
+                raise "Unhandled match: #{ match.inspect }"
+              end
               errors << Reportable.error(
                 [
                   @file_to_validate,
                   sprintf("line %5s", str_sc.current_line_number)
                 ],
-                [':gap_mark (%) at invalid position', match[-40..-1].inspect]
+                [msg, match[-40..-1].inspect]
               )
             else
               break
