@@ -114,7 +114,7 @@ class Repositext
       # @param[Hash] options
       #     :input_is_binary to force File.binread where required
       #     :output_is_binary
-      #     :changed_only
+      #     :'changed-only'
       # @param[Proc] block A Proc that performs the desired operation on each file.
       #     Arguments to the proc are each file's name and contents.
       #     Calling block is expected to return an Array of Outcome objects, one
@@ -127,7 +127,7 @@ class Repositext
       #     block              => out_contents_proc (transforms output file contents)
       def self.process_files_helper(file_pattern, file_filter, output_path_lambda, description, options, &block)
         with_console_output(description, file_pattern) do |counts|
-          changed_files = compute_list_of_changed_files(options[:changed_only])
+          changed_files = compute_list_of_changed_files(options[:'changed-only'])
           Dir.glob(file_pattern).each do |filename|
 
             if file_filter && !(file_filter === filename) # file_filter has to be LHS of `===`
@@ -216,7 +216,7 @@ class Repositext
       def self.move_files_helper(file_pattern, file_filter, output_path_lambda, description, options)
 
         with_console_output(description, file_pattern) do |counts|
-          changed_files = compute_list_of_changed_files(options[:changed_only])
+          changed_files = compute_list_of_changed_files(options[:'changed-only'])
           Dir.glob(file_pattern).each do |filename|
 
             if file_filter && !(file_filter === filename) # file_filter has to be LHS of `===`
@@ -282,13 +282,13 @@ class Repositext
       # @param[Hash] options
       #     :input_is_binary to force File.binread where required
       #     :output_is_binary
-      #     :changed_only
+      #     :'changed-only'
       # @param[Proc] block A Proc that performs the desired operation on each file.
       #     Arguments to the proc are each file's name and contents.
       def self.read_files_helper(file_pattern, file_filter, file_name_2_proc, description, options, &block)
 
         with_console_output(description, file_pattern) do |counts|
-          changed_files = compute_list_of_changed_files(options[:changed_only])
+          changed_files = compute_list_of_changed_files(options[:'changed-only'])
           Dir.glob(file_pattern).each do |filename_1|
 
             if file_filter && !(file_filter === filename_1) # file_filter has to be LHS of `===`
