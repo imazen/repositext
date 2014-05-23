@@ -37,12 +37,12 @@ class Repositext
       # @param: See #process_files_helper below for param description
       def self.export_files(input_base_dir, input_file_pattern, out_dir, file_filter, description, options, &block)
         # Change output file path to destination
-        output_path_lambda = lambda do |input_filename, output_file_attrs|
+        output_path_lambda = options[:output_path_lambda] || lambda { |input_filename, output_file_attrs|
           replace_file_extension(
             input_filename.gsub(input_base_dir, out_dir),
             output_file_attrs[:extension]
           )
-        end
+        }
         file_pattern = input_base_dir + input_file_pattern
 
         process_files_helper(
