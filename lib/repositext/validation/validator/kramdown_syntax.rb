@@ -53,7 +53,7 @@ class Repositext
           # asterisks, quotes (straight or typographic), parentheses, or brackets.
           str_sc = Kramdown::Utils::StringScanner.new(source)
           while !str_sc.eos? do
-            if (match = str_sc.scan_until(/(?<=[[:alpha:]\*\"\“\'\‘\(\[])[%@]/))
+            if (match = str_sc.scan_until(/(?<=[[:alpha:]\*\"\“\”\'\‘\’\(\[])[%@]/))
               msg = case match[-1]
               when '%'
                 ':gap_mark (%) at invalid position'
