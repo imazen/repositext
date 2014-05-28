@@ -37,7 +37,8 @@ class Repositext
           new_at.gsub!(/\n\n(#{ record_mark_rx })([^\n])/, "\n\\1\n\\2")
         end
 
-        new_at = new_at.gsub(/\A\n\n/, '') # remove temporary leading \n\n
+        new_at = new_at.lstrip # remove temporary leading \n\n
+        new_at = make_sure_there_is_a_blank_line_after_first_record_mark(new_at)
         new_at = apply_custom_fixes(new_at, filename)
         Outcome.new(true, { contents: new_at }, [])
       end
@@ -134,6 +135,12 @@ class Repositext
       def self.distance_to_first_para_break(txt)
         v = txt.index("\n\n")
         v.nil? ? Float::INFINITY : v + 1
+      end
+
+      # @param[String] txt
+      # @return[String] txt with blank line after first record_mark
+      def self.make_sure_there_is_a_blank_line_after_first_record_mark(txt)
+        txt.gsub(/\A(\^\^\^[^\n]*)\n+/, '\1' + "\n\n")
       end
 
       # Override this method for any custom fixes in sub classes
