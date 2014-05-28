@@ -26,12 +26,9 @@ module Kramdown
             # mark for deletion in post processing
             @output << "\n\n<<delete this line>>"
           else
-            # prefix paras with `@`
+            # put empty lines between paras
             @output << "\n\n"
           end
-        # when :block == Element.category(el) # has to come after specific block element types!
-        #   # add a new line for each :block element
-        #   @output << "\n"
         when :gap_mark == el.type
           # export gap_marks
           @output << "%"
@@ -59,6 +56,7 @@ module Kramdown
         r.gsub!(/(?<=\n\[\|\# )([^\n]*)/, '\1|]') # close wrap title in brackets and pipes
         r.gsub!(/ ? ?/, '') # remove beginning and ending eagles
         r.strip!
+        r << "\n\n" # add two newlines to end of file to comply with repositext file conventions
         r
       end
 
