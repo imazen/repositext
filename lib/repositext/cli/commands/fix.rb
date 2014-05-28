@@ -93,6 +93,24 @@ class Repositext
         end
       end
 
+      def fix_normalize_subtitle_mark_before_gap_mark_positions(options)
+        # Don't set default file_spec. Needs to be provided. This could be called
+        # from a number of places.
+        if options['input'].nil?
+          raise(ArgumentError.new("'input' option is required for this command"))
+        end
+        input_file_spec = options['input']
+        Repositext::Cli::Utils.change_files_in_place(
+          config.compute_glob_pattern(input_file_spec),
+          /\.at\z/i,
+          "Normalizing subtitle_mark before gap_mark positions.",
+          options
+        ) do |contents, filename|
+          outcome = Repositext::Fix::NormalizeSubtitleMarkBeforeGapMarkPositions.fix(contents, filename)
+          [outcome]
+        end
+      end
+
       def fix_remove_underscores_inside_folio_paragraph_numbers(options)
         input_file_spec = options['input'] || 'folio_import_dir/at_files'
         Repositext::Cli::Utils.change_files_in_place(

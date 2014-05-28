@@ -82,6 +82,9 @@ class Repositext
         merge_record_marks_from_folio_xml_at_into_idml_at(options)
         fix_adjust_merged_record_mark_positions(options)
         fix_convert_abbreviations_to_lower_case(options) # run after merge_record_marks...
+        fix_normalize_subtitle_mark_before_gap_mark_positions(
+          options.merge({ 'input' => 'staging_dir/at_files' })
+        )
         move_staging_to_content(options)
         sync_from_at(options)
         options['report_file'] = config.compute_glob_pattern(
