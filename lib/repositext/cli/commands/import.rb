@@ -30,6 +30,22 @@ class Repositext
         import_shared_steps(options)
       end
 
+      def import_subtitle_tagging(options)
+        options['report_file'] = config.compute_glob_pattern(
+          'subtitle_tagging_import_dir/validation_report_file'
+        )
+        options['append_to_validation_report'] = false
+        reset_validation_report(options, 'validate_subtitle_tagging_import')
+        validate_subtitle_tagging_import(options.merge('run_options' => %w[pre_import]))
+        merge_subtitle_marks_from_subtitle_tagging_import_into_content_at(options)
+        fix_normalize_subtitle_mark_before_gap_mark_positions(
+          options.merge({ 'input' => 'content_dir/at_files' })
+        )
+        copy_subtitle_marker_csv_files_to_content(options) # and rename them to our file naming convention
+        options['append_to_validation_report'] = true
+        validate_subtitle_tagging_import(options.merge('run_options' => %w[post_import]))
+      end
+
       def import_test(options)
         # dummy method for testing
         puts 'import_test'

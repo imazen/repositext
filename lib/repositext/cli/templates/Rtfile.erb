@@ -45,6 +45,7 @@ base_dir :idml_import_dir, File.expand_path("initial_idml_import/idml/", File.di
 base_dir :rtfile_dir, File.dirname(__FILE__)
 base_dir :staging_dir, File.expand_path("staging/", File.dirname(__FILE__))
 base_dir :subtitle_tagging_export_dir, File.expand_path("subtitle_tagging_export/", File.dirname(__FILE__))
+base_dir :subtitle_tagging_import_dir, File.expand_path("subtitle_tagging_import/", File.dirname(__FILE__))
 
 # File patterns
 # -------------
@@ -59,12 +60,13 @@ base_dir :subtitle_tagging_export_dir, File.expand_path("subtitle_tagging_export
 
 file_pattern :all_files, '**/*'
 file_pattern :at_files, '**/*.at'
+file_pattern :csv_files, '**/*.csv'
 file_pattern :docx_files, '**/*.docx'
 file_pattern :icml_files, '**/*.icml'
 file_pattern :idml_files, '**/*.idml'
 file_pattern :json_files, '**/*.json'
 file_pattern :pt_files, '**/*.md'
-file_pattern :repositext_files, '**/*.{at,json,md,txt}'
+file_pattern :repositext_files, '**/*.{at,csv,json,md,txt}'
 file_pattern :txt_files, '**/*.txt'
 file_pattern :validation_report_file, 'validation_report.txt'
 file_pattern :xml_files, '**/*.xml'

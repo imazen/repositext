@@ -30,6 +30,24 @@ class Repositext
         )
       end
 
+      # Copies files to another location
+      # @param[String] input_base_dir the base_dir path
+      # @param[String] input_file_pattern the input file pattern
+      # @param[String] out_dir the output base directory
+      # @param: See #process_files_helper below for param description
+      def self.copy_files(input_base_dir, input_file_pattern, out_dir, file_filter, description, options)
+        # Change output file path to destination, override in options if filename
+        # needs to be changed, too.
+        output_path_lambda = options[:output_path_lambda] || lambda do |input_filename|
+          input_filename.gsub(input_base_dir, out_dir)
+        end
+        file_pattern = input_base_dir + input_file_pattern
+
+        move_files_helper(
+          file_pattern, file_filter, output_path_lambda, description, options.merge(:move_or_copy => :copy)
+        )
+      end
+
       # Exports files to another format and location
       # @param[String] input_base_dir the base_dir path
       # @param[String] input_file_pattern the input file pattern
@@ -214,8 +232,17 @@ class Repositext
       # @param[Hash] options
       #     :input_is_binary to force File.binread where required
       #     :output_is_binary
+      #     :move_or_copy whether to move or copy the files, defaults to :move
       def self.move_files_helper(file_pattern, file_filter, output_path_lambda, description, options)
-
+        options[:move_or_copy] ||= :move # options is a Thor::CoreExt::HashWithIndifferentAccess. Don't use merge!
+        file_operation_method = case options[:move_or_copy]
+        when :copy
+          :copy_file_unless_path_is_blank
+        when :move
+          :move_file_unless_path_is_blank
+        else
+          raise(ArgumentError.new("Invalid option :move_or_copy: #{ options[:move_or_copy].inspect }"))
+        end
         with_console_output(description, file_pattern) do |counts|
           changed_files = compute_list_of_changed_files(options[:'changed-only'])
           Dir.glob(file_pattern).each do |filename|
@@ -236,7 +263,6 @@ class Repositext
               $stderr.puts " - Moving #{ filename }"
 
               new_path = output_path_lambda.call(filename)
-
               # new_path is either a file path or the empty string (in which
               # case we don't write anything to the file system).
               # NOTE: it's not enough to just check File.exist?(new_path) for
@@ -245,11 +271,11 @@ class Repositext
               exists_already = ('' != new_path && File.exist?(new_path))
 
               if exists_already
-                move_file_unless_path_is_blank(filename, new_path)
+                self.send(file_operation_method, filename, new_path)
                 counts[:updated] += 1
                 $stderr.puts "  * Update: #{ new_path }"
               else
-                move_file_unless_path_is_blank(filename, new_path)
+                self.send(file_operation_method, filename, new_path)
                 counts[:created] += 1
                 $stderr.puts "  * Create: #{ new_path }"
               end
@@ -370,6 +396,22 @@ class Repositext
         end
         new_extension = '.' + new_extension.sub(/\A\./, '')
         basepath + new_extension
+      end
+
+      # Copies file_path to new_path. Overwrites existing files.
+      # Doesn't copy file if file_path is blank (nil, empty string, or string
+      # with only whitespace)
+      # @param[String] file_path
+      # @param[String] new_path
+      # @return[Bool] true if it copied file, false if not.
+      def self.copy_file_unless_path_is_blank(file_path, new_path)
+        if '' == file_path.to_s.strip
+          $stderr.puts %(  - Skip copying blank file_path)
+          false
+        else
+          FileUtils.cp(file_path, new_path)
+          true
+        end
       end
 
       # Moves file_path to new_path. Overwrites existing files.

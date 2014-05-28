@@ -44,7 +44,7 @@ class Repositext
       # @param[String] st_filename the subtitle_tagging filename
       # @return[String] the corresponding repositext filename
       def self.convert_from_subtitle_tagging_import_to_repositext(st_filename)
-        lang_code = st_filename.match(//) # should be 'en'
+        lang_code = st_filename.match(/(?<=\.)[[:alpha:]]{2}(?=\.txt\z)/).to_s # should be 'en'
         st_filename.gsub(/(\d\d\/)(\d\d)/, ['\1', convert_language_code(lang_code), '\2'].join)
                    .gsub(/\.#{ lang_code }\.txt\z/, '.at')
       end
@@ -57,11 +57,11 @@ class Repositext
         r = case lang_code.length
         when 2
           # return corresponding 3 char code
-          mapping = language_code_map.detect { |e| lang_code.downcase == e.last }
+          mapping = LANGUAGE_CODE_MAP.detect { |e| lang_code.downcase == e.last }
           mapping ? mapping.first : nil
         when 3
           # return corresponding 2 char code
-          mapping = language_code_map.detect { |e| lang_code.downcase == e.first }
+          mapping = LANGUAGE_CODE_MAP.detect { |e| lang_code.downcase == e.first }
           mapping ? mapping.last : nil
         else
           raise(ArgumentError.new("Invalid lang_code length, must be 2 or 3 chars: #{ lang_code.inspect }"))

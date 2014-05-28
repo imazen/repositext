@@ -14,7 +14,7 @@ class Repositext
         import_idml_base_dir = options['input_2'] || config.base_dir(:idml_import_dir)
         output_base_dir = options['output'] || config.base_dir(:staging_dir)
 
-        $stderr.puts "Merging :record_mark tokens from folio_at into idml_at"
+        $stderr.puts 'Merging :record_mark tokens from folio_at into idml_at'
         $stderr.puts '-' * 80
         start_time = Time.now
         total_count = 0
@@ -73,6 +73,62 @@ class Repositext
         $stderr.puts '-' * 80
         $stderr.puts "Finished merging #{ success_count } of #{ total_count } files in #{ Time.now - start_time } seconds."
         $stderr.puts " - IDML files not present: #{ idml_not_present_count }"
+      end
+
+      # Merges subtitle_marks from subtitle_tagging_import into content AT.
+      # Uses content AT as authority for text and all tokens except subtitle_marks.
+      def merge_subtitle_marks_from_subtitle_tagging_import_into_content_at(options)
+        input_file_spec_subtitle_tagging_import = options['input_1'] || 'subtitle_tagging_import_dir/txt_files'
+        input_file_pattern_subtitle_tagging_import = config.compute_glob_pattern(input_file_spec_subtitle_tagging_import)
+        base_dir_subtitle_tagging_import = config.base_dir(:subtitle_tagging_import_dir)
+        base_dir_content = options['input_2'] || config.base_dir(:content_dir)
+        base_dir_output = options['output'] || config.base_dir(:content_dir)
+
+        $stderr.puts 'Merging :subtitle_mark tokens from subtitle_tagging_import into content_at'
+        $stderr.puts '-' * 80
+        start_time = Time.now
+        total_count = 0
+        success_count = 0
+        errors_count = 0
+
+        Dir.glob(input_file_pattern_subtitle_tagging_import).each do |subtitle_tagging_import_file_name|
+          if subtitle_tagging_import_file_name !~ /\.txt\z/
+            $stderr.puts " - Skip #{ subtitle_tagging_import_file_name }"
+            next
+          end
+
+          total_count += 1
+          # prepare paths
+          content_at_file_name = Repositext::Utils::SubtitleTaggingFilenameConverter.convert_from_subtitle_tagging_import_to_repositext(
+            subtitle_tagging_import_file_name.gsub(base_dir_subtitle_tagging_import, base_dir_content)
+          )
+          output_file_name = content_at_file_name
+
+          begin
+            outcome = Repositext::Merge::SubtitleMarksFromSubtitleTaggingImportIntoContentAt.merge(
+              File.read(subtitle_tagging_import_file_name),
+              File.read(content_at_file_name),
+            )
+
+            if outcome.success
+              # write to file
+              at_with_merged_tokens = outcome.result
+              FileUtils.mkdir_p(File.dirname(output_file_name))
+              File.write(output_file_name, at_with_merged_tokens)
+              success_count += 1
+              $stderr.puts " + Merge :subtitle_marks from #{ subtitle_tagging_import_file_name }"
+            else
+              errors_count += 1
+              $stderr.puts " x Error: #{ subtitle_tagging_import_file_name }: #{ outcome.messages.join }"
+            end
+          rescue StandardError => e
+            errors_count += 1
+            $stderr.puts " x Error: #{ subtitle_tagging_import_file_name }: #{ e.class.name } - #{ e.message } - #{ e.backtrace.join("\n") }"
+          end
+        end
+
+        $stderr.puts '-' * 80
+        $stderr.puts "Finished merging #{ success_count } of #{ total_count } files in #{ Time.now - start_time } seconds."
       end
 
       def merge_test(options)

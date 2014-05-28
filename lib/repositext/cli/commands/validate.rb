@@ -89,6 +89,36 @@ class Repositext
         end
       end
 
+      def validate_subtitle_tagging_import(options)
+        options['report_file'] ||= config.compute_glob_pattern(
+          'subtitle_tagging_import_dir/validation_report_file'
+        )
+        reset_validation_report(options, 'validate_subtitle_tagging_import')
+        file_specs = config.compute_validation_file_specs(
+          primary: 'subtitle_tagging_import_dir/all_files', # for reporting only
+          content_at_files: 'content_dir/at_files',
+          subtitle_tagging_import_files: 'subtitle_tagging_import_dir/txt_files',
+          subtitle_tagging_export_files: 'subtitle_tagging_export_dir/txt_files',
+        )
+        validation_options = {
+          'subtitle_tagging_converter_method_name' => config.kramdown_converter_method(:to_subtitle_tagging),
+          'kramdown_parser_class' => config.kramdown_parser(:kramdown),
+          'kramdown_validation_parser_class' => config.kramdown_parser(:kramdown_validation),
+        }.merge(options)
+        if options['run_options'].include?('pre_import')
+          Repositext::Validation::SubtitleTaggingPreImport.new(
+            file_specs,
+            validation_options
+          ).run
+        end
+        if options['run_options'].include?('post_import')
+          Repositext::Validation::SubtitleTaggingPostImport.new(
+            file_specs,
+            validation_options
+          ).run
+        end
+      end
+
       # Used for automated testing
       def validate_test(options)
         puts 'validate_test'
