@@ -51,7 +51,7 @@ class Repositext
           end
           # Detect gap_marks (%) and subtitle_marks (@) inside of words,
           # asterisks, quotes (straight or typographic), parentheses, or brackets.
-          str_sc = Kramdown::Utils::StringScanner.new(source)
+          str_sc.reset
           while !str_sc.eos? do
             if (match = str_sc.scan_until(/(?<=[[:alpha:]\*\"\“\”\'\‘\’\(\[])[%@]/))
               msg = case match[-1]

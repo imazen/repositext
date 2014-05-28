@@ -137,7 +137,8 @@ class Repositext
         # @param[Array] errors collector for errors
         # @param[Array] warnings collector for warnings
         def validate_record_mark_syntax(source, errors, warnings)
-          # Record_marks_have to be preceded by a blank line
+          # Record_marks_have to be preceded by a blank line.
+          # The only exception is the first record_mark in each file.
           str_sc = Kramdown::Utils::StringScanner.new(source)
           while !str_sc.eos? do
             # NOTE: This regex won't match the first record_mark at beginning
@@ -157,7 +158,7 @@ class Repositext
           end
 
           # Make sure we have no :record_marks with no text between them
-          str_sc = Kramdown::Utils::StringScanner.new(source)
+          str_sc.reset
           while !str_sc.eos? do
             if (match = str_sc.scan_until(/\^\^\^[^\n\^]+\s*\^\^\^/))
               position_of_previous_record_mark = match.rindex('^^^', -4) || 0
@@ -176,6 +177,25 @@ class Repositext
             end
           end
 
+          # All record_marks have to be followed by exactly two newlines
+          str_sc.reset
+          while !str_sc.eos? do
+            if (match = str_sc.scan_until(/\^\^\^[^\n]*(\n[^\n]|\n{3,})/))
+              context_len = [match.size, 40].min
+              errors << Reportable.error(
+                [
+                  @file_to_validate,
+                  sprintf("line %5s", str_sc.current_line_number)
+                ],
+                [
+                  ':record_mark not followed by blank line',
+                  match[-context_len..-1],
+                ]
+              )
+            else
+              break
+            end
+          end
         end
 
       end
