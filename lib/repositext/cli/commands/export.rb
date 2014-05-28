@@ -73,13 +73,9 @@ class Repositext
           "Exporting AT files to subtitle tagging",
           options.merge(
             :output_path_lambda => lambda { |input_filename, output_file_attrs|
-              # convert
-              # /content/47/eng47-0412_0002.at
-              # =>
-              # /subtitle_tagging_export/47/47-0412_0002.en.rt.txt
-              input_filename.gsub(config.base_dir(input_base_dir_name), output_base_dir)
-                            .gsub(/\/eng/, '/')
-                            .gsub(/\.at\z/, '.en.rt.txt')
+              Repositext::Utils::SubtitleTaggingFilenameConverter.convert_from_repositext_to_subtitle_tagging_export(
+                input_filename.gsub(config.base_dir(input_base_dir_name), output_base_dir)
+              )
             }
           )
         ) do |contents, filename|
