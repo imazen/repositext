@@ -86,7 +86,6 @@ class Repositext
           options.merge({ 'input' => 'staging_dir/at_files' })
         )
         move_staging_to_content(options)
-        sync_from_at(options)
         options['report_file'] = config.compute_glob_pattern(
           'content_dir/validation_report_file'
         )

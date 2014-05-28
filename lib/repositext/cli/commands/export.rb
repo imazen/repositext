@@ -32,6 +32,32 @@ class Repositext
         end
       end
 
+      # Export AT files in /content to plain kramdown (no record_marks,
+      # subtitle_marks, or gap_marks)
+      def export_plain_kramdown(options)
+        input_file_spec = options['input'] || 'content_dir/at_files'
+        input_base_dir_name, input_file_pattern_name = input_file_spec.split(
+          Repositext::Cli::FILE_SPEC_DELIMITER
+        )
+        output_base_dir = options['output'] || config.base_dir('plain_kramdown_export_dir')
+        Repositext::Cli::Utils.export_files(
+          config.base_dir(input_base_dir_name),
+          config.file_pattern(input_file_pattern_name),
+          output_base_dir,
+          /\.md\Z/i,
+          "Exporting AT files to plain kramdown",
+          options
+        ) do |contents, filename|
+          # Remove AT specific tokens
+          md = Suspension::TokenRemover.new(
+            contents,
+            Suspension::AT_SPECIFIC_TOKENS
+          ).remove
+          [Outcome.new(true, { contents: md, extension: '.md' })]
+        end
+      end
+
+
       # Export Subtitle Tagging files
       def export_subtitle_tagging(options)
         input_file_spec = options['input'] || 'content_dir/at_files'
