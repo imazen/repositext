@@ -87,7 +87,7 @@ class Repositext
           root, warnings = config.kramdown_parser(:kramdown).parse(contents)
           doc = Kramdown::Document.new('')
           doc.root = root
-          subtitle_tagging = doc.to_subtitle_tagging
+          subtitle_tagging = doc.send(config.kramdown_converter_method(:to_subtitle_tagging))
           [Outcome.new(true, { contents: subtitle_tagging, extension: 'rt.txt' })]
         end
       end
