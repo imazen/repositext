@@ -11,6 +11,7 @@ class Repositext
         @file_patterns = {}
         @kramdown_parsers = {}
         @kramdown_converter_methods = {}
+        @settings = {}
       end
 
       # Use this method in DSL methods to add a base directory to config
@@ -54,6 +55,13 @@ class Repositext
         @kramdown_parsers[name.to_sym] = Object.const_get(class_name)
       end
 
+      # Use this method in DSL methods to add a setting.
+      # @param[String, Symbol] setting_key
+      # @param[Object] setting_val
+      def add_setting(setting_key, setting_val)
+        @settings[setting_key.to_sym] = setting_val
+      end
+
       # Retrieve a base dir
       # @param[String, Symbol] name
       def base_dir(name)
@@ -82,6 +90,10 @@ class Repositext
       # @param[String, Symbol] name
       def kramdown_parser(name)
         get_config_val(@kramdown_parsers, name)
+      end
+
+      def setting(key)
+        get_config_val(@settings, key)
       end
 
       # Computes a glob pattern from file spec

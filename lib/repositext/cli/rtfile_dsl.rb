@@ -93,6 +93,13 @@ class Repositext
         config.add_kramdown_converter_method(name, method_name)
       end
 
+      # Used in Rtfile to define a repository wide setting.
+      # @param[String, Symbol] setting_key
+      # @apram[Object] setting_val
+      def setting(setting_key, setting_val)
+        config.add_setting(setting_key, setting_val)
+      end
+
       # A method stub for testing this module
       def test
         # If 'test' is the last command in Rtfile, then eval_rtfile will return

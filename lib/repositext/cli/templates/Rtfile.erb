@@ -1,7 +1,7 @@
 =begin
 
 This is an example Rtfile with default settings that run out of the box.
-Modify the DSL methods below to suit your repository layout.
+Modify the DSL methods below to suit your repository preferences.
 
 Base directories and file patterns are used in combination to specify file sets.
 The convention is to chain them together, separated by a slash:
@@ -16,6 +16,15 @@ Examples:
 * staging_dir/all_text_files
 
 =end
+
+# Repo settings
+# -------------
+
+# Provide a key and value for each setting. You can retrieve them in the app
+# via config.setting(:language_code_3_chars)
+
+setting :language_code_3_chars, 'eng'
+setting :language_code_2_chars, 'en'
 
 # Base directories
 # ----------------
