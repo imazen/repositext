@@ -4,9 +4,9 @@ class Repositext
 
     private
 
-      # Export PT files in /content to ICML
+      # Export AT files in /content to ICML
       def export_icml(options)
-        input_file_spec = options['input'] || 'content_dir/pt_files'
+        input_file_spec = options['input'] || 'content_dir/at_files'
         input_base_dir_name, input_file_pattern_name = input_file_spec.split(
           Repositext::Cli::FILE_SPEC_DELIMITER
         )
@@ -15,16 +15,19 @@ class Repositext
           config.base_dir(input_base_dir_name),
           config.file_pattern(input_file_pattern_name),
           output_base_dir,
-          /\.md\Z/i,
-          "Exporting PT files to ICML",
+          /\.at\Z/i,
+          "Exporting AT files to ICML",
           options
         ) do |contents, filename|
+          # We first convert AT to plain markdown to remove record_marks,
+          # subtitle_marks, and gap_marks which aren't supported by ICML.
+          md = convert_at_string_to_plain_markdown(contents)
           # Since the kramdown parser is specified as module in Rtfile,
           # I can't use the standard kramdown API:
           # `doc = Kramdown::Document.new(contents, :input => 'kramdown_repositext')`
           # We have to patch a base Kramdown::Document with the root to be able
           # to convert it.
-          root, warnings = config.kramdown_parser(:kramdown).parse(contents)
+          root, warnings = config.kramdown_parser(:kramdown).parse(md)
           doc = Kramdown::Document.new('')
           doc.root = root
           icml = doc.send(config.kramdown_converter_method(:to_icml))
@@ -48,11 +51,7 @@ class Repositext
           "Exporting AT files to plain kramdown",
           options
         ) do |contents, filename|
-          # Remove AT specific tokens
-          md = Suspension::TokenRemover.new(
-            contents,
-            Suspension::AT_SPECIFIC_TOKENS
-          ).remove
+          md = convert_at_string_to_plain_markdown(contents)
           [Outcome.new(true, { contents: md, extension: '.md' })]
         end
       end
@@ -95,6 +94,16 @@ class Repositext
       def export_test(options)
         # dummy method for testing
         puts 'export_test'
+      end
+
+    private
+
+      def convert_at_string_to_plain_markdown(txt)
+        # Remove AT specific tokens
+        Suspension::TokenRemover.new(
+          txt,
+          Suspension::AT_SPECIFIC_TOKENS
+        ).remove
       end
 
     end
