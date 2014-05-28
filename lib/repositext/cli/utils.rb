@@ -56,8 +56,9 @@ class Repositext
       # @param[String] out_dir the output base directory
       # @param: See #process_files_helper below for param description
       def self.move_files(input_base_dir, input_file_pattern, out_dir, file_filter, description, options)
-        # Change output file path to destination
-        output_path_lambda = lambda do |input_filename|
+        # Change output file path to destination, override in options if filename
+        # needs to be changed, too.
+        output_path_lambda = options[:output_path_lambda] || lambda do |input_filename|
           input_filename.gsub(input_base_dir, out_dir)
         end
         file_pattern = input_base_dir + input_file_pattern
