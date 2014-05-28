@@ -7,7 +7,7 @@ class Repositext
       extend Forwardable
 
       # Instantiates a new Validator.
-      # @param[String] file_to_validate, the path to the file to validate.
+      # @param[String, Array<String>] file_to_validate, the path to the file or files to validate.
       # @param[Logger] logger
       # @param[Reporter] reporter
       # @param[Hash] options

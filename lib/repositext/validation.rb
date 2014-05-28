@@ -81,5 +81,16 @@ class Repositext
       end
     end
 
+    # @param[Symbol] file_spec_name
+    # @param[Proc] paired_file_proc a proc that given the primary file path returns
+    #     the path to the paired file
+    def validate_file_pairs(file_spec_name, paired_file_proc, &block)
+      base_dir, file_pattern = @file_specs[file_spec_name]
+      Dir.glob(base_dir + file_pattern).each do |file_name_one|
+        file_name_two = paired_file_proc.call(file_name_one, @file_specs)
+        yield(file_name_one, file_name_two)
+      end
+    end
+
   end
 end
