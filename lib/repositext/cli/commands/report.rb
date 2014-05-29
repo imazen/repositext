@@ -8,6 +8,7 @@ class Repositext
       def report_folio_import_warnings(options)
         input_file_spec = options['input'] || 'folio_import_dir/json_files'
         uniq_warnings = Hash.new(0)
+        file_count = 0
         Repositext::Cli::Utils.read_files(
           config.compute_glob_pattern(input_file_spec),
           /\.folio.warnings\.json\Z/i,
@@ -20,10 +21,26 @@ class Repositext
             message_stub = warning['message'].split(':').first || ''
             uniq_warnings[message_stub] += 1
           end
+          file_count += 1
         end
+        w = []
         uniq_warnings.to_a.sort { |a,b| a.first <=> b.first }.each do |(message, count)|
-          $stderr.puts " - #{ message }: #{ count }"
+          l = " - #{ message }: #{ count }"
+          $stderr.puts l
+          w << l
         end
+        report_file_path = File.join(config.base_dir('reports_dir'), 'folio_import_warnings_summary.txt')
+        File.open(report_file_path, 'w') { |f|
+          f.write "Folio Import Warnings Summary\n"
+          f.write '-' * 40
+          f.write "\n"
+          f.write w.join("\n")
+          f.write "\n"
+          f.write '-' * 40
+          f.write "\n"
+          f.write "Found #{ w.length } warnings in #{ file_count } files at #{ Time.now.to_s }.\n\n"
+          f.write "Command to generate this file: `repositext report folio_import_warnings`\n"
+        }
       end
 
       def report_quotes_summary(options)
@@ -53,6 +70,15 @@ class Repositext
           output_lines << ''
         }
         output_lines.each { |e| $stderr.puts e }
+        report_file_path = File.join(config.base_dir('reports_dir'), 'content_quotes_summary.txt')
+        File.open(report_file_path, 'w') { |f|
+          f.write "Quotes Summary in Content\n"
+          f.write '-' * 40
+          f.write "\n"
+          f.write output_lines.join("\n")
+          f.write "\n"
+          f.write "Command to generate this file: `repositext report quotes_summary`\n"
+        }
       end
 
       def report_quotes_details(options)
@@ -82,6 +108,15 @@ class Repositext
           output_lines << ''
         }
         output_lines.each { |e| $stderr.puts e }
+        report_file_path = File.join(config.base_dir('reports_dir'), 'content_quotes_details.txt')
+        File.open(report_file_path, 'w') { |f|
+          f.write "Quotes Details in Content\n"
+          f.write '-' * 40
+          f.write "\n"
+          f.write output_lines.join("\n")
+          f.write "\n"
+          f.write "Command to generate this file: `repositext report quotes_details`\n"
+        }
       end
 
       # Finds invalid quote sequences, e.g., two subsequent open double quotes.
@@ -117,6 +152,7 @@ class Repositext
             #{ d_quote_open }                       # d-quote-open
           )
         /mx                                         # NOTE: we don't handle s-quote-close as this is also used for apostrophes
+        output_lines = []
         files_hash = {}
         context_size = 4 # num of chars to add before and after excerpt for context
 
@@ -149,29 +185,40 @@ class Repositext
             end
           end
         end
-        $stderr.puts "Detecting invalid typographic quotes"
-        $stderr.puts '-' * 80
+        output_lines << "Detecting invalid typographic quotes"
+        output_lines << '-' * 80
         total_count = 0
         files_hash.to_a.sort { |a,b| a.first <=> b.first }.each do |(filename, instances)|
-          $stderr.puts "File: #{ filename }"
+          output_lines << "File: #{ filename }"
           instances.each do |instance|
             total_count += 1
-            $stderr.puts [
+            output_lines << [
               " - #{ sprintf("line %5s", instance[:line]) }",
               " - |#{ instance[:excerpt].truncate_in_the_middle(120) }|",
             ].join
           end
         end
-        $stderr.puts "-" * 80
-        $stderr.puts "Found #{ total_count } instances of invalid typographic quotes in #{ files_hash.size } files."
+        output_lines << "-" * 80
+        output_lines << "Found #{ total_count } instances of invalid typographic quotes in #{ files_hash.size } files."
+        output_lines.each { |e| $stderr.puts e }
+        report_file_path = File.join(config.base_dir('reports_dir'), 'invalid_typographic_quotes.txt')
+        File.open(report_file_path, 'w') { |f|
+          f.write "Invalid Typographic Quotes in Content\n"
+          f.write '-' * 40
+          f.write "\n"
+          f.write output_lines.join("\n")
+          f.write "\n"
+          f.write "Command to generate this file: `repositext report invalid_typographic_quotes`\n"
+        }
       end
 
-      def report_words_starting_with_apostrophe(options)
+      def report_words_with_apostrophe(options)
         # TODO: add report that shows all words starting with apostrophe that have only one character
         input_file_spec = options['input'] || 'folio_import_dir/at_files'
         apostrophe_at_beginning = {}
         apostrophe_in_the_middle = {}
         other = {}
+        ouputs_lines = []
         Repositext::Cli::Utils.read_files(
           config.compute_glob_pattern(input_file_spec),
           /\.folio\.at\Z/i,
@@ -206,26 +253,34 @@ class Repositext
             bin[key] += 1
           }
         end
-        $stderr.puts "-" * 80
-        $stderr.puts "Words starting with apostrophe."
+        output_lines << "-" * 80
+        output_lines << "Words starting with apostrophe."
         apostrophe_at_beginning.to_a.sort { |a,b| a.first <=> b.first }.each do |(key, count)|
-          $stderr.puts " #{ key } - #{ count }"
+          output_lines << " #{ key } - #{ count }"
         end
-        $stderr.puts "-" * 80
-        $stderr.puts "Words containing apostrophe."
+        output_lines << "-" * 80
+        output_lines << "Words containing apostrophe."
         apostrophe_in_the_middle.to_a.sort { |a,b|
           # sort first by post, then by pre
           a_pre, a_post = a.first.split("'")
           b_pre, b_post = b.first.split("'")
           [a_post.strip, a_pre.strip] <=> [b_post.strip, b_pre.strip]
         }.each do |(key, count)|
-          $stderr.puts " #{ key } - #{ count }"
+          output_lines << " #{ key } - #{ count }"
         end
-        $stderr.puts "-" * 80
-        $stderr.puts "Others."
+        output_lines << "-" * 80
+        output_lines << "Others."
         other.to_a.sort { |a,b| a.first <=> b.first }.each do |(key, count)|
-          $stderr.puts " #{ key } - #{ count }"
+          output_lines << " #{ key } - #{ count }"
         end
+        output_lines.each { |e| $stderr.puts e }
+        report_file_path = File.join(config.base_dir('reports_dir'), 'words_with_apostrophe.txt')
+        File.open(report_file_path, 'w') { |f|
+          f.write "Words with Apostrophe in Content\n"
+          f.write '-' * 40
+          f.write output_lines.join("\n")
+          f.write "\nCommand to generate this file: `repositext report words_with_apostrophe`"
+        }
       end
 
     private
