@@ -275,6 +275,7 @@ class Repositext
                 counts[:updated] += 1
                 $stderr.puts "  * Update: #{ new_path }"
               else
+                FileUtils.mkdir_p(File.dirname(new_path))
                 self.send(file_operation_method, filename, new_path)
                 counts[:created] += 1
                 $stderr.puts "  * Create: #{ new_path }"
