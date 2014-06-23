@@ -75,7 +75,13 @@ class Repositext
       end
 
       def export_pdf_web(options)
-        export_pdf_base('pdf_web', options)
+        case 1
+        when 1
+          export_pdf_base('pdf_web', options.merge('page_settings_key' => :english_regular))
+        when 2
+          export_pdf_base('pdf_web', options.merge('page_settings_key' => :foreign_regular))
+        else
+        end
       end
 
       # @param[String] variant one of 'pdf_plain', 'pdf_recording', 'pdf_translator'
