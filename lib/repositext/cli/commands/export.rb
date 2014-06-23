@@ -45,13 +45,13 @@ class Repositext
         # Contains everything
         case 1
         when 1
-          export_pdf_base('pdf_book', options.merge('page_settings_key' => :english_bound))
-        when 2
           export_pdf_base('pdf_book', options.merge('page_settings_key' => :english_regular))
+        when 2
+          export_pdf_base('pdf_book', options.merge('page_settings_key' => :english_bound))
         when 3
-          export_pdf_base('pdf_book', options.merge('page_settings_key' => :foreign_bound))
-        when 4
           export_pdf_base('pdf_book', options.merge('page_settings_key' => :foreign_regular))
+        when 4
+          export_pdf_base('pdf_book', options.merge('page_settings_key' => :foreign_bound))
         else
         end
       end
