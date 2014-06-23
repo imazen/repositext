@@ -3,7 +3,6 @@ module Kramdown
     class LatexRepositextTranslator < LatexRepositext
 
       include DocumentMixin
-      include RenderRecordMarksMixin
       include RenderSubtitleAndGapMarksMixin
 
     end
