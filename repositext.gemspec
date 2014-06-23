@@ -24,6 +24,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency('outcome')
   s.add_runtime_dependency('ruby-graphviz')
   s.add_runtime_dependency('rubyzip')
+  s.add_runtime_dependency('rugged')
   s.add_runtime_dependency('suspension')
   s.add_runtime_dependency('thor')
 

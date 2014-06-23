@@ -188,11 +188,11 @@ class Repositext
                   message = outcome.messages.join("\n")
 
                   if(nil == existing_contents)
-                    write_file_unless_path_is_blank(new_path, new_contents)
+                    write_file_unless_path_is_blank(new_path, new_contents, options[:output_is_binary])
                     counts[:created] += 1
                     $stderr.puts "  * Create: #{ new_path } #{ message }"
                   elsif(existing_contents != new_contents)
-                    write_file_unless_path_is_blank(new_path, new_contents)
+                    write_file_unless_path_is_blank(new_path, new_contents, options[:output_is_binary])
                     counts[:updated] += 1
                     $stderr.puts "  * Update: #{ new_path } #{ message }"
                   else
@@ -437,7 +437,7 @@ class Repositext
       # @param[String] file_path
       # @param[String] file_contents
       # @return[Integer, Nil] the number of bytes written or false if nothing was written
-      def self.write_file_unless_path_is_blank(file_path, file_contents)
+      def self.write_file_unless_path_is_blank(file_path, file_contents, output_is_binary = false)
         if '' == file_path.to_s.strip
           $stderr.puts %(  - Skip writing "#{ file_contents.truncate_in_the_middle(60) }" to blank file_path)
           false
@@ -446,9 +446,11 @@ class Repositext
           unless File.directory?(dir)
             FileUtils.mkdir_p(dir)
           end
-          # TODO: we may need to look at the :output_is_binary option and write
-          # differently if required
-          File.write(file_path, file_contents)
+          if output_is_binary
+            File.binwrite(file_path, file_contents)
+          else
+            File.write(file_path, file_contents)
+          end
         end
       end
 

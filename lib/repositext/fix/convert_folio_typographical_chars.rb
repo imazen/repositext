@@ -2,14 +2,6 @@ class Repositext
   class Fix
     class ConvertFolioTypographicalChars
 
-      APOSTROPHE = "’"
-      D_QUOTE_CLOSE = "”"
-      D_QUOTE_OPEN = "“"
-      ELIPSIS = "…"
-      EM_DASH = "—"
-      S_QUOTE_CLOSE = "’"
-      S_QUOTE_OPEN = "‘"
-
       # Converts certain characters in text to proper typographical marks.
       # We make changes in place for better performance
       # (using `#gsub!` instead of `#gsub`).

@@ -1,0 +1,176 @@
+\documentclass[11pt, twoside, openright]{book}
+
+% TODO: turn off ligatures in English
+
+% NOTE: in latex, bp is equivalent to PS points in other programs. A latex
+% pt is different. See 5th bullet here: http://tex.stackexchange.com/a/4244
+
+% nag to be alerted of syntax issues
+\usepackage{nag}
+
+% set rt specific relative point, to be used for all point based lengths that
+% should be relative to font size.
+\newlength{\RtRelPt}
+\setlength{\RtRelPt}{<%= @scale_factor %>pt}
+
+% fontspec to use custom fonts
+\usepackage{fontspec}
+\setmainfont{V-Calisto-St}
+
+% needspace to make sure there is no page break in id paragraphs at the end
+\usepackage{needspace}
+
+% relsize to set font size relative to base font size
+\usepackage{relsize}
+
+% xcolor to color text
+\usepackage[svgnames]{xcolor}
+
+% package and command dependency boundary
+
+% changepage to indent paragraphs via adjustwidth
+\usepackage{changepage}
+
+% fancyhdr for custom headers and footers
+\usepackage{fancyhdr}
+\setlength{\headheight}{14\RtRelPt}
+\newcommand{\RtDoubleHRule}{
+  \begin{minipage}{\textwidth}
+  \hrule width \hsize height 0.2\RtRelPt
+  \kern 1\RtRelPt
+  \hrule width \hsize height 0.2\RtRelPt
+  \end{minipage}
+}
+\newcommand{\RtFooterContent}{
+  \fancyfoot[L]{<%= @date_code %>} % outside
+  \fancyfoot[C]{<%= @title %>} % center
+  \fancyfoot[R]{Rev. <%= @latest_commit_hash %>} % inside
+}
+
+% specify pagestyle after defining command RtSmCapsEmulation since it is being
+% inserted as part of @title
+\fancypagestyle{RtPageStyle}{
+  \fancyhf{}
+  \fancyhfoffset[LE]{0mm}
+  \renewcommand{\footrule}{\RtDoubleHRule\par}
+  \fancyhead[EL,OR]{\thepage} % outside
+  \fancyhead[ER]{\emph{T\RtSmCapsEmulation{HE} S\RtSmCapsEmulation{POKEN} W\RtSmCapsEmulation{ORD}}} % inside even
+  \fancyhead[OL]{<%= @title %>} % inside odd
+  \RtFooterContent
+}
+\pagestyle{RtPageStyle} % apply custom pagestyle
+
+\fancypagestyle{RtFirstPageStyle}{
+  \fancyhf{}
+  \renewcommand{\headrulewidth}{0mm}
+  \renewcommand{\footrule}{\RtDoubleHRule\par}
+  \RtFooterContent
+}
+
+% geometry for custom page layout
+\usepackage[<%= @page_settings %>, includefoot, includehead]{geometry}
+\setlength{\marginparwidth}{0pt}
+
+% prevent hyphenation
+\usepackage[none]{hyphenat}
+
+% layout for showing layout parameters in document (using \layout{} command)
+\usepackage{layout}
+
+% showframe to display layout boundaries in the document on every page.
+%\usepackage{showframe}
+
+% command to render eagle smaller than regular text
+\newcommand{\RtEagle}{\textscale{0.67}{}}
+% command to render gap mark. Pass the text to be highlighted as argument.
+\newcommand{\RtGapMark}[1]
+  {\textcolor{red}{#1}}
+% command to render gap mark with number. Pass the text to be highlighted as argument.
+\newcounter{RtGapMarkCounter}
+\setcounter{RtGapMarkCounter}{3}
+\newcommand{\RtGapMarkWithNumber}[1]
+  {%
+    \textcolor{red}{%
+      \textnormal{%
+        \textsuperscript{\{\theRtGapMarkCounter\}}}%
+      #1}%
+    \stepcounter{RtGapMarkCounter}}
+% command to render paragraph number. Pass the para number as argument.
+\newcommand{\RtParagraphNumber}[1]
+  {\noindent\makebox[\parindent][l]{\raisebox{0.45ex}{{\textscale{0.67}{#1}}}}}
+% command to render record_mark. Pass rid as param
+\newcommand{\RtRecordMark}[1]
+  {\noindent\colorbox{LightGrey}{Record#1}\par}
+% command to emulate lower-case small-caps chars
+\newcommand{\RtSmCapsEmulation}[1]
+  {\textscale{0.7}{#1}}
+
+% environment to render idparagraph paragraphs
+\newenvironment{RtIdParagraph}
+  {\par\relscale{0.73}}
+  {\par}
+% environment to render idtitle1 paragraphs
+\newenvironment{RtIdTitle1}
+  {\needspace{350\RtRelPt}\vspace*{\fill}\begin{center}\relscale{0.91}}
+  {\end{center}}
+% environment to render idtitle1 paragraphs
+\newenvironment{RtIdTitle2}
+  {\par\begin{center}\relscale{0.73}}
+  {\par\end{center}}
+% environment to render meta info
+\newenvironment{RtMetaInfo}
+  {\par\relscale{0.73}}
+  {\par}
+% environment to render .normal
+\newenvironment{RtNormal}
+  {}
+  {}
+% environment to render .normal_pn
+\newenvironment{RtNormalPn}
+  {}
+  {}
+% environment to render translator omit in green
+\newenvironment{RtOmit}
+  {\par\color{Green}}
+  {\par}
+% environment to render scr paragraphs
+\newenvironment{RtScr}
+ {\par\leftskip=20\RtRelPt \rightskip=20\RtRelPt \setlength{\parindent}{8\RtRelPt}}
+ {\par}
+% environment to render songs. Wrap in minipage to prevent page break inside a song
+\newenvironment{RtSong}
+ {\begin{minipage}{\textwidth}\par\leftskip=60\RtRelPt \rightskip=30\RtRelPt \setlength{\parindent}{-8\RtRelPt}}
+ {\par\end{minipage}\vspace{8\RtRelPt}}
+% environment to render ### header
+\newenvironment{RtSubTitle}
+  {}
+  {}
+% environment to render # header
+\newenvironment{RtTitle}
+  {\begin{center}\relscale{2}}
+  {\vspace{24\RtRelPt}\end{center}}
+
+% avoid widows and orphans
+\widowpenalty=5000
+\clubpenalty=5000
+
+% set rubber value between paras for flushbottom
+\setlength{\parskip}{3\RtRelPt plus 4\RtRelPt minus 1\RtRelPt}
+\setlength{\parindent}{18\RtRelPt}
+\setlength{\emergencystretch}{15\RtRelPt} % to prevent lines from sticking out on the right
+
+\begin{document}
+
+\relscale{<%= @scale_factor %>} % scale all fonts in document (to be able to use this template for both book and enlarged)
+
+\thispagestyle{RtFirstPageStyle} % to have same header and footer on title page
+
+<%= @body %>
+
+<%= @meta_info %>
+
+% uncomment to display two pages with layout parameters
+%\newpage
+%\layout{}
+
+\end{document}

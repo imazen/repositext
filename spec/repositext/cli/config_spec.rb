@@ -174,7 +174,7 @@ describe Repositext::Cli::Config do
       end
     end
 
-    describe 'glob pattern as file_spec' do
+    describe 'absolute glob pattern as file_spec' do
       [
         '/dir1/*',
         '/dir1/dir2/**/*.at',

@@ -111,10 +111,19 @@ class Repositext
           r << base_dir(bd)  if bd
           r << file_pattern(fp)  if fp
         else
-          # interpret file_spec as glob pattern.
+          # interpret file_spec as glob pattern, either an absolute path, or
+          # a relative path, based on current working directory.
           # NOTE: this doesn't necessarily have to contain '*'. It could be the
           # path to a single file.
-          r = file_spec
+          if '/' == file_spec[0]
+            # absolute path, use as is
+            r = file_spec
+          else
+            # relative path, based on current working directory
+            # Note: we could use just the file_spec since relative paths are
+            # based on pwd by default. I just wanted to make the behavior obvious.
+            r = File.expand_path(file_spec, Dir.pwd)
+          end
         end
         r
       end
