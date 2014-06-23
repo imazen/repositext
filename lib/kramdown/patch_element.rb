@@ -17,10 +17,15 @@ module Kramdown
                                         .join(' ')
     end
 
+    # Returns self's classes as array, sorted alphabetically
+    def get_classes
+      (attr['class'] || '').split(' ').sort
+    end
+
     # Returns true if self has a_class
     # @param[String] a_class
     def has_class?(a_class)
-      (attr['class'] || '').split(' ').any? { |e| e == a_class.strip }
+      get_classes.any? { |e| e == a_class.strip }
     end
 
     # Returns a tree representation of self and its descendants.

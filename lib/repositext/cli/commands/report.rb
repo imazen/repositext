@@ -283,6 +283,51 @@ class Repositext
         }
       end
 
+      def report_paragraph_classes_inventory(options)
+        input_file_spec = options['input'] || 'content_dir/at_files'
+        file_count = 0
+        paragraph_class_combinations = Hash.new(0)
+        Repositext::Cli::Utils.read_files(
+          config.compute_glob_pattern(input_file_spec),
+          /\.at\Z/i,
+          nil,
+          "Reading AT files",
+          options
+        ) do |contents, filename|
+          # Since the kramdown parser is specified as module in Rtfile,
+          # I can't use the standard kramdown API:
+          # `doc = Kramdown::Document.new(contents, :input => 'kramdown_repositext')`
+          # We have to patch a base Kramdown::Document with the root to be able
+          # to convert it.
+          root, warnings = config.kramdown_parser(:kramdown).parse(contents)
+          doc = Kramdown::Document.new('')
+          doc.root = root
+          doc_paragraph_class_combinations = doc.to_report_paragraph_classes_inventory
+          doc_paragraph_class_combinations.each do |pcc, count|
+            paragraph_class_combinations[pcc] += count
+          end
+          file_count += 1
+        end
+        lines = []
+        paragraph_class_combinations.to_a.sort { |a,b| a.first <=> b.first }.each do |(classes, count)|
+          l = " - #{ classes }: #{ count }"
+          $stderr.puts l
+          lines << l
+        end
+        report_file_path = File.join(config.base_dir('reports_dir'), 'paragraph_classes_inventory.txt')
+        File.open(report_file_path, 'w') { |f|
+          f.write "Paragraph classes inventory\n"
+          f.write '-' * 40
+          f.write "\n"
+          f.write lines.join("\n")
+          f.write "\n"
+          f.write '-' * 40
+          f.write "\n"
+          f.write "Found #{ lines.length } combinations of paragraph classes in #{ file_count } files at #{ Time.now.to_s }.\n\n"
+          f.write "Command to generate this file: `repositext report paragraph_classes_inventory`\n"
+        }
+      end
+
     private
 
       # Detects and counts quote instances. Returns an array of hashes with an entry
