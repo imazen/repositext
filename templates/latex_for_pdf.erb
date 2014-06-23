@@ -42,9 +42,11 @@
   \end{minipage}
 }
 \newcommand{\RtFooterContent}{
+  <% if @include_meta_info %>
   \fancyfoot[L]{<%= @date_code %>} % outside
   \fancyfoot[C]{<%= @title %>} % center
   \fancyfoot[R]{Rev. <%= @latest_commit_hash %>} % inside
+  <% end %>
 }
 
 % specify pagestyle after defining command RtSmCapsEmulation since it is being

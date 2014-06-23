@@ -53,6 +53,10 @@ module Kramdown
         1.0
       end
 
+      def include_meta_info
+        false
+      end
+
     end
   end
 end

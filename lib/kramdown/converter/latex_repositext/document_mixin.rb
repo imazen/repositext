@@ -44,6 +44,10 @@ module Kramdown
           1.25
         end
 
+        def include_meta_info
+          true
+        end
+
       protected
 
         # Returns a complete latex document as string.
@@ -53,10 +57,11 @@ module Kramdown
         def wrap_body_in_template(latex_body)
           # assign i_vars referenced in template file
           @git_repo = Repositext::Repository.new
+          @include_meta_info = include_meta_info
           @latest_commit = @git_repo.latest_commit(@options[:source_filename])
           @latest_commit_hash = @latest_commit.oid[0,8]
           @body = latex_body
-          @meta_info = compute_meta_info(@git_repo, @latest_commit)
+          @meta_info = include_meta_info ? compute_meta_info(@git_repo, @latest_commit) : ''
           @title = compute_title(latex_body)
           @scale_factor = size_scale_factor
           @date_code = @options[:source_filename].split('/').last.match(/[[:alpha:]]{3}\d{2}-\d{4}[[:alpha:]]?/).to_s.capitalize

@@ -4,6 +4,10 @@ module Kramdown
 
       include DocumentMixin
 
+      def include_meta_info
+        false
+      end
+
     end
   end
 end
