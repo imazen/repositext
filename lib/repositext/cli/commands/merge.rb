@@ -109,7 +109,7 @@ class Repositext
         errors_count = 0
 
         Dir.glob(input_file_pattern_subtitle_tagging_import).each do |subtitle_tagging_import_file_name|
-          if subtitle_tagging_import_file_name !~ /\.txt\z/
+          if subtitle_tagging_import_file_name !~ /(?<!markers)\.txt\z/ # don't include .markers.txt files!
             $stderr.puts " - Skip #{ subtitle_tagging_import_file_name }"
             next
           end
