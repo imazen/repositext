@@ -8,7 +8,7 @@ module Kramdown
       # @param[Hash] options
       def initialize(root, options)
         super
-        @paragraph_classes_inventory
+        @paragraph_classes_inventory = Hash.new(0)
       end
 
       # @param[Kramdown::Element] el
@@ -19,7 +19,7 @@ module Kramdown
       #   }
       def convert(el)
         if :p == el.type
-          @paragraph_classes_inventory
+          @paragraph_classes_inventory[el.get_classes] += 1
         end
         # walk the tree
         el.children.each { |e| convert(e) }

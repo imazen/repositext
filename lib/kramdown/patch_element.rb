@@ -3,7 +3,7 @@ require 'kramdown/element'
 module Kramdown
   class Element
 
-    # Adds class to self
+    # Adds class to self. Classes are case insensitive, so we downcase them.
     # @param[String] a_class
     def add_class(a_class)
       a_class = a_class.to_s.strip
@@ -15,17 +15,18 @@ module Kramdown
                                         .uniq
                                         .sort
                                         .join(' ')
+                                        .downcase
     end
 
     # Returns self's classes as array, sorted alphabetically
     def get_classes
-      (attr['class'] || '').split(' ').sort
+      (attr['class'] || '').downcase.split(' ').sort
     end
 
     # Returns true if self has a_class
     # @param[String] a_class
     def has_class?(a_class)
-      get_classes.any? { |e| e == a_class.strip }
+      get_classes.any? { |e| e == a_class.strip.downcase }
     end
 
     # Returns a tree representation of self and its descendants.
