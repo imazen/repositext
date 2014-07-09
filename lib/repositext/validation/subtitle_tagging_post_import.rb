@@ -17,6 +17,11 @@ class Repositext
           ).run
         end
 
+        # Validate subtitle_mark spacing
+        validate_files(:content_at_files) do |file_name|
+          Validator::SubtitleMarkSpacing.new(file_name, @logger, @reporter, @options).run
+        end
+
         # Validate content_at files
         validate_files(:content_at_files) do |file_name|
           Validator::Utf8Encoding.new(file_name, @logger, @reporter, @options).run

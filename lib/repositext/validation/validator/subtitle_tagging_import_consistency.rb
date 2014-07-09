@@ -63,7 +63,7 @@ class Repositext
                 [@file_to_validate.last], # subtitle_tagging_import file
                 [
                   'Text mismatch between subtitle_tagging_import and content_at:',
-                  diffs.join("\n")
+                  diffs.inspect
                 ]
               )
             ]
