@@ -18,10 +18,16 @@ class Repositext
       # @param[Hash] output_file_attrs key: :extension
       # @return[String] the corresponding subtitle_tagging_export filename
       def self.convert_from_repositext_to_subtitle_tagging_export(rt_filename, output_file_attrs)
-        lang_code = rt_filename.split('/').last[0,3] # should be 'eng'
         extension = output_file_attrs[:extension]
-        rt_filename.gsub(/\/#{ lang_code }/, '/')
-                   .gsub(/\.at\z/, ".#{ convert_language_code(lang_code) }.#{ extension }")
+        input_lang_code = rt_filename.split('/').last[0,3] # should be 'eng'
+        output_lang_code = if('markers.txt' == extension)
+          # don't include language extension for empty markers file
+          ''
+        else
+          ".#{ convert_language_code(input_lang_code) }"
+        end
+        rt_filename.gsub(/\/#{ input_lang_code }/, '/')
+                   .gsub(/\.at\z/, "#{ output_lang_code }.#{ extension }")
       end
 
       # Converts a repositext filename to the corresponding subtitle_tagging_import one
