@@ -165,7 +165,8 @@ class Repositext
           options.merge(
             :output_path_lambda => lambda { |input_filename, output_file_attrs|
               Repositext::Utils::SubtitleTaggingFilenameConverter.convert_from_repositext_to_subtitle_tagging_export(
-                input_filename.gsub(config.base_dir(input_base_dir_name), output_base_dir)
+                input_filename.gsub(config.base_dir(input_base_dir_name), output_base_dir),
+                output_file_attrs
               )
             }
           )
@@ -179,7 +180,11 @@ class Repositext
           doc = Kramdown::Document.new('')
           doc.root = root
           subtitle_tagging = doc.send(config.kramdown_converter_method(:to_subtitle_tagging))
-          [Outcome.new(true, { contents: subtitle_tagging, extension: 'rt.txt' })]
+          empty_markers_file = %(RelativeMS\tSamples\n0\t0\n)
+          [
+            Outcome.new(true, { contents: subtitle_tagging, extension: 'rt.txt' }),
+            Outcome.new(true, { contents: empty_markers_file, extension: 'markers.txt' }),
+          ]
         end
       end
 

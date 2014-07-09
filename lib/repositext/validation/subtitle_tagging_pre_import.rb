@@ -26,7 +26,8 @@ class Repositext
           ca_base_dir, ca_file_pattern = file_specs[:content_at_files]
           ste_base_dir, ste_file_pattern = file_specs[:subtitle_tagging_export_files]
           Repositext::Utils::SubtitleTaggingFilenameConverter.convert_from_repositext_to_subtitle_tagging_export(
-            input_filename.gsub(ca_base_dir, ste_base_dir)
+            input_filename.gsub(ca_base_dir, ste_base_dir),
+            { :extension => 'rt.txt' }
           )
         }
         # Run pairwise validation

@@ -15,11 +15,13 @@ class Repositext
       # /eng47-0412_0002.at => /47-0412_0002.en.rt.txt
       #
       # @param[String] rt_filename the repositext filename
+      # @param[Hash] output_file_attrs key: :extension
       # @return[String] the corresponding subtitle_tagging_export filename
-      def self.convert_from_repositext_to_subtitle_tagging_export(rt_filename)
+      def self.convert_from_repositext_to_subtitle_tagging_export(rt_filename, output_file_attrs)
         lang_code = rt_filename.split('/').last[0,3] # should be 'eng'
+        extension = output_file_attrs[:extension]
         rt_filename.gsub(/\/#{ lang_code }/, '/')
-                   .gsub(/\.at\z/, ".#{ convert_language_code(lang_code) }.rt.txt")
+                   .gsub(/\.at\z/, ".#{ convert_language_code(lang_code) }.#{ extension }")
       end
 
       # Converts a repositext filename to the corresponding subtitle_tagging_import one
