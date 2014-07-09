@@ -77,7 +77,7 @@ class Repositext
 
       def get_paragraphs_that_dont_start_with_subtitle_mark(content)
         # split on para boundaries and find those that don't start with subtitle_mark
-        content.split(/\n+/).find_all { |para|
+        content.strip.split(/\n+/).find_all { |para|
           '@' != para.strip[0]
         }
       end
