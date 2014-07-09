@@ -70,6 +70,7 @@ require 'repositext/validation/utils/reportable'
 require 'repositext/validation/utils/reporter'
 require 'repositext/validation/utils/reporter_test'
 require 'repositext/validation/validator'
+require 'repositext/validation/validator/subtitle_import/body_text_extractor'
 
 # Dependency boundary
 
@@ -109,6 +110,7 @@ require 'repositext/validation/validator/idml_import_syntax'
 require 'repositext/validation/validator/kramdown_syntax'
 require 'repositext/validation/validator/kramdown_syntax_at'
 require 'repositext/validation/validator/kramdown_syntax_pt'
+require 'repositext/validation/validator/subtitle_mark_at_beginning_of_every_paragraph'
 require 'repositext/validation/validator/subtitle_mark_counts_match'
 require 'repositext/validation/validator/subtitle_mark_spacing'
 require 'repositext/validation/validator/subtitle_tagging_export_consistency'

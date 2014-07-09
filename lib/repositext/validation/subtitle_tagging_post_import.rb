@@ -22,6 +22,13 @@ class Repositext
           Validator::SubtitleMarkSpacing.new(file_name, @logger, @reporter, @options).run
         end
 
+        # Validate that every paragraph in the content_at file begins with a subtitle_mark
+        validate_files(:content_at_files) do |file_name|
+          Validator::SubtitleMarkAtBeginningOfEveryParagraph.new(
+            file_name, @logger, @reporter, @options.merge(:content_type => :content)
+          ).run
+        end
+
         # Validate content_at files
         validate_files(:content_at_files) do |file_name|
           Validator::Utf8Encoding.new(file_name, @logger, @reporter, @options).run

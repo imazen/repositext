@@ -36,6 +36,14 @@ class Repositext
             [ca_filename, ste_filename], @logger, @reporter, @options
           ).run
         end
+
+        # Validate that every paragraph in the import file begins with a subtitle_mark
+        validate_files(:subtitle_tagging_import_files) do |file_name|
+          next  if file_name.index('.markers.') # skip markers files
+          Validator::SubtitleMarkAtBeginningOfEveryParagraph.new(
+            file_name, @logger, @reporter, @options.merge(:content_type => :import)
+          ).run
+        end
       end
 
     end

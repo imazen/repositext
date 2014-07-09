@@ -6,6 +6,8 @@ class Repositext
       # Include whitespace in this count excpet for leading or trailing.
       class SubtitleMarkSpacing < Validator
 
+        include BodyTextExtractor
+
         # Runs all validations for self
         def run
           errors, warnings = [], []
@@ -34,24 +36,7 @@ class Repositext
       # @param[String] content_at
       # @return[Outcome]
       def subtitle_marks_spaced_correctly?(content_at)
-        content = content_at.dup
-        # Remove title
-        content.gsub!(/^#[^\n]+\n/, '')
-        # Remove id title and paragraph
-        content.gsub!(
-          /
-            [^\n]+\n # the line before a line that contains '.id_title1'
-            [^\n]+\.id_title1 # line that contains id_title
-            .* # anything after the line that contains .id_title
-          /mx, # multiline so that the last .* matches multiple lines to the end of file
-          ''
-        )
-
-        # Remove all tokens but :subtitle_mark from content_at
-        content_with_subtitle_marks_only = Suspension::TokenRemover.new(
-          content,
-          Suspension::REPOSITEXT_TOKENS.find_all { |e| :subtitle_mark != e.name }
-        ).remove
+        content_with_subtitle_marks_only = extract_body_text_with_subtitle_marks(content_at)
 
         captions = content_with_subtitle_marks_only.split('@')
         too_long_captions = captions.find_all { |caption|
