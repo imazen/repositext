@@ -13,6 +13,8 @@ class Repositext
       # like so:
       #
       # /eng47-0412_0002.at => /47-0412_0002.en.rt.txt
+      # and
+      # /eng47-0412_0002.at => /47-0412_0002.markers.txt
       #
       # @param[String] rt_filename the repositext filename
       # @param[Hash] output_file_attrs key: :extension
