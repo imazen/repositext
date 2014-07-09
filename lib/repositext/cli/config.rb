@@ -158,7 +158,7 @@ class Repositext
       def get_config_val(container, key, raise_on_unknown_key = true)
         key = key.to_sym
         if raise_on_unknown_key && !container.keys.include?(key)
-          raise ArgumentError.new("You requested an unknown key: #{ key.inspect }")
+          raise RtfileError.new("You requested an unknown key: #{ key.inspect }")
         end
         container[key]
       end
