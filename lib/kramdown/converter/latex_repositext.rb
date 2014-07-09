@@ -202,6 +202,8 @@ module Kramdown
                 [\ \(\[\"\'#{ Regexp.escape(Repositext::ALL_TYPOGRAPHIC_CHARS.join) }\*]+ # special char or delimiter
                 | # or
                 \\[[:alnum:]]+\{ # latex command with opening {
+                | # or
+                \s+ # eagle followed by whitespace
               ){0,2} # repeat up to two times to match "\<gap-mark>\(\emph{others}"
             )
             ([[:alpha:]’]+) # find word, including apostrophy. This will be colored red
