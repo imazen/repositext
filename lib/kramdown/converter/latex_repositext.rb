@@ -88,6 +88,22 @@ module Kramdown
             end
           end
 
+          # Have to process Songs before any other classes because of
+          # nested environments. Songs can span multiple paragraphs, so they
+          # need to be the outermost nesting.
+          if el.has_class?('song')
+            # TODO: what to do here? raise warning if not @inside_song?
+          end
+          if el.has_class?('stanza')
+            if !@inside_song
+              # start new RtSong environment
+              before << "\\begin{RtSong}\n"
+              @inside_song = true
+            else
+              # case where we're @inside_song is handled higher up
+            end
+          end
+
           if el.has_class?('id_paragraph')
             # render in RtIdParagraph environment
             before << "\\begin{RtIdParagraph}\n"
@@ -118,18 +134,6 @@ module Kramdown
             # render in RtScr environment
             before << "\\begin{RtScr}\n"
             after << "\n\\end{RtScr}"
-          end
-          if el.has_class?('song')
-            # TODO: what to do here? raise warning if not @inside_song?
-          end
-          if el.has_class?('stanza')
-            if !@inside_song
-              # start new RtSong environment
-              before << "\\begin{RtSong}\n"
-              @inside_song = true
-            else
-              # case where we're @inside_song is handled higher up
-            end
           end
           "#{ before }#{ inner_text || inner(el, opts) }#{ after }\n\n"
         end
@@ -199,7 +203,7 @@ module Kramdown
             #{ gap_mark_regex } # find gap mark
             ( # capturing group for characters that are not to be colored red
               (?: # find one of the following, use non-capturing group for grouping only
-                [\ \(\[\"\'#{ Regexp.escape(Repositext::ALL_TYPOGRAPHIC_CHARS.join) }\*]+ # special char or delimiter
+                [\ \(\[\"\'\}\{#{ Regexp.escape(Repositext::ALL_TYPOGRAPHIC_CHARS.join) }\*]+ # special char or delimiter
                 | # or
                 \\[[:alnum:]]+\{ # latex command with opening {
                 | # or
