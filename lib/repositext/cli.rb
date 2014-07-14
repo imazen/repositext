@@ -2,6 +2,7 @@ class Repositext
   class Cli < Thor
 
     class RtfileError < RuntimeError; end
+    class GitRepoNotUpToDateError < RuntimeError; end
 
     FILE_SPEC_DELIMITER = '/'
 
@@ -39,6 +40,10 @@ class Repositext
                  :type => :boolean,
                  :default => true,
                  :desc => 'If true, only files that have been changed or added will be processed.'
+    class_option :'skip-git-up-to-date-check',
+                 :type => :boolean,
+                 :default => false,
+                 :desc => 'If true, skips the check to make sure that the local repo is up-to-date with origin/master.'
 
     # Override original initialize so that the options hash is not frozen. We
     # need to modify it.
@@ -193,6 +198,7 @@ class Repositext
       method_name = "#{ main_command }_#{ command_spec }"
       if respond_to?(method_name, true)
         with_timer do
+          check_that_current_branch_is_up_to_date_with_origin_master
           self.send(method_name, options)
         end
       else
@@ -207,6 +213,21 @@ class Repositext
       end_time = Time.now
       duration_in_seconds = (end_time - start_time).to_i
       $stderr.puts "Total duration: #{ duration_in_seconds } seconds."
+    end
+
+    # Makes sure that the local branch is up-to-date with origin:master.
+    # Raises an exception if it is not.
+    def check_that_current_branch_is_up_to_date_with_origin_master
+      return true  if options['skip-git-up-to-date-check']
+      git_repo = Repositext::Repository.new
+      latest_commit_sha_remote = git_repo.latest_commit_sha_remote
+      latest_commit_sha_local = git_repo.latest_commit_sha_local
+      raise GitRepoNotUpToDateError.new([
+        '',
+        "Your local '#{ git_repo.current_branch_name }' branch is not up-to-date with origin/master.",
+        'Please get the updates from origin/master first before running a repositext command.',
+        'You can bypass this check by appending "--skip-git-up-to-date-check=true" to the repositext command'
+      ].join("\n"))
     end
 
   end
