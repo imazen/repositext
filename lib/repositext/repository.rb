@@ -29,6 +29,11 @@ class Repositext
       @head_ref.name.sub(/^refs\/heads\//, '')
     end
 
+    # Delegates #lookup method to Rugged::Repository
+    def lookup(oid)
+      @repo.lookup(oid)
+    end
+
     # We shell out to git log to get the latest commit's sha. This is orders of
     # magnitudes faster than using Rugged walker. See this ticket for more info:
     # https://github.com/libgit2/rugged/issues/343#issue-30232795

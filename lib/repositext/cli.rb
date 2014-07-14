@@ -221,13 +221,17 @@ class Repositext
       return true  if options['skip-git-up-to-date-check']
       git_repo = Repositext::Repository.new
       latest_commit_sha_remote = git_repo.latest_commit_sha_remote
-      latest_commit_sha_local = git_repo.latest_commit_sha_local
-      raise GitRepoNotUpToDateError.new([
-        '',
-        "Your local '#{ git_repo.current_branch_name }' branch is not up-to-date with origin/master.",
-        'Please get the updates from origin/master first before running a repositext command.',
-        'You can bypass this check by appending "--skip-git-up-to-date-check=true" to the repositext command'
-      ].join("\n"))
+      begin
+        latest_local_commit = git_repo.lookup(latest_commit_sha_remote)
+      rescue Rugged::OdbError => e
+        # Couldn't find remote's latest commit in local repo, raise error
+        raise GitRepoNotUpToDateError.new([
+          '',
+          "Your local '#{ git_repo.current_branch_name }' branch is not up-to-date with origin/master.",
+          'Please get the updates from origin/master first before running a repositext command.',
+          'You can bypass this check by appending "--skip-git-up-to-date-check=true" to the repositext command'
+        ].join("\n"))
+      end
     end
 
   end
