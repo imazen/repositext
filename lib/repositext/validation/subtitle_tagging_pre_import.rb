@@ -9,7 +9,7 @@ class Repositext
         sti_file_name_proc = lambda { |input_filename, file_specs|
           ca_base_dir, ca_file_pattern = file_specs[:content_at_files]
           sti_base_dir, sti_file_pattern = file_specs[:subtitle_tagging_import_files]
-          Repositext::Utils::SubtitleTaggingFilenameConverter.convert_from_repositext_to_subtitle_tagging_import(
+          Repositext::Utils::SubtitleFilenameConverter.convert_from_repositext_to_subtitle_import(
             input_filename.gsub(ca_base_dir, sti_base_dir)
           )
         }
@@ -25,7 +25,7 @@ class Repositext
         ste_file_name_proc = lambda { |input_filename, file_specs|
           ca_base_dir, ca_file_pattern = file_specs[:content_at_files]
           ste_base_dir, ste_file_pattern = file_specs[:subtitle_tagging_export_files]
-          Repositext::Utils::SubtitleTaggingFilenameConverter.convert_from_repositext_to_subtitle_tagging_export(
+          Repositext::Utils::SubtitleFilenameConverter.convert_from_repositext_to_subtitle_export(
             input_filename.gsub(ca_base_dir, ste_base_dir),
             { :extension => 'rt.txt' }
           )

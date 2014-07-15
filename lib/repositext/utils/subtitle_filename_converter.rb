@@ -1,7 +1,7 @@
 class Repositext
   class Utils
-    # Converts filenames between repositext and subtitle_tagging conventions.
-    class SubtitleTaggingFilenameConverter
+    # Converts filenames between repositext and subtitle/subtitle_tagging conventions.
+    class SubtitleFilenameConverter
 
       # Maps from 3 to 2 character language codes
       LANGUAGE_CODE_MAP = [
@@ -9,21 +9,21 @@ class Repositext
         %w[itl it],
       ].freeze
 
-      # Converts a repositext filename to the corresponding subtitle_tagging_export one
+      # Converts a repositext filename to the corresponding subtitle_export one
       # like so:
       #
-      # /eng47-0412_0002.at => /47-0412_0002.en.rt.txt
+      # /eng47-0412_0002.at => /47-0412_0002.en.txt OR /47-0412_0002.en.rt.txt
       # and
       # /eng47-0412_0002.at => /47-0412_0002.markers.txt
       #
       # @param[String] rt_filename the repositext filename
       # @param[Hash] output_file_attrs key: :extension
-      # @return[String] the corresponding subtitle_tagging_export filename
-      def self.convert_from_repositext_to_subtitle_tagging_export(rt_filename, output_file_attrs)
+      # @return[String] the corresponding subtitle_export filename
+      def self.convert_from_repositext_to_subtitle_export(rt_filename, output_file_attrs)
         extension = output_file_attrs[:extension]
         input_lang_code = rt_filename.split('/').last[0,3] # should be 'eng'
-        output_lang_code = if('markers.txt' == extension)
-          # don't include language extension for empty markers file
+        output_lang_code = if(['markers.txt', 'subtitle_markers.csv'].include?(extension))
+          # don't include language extension for markers file
           ''
         else
           ".#{ convert_language_code(input_lang_code) }"
@@ -32,28 +32,28 @@ class Repositext
                    .gsub(/\.at\z/, "#{ output_lang_code }.#{ extension }")
       end
 
-      # Converts a repositext filename to the corresponding subtitle_tagging_import one
+      # Converts a repositext filename to the corresponding subtitle_import one
       # like so:
       #
       # /eng47-0412_0002.at => /47-0412_0002.en.txt
       #
       # NOTE: import filenames are like export ones, except without the `.rt` extension.
       # @param[String] rt_filename the repositext filename
-      # @return[String] the corresponding subtitle_tagging filename
-      def self.convert_from_repositext_to_subtitle_tagging_import(rt_filename)
+      # @return[String] the corresponding subtitle filename
+      def self.convert_from_repositext_to_subtitle_import(rt_filename)
         lang_code = rt_filename.split('/').last[0,3] # should be 'eng'
         rt_filename.gsub(/\/#{ lang_code }/, '/')
                    .gsub(/\.at\z/, ".#{ convert_language_code(lang_code) }.txt")
       end
 
-      # Converts a subtitle_tagging filename to the corresponding repositext one
+      # Converts a subtitle filename to the corresponding repositext one
       # like so:
       #
       # /47-0412_0002.en.txt => /eng47-0412_0002.at
       #
-      # @param[String] st_filename the subtitle_tagging filename
+      # @param[String] st_filename the subtitle filename
       # @return[String] the corresponding repositext filename
-      def self.convert_from_subtitle_tagging_import_to_repositext(st_filename)
+      def self.convert_from_subtitle_import_to_repositext(st_filename)
         lang_code = st_filename.match(/(?<=\.)[[:alpha:]]{2}(?=\.txt\z)/).to_s # should be 'en'
         st_filename.gsub(/(\d\d\/)(\d\d)/, ['\1', convert_language_code(lang_code), '\2'].join)
                    .gsub(/\.#{ lang_code }\.txt\z/, '.at')

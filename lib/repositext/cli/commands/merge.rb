@@ -116,7 +116,7 @@ class Repositext
 
           total_count += 1
           # prepare paths
-          content_at_file_name = Repositext::Utils::SubtitleTaggingFilenameConverter.convert_from_subtitle_tagging_import_to_repositext(
+          content_at_file_name = Repositext::Utils::SubtitleFilenameConverter.convert_from_subtitle_import_to_repositext(
             subtitle_tagging_import_file_name.gsub(base_dir_subtitle_tagging_import, base_dir_content)
           )
           output_file_name = content_at_file_name

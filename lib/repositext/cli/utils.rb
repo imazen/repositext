@@ -235,11 +235,11 @@ class Repositext
       #     :move_or_copy whether to move or copy the files, defaults to :move
       def self.move_files_helper(file_pattern, file_filter, output_path_lambda, description, options)
         options[:move_or_copy] ||= :move # options is a Thor::CoreExt::HashWithIndifferentAccess. Don't use merge!
-        file_operation_method = case options[:move_or_copy]
+        file_operation_method, verb = case options[:move_or_copy]
         when :copy
-          :copy_file_unless_path_is_blank
+          [:copy_file_unless_path_is_blank, 'Copying']
         when :move
-          :move_file_unless_path_is_blank
+          [:move_file_unless_path_is_blank, 'Moving']
         else
           raise(ArgumentError.new("Invalid option :move_or_copy: #{ options[:move_or_copy].inspect }"))
         end
@@ -260,7 +260,7 @@ class Repositext
             end
 
             begin
-              $stderr.puts " - Moving #{ filename }"
+              $stderr.puts " - #{ verb } #{ filename }"
 
               new_path = output_path_lambda.call(filename)
               # new_path is either a file path or the empty string (in which

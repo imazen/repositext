@@ -149,6 +149,43 @@ class Repositext
       end
 
 
+      # Export Subtitle files
+      def export_subtitle(options)
+        input_file_spec = options['input'] || 'content_dir/at_files'
+        input_base_dir_name, input_file_pattern_name = input_file_spec.split(
+          Repositext::Cli::FILE_SPEC_DELIMITER
+        )
+        input_base_dir = config.base_dir(input_base_dir_name)
+        output_base_dir = options['output'] || config.base_dir('subtitle_export_dir')
+        Repositext::Cli::Utils.export_files(
+          input_base_dir,
+          config.file_pattern(input_file_pattern_name),
+          output_base_dir,
+          /\.at\Z/i,
+          "Exporting AT files to subtitle",
+          options.merge(
+            :output_path_lambda => lambda { |input_filename, output_file_attrs|
+              Repositext::Utils::SubtitleFilenameConverter.convert_from_repositext_to_subtitle_export(
+                input_filename.gsub(input_base_dir, output_base_dir),
+                output_file_attrs
+              )
+            }
+          )
+        ) do |contents, filename|
+          # Since the kramdown parser is specified as module in Rtfile,
+          # I can't use the standard kramdown API:
+          # `doc = Kramdown::Document.new(contents, :input => 'kramdown_repositext')`
+          # We have to patch a base Kramdown::Document with the root to be able
+          # to convert it.
+          root, warnings = config.kramdown_parser(:kramdown).parse(contents)
+          doc = Kramdown::Document.new('')
+          doc.root = root
+          subtitle = doc.send(config.kramdown_converter_method(:to_subtitle))
+          [Outcome.new(true, { contents: subtitle, extension: 'txt' })]
+        end
+        copy_subtitle_marker_csv_files_to_subtitle_export(options)
+      end
+
       # Export Subtitle Tagging files
       def export_subtitle_tagging(options)
         input_file_spec = options['input'] || 'content_dir/at_files'
@@ -164,7 +201,7 @@ class Repositext
           "Exporting AT files to subtitle tagging",
           options.merge(
             :output_path_lambda => lambda { |input_filename, output_file_attrs|
-              Repositext::Utils::SubtitleTaggingFilenameConverter.convert_from_repositext_to_subtitle_tagging_export(
+              Repositext::Utils::SubtitleFilenameConverter.convert_from_repositext_to_subtitle_export(
                 input_filename.gsub(config.base_dir(input_base_dir_name), output_base_dir),
                 output_file_attrs
               )
