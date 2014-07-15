@@ -85,9 +85,15 @@ class Repositext
       # @param[String, Array<String>] _file_descriptor
       # @param[Boolean] _success
       def log_validation_step(_validator, _file_descriptor, _success)
+        # find longest common prefix between @file_pattern_base_path and _file_descriptor
+        # to remove it from logging output
+        longest_common_prefix = [*_file_descriptor].inject(@file_pattern_base_path.dup) {|lcp, s|
+          lcp = lcp.chop while lcp != s[0...lcp.length]
+          lcp
+        }
         parts = [
           '  ',
-          [*_file_descriptor].join(', ').gsub(@file_pattern_base_path, '').ljust(32),
+          [*_file_descriptor].join(', ').gsub(longest_common_prefix, '').ljust(40),
           ' ',
           _validator.class.name.split(/::/).last.ljust(30)
         ]

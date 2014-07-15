@@ -1,19 +1,19 @@
 class Repositext
   class Validation
     class Validator
-      # Validates that the subtitle_tagging_import still matches content_at
-      class SubtitleTaggingImportConsistency < Validator
+      # Validates that the subtitle/subtitle_tagging export still matches content_at
+      class SubtitleExportConsistency < Validator
 
         # Runs all validations for self
         def run
           errors, warnings = [], []
 
           catch (:abandon)  do
-            # @file_to_validate is an array with the paths to the content_at and subtitle_tagging_import files
-            content_at_filename, subtitle_tagging_import_filename = @file_to_validate
+            # @file_to_validate is an array with the paths to the content_at and subtitle_tagging_export files
+            content_at_filename, subtitle_export_filename = @file_to_validate
             outcome = contents_match?(
               ::File.read(content_at_filename),
-              ::File.read(subtitle_tagging_import_filename)
+              ::File.read(subtitle_export_filename)
             )
 
             if outcome.fail?
@@ -30,15 +30,15 @@ class Repositext
 
     private
 
-      # Checks if content_at and subtitle_tagging_import text contents match.
+      # Checks if content_at and subtitle/subtitle_tagging export text contents match.
       # Removes subtitle_marks and gap_marks before comparison because those
       # are expected to change.
       # @param[String] content_at
-      # @param[String] subtitle_tagging_import
+      # @param[String] subtitle_export
       # @return[Outcome]
-      def contents_match?(content_at, subtitle_tagging_import)
-        # We re-export content_at to subtitle_tagging and compare the result
-        # with subtitle_tagging_import
+      def contents_match?(content_at, subtitle_export)
+        # We re-export content_at to subtitle/subtitle_tagging and compare the result
+        # with subtitle_export.
         # Since the kramdown parser is specified as module in Rtfile,
         # I can't use the standard kramdown API:
         # `doc = Kramdown::Document.new(contents, :input => 'kramdown_repositext')`
@@ -47,10 +47,10 @@ class Repositext
         root, warnings = @options['kramdown_parser_class'].parse(content_at)
         doc = Kramdown::Document.new('')
         doc.root = root
-        tmp_subtitle_tagging_export = doc.send(@options['subtitle_tagging_converter_method_name'])
+        tmp_subtitle_export = doc.send(@options['subtitle_converter_method_name'])
         diffs = Repositext::Utils::StringComparer.compare(
-          subtitle_tagging_import.gsub(/[%@]/, ''),
-          tmp_subtitle_tagging_export.gsub(/[%@]/, '')
+          subtitle_export.gsub(/[%@]/, ''),
+          tmp_subtitle_export.gsub(/[%@]/, '')
         )
 
         if diffs.empty?
@@ -60,17 +60,16 @@ class Repositext
             false, nil, [],
             [
               Reportable.error(
-                [@file_to_validate.last], # subtitle_tagging_import file
+                [@file_to_validate.last], # subtitle_import file
                 [
-                  'Text mismatch between subtitle_tagging_import and content_at:',
-                  diffs.inspect
+                  'Text mismatch between subtitle/subtitle_tagging_export and content_at:',
+                  diffs.join("\n")
                 ]
               )
             ]
           )
         end
       end
-
     end
   end
 end

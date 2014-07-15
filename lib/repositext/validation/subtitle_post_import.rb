@@ -1,9 +1,9 @@
 class Repositext
   class Validation
-    class SubtitleTaggingPostImport < Validation
+    class SubtitlePostImport < Validation
 
-      # Specifies validations to run after subtitle_tagging import.
-      # NOTE: md files are not affected by subtitle_tagging_import, so we don't need to validate them.
+      # Specifies validations to run after subtitle/subtitle_tagging import.
+      # NOTE: md files are not affected by subtitle/subtitle_tagging import, so we don't need to validate them.
       def run_list
         # Validate that subtitle_mark counts match between content_at and subtitle marker csv files
         # Define proc that computes subtitle_marker_csv filename from content_at filename
