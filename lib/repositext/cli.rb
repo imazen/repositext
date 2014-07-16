@@ -38,7 +38,7 @@ class Repositext
                  :desc => 'Specifies the input file pattern. Expects an absolute path pattern that can be used with Dir.glob.'
     class_option :'changed-only',
                  :type => :boolean,
-                 :default => true,
+                 :default => false,
                  :desc => 'If true, only files that have been changed or added will be processed.'
     class_option :'skip-git-up-to-date-check',
                  :type => :boolean,
