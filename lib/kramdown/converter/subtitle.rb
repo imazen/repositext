@@ -32,6 +32,9 @@ module Kramdown
         when :gap_mark == el.type
           # export gap_marks
           @output << gap_mark_output
+        when :subtitle_mark == el.type
+          # export gap_marks
+          @output << subtitle_mark_output
         when :em == el.type && el.has_class?('pn')
           # replace space after paragraph numbers with 4 spaces. Done in post processing
           @output << "<<replace space after with 4 spaces>>"
@@ -52,6 +55,11 @@ module Kramdown
       def gap_mark_output
         # gap_marks are removed for subtitle output
         ''
+      end
+
+      def subtitle_mark_output
+        # subtitle_marks are rendered for subtitle output
+        '@'
       end
 
       def post_process_output(raw_output)

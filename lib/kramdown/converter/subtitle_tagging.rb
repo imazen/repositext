@@ -12,6 +12,11 @@ module Kramdown
         '%'
       end
 
+      def subtitle_mark_output
+        # subtitle_marks are removed for subtitle_tagging output
+        ''
+      end
+
     end
   end
 end
