@@ -63,7 +63,7 @@ class Repositext
     # @param[String, optional] branch_name defaults to 'master'
     def latest_commit_sha_remote(remote_name = 'origin', branch_name = 'master')
       most_recent_commit_oid = ''
-      cmd = %(cd #{ @repo_path } && git ls-remote #{ remote_name } | awk '/refs\/heads\/#{ branch_name }/ {print $1}')
+      cmd = %(cd #{ @repo_path } && git ls-remote #{ remote_name } | awk '/refs\\/heads\\/#{ branch_name }/ {print $1}')
       Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
         exit_status = wait_thr.value
         if exit_status.success?
