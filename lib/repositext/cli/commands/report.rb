@@ -354,7 +354,10 @@ class Repositext
               date_code: date_code
             }
           else
-            title_from_erp = title_attrs_from_erp[:title].gsub("'", '’') # convert straight quote to typographic one
+            title_from_erp = title_attrs_from_erp[:title].to_s
+                                 .gsub("'", '’') # convert straight quote to typographic one
+                                 .gsub('Questions And Answers', 'Questions and Answers') # ignore difference in capitalization for 'And'
+                                 .gsub('#', '') # ignore presence of hash
             if title_from_erp != title_from_content_at
               titles_with_differences << {
                 erp: title_from_erp,
