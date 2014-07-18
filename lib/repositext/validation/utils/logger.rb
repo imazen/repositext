@@ -21,6 +21,11 @@ class Repositext
 
         # Delegate to Logging framework
         @logging = Logging.logger[' ']
+        # `Logging.logger` returns any existing instances when called with the
+        # same device (' ' in this case). So we need to clear any existing
+        # appenders first. Otherwise we'd add another appender and each log
+        # line would appear twice in the console.
+        @logging.clear_appenders
         @logging.add_appenders(
           #Logging.appenders.stdout(:layout => Logging.layouts.repositext_basic)
           Logging.appenders.stdout(:layout => Logging.layouts.pattern(:pattern => '%-5l %m\n'))
