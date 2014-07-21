@@ -211,7 +211,7 @@ module Kramdown
                 \s+ # eagle followed by whitespace
               ){0,2} # repeat up to two times to match "\<gap-mark>\(\emph{others}"
             )
-            ([[:alpha:]’]+) # find word, including apostrophy. This will be colored red
+            ([[:alpha:][:digit:]’]+) # find letters, numbers, or apostrophes. This will be colored red
           /x,
           '\1' + latex_command_for_gap_mark + '{\2}'
         )
