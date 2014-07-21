@@ -4,6 +4,72 @@ class Repositext
 
     private
 
+      # Compares the titles in Content AT with those from ERP (provided as
+      # CSV file in the language repo's `data` directory)
+      def report_compare_titles_with_those_of_erp(options)
+        input_file_spec = options['input'] || 'content_dir/at_files'
+        titles_from_erp = load_titles_from_erp
+        file_count = 0
+        titles_with_differences = []
+        Repositext::Cli::Utils.read_files(
+          config.compute_glob_pattern(input_file_spec),
+          /\.at\Z/i,
+          nil,
+          "Reading AT files",
+          options
+        ) do |contents, filename|
+          title_from_content_at = contents.match(/(?<=^#)[^\n]+/)
+                                          .to_s
+                                          .gsub('*', '')
+                                          .strip
+          date_code = Repositext::Utils::FilenamePartExtractor.extract_date_code(filename)
+          title_attrs_from_erp = titles_from_erp[date_code]
+          if title_attrs_from_erp.nil?
+            titles_with_differences << {
+              erp: "[Could not find title from ERP with date code #{ date_code.inspect }",
+              content_at: title_from_content_at,
+              filename: filename,
+              date_code: date_code
+            }
+          else
+            title_from_erp = title_attrs_from_erp[:title].to_s
+                                 .gsub("'", '’') # convert straight quote to typographic one
+                                 .gsub('Questions And Answers', 'Questions and Answers') # ignore difference in capitalization for 'And'
+                                 .gsub('#', '') # ignore presence of hash
+            if title_from_erp != title_from_content_at
+              titles_with_differences << {
+                erp: title_from_erp,
+                content_at: title_from_content_at,
+                filename: filename,
+                date_code: date_code
+              }
+            end
+          end
+          file_count += 1
+        end
+        lines = []
+        titles_with_differences.sort { |a,b| a[:date_code] <=> b[:date_code] }.each do |attrs|
+          l = " - #{ attrs[:date_code].ljust(8) } ERP: #{ attrs[:erp].inspect.ljust(40) } Content AT: #{ attrs[:content_at].inspect }"
+          $stderr.puts l
+          lines << l
+        end
+        summary_line = "Found #{ lines.length } titles with differences in #{ file_count } files at #{ Time.now.to_s }."
+        $stderr.puts summary_line
+        report_file_path = File.join(config.base_dir('reports_dir'), 'compare_titles_with_those_of_erp.txt')
+        File.open(report_file_path, 'w') { |f|
+          f.write "Compare content AT titles with those of ERP\n"
+          f.write '-' * 40
+          f.write "\n"
+          f.write lines.join("\n")
+          f.write "\n"
+          f.write '-' * 40
+          f.write "\n"
+          f.write summary_line
+          f.write "\n\n"
+          f.write "Command to generate this file: `repositext report compare_titles_with_those_of_erp`\n"
+        }
+      end
+
       # Generate summary of folio import warnings
       def report_folio_import_warnings(options)
         input_file_spec = options['input'] || 'folio_import_dir/json_files'
@@ -40,82 +106,6 @@ class Repositext
           f.write "\n"
           f.write "Found #{ w.length } warnings in #{ file_count } files at #{ Time.now.to_s }.\n\n"
           f.write "Command to generate this file: `repositext report folio_import_warnings`\n"
-        }
-      end
-
-      def report_quotes_summary(options)
-        output_lines = []
-        ["'", '"'].each { |quote_char|
-          output_lines << "Detecting #{ quote_char } quotes"
-          output_lines << '-' * 80
-          instances = find_all_quote_instances(quote_char, options)
-          sequences = {}
-          instances.each do |attrs|
-            # normalize key
-            key = compute_sequence_key(attrs[:pre], quote_char, attrs[:post])
-            # add to hash
-            sequences[key] ||= { :pre => nil, :post => nil, :count => 0 }
-            sequences[key][:count] += 1
-            sequences[key][:pre] = attrs[:pre]
-            sequences[key][:post] = attrs[:post]
-          end
-          quote_instances_count = 0
-          sequences.to_a.sort { |a,b| a.first <=> b.first }.each do |(key, attrs)|
-            example = "#{ attrs[:pre] }#{ quote_char }#{ attrs[:post] }".gsub(/\n/, '\\n')
-            output_lines << " #{ key }    - #{ example.ljust(50, ' ') }   - #{ attrs[:count] }"
-            quote_instances_count += attrs[:count]
-          end
-          output_lines << "-" * 80
-          output_lines << "Found #{ quote_instances_count } #{ quote_char } quotes in #{ sequences.size } distinct character sequences."
-          output_lines << ''
-        }
-        output_lines.each { |e| $stderr.puts e }
-        report_file_path = File.join(config.base_dir('reports_dir'), 'content_quotes_summary.txt')
-        File.open(report_file_path, 'w') { |f|
-          f.write "Quotes Summary in Content\n"
-          f.write '-' * 40
-          f.write "\n"
-          f.write output_lines.join("\n")
-          f.write "\n"
-          f.write "Command to generate this file: `repositext report quotes_summary`\n"
-        }
-      end
-
-      def report_quotes_details(options)
-        output_lines = []
-        ["'", '"'].each { |quote_char|
-          output_lines << "Detecting #{ quote_char } quotes"
-          output_lines << '-' * 80
-          instances = find_all_quote_instances(quote_char, options)
-          sequences = {}
-          instances.each do |attrs|
-            # normalize key
-            key = compute_sequence_key(attrs[:pre], quote_char, attrs[:post])
-            # add to hash
-            sequences[key] ||= []
-            extract = "#{ attrs[:pre] }#{ quote_char }#{ attrs[:post] }".gsub(/\n/, '\\n')
-            sequences[key] << { :extract => extract, :filename => attrs[:filename] }
-          end
-          quote_instances_count = 0
-          sequences.to_a.sort { |a,b| a.first <=> b.first }.each do |(key, instances)|
-            instances.each { |quote_instance|
-              output_lines << " #{ key } - #{ quote_instance[:extract].ljust(45, ' ') } - #{ quote_instance[:filename] }"
-              quote_instances_count += 1
-            }
-          end
-          output_lines << "-" * 80
-          output_lines << "Found #{ quote_instances_count } #{ quote_char } quotes in #{ sequences.size } distinct character sequences."
-          output_lines << ''
-        }
-        output_lines.each { |e| $stderr.puts e }
-        report_file_path = File.join(config.base_dir('reports_dir'), 'content_quotes_details.txt')
-        File.open(report_file_path, 'w') { |f|
-          f.write "Quotes Details in Content\n"
-          f.write '-' * 40
-          f.write "\n"
-          f.write output_lines.join("\n")
-          f.write "\n"
-          f.write "Command to generate this file: `repositext report quotes_details`\n"
         }
       end
 
@@ -212,6 +202,128 @@ class Repositext
         }
       end
 
+      # Generates a report that counts all paragraph class combinations it encounters.
+      def report_paragraph_classes_inventory(options)
+        input_file_spec = options['input'] || 'content_dir/at_files'
+        file_count = 0
+        paragraph_class_combinations = Hash.new(0)
+        Repositext::Cli::Utils.read_files(
+          config.compute_glob_pattern(input_file_spec),
+          /\.at\Z/i,
+          nil,
+          "Reading AT files",
+          options
+        ) do |contents, filename|
+          # Since the kramdown parser is specified as module in Rtfile,
+          # I can't use the standard kramdown API:
+          # `doc = Kramdown::Document.new(contents, :input => 'kramdown_repositext')`
+          # We have to patch a base Kramdown::Document with the root to be able
+          # to convert it.
+          root, warnings = config.kramdown_parser(:kramdown).parse(contents)
+          doc = Kramdown::Document.new('')
+          doc.root = root
+          doc_paragraph_class_combinations = doc.to_report_paragraph_classes_inventory
+          doc_paragraph_class_combinations.each do |pcc, count|
+            paragraph_class_combinations[pcc] += count
+          end
+          file_count += 1
+        end
+        lines = []
+        paragraph_class_combinations.to_a.sort { |a,b| a.first <=> b.first }.each do |(classes, count)|
+          l = " - #{ classes }: #{ count }"
+          $stderr.puts l
+          lines << l
+        end
+        report_file_path = File.join(config.base_dir('reports_dir'), 'paragraph_classes_inventory.txt')
+        File.open(report_file_path, 'w') { |f|
+          f.write "Paragraph classes inventory\n"
+          f.write '-' * 40
+          f.write "\n"
+          f.write lines.join("\n")
+          f.write "\n"
+          f.write '-' * 40
+          f.write "\n"
+          f.write "Found #{ lines.length } combinations of paragraph classes in #{ file_count } files at #{ Time.now.to_s }.\n\n"
+          f.write "Command to generate this file: `repositext report paragraph_classes_inventory`\n"
+        }
+      end
+
+      def report_quotes_details(options)
+        output_lines = []
+        ["'", '"'].each { |quote_char|
+          output_lines << "Detecting #{ quote_char } quotes"
+          output_lines << '-' * 80
+          instances = find_all_quote_instances(quote_char, options)
+          sequences = {}
+          instances.each do |attrs|
+            # normalize key
+            key = compute_sequence_key(attrs[:pre], quote_char, attrs[:post])
+            # add to hash
+            sequences[key] ||= []
+            extract = "#{ attrs[:pre] }#{ quote_char }#{ attrs[:post] }".gsub(/\n/, '\\n')
+            sequences[key] << { :extract => extract, :filename => attrs[:filename] }
+          end
+          quote_instances_count = 0
+          sequences.to_a.sort { |a,b| a.first <=> b.first }.each do |(key, instances)|
+            instances.each { |quote_instance|
+              output_lines << " #{ key } - #{ quote_instance[:extract].ljust(45, ' ') } - #{ quote_instance[:filename] }"
+              quote_instances_count += 1
+            }
+          end
+          output_lines << "-" * 80
+          output_lines << "Found #{ quote_instances_count } #{ quote_char } quotes in #{ sequences.size } distinct character sequences."
+          output_lines << ''
+        }
+        output_lines.each { |e| $stderr.puts e }
+        report_file_path = File.join(config.base_dir('reports_dir'), 'content_quotes_details.txt')
+        File.open(report_file_path, 'w') { |f|
+          f.write "Quotes Details in Content\n"
+          f.write '-' * 40
+          f.write "\n"
+          f.write output_lines.join("\n")
+          f.write "\n"
+          f.write "Command to generate this file: `repositext report quotes_details`\n"
+        }
+      end
+
+      def report_quotes_summary(options)
+        output_lines = []
+        ["'", '"'].each { |quote_char|
+          output_lines << "Detecting #{ quote_char } quotes"
+          output_lines << '-' * 80
+          instances = find_all_quote_instances(quote_char, options)
+          sequences = {}
+          instances.each do |attrs|
+            # normalize key
+            key = compute_sequence_key(attrs[:pre], quote_char, attrs[:post])
+            # add to hash
+            sequences[key] ||= { :pre => nil, :post => nil, :count => 0 }
+            sequences[key][:count] += 1
+            sequences[key][:pre] = attrs[:pre]
+            sequences[key][:post] = attrs[:post]
+          end
+          quote_instances_count = 0
+          sequences.to_a.sort { |a,b| a.first <=> b.first }.each do |(key, attrs)|
+            example = "#{ attrs[:pre] }#{ quote_char }#{ attrs[:post] }".gsub(/\n/, '\\n')
+            output_lines << " #{ key }    - #{ example.ljust(50, ' ') }   - #{ attrs[:count] }"
+            quote_instances_count += attrs[:count]
+          end
+          output_lines << "-" * 80
+          output_lines << "Found #{ quote_instances_count } #{ quote_char } quotes in #{ sequences.size } distinct character sequences."
+          output_lines << ''
+        }
+        output_lines.each { |e| $stderr.puts e }
+        report_file_path = File.join(config.base_dir('reports_dir'), 'content_quotes_summary.txt')
+        File.open(report_file_path, 'w') { |f|
+          f.write "Quotes Summary in Content\n"
+          f.write '-' * 40
+          f.write "\n"
+          f.write output_lines.join("\n")
+          f.write "\n"
+          f.write "Command to generate this file: `repositext report quotes_summary`\n"
+        }
+      end
+
       def report_words_with_apostrophe(options)
         # TODO: add report that shows all words starting with apostrophe that have only one character
         input_file_spec = options['input'] || 'folio_import_dir/at_files'
@@ -280,115 +392,6 @@ class Repositext
           f.write '-' * 40
           f.write output_lines.join("\n")
           f.write "\nCommand to generate this file: `repositext report words_with_apostrophe`"
-        }
-      end
-
-      def report_paragraph_classes_inventory(options)
-        input_file_spec = options['input'] || 'content_dir/at_files'
-        file_count = 0
-        paragraph_class_combinations = Hash.new(0)
-        Repositext::Cli::Utils.read_files(
-          config.compute_glob_pattern(input_file_spec),
-          /\.at\Z/i,
-          nil,
-          "Reading AT files",
-          options
-        ) do |contents, filename|
-          # Since the kramdown parser is specified as module in Rtfile,
-          # I can't use the standard kramdown API:
-          # `doc = Kramdown::Document.new(contents, :input => 'kramdown_repositext')`
-          # We have to patch a base Kramdown::Document with the root to be able
-          # to convert it.
-          root, warnings = config.kramdown_parser(:kramdown).parse(contents)
-          doc = Kramdown::Document.new('')
-          doc.root = root
-          doc_paragraph_class_combinations = doc.to_report_paragraph_classes_inventory
-          doc_paragraph_class_combinations.each do |pcc, count|
-            paragraph_class_combinations[pcc] += count
-          end
-          file_count += 1
-        end
-        lines = []
-        paragraph_class_combinations.to_a.sort { |a,b| a.first <=> b.first }.each do |(classes, count)|
-          l = " - #{ classes }: #{ count }"
-          $stderr.puts l
-          lines << l
-        end
-        report_file_path = File.join(config.base_dir('reports_dir'), 'paragraph_classes_inventory.txt')
-        File.open(report_file_path, 'w') { |f|
-          f.write "Paragraph classes inventory\n"
-          f.write '-' * 40
-          f.write "\n"
-          f.write lines.join("\n")
-          f.write "\n"
-          f.write '-' * 40
-          f.write "\n"
-          f.write "Found #{ lines.length } combinations of paragraph classes in #{ file_count } files at #{ Time.now.to_s }.\n\n"
-          f.write "Command to generate this file: `repositext report paragraph_classes_inventory`\n"
-        }
-      end
-
-      def report_compare_titles_with_those_of_erp(options)
-        input_file_spec = options['input'] || 'content_dir/at_files'
-        titles_from_erp = load_titles_from_erp
-        file_count = 0
-        titles_with_differences = []
-        Repositext::Cli::Utils.read_files(
-          config.compute_glob_pattern(input_file_spec),
-          /\.at\Z/i,
-          nil,
-          "Reading AT files",
-          options
-        ) do |contents, filename|
-          title_from_content_at = contents.match(/(?<=^#)[^\n]+/)
-                                          .to_s
-                                          .gsub('*', '')
-                                          .strip
-          date_code = Repositext::Utils::FilenamePartExtractor.extract_date_code(filename)
-          title_attrs_from_erp = titles_from_erp[date_code]
-          if title_attrs_from_erp.nil?
-            titles_with_differences << {
-              erp: "[Could not find title from ERP with date code #{ date_code.inspect }",
-              content_at: title_from_content_at,
-              filename: filename,
-              date_code: date_code
-            }
-          else
-            title_from_erp = title_attrs_from_erp[:title].to_s
-                                 .gsub("'", '’') # convert straight quote to typographic one
-                                 .gsub('Questions And Answers', 'Questions and Answers') # ignore difference in capitalization for 'And'
-                                 .gsub('#', '') # ignore presence of hash
-            if title_from_erp != title_from_content_at
-              titles_with_differences << {
-                erp: title_from_erp,
-                content_at: title_from_content_at,
-                filename: filename,
-                date_code: date_code
-              }
-            end
-          end
-          file_count += 1
-        end
-        lines = []
-        titles_with_differences.sort { |a,b| a[:date_code] <=> b[:date_code] }.each do |attrs|
-          l = " - #{ attrs[:date_code].ljust(8) } ERP: #{ attrs[:erp].inspect.ljust(40) } Content AT: #{ attrs[:content_at].inspect }"
-          $stderr.puts l
-          lines << l
-        end
-        summary_line = "Found #{ lines.length } titles with differences in #{ file_count } files at #{ Time.now.to_s }."
-        $stderr.puts summary_line
-        report_file_path = File.join(config.base_dir('reports_dir'), 'compare_titles_with_those_of_erp.txt')
-        File.open(report_file_path, 'w') { |f|
-          f.write "Compare content AT titles with those of ERP\n"
-          f.write '-' * 40
-          f.write "\n"
-          f.write lines.join("\n")
-          f.write "\n"
-          f.write '-' * 40
-          f.write "\n"
-          f.write summary_line
-          f.write "\n\n"
-          f.write "Command to generate this file: `repositext report compare_titles_with_those_of_erp`\n"
         }
       end
 
