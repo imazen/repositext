@@ -109,6 +109,53 @@ class Repositext
         }
       end
 
+      # Generates a report with gap_mark counts for all content AT files that
+      # contain gap_marks
+      def report_gap_mark_count(options)
+        input_file_spec = options['input'] || 'content_dir/at_files'
+        file_count = 0
+        files_with_gap_marks = []
+        Repositext::Cli::Utils.read_files(
+          config.compute_glob_pattern(input_file_spec),
+          /\.at\Z/i,
+          nil,
+          "Reading AT files",
+          options
+        ) do |contents, filename|
+          gap_mark_count = contents.scan(/(?<!\\)%/).size
+          date_code = Repositext::Utils::FilenamePartExtractor.extract_date_code(filename)
+          if gap_mark_count > 0
+            files_with_gap_marks << {
+              gap_mark_count: gap_mark_count, # add two for correct count in final document
+              filename: filename,
+              date_code: date_code,
+            }
+          end
+          file_count += 1
+        end
+        lines = []
+        files_with_gap_marks.sort { |a,b| a[:date_code] <=> b[:date_code] }.each do |attrs|
+          l = " - #{ attrs[:date_code].ljust(10) } - #{ attrs[:gap_mark_count].to_s.rjust(5) }"
+          $stderr.puts l
+          lines << l
+        end
+        summary_line = "Found #{ lines.length } of #{ file_count } files with gap_marks at #{ Time.now.to_s }."
+        $stderr.puts summary_line
+        report_file_path = File.join(config.base_dir('reports_dir'), 'gap_mark_count.txt')
+        File.open(report_file_path, 'w') { |f|
+          f.write "Gap_mark count\n"
+          f.write '-' * 40
+          f.write "\n"
+          f.write lines.join("\n")
+          f.write "\n"
+          f.write '-' * 40
+          f.write "\n"
+          f.write summary_line
+          f.write "\n\n"
+          f.write "Command to generate this file: `repositext report gap_mark_count`\n"
+        }
+      end
+
       # Finds invalid quote sequences, e.g., two subsequent open double quotes.
       # An invalid sequence is:
       # * two quotes of same QuoteType with no other quote inbetween (applies to s-quote-open or d-quote-close only)
