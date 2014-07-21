@@ -204,7 +204,7 @@ module Kramdown
             #{ gap_mark_regex } # find gap mark
             ( # capturing group for characters that are not to be colored red
               (?: # find one of the following, use non-capturing group for grouping only
-                [\ \(\[\"\'\}\{#{ Regexp.escape(Repositext::ALL_TYPOGRAPHIC_CHARS.join) }\*]+ # special char or delimiter
+                [\ \(\[\"\'\}#{ Regexp.escape(Repositext::ALL_TYPOGRAPHIC_CHARS.join) }\*]+ # special char or delimiter, we need closing brace because sometimes the tmp gap mark ends up inside an emph span
                 | # or
                 \\[[:alnum:]]+\{ # latex command with opening {
                 | # or
