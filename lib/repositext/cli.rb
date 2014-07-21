@@ -171,6 +171,7 @@ class Repositext
     long_desc long_description_for_export
     # @param[String] command_spec Specification of the operation
     def export(command_spec)
+      check_that_current_branch_is_up_to_date_with_origin_master
       invoke_repositext_command('export', command_spec, options)
     end
 
@@ -178,6 +179,7 @@ class Repositext
     long_desc long_description_for_import
     # @param[String] command_spec Specification of the operation
     def import(command_spec)
+      check_that_current_branch_is_up_to_date_with_origin_master
       invoke_repositext_command('import', command_spec, options)
     end
 
@@ -198,7 +200,6 @@ class Repositext
       method_name = "#{ main_command }_#{ command_spec }"
       if respond_to?(method_name, true)
         with_timer do
-          check_that_current_branch_is_up_to_date_with_origin_master
           self.send(method_name, options)
         end
       else
