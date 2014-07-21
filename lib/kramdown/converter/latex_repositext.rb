@@ -153,6 +153,7 @@ module Kramdown
       def convert_root(el, opts)
         @inside_song = false # maintain song wrapping state
         latex_body = inner(el, opts)
+        latex_body << break_out_of_song(@inside_song) # close any open song environments
         latex_body = post_process_latex_body(latex_body)
         wrap_body_in_template(latex_body)
       end
