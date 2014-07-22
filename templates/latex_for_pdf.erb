@@ -15,7 +15,11 @@
 
 % fontspec to use custom fonts
 \usepackage{fontspec}
-\setmainfont{V-Calisto-St}
+% We have to manually specify the Bold font shape since otherwise Latex uses
+% BoldItalic for Bold.
+% NOTE: specifying more font shapes (bi and i), resulted in broken behavior, too:
+% What should have been bold was bold-italic.
+\setmainfont[BoldFont={V-Calisto-St Bold}]{V-Calisto-St}
 
 % needspace to make sure there is no page break in id paragraphs at the end
 \usepackage{needspace}
