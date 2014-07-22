@@ -67,7 +67,12 @@ class Repositext
       end
 
       def export_pdf_recording(options)
-        export_pdf_base('pdf_recording', options)
+        # Skip files that don't contain gap_marks
+        skip_file_proc = Proc.new { |contents, filename| !contents.index('%') }
+        export_pdf_base(
+          'pdf_recording',
+          options.merge(:skip_file_proc => skip_file_proc)
+        )
       end
 
       def export_pdf_translator(options)
@@ -102,6 +107,10 @@ class Repositext
           "Exporting AT files to #{ variant }",
           options
         ) do |contents, filename|
+          if options[:skip_file_proc] && options[:skip_file_proc].call(contents, filename)
+            $stderr.puts " - Skipping #{ filename } - matches options[:skip_file_proc]"
+            next([Outcome.new(true, { contents: nil })])
+          end
           # Since the kramdown parser is specified as module in Rtfile,
           # I can't use the standard kramdown API:
           # `doc = Kramdown::Document.new(contents, :input => 'kramdown_repositext')`

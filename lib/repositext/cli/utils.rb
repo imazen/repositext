@@ -139,11 +139,9 @@ class Repositext
       #     Calling block is expected to return an Array of Outcome objects, one
       #     for each file, with the following attrs:
       #       * success:  Boolean
-      #       * result:   A hash with :contents and :extension keys
+      #       * result:   A hash with :contents and :extension keys. Set contents
+      #                   to nil to skip a file.
       #       * messages: An array of message strings.
-      # TODO: the following naming may reveal intent more clearly:
-      #     output_path_lambda => out_filename_proc (transforms output file path)
-      #     block              => out_contents_proc (transforms output file contents)
       def self.process_files_helper(file_pattern, file_filter, output_path_lambda, description, options, &block)
         with_console_output(description, file_pattern) do |counts|
           changed_files = compute_list_of_changed_files(options[:'changed-only'])
@@ -172,6 +170,7 @@ class Repositext
 
               outcomes.each do |outcome|
                 if outcome.success
+                  next  if outcome.result[:contents].nil? # skip any files where content is nil
                   output_file_attrs = outcome.result
                   new_path = output_path_lambda.call(filename, output_file_attrs)
                   # new_path is either a file path or the empty string (in which
