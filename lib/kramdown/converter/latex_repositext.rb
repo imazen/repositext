@@ -204,14 +204,14 @@ module Kramdown
             #{ gap_mark_regex } # find gap mark
             ( # capturing group for characters that are not to be colored red
               (?: # find one of the following, use non-capturing group for grouping only
-                [\ \(\[\"\'\}\-#{ Regexp.escape(Repositext::ALL_TYPOGRAPHIC_CHARS.join) }\*]+ # special char or delimiter, we need closing brace because sometimes the tmp gap mark ends up inside an emph span
+                [\ \(\[\"\'\}\*#{ Regexp.escape((Repositext::ALL_TYPOGRAPHIC_CHARS - [Repositext::ELIPSIS]).join) }]+ # special chars or delimiters
                 | # or
                 \\[[:alnum:]]+\{ # latex command with opening {
                 | # or
                 \s+ # eagle followed by whitespace
               ){0,2} # repeat up to two times to match "\<gap-mark>\(\emph{others}"
             )
-            ([[:alpha:][:digit:]’]+) # find letters, numbers, or apostrophes. This will be colored red
+            ([[:alpha:][:digit:]’#{ Repositext::ELIPSIS }\-\?]+) #  This will be colored red
           /x,
           '\1' + latex_command_for_gap_mark + '{\2}'
         )
