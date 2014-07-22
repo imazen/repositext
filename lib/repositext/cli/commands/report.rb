@@ -4,6 +4,63 @@ class Repositext
 
     private
 
+      # Compares the files present in the repository with the list of titles from
+      # ERP. Lists any files that are missing/added in the repository
+      def report_compare_file_inventory_with_erp(options)
+        input_file_spec = options['input'] || 'content_dir/at_files'
+        date_codes_from_erp = load_titles_from_erp.keys
+        date_codes_from_repo = []
+        Repositext::Cli::Utils.read_files(
+          config.compute_glob_pattern(input_file_spec),
+          /\.at\Z/i,
+          nil,
+          "Reading AT files",
+          options
+        ) do |contents, filename|
+          date_codes_from_repo << Repositext::Utils::FilenamePartExtractor.extract_date_code(filename)
+                                                                          .downcase
+        end
+        # compute differences
+        common_date_codes = date_codes_from_erp & date_codes_from_repo
+        missing_date_codes = date_codes_from_erp - common_date_codes
+        added_date_codes = date_codes_from_repo - common_date_codes
+        missing_count = missing_date_codes.length
+        added_count = added_date_codes.length
+        common_count = common_date_codes.length
+        total_count = missing_count + added_count + common_count
+        lines = [
+          "Compare content AT file inventory with ERP",
+          '-' * 40,
+        ]
+        lines << " - There are #{ common_count } files in both content AT and ERP."
+        if missing_date_codes.empty?
+          lines << " - There are no files in ERP that aren't also in content AT."
+        else
+          lines << " - The following #{ missing_count } files in ERP are NOT in content AT:"
+          missing_date_codes.each do |dc|
+            lines << " - - #{ dc }"
+          end
+        end
+        if added_date_codes.empty?
+          lines << " - There are no files in content AT that aren't also in ERP."
+        else
+          lines << " - The following #{ added_count } files in content AT are NOT in ERP:"
+          added_date_codes.each do |dc|
+            lines << " - - #{ dc }"
+          end
+        end
+        lines << '-' * 40
+        lines << "Found #{ missing_count + added_count } differences in #{ total_count } files at #{ Time.now.to_s }."
+        $stderr.puts
+        lines.each { |l| $stderr.puts l }
+        report_file_path = File.join(config.base_dir('reports_dir'), 'compare_file_inventory_with_erp.txt')
+        File.open(report_file_path, 'w') { |f|
+          f.write lines.join("\n")
+          f.write "\n\n"
+          f.write "Command to generate this file: `repositext report compare_file_inventory_with_erp`\n"
+        }
+      end
+
       # Compares the titles in Content AT with those from ERP (provided as
       # CSV file in the language repo's `data` directory)
       def report_compare_titles_with_those_of_erp(options)
