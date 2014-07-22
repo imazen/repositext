@@ -7,8 +7,8 @@ module Kramdown
 
     protected
 
-      def latex_command_for_gap_mark
-        '\\RtGapMarkWithNumber'
+      def tmp_gap_mark_number
+        "<<<gap-mark-number>>>"
       end
 
     end

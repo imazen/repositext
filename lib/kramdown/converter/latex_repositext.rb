@@ -163,10 +163,6 @@ module Kramdown
         ''
       end
 
-      def latex_command_for_gap_mark
-        '\\RtGapMark'
-      end
-
     protected
 
       # Since our font doesn't have a small caps variant, we have to emulate it
@@ -189,6 +185,22 @@ module Kramdown
         }.join
       end
 
+      # Temporary placeholder for gap_mark number and text
+      def tmp_gap_mark_complete
+        tmp_gap_mark_number + tmp_gap_mark_text
+      end
+
+      # Normally we don't render cue numbers with gap_marks. Override this in
+      # converters that render cue numbers
+      def tmp_gap_mark_number
+        ''
+      end
+
+      # Temporary placeholder for gap_mark text
+      def tmp_gap_mark_text
+        "<<<gap-mark>>>"
+      end
+
       # Override this method in any subclasses that wrap the latex body with
       # a preamble to make a complete latex document.
       def wrap_body_in_template(latex_body)
@@ -198,13 +210,26 @@ module Kramdown
       # @param[String] latex_body
       def post_process_latex_body(latex_body)
         lb = latex_body.dup
-        # post process gap_marks
-        gap_mark_regex = Regexp.new(Regexp.escape(TMP_GAP_MARK))
-        lb.gsub!(/
-            #{ gap_mark_regex } # find gap mark
+        # gap_marks: Skip certain characters and find characters to highlight in red
+        gap_mark_complete_regex = Regexp.new(Regexp.escape(tmp_gap_mark_complete))
+        chars_to_skip = [
+          Repositext::D_QUOTE_OPEN,
+          Repositext::EM_DASH,
+          Repositext::S_QUOTE_OPEN,
+          ' ',
+          '(',
+          '[',
+          '"',
+          "'",
+          '}',
+          '*',
+        ].join
+        lb.gsub!(
+          /
+            #{ gap_mark_complete_regex } # find tmp gap mark number and text
             ( # capturing group for characters that are not to be colored red
               (?: # find one of the following, use non-capturing group for grouping only
-                [\ \(\[\"\'\}\*#{ Regexp.escape((Repositext::ALL_TYPOGRAPHIC_CHARS - [Repositext::ELIPSIS]).join) }]+ # special chars or delimiters
+                [#{ Regexp.escape(chars_to_skip) }]+ # special chars or delimiters
                 | # or
                 \\[[:alnum:]]+\{ # latex command with opening {
                 | # or
@@ -213,11 +238,32 @@ module Kramdown
             )
             ([[:alpha:][:digit:]’#{ Repositext::ELIPSIS }\-\?]+) #  This will be colored red
           /x,
-          '\1' + latex_command_for_gap_mark + '{\2}'
+          '\1' + tmp_gap_mark_number + "\\RtGapMarkText" + '{\2}'
         )
-        # replace eagle with latex command for custom formatting
+        # gap_marks: Move gap_mark number to outside of quotes, parentheses and brackes
+        if !['', nil].include?(tmp_gap_mark_number)
+          gap_mark_number_regex = Regexp.new(Regexp.escape(tmp_gap_mark_number))
+          chars_to_move_outside_of = [
+            Repositext::APOSTROPHE,
+            Repositext::D_QUOTE_OPEN,
+            Repositext::S_QUOTE_OPEN,
+            '(',
+            '[',
+          ].join
+          lb.gsub!(
+            /
+              ( # capturing group for characters to move outside of
+                [#{ Regexp.escape(chars_to_move_outside_of) }]*
+              )
+              #{ gap_mark_number_regex } # find tmp gap mark number
+            /x,
+            "\\RtGapMarkNumber" + '\1' # Reverse order
+          )
+        end
+        # eagle: replace eagle with latex command for custom formatting
         lb.gsub!(//, "\\RtEagle")
-        lb.gsub!(/(?<=\\RtEagle)\ /, '\\ ') # force space after leading eagle
+        # eagle: force space after leading eagle
+        lb.gsub!(/(?<=\\RtEagle)\ /, '\\ ')
         lb
       end
 

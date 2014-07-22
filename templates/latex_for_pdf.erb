@@ -89,17 +89,16 @@
 % command to render eagle smaller than regular text
 \newcommand{\RtEagle}{\textscale{0.67}{}}
 % command to render gap mark. Pass the text to be highlighted as argument.
-\newcommand{\RtGapMark}[1]
+\newcommand{\RtGapMarkText}[1]
   {\textcolor{red}{#1}}
-% command to render gap mark with number. Pass the text to be highlighted as argument.
+% command to render auto gap mark number.
 \newcounter{RtGapMarkCounter}
 \setcounter{RtGapMarkCounter}{3}
-\newcommand{\RtGapMarkWithNumber}[1]
+\newcommand{\RtGapMarkNumber}
   {%
     \textcolor{red}{%
       \textnormal{%
-        \textsuperscript{\{\theRtGapMarkCounter\}}}%
-      #1}%
+        \textsuperscript{\{\theRtGapMarkCounter\}}}}%
     \stepcounter{RtGapMarkCounter}}
 % command to render paragraph number. Pass the para number as argument.
 \newcommand{\RtParagraphNumber}[1]
