@@ -126,7 +126,7 @@ class Repositext
           date_code = Repositext::Utils::FilenamePartExtractor.extract_date_code(filename)
           if gap_mark_count > 0
             files_with_gap_marks << {
-              gap_mark_count: gap_mark_count, # add two for correct count in final document
+              gap_mark_count: gap_mark_count + 2, # add two for correct count in final document
               filename: filename,
               date_code: date_code,
             }
