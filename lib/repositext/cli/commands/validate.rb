@@ -120,21 +120,6 @@ class Repositext
         end
       end
 
-      def validate_subtitle_mark_spacing(options)
-        options['report_file'] ||= config.compute_glob_pattern(
-          'reports_dir/validation_report_file'
-        )
-        reset_validation_report(options, 'validate_subtitle_mark_spacing')
-        file_specs = config.compute_validation_file_specs(
-          primary: 'content_dir/all_files', # for reporting only
-          content_at_files: 'content_dir/at_files',
-        )
-        Repositext::Validation::SubtitleMarkSpacing.new(
-          file_specs,
-          {}
-        ).run
-      end
-
       def validate_subtitle_tagging_import(options)
         options['report_file'] ||= config.compute_glob_pattern(
           'subtitle_tagging_import_dir/validation_report_file'
