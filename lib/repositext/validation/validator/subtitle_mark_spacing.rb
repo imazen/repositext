@@ -37,6 +37,10 @@ class Repositext
       # @return[Outcome]
       def subtitle_marks_spaced_correctly?(content_at)
         content_with_subtitle_marks_only = extract_body_text_with_subtitle_marks(content_at)
+        if !content_with_subtitle_marks_only.index('@')
+          # document doesn't contain subtitle marks, skip it
+          return Outcome.new(true, nil)
+        end
 
         captions = content_with_subtitle_marks_only.split('@')
         too_long_captions = captions.find_all { |caption|
