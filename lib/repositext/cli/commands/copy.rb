@@ -53,8 +53,8 @@ class Repositext
             :output_path_lambda => lambda { |input_filename|
               input_filename.gsub(input_base_dir, output_base_dir)
                             .gsub(
-                              /\/([^\/\.]+)\.markers\.txt/,
-                              '/' + config.setting(:language_code_3_chars) + '\1.subtitle_markers.csv'
+                              /\/[[:alpha:]]{3}([^\/\.]+)\.subtitle_markers\.csv/,
+                              '/\1.markers.txt'
                             )
             }
           )
