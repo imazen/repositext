@@ -10,6 +10,7 @@ class Repositext
         end
         validate_files(:at_files) do |file_name|
           Validator::KramdownSyntaxAt.new(file_name, @logger, @reporter, @options).run
+          Validator::SubtitleMarkSpacing.new(filename, @logger, @reporter, @options).run
         end
         validate_files(:pt_files) do |file_name|
           Validator::KramdownSyntaxPt.new(file_name, @logger, @reporter, @options).run
