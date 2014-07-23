@@ -12,8 +12,8 @@ class Repositext
       # @return[Outcome]
       def self.fix(text, filename)
         text = text.dup
-        text.gsub!(/%@/, '@%')
-        text.gsub!(/(\s*)(@?%?)/, '\2\1') # Move both marks in front of eagle
+        text.gsub!(/(\s*)([@%]+)/, '\2\1') # Move both marks in front of eagle
+        text.gsub!(/%@/, '@%') # Do this last since the eagle transform may place them in the wrong order.
 
         Outcome.new(true, { contents: text }, [])
       end
