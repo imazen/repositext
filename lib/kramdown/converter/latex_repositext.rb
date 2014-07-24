@@ -5,6 +5,27 @@ module Kramdown
     # document.
     class LatexRepositext < Latex
 
+      # Since our font doesn't have a small caps variant, we have to emulate it
+      # for latex.
+      # This is a class method so that we can easily use it from other places.
+      def self.emulate_small_caps(txt)
+        cap_groups = txt.split(/([[:lower:]](?=[[:upper:]])|[[:upper:]](?=[[:lower:]]))/)
+                        .find_all { |e| e != '' }
+        r = cap_groups.map { |e|
+          case e
+          when /\A[[:lower:]]/
+            # wrap in RtSmCapsEmulation command and convert to upper case
+            %(\\RtSmCapsEmulation{#{ e.upcase }})
+          when /\A[[:upper:]]/
+            # no modification, leave as is
+            e
+          else
+            # leave as is (this is digits, latex commands, puncuation, etc.)
+            e
+          end
+        }.join
+      end
+
       # Patch this method to handle ems that came via imports:
       # When importing, :ems are used as container to apply a class to a span.
       def convert_em(el, opts)
@@ -29,7 +50,7 @@ module Kramdown
             after << '}'
           end
           if el.has_class?('smcaps')
-            inner_text = emulate_small_caps(inner(el, opts))
+            inner_text = self.class.emulate_small_caps(inner(el, opts))
           end
           if el.has_class?('pn')
             # render as paragraph number
@@ -51,7 +72,9 @@ module Kramdown
         case output_header_level(el.options[:level])
         when 1
           # render in RtTitle environment
-          r << "\\begin{RtTitle}\n#{ emulate_small_caps(inner(el, opts)) }\n\\end{RtTitle}"
+          l_title = inner(el, opts)
+          @document_title ||= l_title # capture first level 1 header as document title
+          r << "\\begin{RtTitle}\n#{self.class.emulate_small_caps(l_title) }\n\\end{RtTitle}"
         when 3
           # render in RtSubTitle environment
           r << "\\begin{RtSubTitle}\n#{ inner(el, opts) }\n\\end{RtSubTitle}"
@@ -113,7 +136,7 @@ module Kramdown
             # render in RtIdTitle1 environment
             before << "\\begin{RtIdTitle1}\n"
             after << "\n\\end{RtIdTitle1}"
-            inner_text = emulate_small_caps(inner(el, opts))
+            inner_text = self.class.emulate_small_caps(inner(el, opts))
           end
           if el.has_class?('id_title2')
             # render in RtIdTitle2 environment
@@ -155,7 +178,8 @@ module Kramdown
         latex_body = inner(el, opts)
         latex_body << break_out_of_song(@inside_song) # close any open song environments
         latex_body = post_process_latex_body(latex_body)
-        wrap_body_in_template(latex_body)
+        document_title = (@document_title || '[Untitled]').strip.gsub(/\A\\emph\{(.+)\}/, '\1') # strip surrounding \emph latex command
+        wrap_body_in_template(latex_body, document_title)
       end
 
       # Override this method in any subclasses that render subtitle_marks
@@ -164,26 +188,6 @@ module Kramdown
       end
 
     protected
-
-      # Since our font doesn't have a small caps variant, we have to emulate it
-      # for latex.
-      def emulate_small_caps(txt)
-        cap_groups = txt.split(/([[:lower:]](?=[[:upper:]])|[[:upper:]](?=[[:lower:]]))/)
-                        .find_all { |e| e != '' }
-        r = cap_groups.map { |e|
-          case e
-          when /\A[[:lower:]]/
-            # wrap in RtSmCapsEmulation command and convert to upper case
-            %(\\RtSmCapsEmulation{#{ e.upcase }})
-          when /\A[[:upper:]]/
-            # no modification, leave as is
-            e
-          else
-            # leave as is (this is digits, latex commands, puncuation, etc.)
-            e
-          end
-        }.join
-      end
 
       # Temporary placeholder for gap_mark number and text
       def tmp_gap_mark_complete
@@ -203,7 +207,7 @@ module Kramdown
 
       # Override this method in any subclasses that wrap the latex body with
       # a preamble to make a complete latex document.
-      def wrap_body_in_template(latex_body)
+      def wrap_body_in_template(latex_body, document_title)
         latex_body
       end
 

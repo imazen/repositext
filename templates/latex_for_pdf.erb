@@ -48,7 +48,7 @@
 \newcommand{\RtFooterContent}{
   <% if @include_meta_info %>
   \fancyfoot[L]{<%= @date_code %>} % outside
-  \fancyfoot[C]{<%= @title %>} % center
+  \fancyfoot[C]{\emph{<%= @truncated_title %>}} % center
   \fancyfoot[R]{Rev. <%= @latest_commit_hash %>} % inside
   <% end %>
 }
@@ -61,7 +61,7 @@
   \renewcommand{\footrule}{\RtDoubleHRule\par}
   \fancyhead[EL,OR]{\thepage} % outside
   \fancyhead[ER]{\emph{T\RtSmCapsEmulation{HE} S\RtSmCapsEmulation{POKEN} W\RtSmCapsEmulation{ORD}}} % inside even
-  \fancyhead[OL]{<%= @title %>} % inside odd
+  \fancyhead[OL]{\emph{<%= @truncated_title %>}} % inside odd
   \RtFooterContent
 }
 \pagestyle{RtPageStyle} % apply custom pagestyle

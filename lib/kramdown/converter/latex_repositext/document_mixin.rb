@@ -51,10 +51,10 @@ module Kramdown
       protected
 
         # Returns a complete latex document as string.
-        # @param[Kramdown::Element] el the kramdown root element
-        # @param[Hash] opts
+        # @param[String] latex_body
+        # @param[String] document_title
         # @return[String]
-        def wrap_body_in_template(latex_body)
+        def wrap_body_in_template(latex_body, document_title)
           # assign i_vars referenced in template file
           @git_repo = Repositext::Repository.new
           @include_meta_info = include_meta_info
@@ -62,9 +62,14 @@ module Kramdown
           @latest_commit_hash = @latest_commit.oid[0,8]
           @body = latex_body
           @meta_info = include_meta_info ? compute_meta_info(@git_repo, @latest_commit) : ''
-          @title = compute_title(latex_body)
+          @title = document_title
+          @truncated_title = compute_truncated_title(document_title)
           @scale_factor = size_scale_factor
-          @date_code = @options[:source_filename].split('/').last.match(/[[:alpha:]]{3}\d{2}-\d{4}[[:alpha:]]?/).to_s.capitalize
+          @date_code = @options[:source_filename].split('/')
+                                                 .last
+                                                 .match(/[[:alpha:]]{3}\d{2}-\d{4}[[:alpha:]]?/)
+                                                 .to_s
+                                                 .capitalize
           @page_settings = page_settings_for_latex_geometry_package
           erb = ERB.new(latex_template)
           r = erb.result(binding)
@@ -92,19 +97,14 @@ module Kramdown
           r
         end
 
-        # Computes the document title from latex_body
-        # @param[String] latex_body
-        # @return[String] the title
-        def compute_title(latex_body)
-          # find first title environment
-          # \begin{RtTitle}
-          # \emph{The Title}
-          # \end{RtTitle}
-          title_inner = latex_body.match(/\\begin\{RtTitle\}(.*?)\\end\{RtTitle\}/m)
-          return '[No title found]'  if title_inner.nil?
-          # \n\\emph{The Title}\n
-          #title_text_only = title_inner[1].gsub(/\\emph\{/, '').gsub(/\}/, '').strip
-          title_inner[1]
+        # Returns a version of title that is guaranteed to be no longer than
+        # max_len
+        # @param[String] title the title without any latex commands
+        # @param[Integer, optional] max_len
+        def compute_truncated_title(title, max_len=45)
+          t = title.truncate_in_the_middle(max_len)
+          t = ::Kramdown::Converter::LatexRepositext.emulate_small_caps(t)
+          t
         end
 
         # Returns page settings as string that can be passed to latex
