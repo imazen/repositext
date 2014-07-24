@@ -9,21 +9,16 @@ module Kramdown
       # for latex.
       # This is a class method so that we can easily use it from other places.
       def self.emulate_small_caps(txt)
-        cap_groups = txt.split(/([[:lower:]](?=[[:upper:]])|[[:upper:]](?=[[:lower:]]))/)
-                        .find_all { |e| e != '' }
-        r = cap_groups.map { |e|
-          case e
-          when /\A[[:lower:]]/
-            # wrap in RtSmCapsEmulation command and convert to upper case
-            %(\\RtSmCapsEmulation{#{ e.upcase }})
-          when /\A[[:upper:]]/
-            # no modification, leave as is
-            e
-          else
-            # leave as is (this is digits, latex commands, puncuation, etc.)
-            e
-          end
-        }.join
+        # wrap all groups of lower case characters (not latex commands!) in RtSmCapsEmulation command
+        r = txt.gsub(
+          /
+            ( # wrap in capture group so that we can access it for replacement
+              (?<![\\[:lower:]]) # negative lookbehind for latex commands like emph
+              [[:lower:]]+ # capture all lower case letters
+            )
+          /x,
+        ) { |e| %(\\RtSmCapsEmulation{#{ e.upcase }}) }
+        r
       end
 
       # Patch this method to handle ems that came via imports:
