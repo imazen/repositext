@@ -4,6 +4,8 @@ class Repositext
       # Validates that the subtitle/subtitle_tagging import still matches content_at
       class SubtitleImportConsistency < Validator
 
+        class TextMismatchError < ::StandardError; end
+
         # Runs all validations for self
         def run
           errors, warnings = [], []
@@ -55,17 +57,27 @@ class Repositext
           if false # diffs.empty?
             Outcome.new(true, nil)
           else
-            Outcome.new(
-              false, nil, [],
+            # We want to terminate an import if the text is not consistent.
+            # Normally we'd return a negative outcome (see below), but in this
+            # case we raise an exception.
+            # Outcome.new(
+            #   false, nil, [],
+            #   [
+            #     Reportable.error(
+            #       [@file_to_validate.last], # subtitle/subtitle_tagging_import file
+            #       [
+            #         'Text mismatch between subtitle/subtitle_tagging_import and content_at:',
+            #         diffs.inspect
+            #       ]
+            #     )
+            #   ]
+            # )
+            raise TextMismatchError.new(
               [
-                Reportable.error(
-                  [@file_to_validate.last], # subtitle/subtitle_tagging_import file
-                  [
-                    'Text mismatch between subtitle/subtitle_tagging_import and content_at:',
-                    diffs.inspect
-                  ]
-                )
-              ]
+                "\n\nText mismatch between subtitle/subtitle_tagging_import and content_at.",
+                "Cannot proceed with import. Please resolve text differences first:",
+                diffs.inspect
+              ].join("\n")
             )
           end
         end
