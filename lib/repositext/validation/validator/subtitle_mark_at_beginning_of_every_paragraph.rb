@@ -10,7 +10,7 @@ class Repositext
         def run
           errors, warnings = [], []
 
-          catch (:abandon)  do
+          catch(:abandon) do
             outcome = subtitle_mark_at_beginning_of_every_paragraph?(
               ::File.read(@file_to_validate)
             )

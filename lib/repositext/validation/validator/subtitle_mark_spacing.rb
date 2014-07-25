@@ -12,7 +12,7 @@ class Repositext
         def run
           errors, warnings = [], []
 
-          catch (:abandon)  do
+          catch(:abandon) do
             # @file_to_validate is an array with the paths to the content_at and subtitle_tagging_export files
             outcome = subtitle_marks_spaced_correctly?(
               ::File.read(@file_to_validate)

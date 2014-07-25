@@ -9,7 +9,7 @@ class Repositext
         def run
           errors, warnings = [], []
 
-          catch (:abandon)  do
+          catch(:abandon) do
             content_at_filename, subtitle_marker_csv_filename = @file_to_validate
 
             outcome = subtitle_mark_counts_match?(

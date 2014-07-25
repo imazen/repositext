@@ -8,7 +8,7 @@ class Repositext
         def run
           errors, warnings = [], []
 
-          catch (:abandon)  do
+          catch(:abandon) do
             # @file_to_validate is an array with the paths to the content_at and
             # subtitle/subtitle_tagging_import files
             content_at_filename, subtitle_import_filename = @file_to_validate

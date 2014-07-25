@@ -10,7 +10,7 @@ class Repositext
           document_to_validate = ::File.binread(@file_to_validate)
           errors, warnings = [], []
 
-          catch (:abandon)  do
+          catch(:abandon) do
             outcome = valid_idml_round_trip?(document_to_validate)
             if outcome.fail?
               errors += outcome.errors
