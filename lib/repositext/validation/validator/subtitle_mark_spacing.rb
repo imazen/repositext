@@ -28,42 +28,42 @@ class Repositext
           log_and_report_validation_step(errors, warnings)
         end
 
-      end
+      private
 
-    private
+        # Checks that subtitle marks in content_at are spaced correctly
+        # @param[String] content_at
+        # @return[Outcome]
+        def subtitle_marks_spaced_correctly?(content_at)
+          content_with_subtitle_marks_only = extract_body_text_with_subtitle_marks(content_at)
+          if !content_with_subtitle_marks_only.index('@')
+            # document doesn't contain subtitle marks, skip it
+            return Outcome.new(true, nil)
+          end
 
-      # Checks that subtitle marks in content_at are spaced correctly
-      # @param[String] content_at
-      # @return[Outcome]
-      def subtitle_marks_spaced_correctly?(content_at)
-        content_with_subtitle_marks_only = extract_body_text_with_subtitle_marks(content_at)
-        if !content_with_subtitle_marks_only.index('@')
-          # document doesn't contain subtitle marks, skip it
-          return Outcome.new(true, nil)
+          captions = content_with_subtitle_marks_only.split('@')
+          too_long_captions = captions.find_all { |caption|
+            caption.strip.length > 120
+          }
+          if too_long_captions.empty?
+            Outcome.new(true, nil)
+          else
+            Outcome.new(
+              false, nil, [],
+              [
+                Reportable.error(
+                  [@file_to_validate], # content_at file
+                  [
+                    'The following captions are too long:',
+                    too_long_captions.map { |e|
+                      "#{ e.length } chars: #{ e.inspect }"
+                    }.join("\n")
+                  ]
+                )
+              ]
+            )
+          end
         end
 
-        captions = content_with_subtitle_marks_only.split('@')
-        too_long_captions = captions.find_all { |caption|
-          caption.strip.length > 120
-        }
-        if too_long_captions.empty?
-          Outcome.new(true, nil)
-        else
-          Outcome.new(
-            false, nil, [],
-            [
-              Reportable.error(
-                [@file_to_validate], # content_at file
-                [
-                  'The following captions are too long:',
-                  too_long_captions.map { |e|
-                    "#{ e.length } chars: #{ e.inspect }"
-                  }.join("\n")
-                ]
-              )
-            ]
-          )
-        end
       end
     end
   end

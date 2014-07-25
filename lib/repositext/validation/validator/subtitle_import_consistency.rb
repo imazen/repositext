@@ -27,51 +27,50 @@ class Repositext
           log_and_report_validation_step(errors, warnings)
         end
 
-      end
+      private
 
-    private
-
-      # Checks if content_at and subtitle/subtitle_tagging_import text contents match.
-      # Removes subtitle_marks and gap_marks before comparison because those
-      # are expected to change.
-      # @param[String] content_at
-      # @param[String] subtitle_import
-      # @return[Outcome]
-      def contents_match?(content_at, subtitle_import)
-        # We re-export content_at to subtitle/subtitle_tagging and compare the result
-        # with subtitle_import
-        # Since the kramdown parser is specified as module in Rtfile,
-        # I can't use the standard kramdown API:
-        # `doc = Kramdown::Document.new(contents, :input => 'kramdown_repositext')`
-        # We have to patch a base Kramdown::Document with the root to be able
-        # to convert it.
-        root, warnings = @options['kramdown_parser_class'].parse(content_at)
-        doc = Kramdown::Document.new('')
-        doc.root = root
-        tmp_subtitle_export = doc.send(@options['subtitle_converter_method_name'])
-        diffs = Repositext::Utils::StringComparer.compare(
-          subtitle_import.gsub(/[%@]/, ''),
-          tmp_subtitle_export.gsub(/[%@]/, '')
-        )
-
-        if diffs.empty?
-          Outcome.new(true, nil)
-        else
-          Outcome.new(
-            false, nil, [],
-            [
-              Reportable.error(
-                [@file_to_validate.last], # subtitle/subtitle_tagging_import file
-                [
-                  'Text mismatch between subtitle/subtitle_tagging_import and content_at:',
-                  diffs.inspect
-                ]
-              )
-            ]
+        # Checks if content_at and subtitle/subtitle_tagging_import text contents match.
+        # Removes subtitle_marks and gap_marks before comparison because those
+        # are expected to change.
+        # @param[String] content_at
+        # @param[String] subtitle_import
+        # @return[Outcome]
+        def contents_match?(content_at, subtitle_import)
+          # We re-export content_at to subtitle/subtitle_tagging and compare the result
+          # with subtitle_import
+          # Since the kramdown parser is specified as module in Rtfile,
+          # I can't use the standard kramdown API:
+          # `doc = Kramdown::Document.new(contents, :input => 'kramdown_repositext')`
+          # We have to patch a base Kramdown::Document with the root to be able
+          # to convert it.
+          root, warnings = @options['kramdown_parser_class'].parse(content_at)
+          doc = Kramdown::Document.new('')
+          doc.root = root
+          tmp_subtitle_export = doc.send(@options['subtitle_converter_method_name'])
+          diffs = Repositext::Utils::StringComparer.compare(
+            subtitle_import.gsub(/[%@]/, ''),
+            tmp_subtitle_export.gsub(/[%@]/, '')
           )
-        end
-      end
 
+          if false # diffs.empty?
+            Outcome.new(true, nil)
+          else
+            Outcome.new(
+              false, nil, [],
+              [
+                Reportable.error(
+                  [@file_to_validate.last], # subtitle/subtitle_tagging_import file
+                  [
+                    'Text mismatch between subtitle/subtitle_tagging_import and content_at:',
+                    diffs.inspect
+                  ]
+                )
+              ]
+            )
+          end
+        end
+
+      end
     end
   end
 end
