@@ -495,7 +495,8 @@ class Repositext
           f.write "Words with Apostrophe in Content\n"
           f.write '-' * 40
           f.write output_lines.join("\n")
-          f.write "\nCommand to generate this file: `repositext report words_with_apostrophe`"
+          f.write "\n"
+          f.write "Command to generate this file: `repositext report words_with_apostrophe`\n"
         }
       end
 

@@ -68,10 +68,10 @@ module Kramdown
         json_state = JSON::State.new(array_nl: "\n") # to format json output
         {
           'folio.at' => kramdown_string,
-          'folio.data.json' => @data_output.to_json(json_state),
-          'folio.deleted_text.json' => @deleted_text_output.to_json(json_state),
-          'folio.notes.json' => @notes_output.to_json(json_state),
-          'folio.warnings.json' => @warnings_output.to_json(json_state),
+          'folio.data.json' => @data_output.to_json(json_state) + "\n",
+          'folio.deleted_text.json' => @deleted_text_output.to_json(json_state) + "\n",
+          'folio.notes.json' => @notes_output.to_json(json_state) + "\n",
+          'folio.warnings.json' => @warnings_output.to_json(json_state) + "\n",
         }
       end
 

@@ -69,7 +69,7 @@ module Kramdown
         r.gsub!(/(?<=\n\[\|\# )([^\n]*)/, '\1|]') # close wrap title in brackets and pipes
         r.gsub!(/ ? ?/, '') # remove beginning and ending eagles
         r.strip!
-        r << "\n\n" # add two newlines to end of file to comply with repositext file conventions
+        r << "\n" # add single newline to end of file to comply with repositext file conventions
         r
       end
 

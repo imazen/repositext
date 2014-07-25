@@ -26,7 +26,6 @@ class Repositext
         end
       end
 
-
       # When merging AT imported from Folio XML with AT imported from IDML,
       # the :record_marks sometimes end up in the middle of a paragraph.
       # This happens when Folio and IDML have textual differences.
@@ -108,6 +107,43 @@ class Repositext
         ) do |contents, filename|
           outcome = Repositext::Fix::NormalizeSubtitleMarkBeforeGapMarkPositions.fix(contents, filename)
           [outcome]
+        end
+      end
+
+      # Normalizes all text files to a single newline
+      def fix_normalize_trailing_newlines(options)
+        which_files = :all # :content_at_only or :all
+        case which_files
+        when :content_at_only
+          base_dirs = %w[content_dir]
+          file_type = 'at_files'
+        when :all
+          base_dirs = %w[
+            compare_dir
+            content_dir
+            folio_import_dir
+            idml_import_dir
+            plain_kramdown_export_dir
+            reports_dir
+            subtitle_export_dir
+            subtitle_import_dir
+            subtitle_tagging_export_dir
+            subtitle_tagging_import_dir
+          ]
+          file_type = 'repositext_files'
+        else
+          raise "Invalid which_files: #{ which_files.inspect }"
+        end
+        base_dirs.each do |base_dir_name|
+          input_file_spec = "#{ base_dir_name }/#{ file_type }"
+          Repositext::Cli::Utils.change_files_in_place(
+            config.compute_glob_pattern(input_file_spec),
+            /.\z/i,
+            "Normalizing trailing newlines in #{ base_dir_name }/#{ file_type }",
+            options
+          ) do |contents, filename|
+            [Outcome.new(true, { contents: contents.gsub(/(?<!\n)\n*\z/, "\n") }, [])]
+          end
         end
       end
 
