@@ -63,7 +63,8 @@ module Kramdown
           @body = latex_body
           @meta_info = include_meta_info ? compute_meta_info(@git_repo, @latest_commit) : ''
           @title = document_title
-          @truncated_title = compute_truncated_title(document_title)
+          @truncated_title_header = compute_truncated_title(document_title, 70, 3)
+          @truncated_title_footer = compute_truncated_title(document_title, 45, 3)
           @scale_factor = size_scale_factor
           @date_code = @options[:source_filename].split('/')
                                                  .last
@@ -100,9 +101,10 @@ module Kramdown
         # Returns a version of title that is guaranteed to be no longer than
         # max_len
         # @param[String] title the title without any latex commands
-        # @param[Integer, optional] max_len
-        def compute_truncated_title(title, max_len=45)
-          t = title.truncate_in_the_middle(max_len)
+        # @param[Integer] max_len maximum length of returned string
+        # @param[Integer] min_length_of_last_word minimum length of last word in returned string
+        def compute_truncated_title(title, max_len, min_length_of_last_word)
+          t = title.truncate(max_len, separator: /(?<=[[:alpha:]]{#{min_length_of_last_word}})\s/)
           t = ::Kramdown::Converter::LatexRepositext.emulate_small_caps(t)
           t
         end
