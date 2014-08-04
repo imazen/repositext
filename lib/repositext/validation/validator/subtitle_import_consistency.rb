@@ -54,7 +54,7 @@ class Repositext
             tmp_subtitle_export.gsub(/[%@]/, '')
           )
 
-          if false # diffs.empty?
+          if diffs.empty?
             Outcome.new(true, nil)
           else
             # We want to terminate an import if the text is not consistent.
