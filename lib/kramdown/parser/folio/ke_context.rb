@@ -61,7 +61,30 @@ class Kramdown::Parser::Folio::KeContext
     get('text_container_stack', xn).last
   end
 
+  def inspect
+    @cx.keys.inject({}) { |m,k|
+      m[k] = case k
+      when "text_container_stack"
+        @cx[k].inspect
+      when "distinct_p_referenceline_contents"
+        "#{ (@cx[k] || []).size } items"
+      when "p"
+        @cx[k].element_summary
+      when "record_id"
+        @cx[k].inspect
+      when "record_mark"
+        @cx[k].element_summary
+      when "root"
+        @cx[k].element_summary
+      when "tape_id"
+        @cx[k].inspect
+      when "year_id"
+        @cx[k].inspect
+      else
+        raise "handle this: #{ k.inspect }"
       end
+      m
+    }.inspect
   end
 
   # Records distinct contents and adds a warning if they are inconsistent with
