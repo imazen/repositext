@@ -74,7 +74,7 @@ class Repositext
             # )
             raise TextMismatchError.new(
               [
-                "\n\nText mismatch between subtitle/subtitle_tagging_import and content_at.",
+                "\n\nText mismatch between subtitle/subtitle_tagging_import and content_at in #{ @file_to_validate.last }.",
                 "Cannot proceed with import. Please resolve text differences first:",
                 diffs.inspect
               ].join("\n")
