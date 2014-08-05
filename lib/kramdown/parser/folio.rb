@@ -190,7 +190,12 @@ module Kramdown
         end
       end
 
-      # Modifies kramdown_tree in place
+      # Modifies kramdown_tree in place.
+      # NOTE: this method has potential for optimization. We blindly run
+      # recursively_merge_adjacent_elements in a number of places. This is only
+      # necessary if the previous methods actually modified the tree.
+      # I'm thinking only if nodes were removed, however that needs to be
+      # confirmed.
       # @param[Kramdown::Element] kramdown_tree the root of the tree
       def post_process_kramdown_tree!(kramdown_tree)
         # override this to post process elements in the kramdown tree
@@ -212,6 +217,9 @@ module Kramdown
         # other processing.
         recursively_merge_adjacent_elements!(kramdown_tree)
         recursively_clean_up_tree!(kramdown_tree)
+        # merge again since we may have new identical siblings after cleaning up the tree
+        # e.g. an italic span with whitespace only between two text nodes was removed.
+        recursively_merge_adjacent_elements!(kramdown_tree)
       end
 
       # ***********************************************
