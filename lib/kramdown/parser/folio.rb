@@ -87,7 +87,7 @@ module Kramdown
         @warnings_output = []
         # Parse
         @ke_context = Folio::KeContext.new(
-          { :root => Kramdown::ElementRt.new(:root, nil, nil, :encoding => 'UTF-8') },
+          { 'root' => Kramdown::ElementRt.new(:root, nil, nil, :encoding => 'UTF-8') },
           self
         )
         @xml_document = Nokogiri::XML(@folio_xml) # Can't do { |config| config.noblanks }, it breaks parsing

@@ -3,7 +3,7 @@ class Kramdown::Parser::Folio::KeContext
 
   # Initializes new kramdown::element processing context
   # @param[Hash] attrs
-  #     * :root: the root kramdown element, required
+  #     * 'root': the root kramdown element, required
   # @param[Kramdown::Parser::Folio] folio_parser instance of folio parser so that
   #     we can trigger warnings
   def initialize(attrs, folio_parser)
@@ -22,8 +22,6 @@ class Kramdown::Parser::Folio::KeContext
       'record_id' => nil,
       # The current record_mark
       'record_mark' => nil,
-      # The kramdown root element
-      'root' => Kramdown::ElementRt.new(:root, nil, nil, :encoding => 'UTF-8'),
       # The current tape_id
       'tape_id' => nil,
       # The current year_id (vgr)
