@@ -49,7 +49,9 @@ class Repositext
           root, warnings = @options['kramdown_parser_class'].parse(content_at)
           doc = Kramdown::Document.new('')
           doc.root = root
-          tmp_subtitle_export = doc.send(@options['subtitle_converter_method_name'])
+          # Important: We need to always compare with subtitle_export, never
+          # subtitle_tagging_export since we strip subtitle marks there.
+          tmp_subtitle_export = doc.send(@options['subtitle_export_converter_method_name'])
           diffs = Repositext::Utils::StringComparer.compare(
             subtitle_import, #.gsub(/[%@]/, ''),
             tmp_subtitle_export #.gsub(/[%@]/, '')

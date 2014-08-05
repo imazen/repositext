@@ -102,6 +102,7 @@ class Repositext
         )
         validation_options = {
           'subtitle_converter_method_name' => config.kramdown_converter_method(:to_subtitle),
+          'subtitle_export_converter_method_name' => config.kramdown_converter_method(:to_subtitle),
           'subtitle_export_extension' => 'txt',
           'kramdown_parser_class' => config.kramdown_parser(:kramdown),
           'kramdown_validation_parser_class' => config.kramdown_parser(:kramdown_validation),
@@ -133,6 +134,7 @@ class Repositext
         )
         validation_options = {
           'subtitle_converter_method_name' => config.kramdown_converter_method(:to_subtitle_tagging),
+          'subtitle_export_converter_method_name' => config.kramdown_converter_method(:to_subtitle),
           'subtitle_export_extension' => 'rt.txt',
           'kramdown_parser_class' => config.kramdown_parser(:kramdown),
           'kramdown_validation_parser_class' => config.kramdown_parser(:kramdown_validation),
