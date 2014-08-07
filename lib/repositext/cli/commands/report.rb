@@ -306,6 +306,57 @@ class Repositext
         }
       end
 
+      # Generate summary of paragraphs with class `q` where the contained span
+      # is not aligned with the para. In other words: question paras that contain
+      # text outside of the span.
+      def report_misaligned_question_paragraphs(options)
+        input_file_spec = options['input'] || 'content_dir/at_files'
+        file_count = 0
+        misaligned_paras = []
+        Repositext::Cli::Utils.read_files(
+          config.compute_glob_pattern(input_file_spec),
+          /\.at\z/i,
+          nil,
+          "Reading content AT files",
+          options
+        ) do |contents, filename|
+          # parse AT, find all paras with q, analyze inner
+          # Since the kramdown parser is specified as module in Rtfile,
+          # I can't use the standard kramdown API:
+          # `doc = Kramdown::Document.new(contents, :input => 'kramdown_repositext')`
+          # We have to patch a base Kramdown::Document with the root to be able
+          # to convert it.
+          root, warnings = config.kramdown_parser(:kramdown).parse(contents)
+          doc = Kramdown::Document.new('')
+          doc.root = root
+          misaligned_paras += doc.to_report_misaligned_question_paragraphs.map { |mp|
+            mp[:location] = filename
+            mp
+          }
+          file_count += 1
+        end
+        misaligned_paras.each do |mp|
+          $stderr.puts " - #{ mp }"
+        end
+        report_file_path = File.join(config.base_dir('reports_dir'), 'misaligned_question_paragraphs.txt')
+        File.open(report_file_path, 'w') { |f|
+          f.write "Misaligned question paragraphs\n"
+          f.write "\n"
+          misaligned_paras.each do |mp|
+            f.write '-' * 40
+            f.write "\n"
+            f.write mp[:location]
+            f.write "\n"
+            f.write mp[:source]
+          end
+          f.write "\n"
+          f.write '-' * 40
+          f.write "\n"
+          f.write "Found #{ misaligned_paras.length } paragraphs in #{ file_count } files at #{ Time.now.to_s }.\n\n"
+          f.write "Command to generate this file: `repositext report misaligned_question_paragraphs`\n"
+        }
+      end
+
       # Generates a report that counts all paragraph class combinations it encounters.
       def report_paragraph_classes_inventory(options)
         input_file_spec = options['input'] || 'content_dir/at_files'
