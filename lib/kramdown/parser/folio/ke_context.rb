@@ -121,6 +121,15 @@ class Kramdown::Parser::Folio::KeContext
     @cx['distinct_p_referenceline_contents'][sanitized_content] += 1
   end
 
+  # Replaces current text container with new_text_container
+  # @param[Kramdown::ElementRt] new_text_container_ke
+  # @return[Kramdown::ElementRt] the previous text container
+  def replace_current_text_container_with(new_text_container_ke)
+    prev_text_container = @cx['text_container_stack'].pop
+    @cx['text_container_stack'].push(new_text_container_ke)
+    prev_text_container
+  end
+
   # Set a ke_context attribute
   # @param[String] attr_name
   # @param[Object] attr_value
