@@ -48,12 +48,12 @@ class Repositext
         else
           Outcome.new(
             false, nil, [],
-            [
+            diffs.map { |diff|
               Reportable.error(
                 [@file_to_validate],
-                [diffs.join("\n")]
+                ['Roundtrip comparison results in different elements', diff]
               )
-            ]
+            }
           )
         end
       end
