@@ -196,16 +196,23 @@ class Repositext
         def validate_character_inventory(source, errors, warnings)
           # Detect invalid characters
           str_sc = Kramdown::Utils::StringScanner.new(source)
+          soft_hyphen_context_window = 10 # how much context to show around soft hyphens
           while !str_sc.eos? do
             if (match = str_sc.scan_until(
               Regexp.union(self.class.invalid_character_detectors)
             ))
+              context = if "\u00AD" == match[-1]
+                # Print context around soft hyphens, replace soft with hard hyphen
+                " inside '#{ match[-soft_hyphen_context_window..-2] }-#{ str_sc.rest[0..soft_hyphen_context_window] }'"
+              else
+                ''
+              end
               errors << Reportable.error(
                 [
                   @file_to_validate,
                   sprintf("line %5s", str_sc.current_line_number)
                 ],
-                ['Invalid character', sprintf('U+%04X', match[-1].codepoints.first)]
+                ['Invalid character', sprintf('U+%04X', match[-1].codepoints.first) + context]
               )
             else
               break
