@@ -42,8 +42,12 @@ module Kramdown
           :text == fc.type
         )
           fc.value.gsub!(/\A[ \t\n]+/, '')
-          # remove :text el if it is now empty
-          ke.children.delete_at(0)  if '' == fc.value
+          if '' == fc.value
+            # remove :text el if it is now empty
+            ke.children.delete_at(0)
+            # process ke again since there may be new leading whitespace
+            sanitize_whitespace_during_import!(ke)
+          end
         end
         # remove trailing whitespace
         if(
@@ -51,8 +55,12 @@ module Kramdown
           :text == lc.type
         )
           lc.value.gsub!(/[ \t\n]+\z/, '')
-          # remove :text el if it is now empty
-          ke.children.delete_at(-1)  if '' == lc.value
+          if '' == lc.value
+            # remove :text el if it is now empty
+            ke.children.delete_at(-1)
+            # process ke again since there may be new trailing whitespace
+            sanitize_whitespace_during_import!(ke)
+          end
         end
       end
     end

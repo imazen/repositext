@@ -7,11 +7,12 @@ describe ::Kramdown::ImportWhitespaceSanitizer do
 
     p1 = Kramdown::ElementRt.new(:p, nil, 'id' => 'p1')
     text1 = Kramdown::ElementRt.new(:text, "text1")
-    text_lt1 = Kramdown::ElementRt.new(:text, "\ttext_lt1", 'id' => 'text_lt1')
-    text_ls1 = Kramdown::ElementRt.new(:text, " text_ls1", 'id' => 'text_ls1')
-    text_to1 = Kramdown::ElementRt.new(:text, "\t", 'id' => 'text_to1')
-    text_ts1 = Kramdown::ElementRt.new(:text, "text_ts1 ", 'id' => 'text_ts1')
-    text_wr1 = Kramdown::ElementRt.new(:text, "text_wr1 \t\t   after", 'id' => 'text_wr1')
+    text_lt1 = Kramdown::ElementRt.new(:text, "\ttext_lt1", 'id' => 'text_lt1') # leading tab
+    text_ls1 = Kramdown::ElementRt.new(:text, " text_ls1", 'id' => 'text_ls1') # leading space
+    text_so1 = Kramdown::ElementRt.new(:text, " ", 'id' => 'text_so1') # space only
+    text_to1 = Kramdown::ElementRt.new(:text, "\t", 'id' => 'text_to1') # tab only
+    text_ts1 = Kramdown::ElementRt.new(:text, "text_ts1 ", 'id' => 'text_ts1') # trailing space
+    text_wr1 = Kramdown::ElementRt.new(:text, "text_wr1 \t\t   after", 'id' => 'text_wr1') # with runs of whitespace
     [
       [
         "replaces an internal tab with a space",
@@ -98,6 +99,56 @@ describe ::Kramdown::ImportWhitespaceSanitizer do
         ),
         %( - :p - {"id"=>"p1"}
              - :text - {"id"=>"text_wr1"} - "text_wr1 after"
+          )
+      ],
+      [
+        "removes leading whitespace in text node after space only text node first child",
+        construct_kramdown_rt_tree(
+          [p1, [
+            text_so1,
+            text_ls1,
+          ]]
+        ),
+        %( - :p - {"id"=>"p1"}
+             - :text - {"id"=>"text_ls1"} - "text_ls1"
+          )
+      ],
+      [
+        "removes trailing whitespace in text node before space only text node last child",
+        construct_kramdown_rt_tree(
+          [p1, [
+            text_ts1,
+            text_so1,
+          ]]
+        ),
+        %( - :p - {"id"=>"p1"}
+             - :text - {"id"=>"text_ts1"} - "text_ts1"
+          )
+      ],
+      [
+        "removes multiple space only first children",
+        construct_kramdown_rt_tree(
+          [p1, [
+            text_ts1,
+            text_ts1,
+            text1,
+          ]]
+        ),
+        %( - :p - {"id"=>"p1"}
+             - :text - {"id"=>"text1"} - "text1"
+          )
+      ],
+      [
+        "removes multiple space only last children",
+        construct_kramdown_rt_tree(
+          [p1, [
+            text1,
+            text_ts1,
+            text_ts1,
+          ]]
+        ),
+        %( - :p - {"id"=>"p1"}
+             - :text - {"id"=>"text1"} - "text1"
           )
       ],
     ].each do |desc, kt, xpect|
