@@ -217,6 +217,8 @@ module Kramdown
         # other processing.
         recursively_merge_adjacent_elements!(kramdown_tree)
         recursively_clean_up_tree!(kramdown_tree)
+        # Run this again since we may have new locations with leading or trailing whitespace
+        recursively_sanitize_whitespace_during_import!(kramdown_tree)
         # merge again since we may have new identical siblings after cleaning up the tree
         # e.g. an italic span with whitespace only between two text nodes was removed.
         recursively_merge_adjacent_elements!(kramdown_tree)
