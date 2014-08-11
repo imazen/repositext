@@ -543,7 +543,7 @@ class Repositext
         output_lines.each { |e| $stderr.puts e }
         report_file_path = File.join(config.base_dir('reports_dir'), 'words_with_apostrophe.txt')
         File.open(report_file_path, 'w') { |f|
-          f.write "Words with Apostrophe in Content\n"
+          f.write "Words with Apostrophe in Folio import\n"
           f.write '-' * 40
           f.write output_lines.join("\n")
           f.write "\n"
@@ -571,7 +571,7 @@ class Repositext
           config.compute_glob_pattern(input_file_spec),
           /\.at\Z/i,
           nil,
-          "Reading folio at files",
+          "Reading content AT files",
           options
         ) do |contents, filename|
           # iterate over all straight quotes
