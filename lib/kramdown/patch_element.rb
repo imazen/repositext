@@ -150,7 +150,9 @@ module Kramdown
     # Removes class from self
     # @param[String] a_class
     def remove_class(a_class)
-      self.attr['class'].gsub!(/\s*#{ a_class.strip }\s*/, '')
+      self.attr['class'] = attr['class'].split(' ')
+                                        .map { |e| e.gsub(/\A#{ a_class.strip }\z/, '') }
+                                        .join(' ')
     end
 
   end

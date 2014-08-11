@@ -104,6 +104,11 @@ describe Kramdown::Element do
       e.remove_class(' class2 ')
       e.has_class?('class2').must_equal false
     end
+    it "doesn't remove partial class names" do
+      e = Kramdown::Element.new(:text, nil, 'class' => 'normal_pn')
+      e.remove_class('normal')
+      e.has_class?('normal_pn').must_equal true
+    end
   end
 
 end
