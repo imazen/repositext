@@ -20,7 +20,16 @@ module Kramdown
         case
         when :header == el.type
           # put opening part of header wrapper. Post processing will close it
-          @output << "\n[|# "
+          case el.options[:level]
+          when 1
+            # render as H1
+            @output << "\n[|# "
+          when 3
+            # render as H3
+            @output << "\n\n[|### "
+          else
+            raise "Unhandled header type: #{ el.inspect }"
+          end
         when :p == el.type
           if %w[id_title1 id_title2 id_paragraph].any? { |e| el.has_class?(e) }
             # mark for deletion in post processing
@@ -64,10 +73,17 @@ module Kramdown
 
       def post_process_output(raw_output)
         r = raw_output.dup
-        r.gsub!(/\n\n<<delete this line>>[^\n]*/, '') # delete lines that are marked for deletion
-        r.gsub!(/<<replace space after with 4 spaces>>([^\s]*)\s*/, '\1    ') # replace space after paragraph number with 4 spaces
-        r.gsub!(/(?<=\n\[\|\# )([^\n]*)/, '\1|]') # close wrap title in brackets and pipes
-        r.gsub!(/ ? ?/, '') # remove beginning and ending eagles
+        # delete lines that are marked for deletion
+        r.gsub!(/\n\n<<delete this line>>[^\n]*/, '')
+        # replace space after paragraph number with 4 spaces
+        r.gsub!(/<<replace space after with 4 spaces>>([^\s]*)\s*/, '\1    ')
+        # close wrap title in brackets and pipes
+        r.gsub!(/(?<=\[\|#)([^\n]*)/, '\1|]')
+        # remove beginning and ending eagles
+        r.gsub!(/ ? ?/, '')
+        # move subtitle marks that are inside header wrappers to before the wrapper
+        r.gsub!(/(?<=\n)(\[\|[#]+\s+)(@)/, '\2\1')
+        # trim leading and trailing whitespace
         r.strip!
         r << "\n" # add single newline to end of file to comply with repositext file conventions
         r

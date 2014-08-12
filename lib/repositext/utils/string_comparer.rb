@@ -9,7 +9,6 @@ class Repositext
       # @return[Array] An array of diffs like so:
       # [[1, 'added', 'line 42', 'text_before text_after'], [-1, 'removed ', 'line 43', 'text_before removed text_after']]
       # All information is relative to string_1. 1 means a string was added, -1 it was deleted.
-      # All contextual information is based on string_1
       def self.compare(string_1, string_2)
         if string_1 == string_2
           return []
@@ -24,8 +23,12 @@ class Repositext
             excerpt_start = [(char_num - excerpt_window), 0].max
             excerpt_end = [(char_num + diff.last.length + excerpt_window), string_1.length].min
             excerpt = case diff.first
-            when -1, 1
+            when -1
+              # use string_1 as context for deletions
               string_1[excerpt_start..excerpt_end]
+            when 1
+              # use string_2 as context for additions
+              string_2[excerpt_start..excerpt_end]
             when 0
               nil
             else

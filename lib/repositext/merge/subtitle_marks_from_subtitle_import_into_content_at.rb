@@ -17,7 +17,6 @@ class Repositext
     protected
 
       # Undoes the modifications we make during subtitle import:
-      # * remove empty lines between paragraphs
       # * remove title escaping ([| ... |])
       # * reduce 4 spaces after para numbers to one
       # * replace eagles
@@ -26,10 +25,19 @@ class Repositext
       # @param[String] content_at the content AT document
       # @return[String] a subtitle import document that has all modifications undone
       def self.undo_subtitle_import_modifications(si, content_at)
-        # si.gsub!(/\[\|([^\|]+)\|\]/, '\1') # remove title escaping (has to come after removing empty lines)
+        new_si = si.dup
+        # Do some manual operations first
+        # remove title escaping ([| ... |])
+        new_si.gsub!(/\[\|([^\|]+)\|\]/, '\1')
+        # Reduce 4 spaces after para numbers to one
+        new_si.gsub!(/(\d+)    /, '\1 ')
+        # Move subtitle marks that are before headers to inside the header
+        # so that headers are recognized by kramdown ('#' at beginning of line)
+        new_si.gsub!(/(?<=\n)(@)([#]{1,6}\s+)/, '\2\1')
+        # Then let TextReplayer take care of the rest
         Suspension::TextReplayer.new(
           content_at,
-          si,
+          new_si,
           Suspension::REPOSITEXT_TOKENS
         ).replay
       end
@@ -52,7 +60,7 @@ class Repositext
           content_at,
           Suspension::REPOSITEXT_TOKENS.find_all { |e| :subtitle_mark == e.name }
         ).remove
-        # Add :subtitle_marks to text and all other tokens.
+        # Add :subtitle_marks to (text and all other tokens).
         at_with_merged_tokens = Suspension::TokenReplacer.new(
           subtitle_import_with_subtitle_marks_only,
           content_at_without_subtitle_marks
