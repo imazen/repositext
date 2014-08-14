@@ -143,7 +143,7 @@ module Kramdown
           when 'Properties'
             # ignore
           else
-            raise InvalidElementException, "Found unexpected child element #{child.name} of ParagraphStyleRange on line #{ child.line }"
+            raise InvalidElementException, "Found unexpected child element '#{ child.name }' of ParagraphStyleRange on line #{ child.line }"
           end
         end
       end
@@ -324,7 +324,7 @@ module Kramdown
           else
             raise(
               InvalidElementException,
-              "Found unexpected child element #{ child.name } of CharacterStyleRange on line #{ child.line }"
+              "Found unexpected child element '#{ child.name }' of CharacterStyleRange on line #{ child.line }"
             )
           end
         end
