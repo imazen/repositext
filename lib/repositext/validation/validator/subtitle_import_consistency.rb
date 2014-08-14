@@ -49,7 +49,7 @@ class Repositext
           doc = Kramdown::Document.new('')
           doc.root = root
           tmp_subtitle_export = doc.send(@options['subtitle_converter_method_name'])
-          diffs = Repositext::Utils::StringComparer.compare(
+          diffs = Suspension::StringComparer.compare(
             subtitle_import.gsub(/[%@]/, ''),
             tmp_subtitle_export.gsub(/[%@]/, '')
           )

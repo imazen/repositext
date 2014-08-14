@@ -52,7 +52,7 @@ class Repositext
           # Important: We need to always compare with subtitle_export, never
           # subtitle_tagging_export since we strip subtitle marks there.
           tmp_subtitle_export = doc.send(@options['subtitle_export_converter_method_name'])
-          diffs = Repositext::Utils::StringComparer.compare(
+          diffs = Suspension::StringComparer.compare(
             subtitle_import, #.gsub(/[%@]/, ''),
             tmp_subtitle_export #.gsub(/[%@]/, '')
           )
