@@ -9,6 +9,12 @@ class Repositext
         options['report_file'] ||= config.compute_glob_pattern(
           'content_dir/validation_report_file'
         )
+        # NOTE: until we have a process in place to merge record_ids from english
+        # into foreign languages, we perform the validation that all elements
+        # are inside a :record_mark only if rtfile folio_import_strategy is to merge:
+        if :merge_record_ids_into_idml == config.setting(:folio_import_strategy)
+          options['run_options'] << 'kramdown_syntax_at-all_elements_are_inside_record_mark'
+        end
         reset_validation_report(options, 'validate_content')
         file_specs = config.compute_validation_file_specs(
           primary: 'content_dir/all_files', # for reporting only
