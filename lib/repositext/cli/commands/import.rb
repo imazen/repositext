@@ -115,7 +115,14 @@ class Repositext
 
       # Specifies all shared steps that need to run after each import
       def import_shared_steps(options)
-        merge_record_marks_from_folio_xml_at_into_idml_at(options)
+        case config.setting(:folio_import_strategy)
+        when :merge_record_ids_into_idml
+          merge_record_marks_from_folio_xml_at_into_idml_at(options)
+        when :only_use_if_idml_not_present
+          merge_use_idml_or_folio(options)
+        else
+          raise "Invalid folio_import_strategy: #{ config.setting(:folio_import_strategy).inspect }"
+        end
         fix_adjust_merged_record_mark_positions(options)
         fix_convert_abbreviations_to_lower_case(options) # run after merge_record_marks...
         fix_normalize_subtitle_mark_before_gap_mark_positions(

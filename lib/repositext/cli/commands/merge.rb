@@ -134,6 +134,76 @@ class Repositext
         )
       end
 
+      # Uses either idml_imported (preference) or folio_imported (fallback) at for content.
+      # NOTE: this duplicates a lot of code from merge_record_marks_from_folio_xml_at_into_idml_at
+      def merge_use_idml_or_folio(options)
+        input_folio_base_dir = config.base_dir(:folio_import_dir)
+        input_idml_base_dir = config.base_dir(:idml_import_dir)
+        input_file_pattern = config.file_pattern(:at_files)
+        output_base_dir = config.base_dir(:staging_dir)
+        $stderr.puts 'Using either idml_at or folio_at for content_at'
+        $stderr.puts '-' * 80
+        start_time = Time.now
+        total_count = 0
+        success_count = 0
+        errors_count = 0
+        idml_used_count = 0
+        folio_used_count = 0
+
+        # TODO: refactor this method to use Cli::Utils so that the changed-only flag works
+
+        # First get union of all Folio and Idml files
+        folio_files = Dir.glob(File.join(input_folio_base_dir, input_file_pattern))
+        idml_files = Dir.glob(File.join(input_idml_base_dir, input_file_pattern))
+        all_output_files = (folio_files + idml_files).map { |e|
+          # process folio files
+          e = e.gsub(input_folio_base_dir, output_base_dir)
+               .gsub(/\.folio\.at\z/, '.at')
+          # process idml files
+          e = e.gsub(input_idml_base_dir, output_base_dir)
+               .gsub(/\.idml\.at\z/, '.at')
+        }.uniq.sort
+        all_output_files.each do |output_file_name|
+          if output_file_name !~ /\.at\z/
+            $stderr.puts " - Skip #{ output_file_name }"
+            next
+          end
+
+          total_count += 1
+
+          # prepare paths
+          at_folio_file_name = output_file_name.gsub(output_base_dir, input_folio_base_dir).gsub(/\.at\z/, '.folio.at')
+          at_idml_file_name = output_file_name.gsub(output_base_dir, input_idml_base_dir).gsub(/\.at\z/, '.idml.at')
+
+          if File.exists?(at_idml_file_name)
+            # Idml is present, use it
+            FileUtils.mkdir_p(File.dirname(output_file_name))
+            idml_at = File.read(at_idml_file_name)
+            # write to file
+            File.write(output_file_name, idml_at)
+            success_count += 1
+            idml_used_count += 1
+            $stderr.puts "   Use #{ at_idml_file_name }"
+          elsif File.exists?(at_folio_file_name)
+            # IDML file is not present, bt folio is, use it
+            FileUtils.mkdir_p(File.dirname(output_file_name))
+            folio_at = File.read(at_folio_file_name)
+            # write to file
+            File.write(output_file_name, folio_at)
+            success_count += 1
+            folio_used_count += 1
+            $stderr.puts "   Use #{ at_folio_file_name }"
+          else
+            raise "Could find neither Folio nor IDML file! (#{ output_file_name })"
+          end
+        end
+
+        $stderr.puts '-' * 80
+        $stderr.puts "Finished merging #{ success_count } of #{ total_count } files in #{ Time.now - start_time } seconds."
+        $stderr.puts " - IDML files used: #{ idml_used_count }"
+        $stderr.puts " - Folio files used: #{ folio_used_count }"
+      end
+
       def merge_test(options)
         # dummy method for testing
         puts 'merge_test'

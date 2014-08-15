@@ -24,7 +24,14 @@ Examples:
 # via config.setting(:language_code_3_chars)
 
 setting :language_code_3_chars, 'eng'
+
+# See iso 639-1 for a list of all two character language codes
 setting :language_code_2_chars, 'en'
+
+# Options:
+# * :merge_record_ids_into_idml: imports all folio files and merges record ids where idml exists
+# * :only_use_if_idml_not_present: imports all folio files, only uses folio where idml does not exist
+setting :folio_import_strategy, :only_use_if_idml_not_present
 
 # Base directories
 # ----------------
