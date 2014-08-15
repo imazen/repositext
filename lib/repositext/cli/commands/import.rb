@@ -41,6 +41,7 @@ class Repositext
         fix_normalize_subtitle_mark_before_gap_mark_positions(
           options.merge({ 'input' => 'content_dir/at_files' })
         )
+        fix_normalize_trailing_newlines(options)
         copy_subtitle_marker_csv_files_to_content(options) # and rename them to our file naming convention
         options['append_to_validation_report'] = true
         validate_subtitle_import(options.merge('run_options' => %w[post_import]))
@@ -57,6 +58,7 @@ class Repositext
         fix_normalize_subtitle_mark_before_gap_mark_positions(
           options.merge({ 'input' => 'content_dir/at_files' })
         )
+        fix_normalize_trailing_newlines(options)
         copy_subtitle_marker_csv_files_to_content(options) # and rename them to our file naming convention
         options['append_to_validation_report'] = true
         validate_subtitle_tagging_import(options.merge('run_options' => %w[post_import]))
@@ -84,6 +86,7 @@ class Repositext
         reset_validation_report(options, 'import_folio_xml_specific_steps')
         validate_folio_xml_import(options.merge('run_options' => %w[pre_import]))
         convert_folio_xml_to_at(options)
+        fix_normalize_trailing_newlines(options)
         fix_remove_underscores_inside_folio_paragraph_numbers(options)
         fix_normalize_editors_notes(
           options.merge({ 'input' => 'folio_import_dir/at_files' })
@@ -101,6 +104,7 @@ class Repositext
         reset_validation_report(options, 'import_idml_specific_steps')
         validate_idml_import(options.merge('run_options' => %w[pre_import]))
         convert_idml_to_at(options)
+        fix_normalize_trailing_newlines(options)
         fix_adjust_gap_mark_positions(options)
         fix_normalize_editors_notes(
           options.merge({ 'input' => 'idml_import_dir/at_files' })
@@ -117,6 +121,7 @@ class Repositext
         fix_normalize_subtitle_mark_before_gap_mark_positions(
           options.merge({ 'input' => 'staging_dir/at_files' })
         )
+        fix_normalize_trailing_newlines(options)
         move_staging_to_content(options)
         options['report_file'] = config.compute_glob_pattern(
           'content_dir/validation_report_file'

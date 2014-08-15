@@ -112,12 +112,25 @@ class Repositext
 
       # Normalizes all text files to a single newline
       def fix_normalize_trailing_newlines(options)
+        # This would use the input option, however that may not work since
+        # we touch lots of directories as part of an import.
+        # input_file_spec = options['input'] || 'rtfile_dir/repositext_files'
+        # Repositext::Cli::Utils.change_files_in_place(
+        #   config.compute_glob_pattern(input_file_spec),
+        #   /.\z/i,
+        #   "Normalizing trailing newlines",
+        #   options
+        # ) do |contents, filename|
+        #   [Outcome.new(true, { contents: contents.gsub(/(?<!\n)\n*\z/, "\n") }, [])]
+        # end
+
         which_files = :all # :content_at_only or :all
         case which_files
         when :content_at_only
           base_dirs = %w[content_dir]
           file_type = 'at_files'
         when :all
+          # Process all subfolders of root. Don't touch files in root.
           base_dirs = %w[
             compare_dir
             content_dir
