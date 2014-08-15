@@ -31,10 +31,14 @@ class Kramdown::Parser::Folio::KeContext
   end
 
   # Adds the_text to current_text_container, creating a new text
-  # element if necessary
+  # element if necessary. Entity encodes allowed unicode characters.
   # @param[String] the_text
   # @param[Nokogiri::XML::Node] xn for warning location
   def add_text_to_current_text_container(the_text, xn)
+    # Entity encode any legitimate special characters.
+    the_text = the_text.gsub(/[\u00A0\u2011\u2028\u202F\uFEFF]/) { |match|
+      sprintf('&#x%04X;', match.codepoints.first)
+    }
     if(tce = get_current_text_container(xn))
       if tce.children.last && :text == tce.children.last.type
         tce.children.last.value << the_text
