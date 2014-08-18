@@ -132,7 +132,6 @@ class Repositext
         when :all
           # Process all subfolders of root. Don't touch files in root.
           base_dirs = %w[
-            compare_dir
             content_dir
             folio_import_dir
             idml_import_dir
