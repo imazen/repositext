@@ -134,6 +134,62 @@ class Repositext
         )
       end
 
+      # Merges titles from folio roundtrip compare txt files into content AT
+      # to get correct spelling.
+      def merge_titles_from_folio_roundtrip_compare_into_content_at(options)
+        base_dir_folio_roundtrip_compare = File.join(
+          config.base_dir(:compare_dir), 'folio_source/with_folio_import'
+        )
+        file_pattern_folio_roundtrip_compare = config.file_pattern(:txt_files)
+        base_dir_content = config.base_dir(:content_dir)
+
+        markers_file_regex = /(?<!markers)\.txt\z/
+
+        $stderr.puts 'Merging titles from folio roundtrip compare into content_at'
+        $stderr.puts '-' * 80
+        start_time = Time.now
+        total_count = 0
+        success_count = 0
+        errors_count = 0
+
+        Dir.glob(
+          File.join(base_dir_folio_roundtrip_compare, file_pattern_folio_roundtrip_compare)
+        ).each do |folio_roundtrip_compare_file_name|
+          total_count += 1
+          # prepare paths
+          content_at_file_name = folio_roundtrip_compare_file_name.gsub(
+            base_dir_folio_roundtrip_compare,
+            base_dir_content
+          )
+          output_file_name = content_at_file_name
+
+          begin
+            outcome = Repositext::Merge::TitlesFromFolioRoundtripCompareIntoContentAt.merge(
+              File.read(folio_roundtrip_compare_file_name),
+              File.read(content_at_file_name),
+            )
+
+            if outcome.success
+              # write to file
+              at_with_merged_title = outcome.result
+              FileUtils.mkdir_p(File.dirname(output_file_name))
+              File.write(output_file_name, at_with_merged_title)
+              success_count += 1
+              $stderr.puts " + Merge title from #{ folio_roundtrip_compare_file_name }"
+            else
+              errors_count += 1
+              $stderr.puts " x Error: #{ folio_roundtrip_compare_file_name }: #{ outcome.messages.join }"
+            end
+          rescue StandardError => e
+            errors_count += 1
+            $stderr.puts " x Error: #{ folio_roundtrip_compare_file_name }: #{ e.class.name } - #{ e.message } - #{ e.backtrace.join("\n") }"
+          end
+        end
+
+        $stderr.puts '-' * 80
+        $stderr.puts "Finished merging #{ success_count } of #{ total_count } files in #{ Time.now - start_time } seconds."
+      end
+
       # Uses either idml_imported (preference) or folio_imported (fallback) at for content.
       # NOTE: this duplicates a lot of code from merge_record_marks_from_folio_xml_at_into_idml_at
       def merge_use_idml_or_folio(options)

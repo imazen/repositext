@@ -134,6 +134,7 @@ class Repositext
         )
         fix_normalize_trailing_newlines(options)
         move_staging_to_content(options)
+        merge_titles_from_folio_roundtrip_compare_into_content_at(options) # run after files are moved to content
         options['report_file'] = config.compute_glob_pattern(
           'content_dir/validation_report_file'
         )
