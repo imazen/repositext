@@ -86,6 +86,7 @@ class Repositext
         reset_validation_report(options, 'import_folio_xml_specific_steps')
         validate_folio_xml_import(options.merge('run_options' => %w[pre_import]))
         convert_folio_xml_to_at(options)
+        merge_titles_from_folio_roundtrip_compare_into_folio_import(options)
         fix_normalize_trailing_newlines(options)
         fix_remove_underscores_inside_folio_paragraph_numbers(options)
         fix_normalize_editors_notes(
@@ -134,7 +135,6 @@ class Repositext
         )
         fix_normalize_trailing_newlines(options)
         move_staging_to_content(options)
-        merge_titles_from_folio_roundtrip_compare_into_content_at(options) # run after files are moved to content
         options['report_file'] = config.compute_glob_pattern(
           'content_dir/validation_report_file'
         )

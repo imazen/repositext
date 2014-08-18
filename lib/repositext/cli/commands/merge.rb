@@ -136,7 +136,7 @@ class Repositext
 
       # Merges titles from folio roundtrip compare txt files into content AT
       # to get correct spelling.
-      def merge_titles_from_folio_roundtrip_compare_into_content_at(options)
+      def merge_titles_from_folio_roundtrip_compare_into_folio_import(options)
         base_dir_folio_roundtrip_compare = File.join(
           config.base_dir(:compare_dir), 'folio_source/with_folio_import'
         )
