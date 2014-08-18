@@ -141,7 +141,7 @@ class Repositext
           config.base_dir(:compare_dir), 'folio_source/with_folio_import'
         )
         file_pattern_folio_roundtrip_compare = config.file_pattern(:txt_files)
-        base_dir_content = config.base_dir(:content_dir)
+        base_dir_folio_import = config.base_dir(:folio_import_dir)
 
         markers_file_regex = /(?<!markers)\.txt\z/
 
@@ -159,11 +159,11 @@ class Repositext
           # prepare paths
           content_at_file_name = folio_roundtrip_compare_file_name.gsub(
             base_dir_folio_roundtrip_compare, # update path
-            base_dir_content
+            base_dir_folio_import
           ).gsub(
             /\/+/, '/' # normalize runs of slashes resulting from different directory depths
           ).gsub(
-            /\.txt\z/, '.at' # replace file extension
+            /\.txt\z/, '.folio.at' # replace file extension
           )
 
 
