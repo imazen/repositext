@@ -158,9 +158,15 @@ class Repositext
           total_count += 1
           # prepare paths
           content_at_file_name = folio_roundtrip_compare_file_name.gsub(
-            base_dir_folio_roundtrip_compare,
+            base_dir_folio_roundtrip_compare, # update path
             base_dir_content
+          ).gsub(
+            /\/+/, '/' # normalize runs of slashes resulting from different directory depths
+          ).gsub(
+            /\.txt\z/, '.at' # replace file extension
           )
+
+
           output_file_name = content_at_file_name
 
           begin
