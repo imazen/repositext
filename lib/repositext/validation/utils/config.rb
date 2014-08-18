@@ -101,7 +101,7 @@ class Repositext
         0x202C, # pop directional formatting
         0x202D, # left-to-right override
         0x202E, # right-to-left override
-        0x202F, # narrow no-break space
+      # 0x202F, # narrow no-break space
         0x205F, # medium mathematical space
         0x2060, # word joiner
         0x2061, # function application
