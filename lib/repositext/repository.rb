@@ -34,6 +34,7 @@ class Repositext
       @repo.lookup(oid)
     rescue Rugged::InvalidError => e
       puts "Lookup of oid in remote didn't work. If this is a new repository, at least one commit needs to be at the remote."
+      raise
     end
 
     # We shell out to git log to get the latest commit's sha. This is orders of
