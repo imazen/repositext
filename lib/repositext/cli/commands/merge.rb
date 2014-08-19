@@ -138,7 +138,7 @@ class Repositext
       # to get correct spelling.
       def merge_titles_from_folio_roundtrip_compare_into_folio_import(options)
         base_dir_folio_roundtrip_compare = File.join(
-          config.base_dir(:compare_dir), 'folio_source/with_folio_import'
+          config.base_dir(:compare_dir), 'folio_source/raw_plaintext'
         )
         file_pattern_folio_roundtrip_compare = config.file_pattern(:txt_files)
         base_dir_folio_import = config.base_dir(:folio_import_dir)
@@ -165,7 +165,6 @@ class Repositext
           ).gsub(
             /\.txt\z/, '.folio.at' # replace file extension
           )
-
 
           output_file_name = content_at_file_name
 

@@ -6,6 +6,8 @@ describe Repositext::Merge::TitlesFromFolioRoundtripCompareIntoContentAt do
     [
       ['1 title', 'title'],
       ['1abc title word word', 'title word word'],
+      [' 1 title', 'title'],
+      [' 1abc title word word', 'title word word'],
     ].each do |test_string, xpect|
       it "handles #{ test_string.inspect }" do
         Repositext::Merge::TitlesFromFolioRoundtripCompareIntoContentAt.send(
