@@ -28,6 +28,7 @@ setting :language_code_3_chars, 'eng'
 # See iso 639-1 for a list of all two character language codes
 setting :language_code_2_chars, 'en'
 
+# Folio import strategy
 # Options:
 # * :merge_record_ids_into_idml: imports all folio files and merges record ids where idml exists
 # * :only_use_if_idml_not_present: imports all folio files, only uses folio where idml does not exist
@@ -47,6 +48,8 @@ setting :folio_import_strategy, :only_use_if_idml_not_present
 base_dir :compare_dir, File.expand_path("compare/", File.dirname(__FILE__))
 base_dir :content_dir, File.expand_path("content/", File.dirname(__FILE__))
 base_dir :folio_import_dir, File.expand_path("initial_folio_import/folio/", File.dirname(__FILE__))
+base_dir :gap_mark_tagging_export_dir, File.expand_path("gap_mark_tagging_export/", File.dirname(__FILE__))
+base_dir :gap_mark_tagging_import_dir, File.expand_path("gap_mark_tagging_import/", File.dirname(__FILE__))
 base_dir :icml_export_dir, File.expand_path("export_icml/", File.dirname(__FILE__))
 base_dir :idml_import_dir, File.expand_path("initial_idml_import/idml/", File.dirname(__FILE__))
 base_dir :pdf_export_dir, File.expand_path("pdf_export/", File.dirname(__FILE__))
@@ -100,6 +103,7 @@ kramdown_parser :kramdown_validation, 'Kramdown::Parser::KramdownValidation'
 # Provide a name and a method name to be used for conversion.
 
 kramdown_converter_method :to_at, :to_kramdown
+kramdown_converter_method :to_gap_mark_tagging, :to_gap_mark_tagging
 kramdown_converter_method :to_icml, :to_icml
 kramdown_converter_method :to_idml_story, :to_idml_story
 kramdown_converter_method :to_plain_text, :to_plain_text

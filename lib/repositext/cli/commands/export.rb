@@ -4,6 +4,39 @@ class Repositext
 
     private
 
+      # Export Gap mark Tagging files
+      def export_gap_mark_tagging(options)
+        input_file_spec = options['input'] || 'content_dir/at_files'
+        input_base_dir_name, input_file_pattern_name = input_file_spec.split(
+          Repositext::Cli::FILE_SPEC_DELIMITER
+        )
+        output_base_dir = options['output'] || config.base_dir('gap_mark_tagging_export_dir')
+        Repositext::Cli::Utils.export_files(
+          config.base_dir(input_base_dir_name),
+          config.file_pattern(input_file_pattern_name),
+          output_base_dir,
+          /\.at\Z/i,
+          "Exporting AT files to gap_mark tagging",
+          options.merge(
+            :output_path_lambda => lambda { |input_filename, output_file_attrs|
+              input_filename.gsub(config.base_dir(input_base_dir_name), output_base_dir)
+                            .gsub(/_\d+\.at\z/, '.gap_mark_tagging.txt')
+            }
+          )
+        ) do |contents, filename|
+          # Since the kramdown parser is specified as module in Rtfile,
+          # I can't use the standard kramdown API:
+          # `doc = Kramdown::Document.new(contents, :input => 'kramdown_repositext')`
+          # We have to patch a base Kramdown::Document with the root to be able
+          # to convert it.
+          root, warnings = config.kramdown_parser(:kramdown).parse(contents)
+          doc = Kramdown::Document.new('')
+          doc.root = root
+          gap_mark_tagging = doc.send(config.kramdown_converter_method(:to_gap_mark_tagging))
+          [Outcome.new(true, { contents: gap_mark_tagging, extension: 'gap_mark_tagging.txt' })]
+        end
+      end
+
       # Export AT files in /content to ICML
       def export_icml(options)
         input_file_spec = options['input'] || 'content_dir/at_files'

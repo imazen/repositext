@@ -33,6 +33,7 @@ require 'repositext/constants'
 
 # Dependency boundary
 
+require 'kramdown/converter/gap_mark_tagging'
 require 'kramdown/converter/graphviz'
 require 'kramdown/converter/html_doc'
 require 'kramdown/converter/icml'
