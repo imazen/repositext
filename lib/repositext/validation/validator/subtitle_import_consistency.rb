@@ -2,14 +2,14 @@ class Repositext
   class Validation
     class Validator
       # Depending on @options[:subtitle_import_consistency_compare_mode], validates:
-      # * 'text_contents_only':
+      # * 'pre_import':
       #   that the text contents in subtitle/subtitle_tagging import still match those of content_at
-      #   Purpose: To make sure that import is based on current content_at. Run pre-import
-      # * 'roundtrip':
+      #   Purpose: To make sure that import is based on current content_at.
+      # * 'post_import':
       #   that the subtitle/subtitle_tagging import file is identical to a
       #   subtitle export generated from the new content AT (with updated subtitle_marks)
       #   Purpose: To make sure that the import worked correctly and nothing
-      #   was changed inadvertently. Run post-import.
+      #   was changed inadvertently.
       class SubtitleImportConsistency < Validator
 
         class TextMismatchError < ::StandardError; end
@@ -44,24 +44,33 @@ class Repositext
         # @param[String] subtitle_import
         # @return[Outcome]
         def contents_match?(content_at, subtitle_import)
+          # We have to export content_at in both cases to a temporary subtitle_export
+          # so that we can compare it with the subtitle_import
+
+          # Since the kramdown parser is specified as module in Rtfile,
+          # I can't use the standard kramdown API:
+          # `doc = Kramdown::Document.new(contents, :input => 'kramdown_repositext')`
+          # We have to patch a base Kramdown::Document with the root to be able
+          # to convert it.
+          root, warnings = @options['kramdown_parser_class'].parse(content_at)
+          doc = Kramdown::Document.new('')
+          doc.root = root
+
           case @options[:subtitle_import_consistency_compare_mode]
-          when 'text_contents_only'
-            # We remove subtitle_marks and gap_marks
-            string_1, string_2 = content_at.gsub(/[%@]/, ''), subtitle_import.gsub(/[%@]/, '')
+          when 'pre_import'
+            # We re-export the existing content_at to subtitle/subtitle_tagging
+            # and compare the result with subtitle_import after removing
+            # subtitle_marks and gap_marks in both since we expect them to change.
+            tmp_subtitle_export = doc.send(@options['subtitle_converter_method_name'])
+            string_1, string_2 = tmp_subtitle_export.gsub(/[%@]/, ''), subtitle_import.gsub(/[%@]/, '')
             error_message = "\n\nText mismatch between subtitle/subtitle_tagging_import and content_at in #{ @file_to_validate.last }."
-          when 'roundtrip'
-            # We re-export content_at to subtitle/subtitle_tagging and compare the result
-            # with subtitle_import
-            # Since the kramdown parser is specified as module in Rtfile,
-            # I can't use the standard kramdown API:
-            # `doc = Kramdown::Document.new(contents, :input => 'kramdown_repositext')`
-            # We have to patch a base Kramdown::Document with the root to be able
-            # to convert it.
-            root, warnings = @options['kramdown_parser_class'].parse(content_at)
-            doc = Kramdown::Document.new('')
-            doc.root = root
+          when 'post_import'
+            # We re-export the new content_at to subtitle and compare the result
+            # with subtitle_import. We leave all subtitle_marks and gap_marks
+            # in place since they should be identical if everything works correctly.
+
             # Important: We need to always compare with subtitle_export, never
-            # subtitle_tagging_export since we strip subtitle marks there.
+            # subtitle_tagging_export since we strip subtitle marks in the latter.
             tmp_subtitle_export = doc.send(@options['subtitle_export_converter_method_name'])
             string_1, string_2 = subtitle_import, tmp_subtitle_export
             error_message = "\n\nText mismatch between subtitle/subtitle_tagging_import and subtitle_export from content_at in #{ @file_to_validate.last }."

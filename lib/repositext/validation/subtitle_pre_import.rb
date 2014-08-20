@@ -19,7 +19,7 @@ class Repositext
             [ca_filename, si_filename],
             @logger,
             @reporter,
-            @options.merge(:subtitle_import_consistency_compare_mode => 'text_contents_only')
+            @options.merge(:subtitle_import_consistency_compare_mode => 'pre_import')
           ).run
         end
 

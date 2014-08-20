@@ -46,7 +46,7 @@ class Repositext
             [ca_filename, si_filename],
             @logger,
             @reporter,
-            @options.merge(:subtitle_import_consistency_compare_mode => 'roundtrip')
+            @options.merge(:subtitle_import_consistency_compare_mode => 'post_import')
           ).run
         end
 
