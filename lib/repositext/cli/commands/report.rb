@@ -434,11 +434,11 @@ class Repositext
         }
       end
 
-      # Generates a report that counts all paragraph class combinations it encounters.
-      def report_paragraph_classes_inventory(options)
+      # Generates a report that counts all kramdown element class combinations it encounters.
+      def report_kramdown_element_classes_inventory(options)
         input_file_spec = options['input'] || 'content_dir/at_files'
         file_count = 0
-        paragraph_class_combinations = Hash.new(0)
+        class_combinations = {}
         Repositext::Cli::Utils.read_files(
           config.compute_glob_pattern(input_file_spec),
           /\.at\Z/i,
@@ -454,29 +454,34 @@ class Repositext
           root, warnings = config.kramdown_parser(:kramdown).parse(contents)
           doc = Kramdown::Document.new('')
           doc.root = root
-          doc_paragraph_class_combinations = doc.to_report_paragraph_classes_inventory
-          doc_paragraph_class_combinations.each do |pcc, count|
-            paragraph_class_combinations[pcc] += count
+          doc_class_combinations = doc.to_report_kramdown_element_classes_inventory
+          doc_class_combinations.each do |et, class_combinations_hash|
+            class_combinations[et] ||= Hash.new(0)
+            class_combinations_hash.each do |cc, count|
+              class_combinations[et][cc] += count
+            end
           end
           file_count += 1
         end
         lines = []
-        paragraph_class_combinations.to_a.sort { |a,b| a.first <=> b.first }.each do |(classes, count)|
-          l = " - #{ classes }: #{ count }"
-          $stderr.puts l
-          lines << l
+        class_combinations.each do |(ke_type, class_combinations_hash)|
+          lines << " - #{ ke_type }:"
+          class_combinations_hash.each do |(classes_combination, count)|
+            lines << "   - #{ classes_combination }: #{ count }"
+          end
         end
-        report_file_path = File.join(config.base_dir('reports_dir'), 'paragraph_classes_inventory.txt')
+        lines.each { |e| $stderr.puts e }
+        report_file_path = File.join(config.base_dir('reports_dir'), 'kramdown_element_classes_inventory.txt')
         File.open(report_file_path, 'w') { |f|
-          f.write "Paragraph classes inventory\n"
+          f.write "Kramdown element classes inventory\n"
           f.write '-' * 40
           f.write "\n"
           f.write lines.join("\n")
           f.write "\n"
           f.write '-' * 40
           f.write "\n"
-          f.write "Found #{ lines.length } combinations of paragraph classes in #{ file_count } files at #{ Time.now.to_s }.\n\n"
-          f.write "Command to generate this file: `repositext report paragraph_classes_inventory`\n"
+          f.write "Extracted combinations of kramdown element classes from #{ file_count } files at #{ Time.now.to_s }.\n\n"
+          f.write "Command to generate this file: `repositext report kramdown_element_classes_inventory`\n"
         }
       end
 
