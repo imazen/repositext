@@ -42,8 +42,11 @@ class Repositext
         }
         # Run pairwise validation
         validate_file_pairs(:content_at_files, si_filename_proc) do |ca_filename, si_filename|
-          Validator::SubtitleImportMatchesSubtitleExportFromContentAt.new(
-            [ca_filename, si_filename], @logger, @reporter, @options
+          Validator::SubtitleImportConsistency.new(
+            [ca_filename, si_filename],
+            @logger,
+            @reporter,
+            @options.merge(:subtitle_import_consistency_compare_mode => 'roundtrip')
           ).run
         end
 

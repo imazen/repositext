@@ -16,7 +16,10 @@ class Repositext
         # Run pairwise validation
         validate_file_pairs(:content_at_files, si_file_name_proc) do |ca_filename, si_filename|
           Validator::SubtitleImportConsistency.new(
-            [ca_filename, si_filename], @logger, @reporter, @options
+            [ca_filename, si_filename],
+            @logger,
+            @reporter,
+            @options.merge(:subtitle_import_consistency_compare_mode => 'text_contents_only')
           ).run
         end
 
