@@ -127,6 +127,83 @@ class Repositext
         }
       end
 
+      # Generates a list of how each file in content AT was sourced (Folio or Idml)
+      def report_content_sources(options)
+        input_file_spec = options['input'] || 'content_dir/at_files'
+        content_base_dir = config.base_dir('content_dir')
+        folio_import_base_dir = config.base_dir('folio_import_dir')
+        idml_import_base_dir = config.base_dir('idml_import_dir')
+        total_count = 0
+        folio_sourced = []
+        idml_sourced = []
+        other_sourced = []
+
+        Repositext::Cli::Utils.read_files(
+          config.compute_glob_pattern(input_file_spec),
+          /\.at\Z/i,
+          nil,
+          "Reading AT files",
+          options
+        ) do |contents, filename|
+          total_count += 1
+          idml_input_filename = filename.gsub(content_base_dir, idml_import_base_dir)
+                                        .gsub(/\.at/, '.idml.at')
+          folio_input_filename = filename.gsub(content_base_dir, folio_import_base_dir)
+                                         .gsub(/\.at/, '.folio.at')
+          if File.exists?(idml_input_filename)
+            idml_sourced << filename
+          elsif File.exists?(folio_input_filename)
+            folio_sourced << filename
+          else
+            other_sourced << filename
+          end
+        end
+
+        lines = [
+          "List sources of content_at files",
+          '-' * 40,
+        ]
+        if idml_sourced.any?
+          lines << " - The following #{ idml_sourced.length } content AT files are sourced from Idml:"
+          idml_sourced.each do |f|
+            lines << "   - #{ f }"
+          end
+        else
+          lines << " - There are no content AT files sourced from Idml."
+        end
+        if folio_sourced.any?
+          lines << " - The following #{ folio_sourced.length } content AT files are sourced from Folio:"
+          folio_sourced.each do |f|
+            lines << "   - #{ f }"
+          end
+        else
+          lines << " - There are no content AT files sourced from Folio."
+        end
+        if other_sourced.any?
+          lines << " - The following #{ folio_sourced.length } content AT files are from other sources:"
+          other_sourced.each do |f|
+            lines << "   - #{ f }"
+          end
+        else
+          lines << " - There are no content AT files from other sources."
+        end
+        lines << '-' * 40
+        lines << "Sources summary:"
+        lines << " - Idml: #{ idml_sourced.length }"
+        lines << " - Folio: #{ folio_sourced.length }"
+        lines << " - Other: #{ other_sourced.length }"
+        total_sourced = idml_sourced.length + folio_sourced.length + other_sourced.length
+        lines << "Determined sources for #{ total_sourced } of #{ total_count } files at #{ Time.now.to_s }."
+        $stderr.puts
+        lines.each { |l| $stderr.puts l }
+        report_file_path = File.join(config.base_dir('reports_dir'), 'content_sources.txt')
+        File.open(report_file_path, 'w') { |f|
+          f.write lines.join("\n")
+          f.write "\n\n"
+          f.write "Command to generate this file: `repositext report content_sources`\n"
+        }
+      end
+
       # Generate summary of folio import warnings
       def report_folio_import_warnings(options)
         input_file_spec = options['input'] || 'folio_import_dir/json_files'
