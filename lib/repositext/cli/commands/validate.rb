@@ -62,6 +62,37 @@ class Repositext
         end
       end
 
+      def validate_gap_mark_tagging_import(options)
+        options['report_file'] ||= config.compute_glob_pattern(
+          'gap_mark_tagging_import_dir/validation_report_file'
+        )
+        reset_validation_report(options, 'validate_gap_mark_tagging_import')
+        file_specs = config.compute_validation_file_specs(
+          primary: 'gap_mark_tagging_import_dir/all_files', # for reporting only
+          content_at_files: 'content_dir/at_files',
+          gap_mark_tagging_import_files: 'gap_mark_tagging_import_dir/txt_files',
+          gap_mark_tagging_export_files: 'gap_mark_tagging_export_dir/txt_files',
+        )
+        validation_options = {
+          'gap_mark_tagging_converter_method_name' => config.kramdown_converter_method(:to_gap_mark_tagging),
+          'gap_mark_export_extension' => 'gap_mark_tagging.txt',
+          'kramdown_parser_class' => config.kramdown_parser(:kramdown),
+          'kramdown_validation_parser_class' => config.kramdown_parser(:kramdown_validation),
+        }.merge(options)
+        if options['run_options'].include?('pre_import')
+          Repositext::Validation::GapMarkTaggingPreImport.new(
+            file_specs,
+            validation_options
+          ).run
+        end
+        if options['run_options'].include?('post_import')
+          Repositext::Validation::GapMarkTaggingPostImport.new(
+            file_specs,
+            validation_options
+          ).run
+        end
+      end
+
       # Validates all files related to idml import
       def validate_idml_import(options)
         options['report_file'] ||= config.compute_glob_pattern(
@@ -109,7 +140,6 @@ class Repositext
         validation_options = {
           'subtitle_converter_method_name' => config.kramdown_converter_method(:to_subtitle),
           'subtitle_export_converter_method_name' => config.kramdown_converter_method(:to_subtitle),
-          'subtitle_export_extension' => 'txt',
           'kramdown_parser_class' => config.kramdown_parser(:kramdown),
           'kramdown_validation_parser_class' => config.kramdown_parser(:kramdown_validation),
         }.merge(options)
@@ -141,7 +171,6 @@ class Repositext
         validation_options = {
           'subtitle_converter_method_name' => config.kramdown_converter_method(:to_subtitle_tagging),
           'subtitle_export_converter_method_name' => config.kramdown_converter_method(:to_subtitle),
-          'subtitle_export_extension' => 'rt.txt',
           'kramdown_parser_class' => config.kramdown_parser(:kramdown),
           'kramdown_validation_parser_class' => config.kramdown_parser(:kramdown_validation),
         }.merge(options)

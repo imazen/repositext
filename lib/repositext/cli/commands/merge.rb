@@ -4,6 +4,61 @@ class Repositext
 
     private
 
+      # Merges gap_marks from gap_mark_tagging_import into content AT.
+      # Uses content AT as authority for text and all tokens except gap_marks.
+      def merge_gap_marks_from_gap_mark_tagging_import_into_content_at(options)
+        input_file_spec_gap_mark_tagging_import = options['input_1'] || 'gap_mark_tagging_import_dir/txt_files'
+        input_file_pattern_gap_mark_tagging_import = config.compute_glob_pattern(input_file_spec_gap_mark_tagging_import)
+        base_dir_gap_mark_tagging_import = config.base_dir(:gap_mark_tagging_import_dir)
+        base_dir_content = options['input_2'] || config.base_dir(:content_dir)
+        base_dir_output = options['output'] || config.base_dir(:content_dir)
+
+        $stderr.puts 'Merging :gap_mark tokens from gap_mark_tagging_import into content_at'
+        $stderr.puts '-' * 80
+        start_time = Time.now
+        total_count = 0
+        success_count = 0
+        errors_count = 0
+
+        Dir.glob(input_file_pattern_gap_mark_tagging_import).each do |gap_mark_tagging_import_file_name|
+          if gap_mark_tagging_import_file_name !~ /\.gap_mark_tagging\.txt\z/
+            next
+          end
+
+          total_count += 1
+          # prepare paths
+          content_at_file_name = gap_mark_tagging_import_file_name.gsub(base_dir_gap_mark_tagging_import, base_dir_content)
+                                                          .gsub(/\.gap_mark_tagging\.txt\z/, '.at')
+          output_file_name = content_at_file_name
+
+          begin
+            outcome = Repositext::Merge::GapMarksFromGapMarkImportIntoContentAt.merge(
+              File.read(gap_mark_tagging_import_file_name),
+              File.read(content_at_file_name),
+            )
+
+            if outcome.success
+              # write to file
+              at_with_merged_tokens = outcome.result
+              FileUtils.mkdir_p(File.dirname(output_file_name))
+              File.write(output_file_name, at_with_merged_tokens)
+              success_count += 1
+              $stderr.puts " + Merge :gap_marks from #{ gap_mark_tagging_import_file_name }"
+            else
+              errors_count += 1
+              $stderr.puts " x Error: #{ gap_mark_tagging_import_file_name }: #{ outcome.messages.join }"
+            end
+          rescue StandardError => e
+            errors_count += 1
+            $stderr.puts " x Error: #{ gap_mark_tagging_import_file_name }: #{ e.class.name } - #{ e.message } - #{ e.backtrace.join("\n") }"
+          end
+        end
+
+        $stderr.puts '-' * 80
+        $stderr.puts "Finished merging #{ success_count } of #{ total_count } files in #{ Time.now - start_time } seconds."
+      end
+
+
       # Merges record_marks from FOLIO XML import into IDML import
       # Uses IDML as authority for text and all tokens except record_marks.
       # If no IDML file is present, uses FOLIO XML as authority for everything.

@@ -20,7 +20,7 @@ class Repositext
           options.merge(
             :output_path_lambda => lambda { |input_filename, output_file_attrs|
               input_filename.gsub(config.base_dir(input_base_dir_name), output_base_dir)
-                            .gsub(/_\d+\.at\z/, '.gap_mark_tagging.txt')
+                            .gsub(/\.at\z/, '.gap_mark_tagging.txt')
             }
           )
         ) do |contents, filename|

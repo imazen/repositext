@@ -24,6 +24,37 @@ class Repositext
         import_shared_steps(options)
       end
 
+      def import_gap_mark_tagging(options)
+        options['report_file'] = config.compute_glob_pattern(
+          'gap_mark_tagging_import_dir/validation_report_file'
+        )
+        options['append_to_validation_report'] = false
+        reset_validation_report(options, 'validate_gap_mark_tagging_import')
+        validate_gap_mark_tagging_import(options.merge('run_options' => %w[pre_import]))
+        merge_gap_marks_from_gap_mark_tagging_import_into_content_at(options)
+        fix_normalize_subtitle_mark_before_gap_mark_positions(
+          options.merge({ 'input' => 'content_dir/at_files' })
+        )
+        fix_normalize_trailing_newlines(options)
+        options['append_to_validation_report'] = true
+        validate_gap_mark_tagging_import(options.merge('run_options' => %w[post_import]))
+      end
+
+      def import_html(options)
+        options['report_file'] = config.compute_glob_pattern(
+          'html_import_dir/validation_report_file'
+        )
+        options['append_to_validation_report'] = false
+        reset_validation_report(options, 'validate_html_import')
+        validate_html_import(options.merge('run_options' => %w[pre_import]))
+        convert_html_to_at(options)
+        fix_normalize_trailing_newlines(options)
+        # any fixes
+        copy_html_import_to_content(options)
+        options['append_to_validation_report'] = true
+        validate_html_import(options.merge('run_options' => %w[post_import]))
+      end
+
       # Import IDML and merge into /content
       def import_idml(options)
         import_idml_specific_steps(options)
