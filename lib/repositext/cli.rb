@@ -123,6 +123,7 @@ class Repositext
     long_desc long_description_for_report
     # @param[String] command_spec Specification of the operation
     def report(command_spec)
+      check_that_current_branch_is_up_to_date_with_origin_master
       invoke_repositext_command('report', command_spec, options)
     end
 
