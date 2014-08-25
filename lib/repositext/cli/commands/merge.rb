@@ -4,6 +4,87 @@ class Repositext
 
     private
 
+      # Merges accepted corrections for specially formatted files into content AT.
+      # This is done in two steps:
+      #  1. Apply all corrections that can be done automatically (based on exact text matches)
+      #  2. Apply manual corrections where no or multiple extact matches are found.
+      # We have to do it in two steps so that when we open the file in the editor
+      # for manual changes, all auto corrections are already applied to the file
+      # and they don't overwrite any manual corrections prior to when the script
+      # stores auto corrections to disk.
+      def merge_accepted_corrections_into_content_at(options)
+        base_dir_content = config.base_dir(:content_dir)
+        base_dir_accepted_corrections = config.base_dir(:accepted_corrections_dir)
+
+        $stderr.puts 'Merging accepted corrections into content_at'
+        $stderr.puts '-' * 80
+        start_time = Time.now
+        total_count = 0
+        auto_success_count = 0
+        manual_success_count = 0
+        errors_count = 0
+
+        Dir.glob(
+          File.join(base_dir_accepted_corrections, '**/*.accepted_corrections.txt')
+        ).each do |accepted_corrections_file_name|
+          total_count += 1
+          # prepare paths
+          content_at_file_name = accepted_corrections_file_name.gsub(
+            base_dir_accepted_corrections,
+            base_dir_content
+          ).gsub(
+            /\.accepted_corrections\.txt\z/, '.at'
+          )
+          output_file_name = content_at_file_name
+
+          begin
+            # First apply all corrections that can be done automatically
+            outcome = Repositext::Merge::AcceptedCorrectionsIntoContentAt.merge_auto(
+              File.read(accepted_corrections_file_name),
+              File.read(content_at_file_name),
+              content_at_file_name,
+            )
+
+            if outcome.success
+              # write to file
+              at_with_accepted_corrections = outcome.result
+              FileUtils.mkdir_p(File.dirname(output_file_name))
+              File.write(output_file_name, at_with_accepted_corrections)
+              auto_success_count += 1
+              $stderr.puts " + Auto-merge accepted corrections from #{ accepted_corrections_file_name }"
+            else
+              errors_count += 1
+              $stderr.puts " x Error: #{ accepted_corrections_file_name }: #{ outcome.messages.join }"
+            end
+
+            # Second apply manual corrections.
+            outcome = Repositext::Merge::AcceptedCorrectionsIntoContentAt.merge_manually(
+              File.read(accepted_corrections_file_name),
+              File.read(content_at_file_name),
+              content_at_file_name,
+            )
+
+            if outcome.success
+              # Nothing needs to be written to file. This has already been done
+              # manually in the editor.
+              manual_success_count += 1
+              $stderr.puts " + Manually merge accepted corrections from #{ accepted_corrections_file_name }"
+            else
+              errors_count += 1
+              $stderr.puts " x Error: #{ accepted_corrections_file_name }: #{ outcome.messages.join }"
+            end
+          rescue StandardError => e
+            errors_count += 1
+            $stderr.puts " x Error: #{ accepted_corrections_file_name }: #{ e.class.name } - #{ e.message } - #{ e.backtrace.join("\n") }"
+          end
+        end
+
+        $stderr.puts '-' * 80
+        $stderr.puts "Finished merging #{ total_count } files in #{ Time.now - start_time } seconds:"
+        $stderr.puts " - Auto-merges: #{ auto_success_count } files."
+        $stderr.puts " - Manual merges: #{ manual_success_count } files."
+      end
+
       # Merges gap_marks from gap_mark_tagging_import into content AT.
       # Uses content AT as authority for text and all tokens except gap_marks.
       def merge_gap_marks_from_gap_mark_tagging_import_into_content_at(options)
