@@ -231,7 +231,12 @@ class Repositext
       # Dynamically generates a regex that matches pararaph_number
       # @param[Integer, String] paragraph_number
       def self.dynamic_paragraph_number_regex(paragraph_number)
-        /\n\*#{ paragraph_number.to_s.strip }\*\{\:\s\.pn\}/
+        if '1' == paragraph_number.to_s
+          # Para 1 doesn't have a number, match beginning of document
+          /\A/
+        else
+          /\n\*#{ paragraph_number.to_s.strip }\*\{\:\s\.pn\}/
+        end
       end
 
     end
