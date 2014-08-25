@@ -147,7 +147,11 @@ class Repositext
           /
             #{ dynamic_paragraph_number_regex(correction[:paragraph_number]) } # match paragraph number span
             .*? # match anything nongreedily
-            (?=#{ dynamic_paragraph_number_regex(correction[:paragraph_number].succ) }) # stop before next paragraph number
+            (?=(
+              #{ dynamic_paragraph_number_regex(correction[:paragraph_number].succ) } # stop before next paragraph number
+              | # or
+               # eagle if we are on the last paragraph
+            ))
           /xm # multiline
         ).to_s
         if '' == relevant_paragraph
