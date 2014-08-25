@@ -47,10 +47,10 @@ class Repositext
             ca[:line_number] = correction_location.match(/lines?\s+([\d\-]+)/i)[1].to_s
             # extract reads
             s.skip_until(/\nreads:\s+/i) # advance up to and including reads: marker
-            ca[:before] = s.scan(/[^\n]+/).to_s.strip # fetch single line
+            ca[:before] = s.scan(/.+(?=\nbecomes:)/im).to_s.strip # fetch everything up to "Becomes:"
             # extract becomes
             s.skip_until(/\nbecomes:\s+/i) # advance up to and including becomes: marker
-            ca[:after] = s.scan(/[^\n]+/).to_s.strip # fetch single line
+            ca[:after] = s.scan(/.+(?=\n(\n\d+\.|\z))/).to_s.strip # fetch up to next correction number, or end of document
           else
             # No more corrections found
             s.terminate
