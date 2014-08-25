@@ -143,14 +143,20 @@ class Repositext
       def self.try_fuzzy_match!(correction, corrected_at, report_lines, content_at_filename, files_to_open_in_sublime)
         # Check if correction was already applied to the relevant paragraph
         # Extract relevant paragraph
+        or_match_on_eagle = if '1' == correction[:paragraph_number].to_s
+          # Don't stop at eagle when looking for paragraph 1, because it would stop at the starting eagle
+          ''
+        else
+          # Stop also at eagle in case we're looking at the last paragraph that doesn't have a subsequent one
+          '|'
+        end
         relevant_paragraph = corrected_at.match(
           /
             #{ dynamic_paragraph_number_regex(correction[:paragraph_number]) } # match paragraph number span
             .*? # match anything nongreedily
             (?=(
               #{ dynamic_paragraph_number_regex(correction[:paragraph_number].succ) } # stop before next paragraph number
-              | # or
-               # eagle if we are on the last paragraph
+              #{ or_match_on_eagle }
             ))
           /xm # multiline
         ).to_s
