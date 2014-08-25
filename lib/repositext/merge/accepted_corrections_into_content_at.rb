@@ -109,7 +109,6 @@ class Repositext
       # @return[Outcome] where result is corrected_at and messages contains the report_lines
       def self.merge_corrections_into_content_at(strategy, corrections, content_at, content_at_filename)
         report_lines = []
-        files_to_open_in_sublime = []
         corrected_at = content_at.dup
         corrections.each { |correction|
           # count exact matches
@@ -120,15 +119,14 @@ class Repositext
               correction,
               corrected_at,
               report_lines,
-              content_at_filename,
-              files_to_open_in_sublime
+              content_at_filename
             )
           elsif 1 == number_of_exact_matches && :auto == strategy
             # There is exactly one perfect match, replace it automatically
             replace_perfect_match!(correction, corrected_at, report_lines)
           elsif :manual == strategy
             # Multiple matches
-            pick_from_multiple_matches!(correction, corrected_at, report_lines)
+            pick_from_multiple_matches!(correction, corrected_at, report_lines, content_at_filename)
           end
         }
         Outcome.new(true, corrected_at, report_lines)
@@ -139,8 +137,7 @@ class Repositext
       # @param[String] corrected_at will be updated in place
       # @param[Array] report_lines collector for report output
       # @param[String] content_at_filename filename of the content_at file
-      # @param[Array] files_to_open_in_sublime collector for files to be opened later
-      def self.try_fuzzy_match!(correction, corrected_at, report_lines, content_at_filename, files_to_open_in_sublime)
+      def self.try_fuzzy_match!(correction, corrected_at, report_lines, content_at_filename)
         # Check if correction was already applied to the relevant paragraph
         # Extract relevant paragraph
         or_match_on_eagle = if '1' == correction[:paragraph_number].to_s
@@ -204,7 +201,8 @@ class Repositext
         $stderr.puts l
       end
 
-      def self.pick_from_multiple_matches!(correction, corrected_at, report_lines)
+      # @param[String] content_at_filename filename of the content_at file
+      def self.pick_from_multiple_matches!(correction, corrected_at, report_lines, content_at_filename)
         l = "##{ correction[:correction_number] }: Multiple matches found."
         report_lines << l
         $stderr.puts l
