@@ -50,7 +50,7 @@ class Repositext
             ca[:before] = s.scan(/.+?(?=\nbecomes:)/im).to_s.strip # fetch everything up to "Becomes:"
             # extract becomes
             s.skip_until(/\nbecomes:\s+/i) # advance up to and including becomes: marker
-            ca[:after] = s.scan(/.+?(?=(\n{2,}\d+\.|\n+\z))/).to_s.strip # fetch up to next correction number, or end of document
+            ca[:after] = s.scan(/.+?(?=(\n{2,}\d+\.|\n+\z))/m).to_s.strip # fetch up to next correction number, or end of document
           else
             # No more corrections found
             s.terminate
