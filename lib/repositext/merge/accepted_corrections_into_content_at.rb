@@ -43,6 +43,8 @@ class Repositext
           if correction_location
             # extract paragraph number
             ca[:paragraph_number] = correction_location.match(/paragraphs?\s+(\d+)/i)[1].to_s
+            # extract line number
+            ca[:line_number] = correction_location.match(/lines?\s+([\d\-]+)/i)[1].to_s
             # extract reads
             s.skip_until(/\nreads:\s+/i) # advance up to and including reads: marker
             ca[:before] = s.scan(/[^\n]+/).to_s.strip # fetch single line
@@ -67,6 +69,7 @@ class Repositext
           has_missing_attrs = [
             :correction_number,
             :paragraph_number,
+            :line_number,
             :before,
             :after,
           ].any? { |attr| e[attr].nil? }
@@ -83,6 +86,17 @@ class Repositext
         correction_numbers.each_cons(2) { |x,y|
           if y != x + 1
             raise "Correction numbers are not consecutive: #{ [x,y].inspect }"
+          end
+        }
+
+        # Validate that no invalid characters are in correction file
+        invalid_chars_regex = /–/
+        corrections.each { |e|
+          if e[:before] =~ invalid_chars_regex
+            raise "Invalid character in correction ##{ e[:correction_number] }: #{ e[:before] }"
+          end
+          if e[:after] =~ invalid_chars_regex
+            raise "Invalid character in correction ##{ e[:correction_number] }: #{ e[:before] }"
           end
         }
       end
@@ -127,16 +141,30 @@ class Repositext
       # @param[String] content_at_filename filename of the content_at file
       # @param[Array] files_to_open_in_sublime collector for files to be opened later
       def self.try_fuzzy_match!(correction, corrected_at, report_lines, content_at_filename, files_to_open_in_sublime)
-        # Check if correction was already applied
-        if 1 == corrected_at.scan(correction[:after]).size
+        # Check if correction was already applied to the relevant paragraph
+        # Extract relevant paragraph
+        relevant_paragraph = corrected_at.match(
+          /
+            #{ dynamic_paragraph_number_regex(correction[:paragraph_number]) } # match paragraph number span
+            .*? # match anything nongreedily
+            (?=#{ dynamic_paragraph_number_regex(correction[:paragraph_number].succ) }) # stop before next paragraph number
+          /xm # multiline
+        ).to_s
+        if '' == relevant_paragraph
+          raise "Could not find paragraph #{ correction[:paragraph_number] }"
+        end
+
+        # Look for exact match
+        if 1 == relevant_paragraph.scan(correction[:after]).size
           l = "##{ correction[:correction_number] }: It appears that this correction has already been applied. (Exact)"
           report_lines << l
           $stderr.puts l
           return
         end
+
         # Try fuzzy match: Remove gap_marks and subtitle_marks and see if that was applied already
         correction_after_without_marks = correction[:after].gsub(/[%@]/, '')
-        corrected_at_without_marks = corrected_at.gsub(/[%@]/, '')
+        corrected_at_without_marks = relevant_paragraph.gsub(/[%@]/, '')
         if 1 == corrected_at_without_marks.scan(correction_after_without_marks).size
           l = "##{ correction[:correction_number] }: It appears that this correction has already been applied. (Except gap_mark or subtitle_mark)"
           report_lines << l
@@ -145,23 +173,17 @@ class Repositext
         end
 
         # No match found, open location in sublime
-        # Compute line number
-        regex = /
-          .*? # match anything nongreedily
-          \n\*#{ correction[:paragraph_number] }\*\{\:\s\.pn\} # match paragraph number span
-        /xm # multiline
-        text_before_paragraph = corrected_at.match(regex).to_s
-        subl_line = text_before_paragraph.count("\n") + 1
         l = "##{ correction[:correction_number] }: No exact match found, update manually."
         report_lines << l
         $stderr.puts l
         open_in_sublime(
           content_at_filename,
           [
-            "    Could not find phrase '#{ correction[:before] }' in paragraph #{ correction[:paragraph_number] }",
+            "    Could not find phrase '#{ correction[:before] }'",
+            "    in paragraph #{ correction[:paragraph_number] }, line #{ correction[:line_number] }",
             "    Replace with: '#{ correction[:after] }'",
           ].join("\n"),
-          subl_line
+          compute_line_number_from_paragraph_number(correction[:paragraph_number], corrected_at)
         )
       end
 
@@ -176,13 +198,40 @@ class Repositext
         l = "##{ correction[:correction_number] }: Multiple matches found."
         report_lines << l
         $stderr.puts l
+        open_in_sublime(
+          content_at_filename,
+          [
+            "    Found multiple instances of phrase '#{ correction[:before] }'",
+            "    in paragraph #{ correction[:paragraph_number] }, line #{ correction[:line_number] }",
+            "    Replace with: '#{ correction[:after] }'",
+          ].join("\n"),
+          compute_line_number_from_paragraph_number(correction[:paragraph_number], corrected_at)
+        )
+      end
+
+      # Given txt and paragraph_number, returns the line at which paragraph_number starts
+      # @param[Integer, String] paragraph_number
+      # @param[String] txt
+      def self.compute_line_number_from_paragraph_number(paragraph_number, txt)
+        regex = /
+          .*? # match anything nongreedily
+          #{ dynamic_paragraph_number_regex(paragraph_number) } # match paragraph number span
+        /xm # multiline
+        text_before_paragraph = txt.match(regex).to_s
+        line_number = text_before_paragraph.count("\n") + 1
       end
 
       # Opens filename in sublime and places cursor at line and col
       def self.open_in_sublime(filename, console_instructions, line=nil, col=nil)
         location_spec = [filename, line, col].compact.map { |e| e.to_s.strip }.join(':')
         $stderr.puts console_instructions
-        `subl --wait --new-window --command select_lines #{ location_spec }`
+        `subl --wait --new-window #{ location_spec }`
+      end
+
+      # Dynamically generates a regex that matches pararaph_number
+      # @param[Integer, String] paragraph_number
+      def self.dynamic_paragraph_number_regex(paragraph_number)
+        /\n\*#{ paragraph_number.to_s.strip }\*\{\:\s\.pn\}/
       end
 
     end
