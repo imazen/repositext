@@ -204,6 +204,46 @@ class Repositext
         }
       end
 
+      # Generates two counts of files: those with gap_marks and those with subtitle_marks
+      def report_count_files_with_gap_marks_and_subtitle_marks(options)
+        input_file_spec = options['input'] || 'content_dir/at_files'
+        content_base_dir = config.base_dir('content_dir')
+        total_count = 0
+        with_gap_marks = 0
+        with_subtitle_marks = 0
+
+        Repositext::Cli::Utils.read_files(
+          config.compute_glob_pattern(input_file_spec),
+          /\.at\Z/i,
+          nil,
+          "Reading AT files",
+          options
+        ) do |contents, filename|
+          total_count += 1
+          with_gap_marks += 1  if contents.index('%')
+          with_subtitle_marks += 1  if contents.index('@')
+          # Uncomment next line to print line 7 of each file
+          # puts contents.split("\n")[6][0,80] + '       ' + filename.split('/').last
+        end
+
+        lines = [
+          "Count of files with gap_marks and subtitle_marks",
+          '-' * 40,
+        ]
+        lines << " - With gap_marks: #{ with_gap_marks }"
+        lines << " - With subtitle_marks: #{ with_subtitle_marks }"
+        lines << '-' * 40
+        lines << "Checked #{ total_count } files at #{ Time.now.to_s }."
+        $stderr.puts
+        lines.each { |l| $stderr.puts l }
+        report_file_path = File.join(config.base_dir('reports_dir'), 'count_files_with_gap_marks_and_subtitle_marks.txt')
+        File.open(report_file_path, 'w') { |f|
+          f.write lines.join("\n")
+          f.write "\n\n"
+          f.write "Command to generate this file: `repositext report count_files_with_gap_marks_and_subtitle_marks`\n"
+        }
+      end
+
       # Generate summary of folio import warnings
       def report_folio_import_warnings(options)
         input_file_spec = options['input'] || 'folio_import_dir/json_files'
