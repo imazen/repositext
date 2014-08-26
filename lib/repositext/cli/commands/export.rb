@@ -150,7 +150,13 @@ class Repositext
           # We have to patch a base Kramdown::Document with the root to be able
           # to convert it.
           root, warnings = config.kramdown_parser(:kramdown).parse(contents)
-          kramdown_doc = Kramdown::Document.new('', options.merge({ :source_filename => filename }))
+          kramdown_doc = Kramdown::Document.new(
+            '',
+            options.merge({
+              :source_filename => filename,
+              :font_name => 'en' == config.setting(:language_code_2_chars) ? 'V-Calisto-St' : 'V-Excelsior LT Std'
+            })
+          )
           kramdown_doc.root = root
           latex_converter_method = variant.gsub(/\Apdf/, 'to_latex_repositext')
           latex = kramdown_doc.send(latex_converter_method)

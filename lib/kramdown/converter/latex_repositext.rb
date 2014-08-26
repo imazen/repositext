@@ -177,11 +177,15 @@ module Kramdown
         wrap_body_in_template(latex_body, document_title)
       end
 
-      # NOTE: There is a strange bug where in the V-Calisto-St font and latex
-      # bold and bold-italic are reversed. So whenever I want bold, I have to
-      # specify bold-italic and vice versa.
       def convert_strong(el, opts)
-        "\\textit{\\textbf{#{ inner(el, opts) }}}"
+        if 'V-Calisto-St' == @options[:font_name]
+          # NOTE: There is a strange bug where in the V-Calisto-St font and latex
+          # bold and bold-italic are reversed. So whenever I want bold, I have to
+          # specify bold-italic and vice versa.
+          "\\textit{\\textbf{#{ inner(el, opts) }}}"
+        else
+          "\\textbf{#{ inner(el, opts) }}"
+        end
       end
 
       # Override this method in any subclasses that render subtitle_marks

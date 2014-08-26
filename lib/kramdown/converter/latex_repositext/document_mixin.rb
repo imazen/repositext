@@ -56,22 +56,25 @@ module Kramdown
         # @return[String]
         def wrap_body_in_template(latex_body, document_title)
           # assign i_vars referenced in template file
-          @git_repo = Repositext::Repository.new
-          @include_meta_info = include_meta_info
-          @latest_commit = @git_repo.latest_commit(@options[:source_filename])
-          @latest_commit_hash = @latest_commit.oid[0,8]
           @body = latex_body
-          @meta_info = include_meta_info ? compute_meta_info(@git_repo, @latest_commit) : ''
-          @title = document_title
-          @truncated_title_header = compute_truncated_title(document_title, 70, 3)
-          @truncated_title_footer = compute_truncated_title(document_title, 45, 3)
-          @scale_factor = size_scale_factor
           @date_code = @options[:source_filename].split('/')
                                                  .last
                                                  .match(/[[:alpha:]]{3}\d{2}-\d{4}[[:alpha:]]?/)
                                                  .to_s
                                                  .capitalize
+          @git_repo = Repositext::Repository.new
+          @include_meta_info = include_meta_info
+          @font_name = @options[:font_name]
+          @latest_commit = @git_repo.latest_commit(@options[:source_filename])
+          @latest_commit_hash = @latest_commit.oid[0,8]
+          @scale_factor = size_scale_factor
+          @title = document_title
+          @truncated_title_footer = compute_truncated_title(document_title, 45, 3)
+          @truncated_title_header = compute_truncated_title(document_title, 70, 3)
           @page_settings = page_settings_for_latex_geometry_package
+          # dependency boundary
+          @meta_info = include_meta_info ? compute_meta_info(@git_repo, @latest_commit) : ''
+
           erb = ERB.new(latex_template)
           r = erb.result(binding)
         end
