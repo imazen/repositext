@@ -8,6 +8,7 @@ class Repositext
       # @param[String] content_at_filename
       # @return[Outcome] the merged document is returned as #result if successful.
       def self.merge_auto(accepted_corrections, content_at, content_at_filename)
+        validate_accepted_corrections_file(accepted_corrections)
         corrections = extract_corrections(accepted_corrections)
         validate_corrections(corrections)
         outcome = merge_corrections_into_content_at(:auto, corrections, content_at, content_at_filename)
@@ -25,6 +26,37 @@ class Repositext
       end
 
     protected
+
+      # Validates the contents of the accepted_corrections file before it attempts
+      # any parsing.
+      # @param[String] accepted_corrections
+      def self.validate_accepted_corrections_file(accepted_corrections)
+        # Validate that no invalid characters are in correction file
+        invalid_chars = []
+        [
+          [/–/, 'EN DASH'],
+          [/"/, 'Straight double quote'],
+          [/'/, 'Straight single quote'],
+        ].each do |(regex, description)|
+          s = StringScanner.new(accepted_corrections)
+          while !s.eos? do
+            inv_char = s.scan_until(/.{,5}#{ regex }/) # match up to 5 chars before invalid char for reporting context
+            if inv_char
+              previous_text = accepted_corrections[0..(s.pos - 1)]
+              line_num = previous_text.count("\n") + 1
+              context = s.matched[(-[10, s.matched.length].min)..-1] + s.rest[0,10]
+              invalid_chars << " - #{ description } on line #{ line_num }: #{ context }"
+            else
+              s.terminate
+            end
+          end
+        end
+        if invalid_chars.any?
+          msg = ["Invalid characters:"]
+          msg += invalid_chars
+          raise msg.join("\n")
+        end
+      end
 
       # @param[String] accepted_corrections
       # @return[Array<Hash>] a hash describing the corrections
@@ -90,17 +122,6 @@ class Repositext
         correction_numbers.each_cons(2) { |x,y|
           if y != x + 1
             raise "Correction numbers are not consecutive: #{ [x,y].inspect }"
-          end
-        }
-
-        # Validate that no invalid characters are in correction file
-        invalid_chars_regex = /–/
-        corrections.each { |e|
-          if e[:before] =~ invalid_chars_regex
-            raise "Invalid character in correction ##{ e[:correction_number] }: #{ e[:before] }"
-          end
-          if e[:after] =~ invalid_chars_regex
-            raise "Invalid character in correction ##{ e[:correction_number] }: #{ e[:before] }"
           end
         }
       end
