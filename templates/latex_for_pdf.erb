@@ -44,7 +44,7 @@
   <% if @include_meta_info %>
   \fancyfoot[L]{<%= @date_code %>} % outside
   \fancyfoot[C]{\textbf{<%= @truncated_title_footer %>}} % center
-  \fancyfoot[R]{Rev. <%= @latest_commit_hash %>} % inside
+  \fancyfoot[R]{\textscale{0.67}{<%= @additional_footer_text %> Rev. <%= @latest_commit_hash %>}} % inside
   <% end %>
 }
 

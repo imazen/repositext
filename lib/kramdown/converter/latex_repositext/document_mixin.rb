@@ -56,6 +56,7 @@ module Kramdown
         # @return[String]
         def wrap_body_in_template(latex_body, document_title)
           # assign i_vars referenced in template file
+          @additional_footer_text = @options[:additional_footer_text]
           @body = latex_body
           @date_code = @options[:source_filename].split('/')
                                                  .last

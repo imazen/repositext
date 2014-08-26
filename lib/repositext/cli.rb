@@ -170,6 +170,9 @@ class Repositext
 
     desc 'export SPEC', 'Exports files from /content'
     long_desc long_description_for_export
+    method_option :'additional-footer-text',
+                  :type => :string,
+                  :desc => 'Adds additional text to the footer of an exported PDF'
     # @param[String] command_spec Specification of the operation
     def export(command_spec)
       check_that_current_branch_is_up_to_date_with_origin_master

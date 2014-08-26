@@ -135,6 +135,10 @@ class Repositext
             Available SPECs:
 
             [TBD]
+
+            Options:
+
+            --additional-footer-text="Some extra text" - adds text to the footer of an exported PDF
           )
         end
 

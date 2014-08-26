@@ -154,7 +154,8 @@ class Repositext
             '',
             options.merge({
               :source_filename => filename,
-              :font_name => 'en' == config.setting(:language_code_2_chars) ? 'V-Calisto-St' : 'V-Excelsior LT Std'
+              :font_name => 'en' == config.setting(:language_code_2_chars) ? 'V-Calisto-St' : 'V-Excelsior LT Std',
+              :additional_footer_text => options['additional-footer-text'],
             })
           )
           kramdown_doc.root = root
