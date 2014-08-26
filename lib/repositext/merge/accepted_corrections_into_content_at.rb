@@ -140,7 +140,7 @@ class Repositext
       def self.try_fuzzy_match!(correction, corrected_at, report_lines, content_at_filename)
         # Check if correction was already applied to the relevant paragraph
         # Extract relevant paragraph
-        or_match_on_eagle = if '1' == correction[:paragraph_number].to_s
+        or_match_on_eagle = if compute_first_para_num(corrected_at) == correction[:paragraph_number].to_s
           # Don't stop at eagle when looking for paragraph 1, because it would stop at the starting eagle
           ''
         else
@@ -152,10 +152,10 @@ class Repositext
         stop_para_number = how_many_paras_to_match.times.each.inject(correction[:paragraph_number]) { |m,e| m.succ }
         relevant_paragraphs = corrected_at.match(
           /
-            #{ dynamic_paragraph_number_regex(correction[:paragraph_number]) } # match paragraph number span
+            #{ dynamic_paragraph_number_regex(correction[:paragraph_number], corrected_at) } # match paragraph number span
             .*? # match anything nongreedily
             (?=(
-              #{ dynamic_paragraph_number_regex(stop_para_number) } # stop before next paragraph number
+              #{ dynamic_paragraph_number_regex(stop_para_number, corrected_at) } # stop before next paragraph number
               #{ or_match_on_eagle }
             ))
           /xm # multiline
@@ -227,7 +227,7 @@ class Repositext
       def self.compute_line_number_from_paragraph_number(paragraph_number, txt)
         regex = /
           .*? # match anything nongreedily
-          #{ dynamic_paragraph_number_regex(paragraph_number) } # match paragraph number span
+          #{ dynamic_paragraph_number_regex(paragraph_number, txt) } # match paragraph number span
         /xm # multiline
         text_before_paragraph = txt.match(regex).to_s
         line_number = text_before_paragraph.count("\n") + 1
@@ -242,13 +242,20 @@ class Repositext
 
       # Dynamically generates a regex that matches pararaph_number
       # @param[Integer, String] paragraph_number
-      def self.dynamic_paragraph_number_regex(paragraph_number)
-        if '1' == paragraph_number.to_s
+      # @param[String] txt the containing text, used to determine the first paragraph number (may not be 1)
+      def self.dynamic_paragraph_number_regex(paragraph_number, txt)
+        if compute_first_para_num(txt) == paragraph_number.to_s
           # Para 1 doesn't have a number, match beginning of document
           /\A/
         else
           /\n\*#{ paragraph_number.to_s.strip }\*\{\:\s\.pn\}/
         end
+      end
+
+      # Returns the number of the first paragraph. Normally '1', however there
+      # are exceptions.
+      def self.compute_first_para_num(txt)
+        (txt.match(/\n\*(\d+)\*\{\:\s\.pn\}/)[1].to_s.to_i - 1).to_s
       end
 
     end
