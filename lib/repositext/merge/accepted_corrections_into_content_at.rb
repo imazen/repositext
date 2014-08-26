@@ -44,7 +44,11 @@ class Repositext
             # extract paragraph number
             ca[:paragraph_number] = correction_location.match(/paragraphs?\s+(\d+)/i)[1].to_s
             # extract line number
-            ca[:line_number] = correction_location.match(/lines?\s+([\d\-]+)/i)[1].to_s
+            if (match = correction_location.match(/lines?\s+([\d\-]+)/i))
+              ca[:line_number] = match[1].to_s
+            else
+              raise "Could not parse line number for correction ##{ ca[:correction_number] }, para ##{ ca[:paragraph_number] }"
+            end
             # extract reads
             s.skip_until(/\nreads:\s+/i) # advance up to and including reads: marker
             ca[:before] = s.scan(/.+?(?=\nbecomes:)/im).to_s.strip # fetch everything up to "Becomes:"
