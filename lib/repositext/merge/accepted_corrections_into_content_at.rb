@@ -147,22 +147,25 @@ class Repositext
           # Stop also at eagle in case we're looking at the last paragraph that doesn't have a subsequent one
           '|'
         end
-        relevant_paragraph = corrected_at.match(
+        # Capture more than a single paragraph for corrections that span paragraph boundaries
+        how_many_paras_to_match = (correction[:after].scan('*{: .pn}').size) + 1
+        stop_para_number = how_many_paras_to_match.times.each.inject(correction[:paragraph_number]) { |m,e| m.succ }
+        relevant_paragraphs = corrected_at.match(
           /
             #{ dynamic_paragraph_number_regex(correction[:paragraph_number]) } # match paragraph number span
             .*? # match anything nongreedily
             (?=(
-              #{ dynamic_paragraph_number_regex(correction[:paragraph_number].succ) } # stop before next paragraph number
+              #{ dynamic_paragraph_number_regex(stop_para_number) } # stop before next paragraph number
               #{ or_match_on_eagle }
             ))
           /xm # multiline
         ).to_s
-        if '' == relevant_paragraph
+        if '' == relevant_paragraphs
           raise "Could not find paragraph #{ correction[:paragraph_number] }"
         end
 
         # Look for exact match
-        if 1 == relevant_paragraph.scan(correction[:after]).size
+        if 1 == relevant_paragraphs.scan(correction[:after]).size
           l = "##{ correction[:correction_number] }: It appears that this correction has already been applied. (Exact)"
           report_lines << l
           $stderr.puts l
@@ -171,7 +174,7 @@ class Repositext
 
         # Try fuzzy match: Remove gap_marks and subtitle_marks and see if that was applied already
         correction_after_without_marks = correction[:after].gsub(/[%@]/, '')
-        corrected_at_without_marks = relevant_paragraph.gsub(/[%@]/, '')
+        corrected_at_without_marks = relevant_paragraphs.gsub(/[%@]/, '')
         if 1 == corrected_at_without_marks.scan(correction_after_without_marks).size
           l = "##{ correction[:correction_number] }: It appears that this correction has already been applied. (Except gap_mark or subtitle_mark)"
           report_lines << l
