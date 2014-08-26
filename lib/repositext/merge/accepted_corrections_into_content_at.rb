@@ -175,7 +175,8 @@ class Repositext
         # Try fuzzy match: Remove gap_marks and subtitle_marks and see if that was applied already
         correction_after_without_marks = correction[:after].gsub(/[%@]/, '')
         corrected_at_without_marks = relevant_paragraphs.gsub(/[%@]/, '')
-        if 1 == corrected_at_without_marks.scan(correction_after_without_marks).size
+        possible_matches_count = corrected_at_without_marks.scan(correction_after_without_marks).size
+        if 1 == possible_matches_count
           l = "##{ correction[:correction_number] }: It appears that this correction has already been applied. (Except gap_mark or subtitle_mark)"
           report_lines << l
           $stderr.puts l
@@ -183,7 +184,7 @@ class Repositext
         end
 
         # No match found, open location in sublime
-        l = "##{ correction[:correction_number] }: No exact match found, update manually."
+        l = "##{ correction[:correction_number] }: #{ possible_matches_count > 1 ? 'Multiple matches' : 'No match' } found, update manually."
         report_lines << l
         $stderr.puts l
         open_in_sublime(
