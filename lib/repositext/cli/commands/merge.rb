@@ -13,8 +13,10 @@ class Repositext
       # and they don't overwrite any manual corrections prior to when the script
       # stores auto corrections to disk.
       def merge_accepted_corrections_into_content_at(options)
-        base_dir_content = config.base_dir(:content_dir)
+        input_file_spec_accepted_corrections = 'accepted_corrections_dir/txt_files'
+        input_file_pattern_accepted_corrections = config.compute_glob_pattern(input_file_spec_accepted_corrections)
         base_dir_accepted_corrections = config.base_dir(:accepted_corrections_dir)
+        base_dir_content = config.base_dir(:content_dir)
 
         $stderr.puts 'Merging accepted corrections into content_at'
         $stderr.puts '-' * 80
@@ -24,9 +26,10 @@ class Repositext
         manual_success_count = 0
         errors_count = 0
 
-        Dir.glob(
-          File.join(base_dir_accepted_corrections, '**/*.accepted_corrections.txt')
-        ).each do |accepted_corrections_file_name|
+        Dir.glob(input_file_pattern_accepted_corrections).each do |accepted_corrections_file_name|
+          if accepted_corrections_file_name !~ /\.accepted_corrections\.txt\z/
+            next
+          end
           total_count += 1
           # prepare paths
           content_at_file_name = accepted_corrections_file_name.gsub(
@@ -51,7 +54,7 @@ class Repositext
               FileUtils.mkdir_p(File.dirname(output_file_name))
               File.write(output_file_name, at_with_accepted_corrections)
               auto_success_count += 1
-              $stderr.puts " + Auto-merge accepted corrections from #{ accepted_corrections_file_name }"
+              $stderr.puts " + Auto-merged accepted corrections from #{ accepted_corrections_file_name }"
             else
               errors_count += 1
               $stderr.puts " x Error: #{ accepted_corrections_file_name }: #{ outcome.messages.join }"
@@ -68,7 +71,7 @@ class Repositext
               # Nothing needs to be written to file. This has already been done
               # manually in the editor.
               manual_success_count += 1
-              $stderr.puts " + Manually merge accepted corrections from #{ accepted_corrections_file_name }"
+              $stderr.puts " + Manually merged accepted corrections from #{ accepted_corrections_file_name }"
             else
               errors_count += 1
               $stderr.puts " x Error: #{ accepted_corrections_file_name }: #{ outcome.messages.join }"
