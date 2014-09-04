@@ -73,7 +73,7 @@ describe Repositext::Merge::AcceptedCorrectionsIntoContentAt do
         :manual,
         { :before => 'no match', :after => '%word1 @word2' },
         "before word1 word2 after",
-        [:report_already_applied, 'Fuzzy'],
+        [:report_already_applied, '~Fuzzy'],
       ],
       [
         :manual,
