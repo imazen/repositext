@@ -149,7 +149,7 @@ class Repositext
         corrected_at = content_at.dup
 
         corrections.each { |correction|
-          relevant_paragraphs = extract_relevant_paragraphs(content_at, correction)
+          relevant_paragraphs = extract_relevant_paragraphs(corrected_at, correction)
           merge_action, specifier = compute_merge_action(strategy, correction, relevant_paragraphs)
           case merge_action
           when :apply_automatically
