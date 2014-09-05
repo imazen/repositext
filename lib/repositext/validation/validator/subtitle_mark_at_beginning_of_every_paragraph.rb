@@ -4,8 +4,6 @@ class Repositext
       # Validates that there is a subtitle_mark at the beginning of every paragraph
       class SubtitleMarkAtBeginningOfEveryParagraph < Validator
 
-        include BodyTextExtractor
-
         # Runs all validations for self
         def run
           errors, warnings = [], []
@@ -69,7 +67,7 @@ class Repositext
         # @param[String] content
         # @return[Array<String>] an array of paras that don't start with @
         def check_content_file(content)
-          content_with_subtitle_marks_only = extract_body_text_with_subtitle_marks(content)
+          content_with_subtitle_marks_only = Repositext::Utils::SubtitleMarkTools.extract_body_text_with_subtitle_marks_onlyextract_body_text_with_subtitle_marks_only(content)
           get_paragraphs_that_dont_start_with_subtitle_mark(content_with_subtitle_marks_only)
         end
 

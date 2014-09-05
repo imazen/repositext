@@ -32,7 +32,7 @@ class String
     "#{ self[0, stop] }#{ omission }"
   end
 
-  # Truncates self, removing the end of the string. It truncates on whitespace
+  # Truncates self, removing the beginning of the string. It truncates on whitespace
   # only and requires a min word length for the last word.
   # @param[Integer] max_len
   # @param[Hash, optional] options

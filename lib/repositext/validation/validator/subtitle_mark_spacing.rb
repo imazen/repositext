@@ -6,8 +6,6 @@ class Repositext
       # Include whitespace in this count excpet for leading or trailing.
       class SubtitleMarkSpacing < Validator
 
-        include BodyTextExtractor
-
         # Runs all validations for self
         def run
           errors, warnings = [], []
@@ -34,16 +32,17 @@ class Repositext
         # @param[String] content_at
         # @return[Outcome]
         def subtitle_marks_spaced_correctly?(content_at)
-          content_with_subtitle_marks_only = extract_body_text_with_subtitle_marks(content_at)
+          content_with_subtitle_marks_only = Repositext::Utils::SubtitleMarkTools.extract_body_text_with_subtitle_marks_onlyextract_body_text_with_subtitle_marks_only(content_at)
           if !content_with_subtitle_marks_only.index('@')
             # document doesn't contain subtitle marks, skip it
             return Outcome.new(true, nil)
           end
 
-          captions = content_with_subtitle_marks_only.split('@')
-          too_long_captions = captions.find_all { |caption|
-            caption.strip.length > 120
-          }
+          captions = Repositext::Utils::SubtitleMarkTools.extract_captions(
+            content_with_subtitle_marks_only,
+            true
+          )
+          too_long_captions = captions.find_all { |caption| caption[:char_length] > 120 }
           if too_long_captions.empty?
             Outcome.new(true, nil)
           else
