@@ -7,13 +7,11 @@ class Repositext
         ['relativeMS', 'samples', 'charPos', 'charLength']
       end
 
-      # Returns just the body text of txt. Strips title
-      # and id_title and id_paragraph and all tokens but :subtitle_mark
+      # Returns just the body text of txt. Strips id_title and id_paragraph and
+      # all tokens except :subtitle_mark.
       # @param[String] txt
       def self.extract_body_text_with_subtitle_marks_only(txt)
         content = txt.dup
-        # Remove title
-        content.gsub!(/^#[^\n]+\n/, '')
         # Remove id title and paragraph
         content.gsub!(
           /

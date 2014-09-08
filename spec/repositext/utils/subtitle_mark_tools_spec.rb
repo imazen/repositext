@@ -6,7 +6,7 @@ describe Repositext::Utils::SubtitleMarkTools do
     [
       [
         "# title\n\n@word1\n@word2\n@word3",
-        "\n@word1\n@word2\n@word3"
+        " title\n\n@word1\n@word2\n@word3"
       ],
       [
         "@word1\n@word2\n@word3\ncontent of id_title, will be stripped\n{: .id_title1 }\nmore id content that will be stripped",
@@ -15,6 +15,10 @@ describe Repositext::Utils::SubtitleMarkTools do
       [
         "@word1\n@word2\n@word3\n*em*{: ial='stripped'}\n^^^ {: .rid #rid-63120029}\n",
         "@word1\n@word2\n@word3\nem"
+      ],
+      [
+        "# title\n@word1\n@word2\n\n### @subtitle\n@word3\n",
+        " title\n@word1\n@word2\n @subtitle\n@word3\n"
       ],
     ].each do |test_string, xpect|
       it "handles #{ test_string.inspect }" do
