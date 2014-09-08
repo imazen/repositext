@@ -27,7 +27,7 @@ class Repositext
       def self.pre_process(txt)
         gmt = txt.dup
         # temporarily replace underscores in IALs, otherwise they'd be removed
-        # by suspension as :emphasis tokens
+        # by Suspension as :emphasis tokens
         gmt.gsub!('_', "(underscore placeholder)")
         gmt
       end
@@ -37,7 +37,7 @@ class Repositext
           txt,
           Suspension::REPOSITEXT_TOKENS.find_all { |e|
             ![
-              :subtitle_mark,
+              :gap_mark,
               :header_atx,
               :ial_block,
               :ial_span,
@@ -48,8 +48,9 @@ class Repositext
 
       def self.post_process(txt)
         gmt = txt.dup
-        gmt.gsub!(/(?<!\n)\{[^\}]+\}/, '')
-        gmt.gsub!('(underscore placeholder)', '_')
+        gmt.gsub!(/(?<!\n)\{[^\}]+\}/, '') # remove inline IALs
+        gmt.gsub!('(underscore placeholder)', '_') # convert underscore placeholders to underscores
+        gmt.gsub!(/(?<=\n)#+\s+/, '') # remove header hash marks
         gmt
       end
 

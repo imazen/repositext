@@ -18,9 +18,6 @@ class Repositext
             [ca_filename, stm_csv_filename], @logger, @reporter, @options
           ).run
         end
-        # validate_files(:repositext_files) do |file_name|
-        #   Validator::Utf8Encoding.new(file_name, @logger, @reporter, @options).run
-        # end
       end
 
     end
