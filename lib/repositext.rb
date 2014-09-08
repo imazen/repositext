@@ -33,7 +33,6 @@ require 'repositext/constants'
 
 # Dependency boundary
 
-require 'kramdown/converter/gap_mark_tagging'
 require 'kramdown/converter/graphviz'
 require 'kramdown/converter/html_doc'
 require 'kramdown/converter/icml'
@@ -92,6 +91,7 @@ require 'repositext/cli/rtfile_dsl'
 require 'repositext/cli/utils'
 require 'repositext/compare/record_id_and_paragraph_alignment'
 require 'repositext/convert/latex_to_pdf'
+require 'repositext/export/gap_mark_tagging'
 require 'repositext/fix/adjust_gap_mark_positions'
 require 'repositext/fix/adjust_merged_record_mark_positions'
 require 'repositext/fix/convert_abbreviations_to_lower_case'

@@ -24,16 +24,12 @@ class Repositext
             }
           )
         ) do |contents, filename|
-          # Since the kramdown parser is specified as module in Rtfile,
-          # I can't use the standard kramdown API:
-          # `doc = Kramdown::Document.new(contents, :input => 'kramdown_repositext')`
-          # We have to patch a base Kramdown::Document with the root to be able
-          # to convert it.
-          root, warnings = config.kramdown_parser(:kramdown).parse(contents)
-          doc = Kramdown::Document.new('')
-          doc.root = root
-          gap_mark_tagging = doc.send(config.kramdown_converter_method(:to_gap_mark_tagging))
-          [Outcome.new(true, { contents: gap_mark_tagging, extension: 'gap_mark_tagging.txt' })]
+          outcome = Repositext::Export::GapMarkTagging.export(contents)
+          if outcome.success?
+            [Outcome.new(true, { contents: outcome.result, extension: 'gap_mark_tagging.txt' })]
+          else
+            outcome
+          end
         end
       end
 
