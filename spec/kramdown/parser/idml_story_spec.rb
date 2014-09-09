@@ -83,7 +83,7 @@ describe Kramdown::Parser::IdmlStory do
           </CharacterStyleRange>
         ),
         {},
-        %(*should be italic,* *smallcaps*{: .smcaps .italic}*, italic again!*\n{: .normal}\n\n)
+        %(*should be italic,* *smallcaps*{: .italic .smcaps}*, italic again!*\n{: .normal}\n\n)
       ],
       [
         "removes styling from Content nodes that contain whitespace only.",
@@ -114,7 +114,7 @@ describe Kramdown::Parser::IdmlStory do
           </CharacterStyleRange>
         ),
         {},
-        %(*Para 1*{: .smcaps .italic} *padded with whitespace* *Para 3*{: .smcaps\n.italic}\n{: .normal}\n\n)
+        %(*Para 1*{: .italic .smcaps} *padded with whitespace* *Para 3*{: .italic\n.smcaps}\n{: .normal}\n\n)
       ],
       [
        "moves trailing whitespace outside of em elements",
@@ -140,7 +140,7 @@ describe Kramdown::Parser::IdmlStory do
           </CharacterStyleRange>
         ),
         {},
-        %(*This is italic a*{::}*nd this is italic with smallcaps.*{: .smcaps\n.italic}\n{: .normal}\n\n)
+        %(*This is italic a*{::}*nd this is italic with smallcaps.*{: .italic\n.smcaps}\n{: .normal}\n\n)
       ],
       [
         "removes Content nodes that contain whitespace only while preserving the unstyled whitespace",

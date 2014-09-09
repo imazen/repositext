@@ -3,7 +3,8 @@ require_relative '../../helper'
 describe Repositext::Fix::ConvertAbbreviationsToLowerCase do
 
   [
-    ['A.M.', '*a.m.*{: .smcaps}'],
+    ['A.M.', 'A.M.'],
+    [' A.M.', ' *a.m.*{: .smcaps}'],
     ['P.M.', '*p.m.*{: .smcaps}'],
     ['A.D.', '*a.d.*{: .smcaps}'],
     ['B.C.', '*b.c.*{: .smcaps}'],
@@ -23,7 +24,7 @@ describe Repositext::Fix::ConvertAbbreviationsToLowerCase do
     ["Ph.D., LL.D., double L.D., Q.S.D., A.B.C.D.E.F. on down to ", "Ph.D., LL.D., double L.D., Q.S.D., A.B.C.D.E.F. on down to "],
   ].each do |(txt, xpect)|
     it "handles #{ txt.inspect }" do
-      o = Repositext::Fix::ConvertAbbreviationsToLowerCase.fix(txt)
+      o = Repositext::Fix::ConvertAbbreviationsToLowerCase.fix(txt, '_')
       o.result[:contents].must_equal(xpect)
     end
   end

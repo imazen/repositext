@@ -7,7 +7,7 @@ describe Repositext::Export::GapMarkTagging do
       ["no change", "no change"],
       [
         "^^^ {: .rid}\n\n# Header\n\n@%*1*{: .pn} word1 word2 word3\n{: .class}\n",
-        " Header\n\n%1 word1 word2 word3\n{: .class}\n",
+        "\n Header\n\n%1 word1 word2 word3\n{: .class}\n",
       ],
     ].each do |txt, xpect|
       it "handles #{ txt.inspect }" do

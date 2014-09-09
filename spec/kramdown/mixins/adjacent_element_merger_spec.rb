@@ -30,8 +30,7 @@ describe ::Kramdown::AdjacentElementMerger do
         ),
         %( - :p - {"id"=>"p1"}
              - :em - {"class"=>"a", "id"=>"em_a1"}
-               - :text - "text1"
-               - :text - "text2"
+               - :text - "text1text2"
           )
       ],
       [
@@ -44,8 +43,7 @@ describe ::Kramdown::AdjacentElementMerger do
         ),
         %( - :p - {"id"=>"p1"}
              - :strong - {"class"=>"a", "id"=>"strong_a1"}
-               - :text - "text1"
-               - :text - "text2"
+               - :text - "text1text2"
           )
       ],
       [
@@ -74,9 +72,7 @@ describe ::Kramdown::AdjacentElementMerger do
         ),
         %( - :p - {"id"=>"p1"}
              - :em - {"class"=>"a", "id"=>"em_a1"}
-               - :text - "text1"
-               - :text - {"id"=>"text_b1"} - " "
-               - :text - "text2"
+               - :text - "text1 text2"
           )
       ],
     ].each do |desc, kt, xpect|

@@ -39,7 +39,7 @@ describe Repositext::Cli do
     ].each do |command|
       it "responds to '#{ command }'" do
         out = capture_io { Repositext::Cli.start([command, 'test', '--rtfile', nil]) }.join.strip
-        out.must_equal "#{ command }_test"
+        out.must_include "#{ command }_test"
       end
     end
   end
@@ -51,7 +51,7 @@ describe Repositext::Cli do
     ].each do |command|
       it "responds to '#{ command }'" do
         out = capture_io { Repositext::Cli.start([command, 'test', '--rtfile', nil]) }.join.strip
-        out.must_equal "#{ command }_test"
+        out.must_include "#{ command }_test"
       end
     end
   end

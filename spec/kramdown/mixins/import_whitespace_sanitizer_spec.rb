@@ -129,13 +129,13 @@ describe ::Kramdown::ImportWhitespaceSanitizer do
         "removes multiple space only first children",
         construct_kramdown_rt_tree(
           [p1, [
-            text_ts1,
-            text_ts1,
+            text_so1,
+            text_so1,
             text1,
           ]]
         ),
         %( - :p - {"id"=>"p1"}
-             - :text - {"id"=>"text1"} - "text1"
+             - :text - "text1"
           )
       ],
       [
@@ -143,12 +143,12 @@ describe ::Kramdown::ImportWhitespaceSanitizer do
         construct_kramdown_rt_tree(
           [p1, [
             text1,
-            text_ts1,
-            text_ts1,
+            text_so1,
+            text_so1,
           ]]
         ),
         %( - :p - {"id"=>"p1"}
-             - :text - {"id"=>"text1"} - "text1"
+             - :text - "text1"
           )
       ],
     ].each do |desc, kt, xpect|

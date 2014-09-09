@@ -38,7 +38,7 @@ describe ::Kramdown::NestedEmsProcessor do
         %( - :p - {"id"=>"p1"}
              - :em - {"id"=>"em1"}
                - :text - "text1"
-             - :em - {"class"=>"smcaps italic", "id"=>"em_sc1"}
+             - :em - {"class"=>"italic smcaps", "id"=>"em_sc1"}
                - :text - "text2"
              - :em - {"id"=>"em1"}
                - :text - "text3"
@@ -69,11 +69,11 @@ describe ::Kramdown::NestedEmsProcessor do
         %( - :p - {"id"=>"p1"}
              - :em - {"id"=>"em1"}
                - :text - "text1"
-             - :em - {"class"=>"smcaps italic", "id"=>"em_sc1"}
+             - :em - {"class"=>"italic smcaps", "id"=>"em_sc1"}
                - :text - "text2"
              - :em - {"id"=>"em1"}
                - :text - "text3"
-             - :em - {"class"=>"smcaps italic", "id"=>"em_sc2"}
+             - :em - {"class"=>"italic smcaps", "id"=>"em_sc2"}
                - :text - "text4"
              - :em - {"id"=>"em1"}
                - :text - "text5"

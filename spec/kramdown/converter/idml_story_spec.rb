@@ -74,7 +74,6 @@ describe Kramdown::Converter::IdmlStory do
         <ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/Horizontal rule">
           <CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
             <Content>* * *</Content>
-            <Br />
           </CharacterStyleRange>
         </ParagraphStyleRange>
       ).strip.gsub(/        /, '') + "\n"
