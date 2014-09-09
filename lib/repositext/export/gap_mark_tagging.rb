@@ -7,8 +7,10 @@ class Repositext
     class GapMarkTagging
 
       # Exports content_at to gap_mark_tagging.
-      # Uses Suspension to remove everything but paragraph IALs and gap_marks
-      # tokens.
+      # Uses Suspension to remove everything but:
+      #  * gap_marks
+      #  * paragraph IALs
+      #  * headers
       # @param[String] content_at
       # @return[Outcome] where result is gap_mark_tagging text
       def self.export(content_at)
@@ -50,7 +52,6 @@ class Repositext
         gmt = txt.dup
         gmt.gsub!(/(?<!\n)\{[^\}]+\}/, '') # remove inline IALs
         gmt.gsub!('(underscore placeholder)', '_') # convert underscore placeholders to underscores
-        gmt.gsub!(/(\A|\n)#+/, '') # remove header hash marks
         gmt
       end
 

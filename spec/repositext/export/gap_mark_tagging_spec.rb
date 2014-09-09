@@ -7,7 +7,7 @@ describe Repositext::Export::GapMarkTagging do
       ["no change", "no change"],
       [
         "^^^ {: .rid}\n\n# Header\n\n@%*1*{: .pn} word1 word2 word3\n{: .class}\n",
-        "\n Header\n\n%1 word1 word2 word3\n{: .class}\n",
+        "\n# Header\n\n%1 word1 word2 word3\n{: .class}\n",
       ],
     ].each do |txt, xpect|
       it "handles #{ txt.inspect }" do
@@ -21,8 +21,8 @@ describe Repositext::Export::GapMarkTagging do
       ["no change", "no change"],
       ["span IALs are removed{: .class}", "span IALs are removed"],
       ["(underscore placeholder)s are processed", "_s are processed"],
-      ["# header hash marks are removed", " header hash marks are removed"],
-      ["### header hash marks are removed", " header hash marks are removed"],
+      ["# headers are preserved", "# headers are preserved"],
+      ["### headers are preserved", "### headers are preserved"],
       ["block IALs are preserved\n{: .class}\n", "block IALs are preserved\n{: .class}\n"],
       ["%gap marks are preserved", "%gap marks are preserved"],
     ].each do |txt, xpect|
