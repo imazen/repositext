@@ -22,12 +22,12 @@ class Repositext
           pt_files: 'content_dir/pt_files',
           repositext_files: 'content_dir/repositext_files'
         )
-        Repositext::Validation::Content.new(
-          file_specs,
-          {
-            'kramdown_validation_parser_class' => config.kramdown_parser(:kramdown_validation)
-          }.merge(options)
-        ).run
+        validation_options = {
+          'is_primary_repo' => config.setting(:is_primary_repo),
+          'kramdown_validation_parser_class' => config.kramdown_parser(:kramdown_validation),
+          'relative_path_to_primary_repo' => config.setting(:relative_path_to_primary_repo),
+        }.merge(options)
+        Repositext::Validation::Content.new(file_specs, validation_options).run
       end
 
       # Validates all files related to folio xml import
@@ -49,16 +49,10 @@ class Repositext
           'kramdown_validation_parser_class' => config.kramdown_parser(:kramdown_validation)
         }.merge(options)
         if options['run_options'].include?('pre_import')
-          Repositext::Validation::FolioXmlPreImport.new(
-            file_specs,
-            validation_options
-          ).run
+          Repositext::Validation::FolioXmlPreImport.new(file_specs, validation_options).run
         end
         if options['run_options'].include?('post_import')
-          Repositext::Validation::FolioXmlPostImport.new(
-            file_specs,
-            validation_options
-          ).run
+          Repositext::Validation::FolioXmlPostImport.new(file_specs, validation_options).run
         end
       end
 
@@ -78,16 +72,10 @@ class Repositext
           'kramdown_validation_parser_class' => config.kramdown_parser(:kramdown_validation),
         }.merge(options)
         if options['run_options'].include?('pre_import')
-          Repositext::Validation::GapMarkTaggingPreImport.new(
-            file_specs,
-            validation_options
-          ).run
+          Repositext::Validation::GapMarkTaggingPreImport.new(file_specs, validation_options).run
         end
         if options['run_options'].include?('post_import')
-          Repositext::Validation::GapMarkTaggingPostImport.new(
-            file_specs,
-            validation_options
-          ).run
+          Repositext::Validation::GapMarkTaggingPostImport.new(file_specs, validation_options).run
         end
       end
 
@@ -111,16 +99,10 @@ class Repositext
           'kramdown_validation_parser_class' => config.kramdown_parser(:kramdown_validation),
         }.merge(options)
         if options['run_options'].include?('pre_import')
-          Repositext::Validation::IdmlPreImport.new(
-            file_specs,
-            validation_options
-          ).run
+          Repositext::Validation::IdmlPreImport.new(file_specs, validation_options).run
         end
         if options['run_options'].include?('post_import')
-          Repositext::Validation::IdmlPostImport.new(
-            file_specs,
-            validation_options
-          ).run
+          Repositext::Validation::IdmlPostImport.new(file_specs, validation_options).run
         end
       end
 
@@ -136,39 +118,19 @@ class Repositext
           subtitle_export_files: 'subtitle_export_dir/txt_files',
         )
         validation_options = {
-          'subtitle_converter_method_name' => config.kramdown_converter_method(:to_subtitle),
-          'subtitle_export_converter_method_name' => config.kramdown_converter_method(:to_subtitle),
+          'is_primary_repo' => config.setting(:is_primary_repo),
           'kramdown_parser_class' => config.kramdown_parser(:kramdown),
           'kramdown_validation_parser_class' => config.kramdown_parser(:kramdown_validation),
+          'relative_path_to_primary_repo' => config.setting(:relative_path_to_primary_repo),
+          'subtitle_converter_method_name' => config.kramdown_converter_method(:to_subtitle),
+          'subtitle_export_converter_method_name' => config.kramdown_converter_method(:to_subtitle),
         }.merge(options)
         if options['run_options'].include?('pre_import')
-          Repositext::Validation::SubtitlePreImport.new(
-            file_specs,
-            validation_options
-          ).run
+          Repositext::Validation::SubtitlePreImport.new(file_specs, validation_options).run
         end
         if options['run_options'].include?('post_import')
-          Repositext::Validation::SubtitlePostImport.new(
-            file_specs,
-            validation_options
-          ).run
+          Repositext::Validation::SubtitlePostImport.new(file_specs, validation_options).run
         end
-      end
-
-      def validate_subtitle_mark_changes(options)
-        options['report_file'] ||= config.compute_glob_pattern(
-          'content_dir/validation_report_file'
-        )
-        reset_validation_report(options, 'validate_subtitle_mark_changes')
-        file_specs = config.compute_validation_file_specs(
-          primary: 'content_dir/all_files', # for reporting only
-          content_at_files: 'content_dir/at_files',
-          subtitle_markers_csv_files: 'content_dir/csv_files',
-        )
-        Repositext::Validation::SubtitleMarkChanges.new(
-          file_specs,
-          options
-        ).run
       end
 
       def validate_subtitle_tagging_import(options)
@@ -183,22 +145,17 @@ class Repositext
           subtitle_export_files: 'subtitle_tagging_export_dir/txt_files',
         )
         validation_options = {
-          'subtitle_converter_method_name' => config.kramdown_converter_method(:to_subtitle_tagging),
-          'subtitle_export_converter_method_name' => config.kramdown_converter_method(:to_subtitle),
+          'is_primary_repo' => config.setting(:is_primary_repo),
           'kramdown_parser_class' => config.kramdown_parser(:kramdown),
           'kramdown_validation_parser_class' => config.kramdown_parser(:kramdown_validation),
+          'subtitle_converter_method_name' => config.kramdown_converter_method(:to_subtitle_tagging),
+          'subtitle_export_converter_method_name' => config.kramdown_converter_method(:to_subtitle),
         }.merge(options)
         if options['run_options'].include?('pre_import')
-          Repositext::Validation::SubtitlePreImport.new(
-            file_specs,
-            validation_options
-          ).run
+          Repositext::Validation::SubtitlePreImport.new(file_specs, validation_options).run
         end
         if options['run_options'].include?('post_import')
-          Repositext::Validation::SubtitlePostImport.new(
-            file_specs,
-            validation_options
-          ).run
+          Repositext::Validation::SubtitlePostImport.new(file_specs, validation_options).run
         end
       end
 

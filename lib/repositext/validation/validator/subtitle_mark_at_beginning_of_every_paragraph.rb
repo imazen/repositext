@@ -4,6 +4,8 @@ class Repositext
       # Validates that there is a subtitle_mark at the beginning of every paragraph
       class SubtitleMarkAtBeginningOfEveryParagraph < Validator
 
+        class NoSubtitleMarkAtBeginningOfParagraph < StandardError; end
+
         # Runs all validations for self
         def run
           errors, warnings = [], []
@@ -31,28 +33,42 @@ class Repositext
           paragraphs_without_subtitle_mark = case @options[:content_type]
           when :import
             check_import_file(content)
+            if paragraphs_without_subtitle_mark.empty?
+              Outcome.new(true, nil)
+            else
+              # We want to terminate an import if there isn't a subtitle_mark
+              # at the beginning of every paragraph.
+              # Normally we'd return a negative outcome (see :content), but in this
+              # case we raise an exception.
+              raise NoSubtitleMarkAtBeginningOfParagraph.new(
+                [
+                  "The following paragraphs don't start with a subtitle_mark:",
+                  paragraphs_without_subtitle_mark.map { |e| e.inspect }.join("\n")
+                ].join("\n")
+              )
+            end
           when :content
             check_content_file(content)
+            if paragraphs_without_subtitle_mark.empty?
+              Outcome.new(true, nil)
+            else
+              Outcome.new(
+                false, nil, [],
+                [
+                  Reportable.error(
+                    [@file_to_validate], # content_at file
+                    [
+                      "The following paragraphs don't start with a subtitle_mark:",
+                      paragraphs_without_subtitle_mark.map { |e| e.inspect }.join("\n")
+                    ]
+                  )
+                ]
+              )
+            end
           else
             raise ArgumentError.new("Invalid @options[:content_type]: #{ @options[:content_type].inspect }")
           end
 
-          if paragraphs_without_subtitle_mark.empty?
-            Outcome.new(true, nil)
-          else
-            Outcome.new(
-              false, nil, [],
-              [
-                Reportable.error(
-                  [@file_to_validate], # content_at file
-                  [
-                    "The following paragraphs don't start with a subtitle_mark:",
-                    paragraphs_without_subtitle_mark.map { |e| e.inspect }.join("\n")
-                  ]
-                )
-              ]
-            )
-          end
         end
 
         # @param[String] content
@@ -72,6 +88,10 @@ class Repositext
         end
 
         def get_paragraphs_that_dont_start_with_subtitle_mark(content)
+          if !content.index('@')
+            # Document doesn't contain subtitle marks, skip it
+            return []
+          end
           # split on para boundaries and find those that don't start with subtitle_mark
           content.strip.split(/\n+/).find_all { |para|
             '@' != para.strip[0]

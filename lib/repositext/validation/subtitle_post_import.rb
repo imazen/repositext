@@ -3,31 +3,22 @@ class Repositext
     class SubtitlePostImport < Validation
 
       # Specifies validations to run after subtitle/subtitle_tagging import.
-      # NOTE: md files are not affected by subtitle/subtitle_tagging import, so we don't need to validate them.
       def run_list
-        # Validate that subtitle_mark counts match between content_at and subtitle marker csv files
-        # Define proc that computes subtitle_marker_csv filename from content_at filename
-        sm_csv_filename_proc = lambda { |input_filename, file_specs|
-          input_filename.gsub(/\.at\z/, '.subtitle_markers.csv')
-        }
-        # Run pairwise validation
-        validate_file_pairs(:content_at_files, sm_csv_filename_proc) do |ca_filename, sm_csv_filename|
-          Validator::SubtitleMarkCountsMatch.new(
-            [ca_filename, sm_csv_filename], @logger, @reporter, @options
-          ).run
+
+        # Single files
+
+        validate_files(:content_at_files) do |filename|
+          Validator::KramdownSyntaxAt.new(filename, @logger, @reporter, @options).run
+          Validator::Utf8Encoding.new(filename, @logger, @reporter, @options).run
+          if @options['is_primary_repo']
+            Validator::SubtitleMarkAtBeginningOfEveryParagraph.new(
+              filename, @logger, @reporter, @options.merge(:content_type => :content)
+            ).run
+            Validator::SubtitleMarkSpacing.new(filename, @logger, @reporter, @options).run
+          end
         end
 
-        # Validate subtitle_mark spacing
-        validate_files(:content_at_files) do |filename|
-          Validator::SubtitleMarkSpacing.new(filename, @logger, @reporter, @options).run
-        end
-
-        # Validate that every paragraph in the content_at file begins with a subtitle_mark
-        validate_files(:content_at_files) do |filename|
-          Validator::SubtitleMarkAtBeginningOfEveryParagraph.new(
-            filename, @logger, @reporter, @options.merge(:content_type => :content)
-          ).run
-        end
+        # File pairs
 
         # Validate that subtitle_export from new content_at is identical to
         # subtitle/subtitle_tagging import file. This is an extra safety measure
@@ -50,11 +41,18 @@ class Repositext
           ).run
         end
 
-        # Validate content_at files
-        validate_files(:content_at_files) do |filename|
-          Validator::Utf8Encoding.new(filename, @logger, @reporter, @options).run
-          Validator::KramdownSyntaxAt.new(filename, @logger, @reporter, @options).run
+        # Validate that subtitle_mark counts match between content_at and subtitle marker csv files
+        # Define proc that computes subtitle_marker_csv filename from content_at filename
+        stm_csv_file_name_proc = lambda { |input_filename, file_specs|
+          input_filename.gsub(/\.at\z/, '.subtitle_markers.csv')
+        }
+        # Run pairwise validation
+        validate_file_pairs(:content_at_files, stm_csv_file_name_proc) do |ca_filename, stm_csv_filename|
+          Validator::SubtitleMarkCountsMatch.new(
+            [ca_filename, stm_csv_filename], @logger, @reporter, @options
+          ).run
         end
+
       end
 
     end

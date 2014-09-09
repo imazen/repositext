@@ -4,6 +4,21 @@ class Repositext
 
       # Specifies validations to run before subtitle/subtitle_tagging import.
       def run_list
+
+        # Single files
+
+        # Validate that every paragraph in the import file begins with a subtitle_mark
+        validate_files(:subtitle_import_files) do |file_name|
+          next  if file_name.index('markers.') # skip markers files
+          if @options['is_primary_repo']
+            Validator::SubtitleMarkAtBeginningOfEveryParagraph.new(
+              file_name, @logger, @reporter, @options.merge(:content_type => :import)
+            ).run
+          end
+        end
+
+        # File pairs
+
         # Validate that the subtitle/subtitle_tagging import still matches content_at
         # Define proc that computes subtitle/subtitle_tagging import filename from content_at filename
         si_file_name_proc = lambda { |input_filename, file_specs|
@@ -23,13 +38,6 @@ class Repositext
           ).run
         end
 
-        # Validate that every paragraph in the import file begins with a subtitle_mark
-        validate_files(:subtitle_import_files) do |file_name|
-          next  if file_name.index('markers.') # skip markers files
-          Validator::SubtitleMarkAtBeginningOfEveryParagraph.new(
-            file_name, @logger, @reporter, @options.merge(:content_type => :import)
-          ).run
-        end
       end
 
     end

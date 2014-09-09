@@ -4,15 +4,36 @@ class Repositext
 
       # Specifies validations to run for files in the /content directory
       def run_list
+
+        # Single files
+
+        validate_files(:at_files) do |file_name|
+          Validator::KramdownSyntaxAt.new(file_name, @logger, @reporter, @options).run
+          if @options['is_primary_repo']
+            Validator::SubtitleMarkSpacing.new(file_name, @logger, @reporter, @options).run
+          end
+        end
         validate_files(:repositext_files) do |file_name|
           Validator::Utf8Encoding.new(file_name, @logger, @reporter, @options).run
         end
-        validate_files(:at_files) do |file_name|
-          Validator::KramdownSyntaxAt.new(file_name, @logger, @reporter, @options).run
-          Validator::SubtitleMarkSpacing.new(file_name, @logger, @reporter, @options).run
-        end
-        validate_files(:pt_files) do |file_name|
-          Validator::KramdownSyntaxPt.new(file_name, @logger, @reporter, @options).run
+
+        # File pairs
+
+        # Validate that there are no significant changes to subtitle_mark positions.
+        # Define proc that computes subtitle_mark_csv filename from content_at filename
+        stm_csv_file_name_proc = lambda { |input_filename, file_specs|
+          input_filename.gsub(/\.at\z/, '.subtitle_markers.csv')
+        }
+        # Run pairwise validation
+        validate_file_pairs(:content_at_files, stm_csv_file_name_proc) do |ca_filename, stm_csv_filename|
+          Validator::SubtitleMarkCountsMatch.new(
+            [ca_filename, stm_csv_filename], @logger, @reporter, @options
+          ).run
+          if @options['is_primary_repo']
+            Validator::SubtitleMarkNoSignificantChanges.new(
+              [ca_filename, stm_csv_filename], @logger, @reporter, @options
+            ).run
+          end
         end
       end
 

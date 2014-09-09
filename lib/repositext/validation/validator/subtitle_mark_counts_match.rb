@@ -38,7 +38,7 @@ class Repositext
           subtitle_marker_csv_count = subtitle_marker_csv.strip.count("\n")
 
           # compare the two counts
-          if content_at_count == subtitle_marker_csv_count
+          if 0 == content_at_count || content_at_count == subtitle_marker_csv_count
             Outcome.new(true, nil)
           else
             Outcome.new(

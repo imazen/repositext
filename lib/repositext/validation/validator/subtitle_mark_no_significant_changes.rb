@@ -30,15 +30,16 @@ class Repositext
 
         # Checks if any subtitle_marks have been changed significantly compared
         # to their positions saved in subtitle_markers.csv
+        # Only applied if content_at contains subtitle_marks.
         # @param[String] content_at
         # @param[CSV] subtitle_marker_csv
         # @return[Outcome]
         def significant_changes?(content_at, subtitle_marker_csv)
           raise(ArgumentError.new("content_at is empty."))  if content_at.to_s.strip.empty?
           raise(ArgumentError.new("subtitle_marker_csv is empty."))  if subtitle_marker_csv.to_s.strip.empty?
-          if 0 == content_at.count('@')
-            # We skip content_at files that don't contain any subtitle_marks
-            return(Outcome.new(true, nil))
+          if !content_at.index('@')
+            # Document doesn't contain subtitle marks, skip it
+            return Outcome.new(true, nil)
           end
           csv = CSV.new(subtitle_marker_csv, col_sep: "\t", headers: :first_row)
           previous_stm_positions_and_lengths = csv.to_a.map { |row|

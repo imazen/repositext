@@ -23,16 +23,15 @@ Examples:
 # Provide a key and value for each setting. You can retrieve them in the app
 # via config.setting(:language_code_3_chars)
 
-setting :language_code_3_chars, 'eng'
-
-# See iso 639-1 for a list of all two character language codes
-setting :language_code_2_chars, 'en'
-
 # Folio import strategy
 # Options:
 # * :merge_record_ids_into_idml: imports all folio files and merges record ids where idml exists
 # * :only_use_if_idml_not_present: imports all folio files, only uses folio where idml does not exist
 setting :folio_import_strategy, :only_use_if_idml_not_present
+setting :is_primary_repo, false
+setting :language_code_3_chars, 'eng'
+setting :language_code_2_chars, 'en' # See iso 639-1 for a list of all two character language codes
+setting :relative_path_to_primary_repo, '../primary_repo_name'
 
 # Base directories
 # ----------------

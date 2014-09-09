@@ -28,13 +28,14 @@ class Repositext
 
       private
 
-        # Checks that subtitle marks in content_at are spaced correctly
+        # Checks that subtitle marks in content_at are spaced correctly.
+        # Only applied if content_at contains subtitle_marks.
         # @param[String] content_at
         # @return[Outcome]
         def subtitle_marks_spaced_correctly?(content_at)
           content_with_subtitle_marks_only = Repositext::Utils::SubtitleMarkTools.extract_body_text_with_subtitle_marks_only(content_at)
           if !content_with_subtitle_marks_only.index('@')
-            # document doesn't contain subtitle marks, skip it
+            # Document doesn't contain subtitle marks, skip it
             return Outcome.new(true, nil)
           end
 
