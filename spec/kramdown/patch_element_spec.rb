@@ -99,6 +99,11 @@ describe Kramdown::Element do
       e.remove_class('class3')
       e.attr['class'].must_equal 'class1 class2'
     end
+    it "works with elements that have no classes" do
+      e = Kramdown::Element.new(:text, nil)
+      e.remove_class('class')
+      e.attr['class'].must_equal ''
+    end
     it "strips whitespace from removed class" do
       e = Kramdown::Element.new(:text, nil, 'class' => 'class1 class2')
       e.remove_class(' class2 ')
