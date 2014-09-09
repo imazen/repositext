@@ -31,7 +31,7 @@ class Repositext
         options['append_to_validation_report'] = false
         reset_validation_report(options, 'validate_gap_mark_tagging_import')
         validate_gap_mark_tagging_import(options.merge('run_options' => %w[pre_import]))
-        merge_gap_marks_from_gap_mark_tagging_import_into_content_at(options)
+        merge_gap_mark_tagging_import_into_content_at(options)
         fix_normalize_subtitle_mark_before_gap_mark_positions(
           options.merge({ 'input' => 'content_dir/at_files' })
         )

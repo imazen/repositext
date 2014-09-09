@@ -50,7 +50,7 @@ class Repositext
         gmt = txt.dup
         gmt.gsub!(/(?<!\n)\{[^\}]+\}/, '') # remove inline IALs
         gmt.gsub!('(underscore placeholder)', '_') # convert underscore placeholders to underscores
-        gmt.gsub!(/(?<=\n)#+\s+/, '') # remove header hash marks
+        gmt.gsub!(/(\A|\n)#+/, '') # remove header hash marks
         gmt
       end
 

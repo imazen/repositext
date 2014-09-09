@@ -46,31 +46,20 @@ class Repositext
         def contents_match?(content_at, gap_mark_tagging_import)
           # We have to export content_at in both cases to a temporary gap_mark_tagging_export
           # so that we can compare it with the gap_mark_tagging_import
-
-          # Since the kramdown parser is specified as module in Rtfile,
-          # I can't use the standard kramdown API:
-          # `doc = Kramdown::Document.new(contents, :input => 'kramdown_repositext')`
-          # We have to patch a base Kramdown::Document with the root to be able
-          # to convert it.
-          root, warnings = @options['kramdown_parser_class'].parse(content_at)
-          doc = Kramdown::Document.new('')
-          doc.root = root
-
+          tmp_gap_mark_tagging_export = Repositext::Export::GapMarkTagging.export(content_at).result
           case @options[:gap_mark_tagging_import_consistency_compare_mode]
           when 'pre_import'
             # We re-export the existing content_at to gap_mark_tagging
             # and compare the result with gap_mark_tagging_import after removing
             # subtitle_marks and gap_marks in both since we expect them to change.
-            tmp_gap_mark_tagging_export = doc.send(@options['gap_mark_tagging_converter_method_name'])
-            string_1 = tmp_gap_mark_tagging_export.gsub(/[%@]/, '')
-            string_2 = gap_mark_tagging_import.gsub(/[%@]/, '')
+            string_1 = Repositext::Merge::GapMarkTaggingImportIntoContentAt.remove_gap_marks_and_omit_classes(tmp_gap_mark_tagging_export)
+            string_2 = Repositext::Merge::GapMarkTaggingImportIntoContentAt.remove_gap_marks_and_omit_classes(gap_mark_tagging_import)
             error_message = "\n\nText mismatch between gap_mark_tagging_import and content_at in #{ @file_to_validate.last }."
           when 'post_import'
             # We re-export the new content_at to gap_mark_tagging and compare the result
             # with gap_mark_tagging_import. We remove subtitle_marks since they
             # are stripped during gap_mark_tagging export. We leave gap_marks in
             # place since they should be identical if everything works correctly.
-            tmp_gap_mark_tagging_export = doc.send(@options['gap_mark_tagging_converter_method_name'])
             string_1 = gap_mark_tagging_import.gsub(/[@]/, '')
             string_2 = tmp_gap_mark_tagging_export.gsub(/[@]/, '')
             error_message = "\n\nText mismatch between gap_mark_tagging_import and gap_mark_tagging_export from content_at in #{ @file_to_validate.last }."

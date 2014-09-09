@@ -88,9 +88,9 @@ class Repositext
         $stderr.puts " - Manual merges: #{ manual_success_count } files."
       end
 
-      # Merges gap_marks from gap_mark_tagging_import into content AT.
-      # Uses content AT as authority for text and all tokens except gap_marks.
-      def merge_gap_marks_from_gap_mark_tagging_import_into_content_at(options)
+      # Merges gap_mark_tagging_import into content AT.
+      # Uses content AT as authority for text.
+      def merge_gap_mark_tagging_import_into_content_at(options)
         input_file_spec_gap_mark_tagging_import = options['input_1'] || 'gap_mark_tagging_import_dir/txt_files'
         input_file_pattern_gap_mark_tagging_import = config.compute_glob_pattern(input_file_spec_gap_mark_tagging_import)
         base_dir_gap_mark_tagging_import = config.base_dir(:gap_mark_tagging_import_dir)
@@ -116,7 +116,7 @@ class Repositext
           output_file_name = content_at_file_name
 
           begin
-            outcome = Repositext::Merge::GapMarksFromGapMarkImportIntoContentAt.merge(
+            outcome = Repositext::Merge::GapMarkTaggingImportIntoContentAt.merge(
               File.read(gap_mark_tagging_import_file_name),
               File.read(content_at_file_name),
             )

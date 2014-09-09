@@ -74,8 +74,6 @@ class Repositext
           gap_mark_tagging_export_files: 'gap_mark_tagging_export_dir/txt_files',
         )
         validation_options = {
-          'gap_mark_tagging_converter_method_name' => config.kramdown_converter_method(:to_gap_mark_tagging),
-          'gap_mark_export_extension' => 'gap_mark_tagging.txt',
           'kramdown_parser_class' => config.kramdown_parser(:kramdown),
           'kramdown_validation_parser_class' => config.kramdown_parser(:kramdown_validation),
         }.merge(options)
