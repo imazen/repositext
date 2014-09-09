@@ -44,10 +44,21 @@ class Repositext
         # Validate that subtitle_mark counts match between content_at and subtitle marker csv files
         # Define proc that computes subtitle_marker_csv filename from content_at filename
         stm_csv_file_name_proc = lambda { |input_filename, file_specs|
-          input_filename.gsub(/\.at\z/, '.subtitle_markers.csv')
+          input_filename.gsub( # update path
+            @options['primary_repo_transforms'][:base_dir][:from],
+            @options['primary_repo_transforms'][:base_dir][:to]
+          ).gsub( # update language code
+            /(?<=\/)#{ @options['primary_repo_transforms'][:language_code][:from] }(?=\d)/,
+            @options['primary_repo_transforms'][:language_code][:to]
+          ).gsub( # update file extension
+            /\.at\z/,
+            '.subtitle_markers.csv'
+          )
         }
         # Run pairwise validation
         validate_file_pairs(:content_at_files, stm_csv_file_name_proc) do |ca_filename, stm_csv_filename|
+          # skip if subtitle_markers CSV file doesn't exist
+          next  if !File.exists?(stm_csv_filename)
           Validator::SubtitleMarkCountsMatch.new(
             [ca_filename, stm_csv_filename], @logger, @reporter, @options
           ).run

@@ -18,14 +18,13 @@ class Repositext
         reset_validation_report(options, 'validate_content')
         file_specs = config.compute_validation_file_specs(
           primary: 'content_dir/all_files', # for reporting only
-          at_files: 'content_dir/at_files',
-          pt_files: 'content_dir/pt_files',
+          content_at_files: 'content_dir/at_files',
           repositext_files: 'content_dir/repositext_files'
         )
         validation_options = {
           'is_primary_repo' => config.setting(:is_primary_repo),
           'kramdown_validation_parser_class' => config.kramdown_parser(:kramdown_validation),
-          'relative_path_to_primary_repo' => config.setting(:relative_path_to_primary_repo),
+          'primary_repo_transforms' => primary_repo_transforms,
         }.merge(options)
         Repositext::Validation::Content.new(file_specs, validation_options).run
       end
@@ -121,7 +120,7 @@ class Repositext
           'is_primary_repo' => config.setting(:is_primary_repo),
           'kramdown_parser_class' => config.kramdown_parser(:kramdown),
           'kramdown_validation_parser_class' => config.kramdown_parser(:kramdown_validation),
-          'relative_path_to_primary_repo' => config.setting(:relative_path_to_primary_repo),
+          'primary_repo_transforms' => primary_repo_transforms,
           'subtitle_converter_method_name' => config.kramdown_converter_method(:to_subtitle),
           'subtitle_export_converter_method_name' => config.kramdown_converter_method(:to_subtitle),
         }.merge(options)
@@ -183,6 +182,25 @@ class Repositext
         end
       end
 
+      # Returns a hash with transforms for the primary repo
+      def primary_repo_transforms
+        primary_repo_base_dir = File.expand_path(
+          File.join(
+            config.base_dir(:rtfile_dir),
+            config.setting(:relative_path_to_primary_repo)
+          )
+        )
+
+        {
+          :base_dir => {
+            :from => config.base_dir(:rtfile_dir),
+            :to => primary_repo_base_dir + '/',
+          },
+          :language_code => {
+            :from => config.setting(:language_code_3_chars),
+            :to => config.setting(:primary_repo_lang_code),
+          }
+        }
     end
   end
 end
