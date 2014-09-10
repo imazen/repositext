@@ -201,6 +201,7 @@ class Repositext
             :to => config.setting(:primary_repo_lang_code),
           }
         }
+      end
     end
   end
 end
