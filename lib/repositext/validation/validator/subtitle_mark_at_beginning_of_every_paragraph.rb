@@ -30,9 +30,9 @@ class Repositext
         # @param[String] content
         # @return[Outcome]
         def subtitle_mark_at_beginning_of_every_paragraph?(content)
-          paragraphs_without_subtitle_mark = case @options[:content_type]
+          case @options[:content_type]
           when :import
-            check_import_file(content)
+            paragraphs_without_subtitle_mark = check_import_file(content)
             if paragraphs_without_subtitle_mark.empty?
               Outcome.new(true, nil)
             else
@@ -48,7 +48,7 @@ class Repositext
               )
             end
           when :content
-            check_content_file(content)
+            paragraphs_without_subtitle_mark = check_content_file(content)
             if paragraphs_without_subtitle_mark.empty?
               Outcome.new(true, nil)
             else
@@ -68,7 +68,6 @@ class Repositext
           else
             raise ArgumentError.new("Invalid @options[:content_type]: #{ @options[:content_type].inspect }")
           end
-
         end
 
         # @param[String] content
