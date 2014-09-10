@@ -51,7 +51,6 @@ base_dir :content_dir, File.expand_path("content/", File.dirname(__FILE__))
 base_dir :folio_import_dir, File.expand_path("initial_folio_import/folio/", File.dirname(__FILE__))
 base_dir :gap_mark_tagging_export_dir, File.expand_path("gap_mark_tagging_export/", File.dirname(__FILE__))
 base_dir :gap_mark_tagging_import_dir, File.expand_path("gap_mark_tagging_import/", File.dirname(__FILE__))
-base_dir :html_import_dir, File.expand_path("html_import/", File.dirname(__FILE__))
 base_dir :icml_export_dir, File.expand_path("export_icml/", File.dirname(__FILE__))
 base_dir :idml_import_dir, File.expand_path("initial_idml_import/idml/", File.dirname(__FILE__))
 base_dir :pdf_export_dir, File.expand_path("pdf_export/", File.dirname(__FILE__))
@@ -79,7 +78,6 @@ file_pattern :all_files, '**/*'
 file_pattern :at_files, '**/*.at'
 file_pattern :csv_files, '**/*.csv'
 file_pattern :docx_files, '**/*.docx'
-file_pattern :html_files, '**/*.html'
 file_pattern :icml_files, '**/*.icml'
 file_pattern :idml_files, '**/*.idml'
 file_pattern :json_files, '**/*.json'
@@ -95,8 +93,6 @@ file_pattern :xml_files, '**/*.xml'
 # Provide a name and a Parser's class name as string.
 
 kramdown_parser :folio_xml, 'Kramdown::Parser::Folio'
-kramdown_parser :html, 'Kramdown::Parser::Html'
-kramdown_parser :html_validation, 'Kramdown::Parser::HtmlValidation'
 kramdown_parser :idml, 'Kramdown::Parser::Idml'
 kramdown_parser :idml_validation, 'Kramdown::Parser::IdmlValidation'
 kramdown_parser :kramdown, 'Kramdown::Parser::KramdownRepositext'
@@ -114,5 +110,3 @@ kramdown_converter_method :to_idml_story, :to_idml_story
 kramdown_converter_method :to_plain_text, :to_plain_text
 kramdown_converter_method :to_subtitle, :to_subtitle
 kramdown_converter_method :to_subtitle_tagging, :to_subtitle_tagging
-
-todo: should I add a mechanism to set env vars for the repo, e.g. two_char_language_code and language_code_three_char?
