@@ -148,7 +148,7 @@ class Repositext
       def self.generate_html_report(diffs, path_to_index, filename_1, filename_2)
         return nil  if diffs.empty? # Don't generate a report if they are all the same
         template_path = File.expand_path(
-          "../../cli/templates/html_diff_report.html.erb", __FILE__
+          "../../../../templates/html_diff_report.html.erb", __FILE__
         )
         @title = 'Compare Record id and paragraph alignment'
         @diffs = diffs.each_with_index.map { |e,idx|

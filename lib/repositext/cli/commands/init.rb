@@ -9,7 +9,7 @@ class Repositext
       def generate_rtfile(options)
         rtfile_path = File.join(Dir.getwd, "Rtfile")
         if !File.exist?(rtfile_path) || options['force']
-          template('cli/templates/Rtfile.erb', rtfile_path)
+          template('../../templates/Rtfile.erb', rtfile_path)
         else
           $stderr.puts "An Rtfile already exists in the given location. Use the --force flag to overwrite it."
         end

@@ -72,7 +72,7 @@ class Repositext
 
         # Generate index page
         template_path = File.expand_path(
-          "../../../cli/templates/html_diff_report_index.html.erb", __FILE__
+          "../../../../../templates/html_diff_report_index.html.erb", __FILE__
         )
         @title = 'Compare Record id and paragraph alignment index'
         @diff_html_files = diff_html_files.map { |e|
