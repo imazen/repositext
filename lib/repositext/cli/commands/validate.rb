@@ -154,6 +154,7 @@ class Repositext
           'is_primary_repo' => config.setting(:is_primary_repo),
           'kramdown_parser_class' => config.kramdown_parser(:kramdown),
           'kramdown_validation_parser_class' => config.kramdown_parser(:kramdown_validation),
+          'primary_repo_transforms' => primary_repo_transforms,
           'subtitle_converter_method_name' => config.kramdown_converter_method(:to_subtitle_tagging),
           'subtitle_export_converter_method_name' => config.kramdown_converter_method(:to_subtitle),
         }.merge(options)
