@@ -32,7 +32,7 @@ setting :is_primary_repo, false
 setting :language_code_2_chars, 'en' # See iso 639-1 for a list of all two character language codes
 setting :language_code_3_chars, 'eng'
 setting :primary_repo_lang_code, 'eng'
-setting :relative_path_to_primary_repo, '../primary_repo_name/'
+setting :relative_path_to_primary_repo, '../primary_repo_name'
 
 # Base directories
 # ----------------

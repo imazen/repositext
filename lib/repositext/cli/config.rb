@@ -9,8 +9,8 @@ class Repositext
       def initialize
         @base_dirs = {}
         @file_patterns = {}
-        @kramdown_parsers = {}
         @kramdown_converter_methods = {}
+        @kramdown_parsers = {}
         @settings = {}
       end
 

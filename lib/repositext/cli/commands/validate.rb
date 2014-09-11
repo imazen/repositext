@@ -105,6 +105,13 @@ class Repositext
         end
       end
 
+      def validate_rtfile(options)
+        Repositext::Validation::Rtfile.new(
+          config.base_dir(:rtfile_dir) + 'Rtfile',
+          config
+        ).run
+      end
+
       def validate_subtitle_import(options)
         options['report_file'] ||= config.compute_glob_pattern(
           'subtitle_import_dir/validation_report_file'
