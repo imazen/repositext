@@ -11,6 +11,8 @@ require 'outcome'
 require 'rugged'
 require 'suspension'
 require 'thor'
+require 'unicode_utils/downcase'
+require 'unicode_utils/upcase'
 require 'zip'
 
 # Establish namespace and class inheritance before we require nested classes

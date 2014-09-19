@@ -20,6 +20,7 @@ PATH
       rugged
       suspension
       thor
+      unicode_utils
 
 PATH
   remote: ../kramdown
@@ -49,14 +50,15 @@ GEM
     minitest-spec-expect (1.0.0)
       minitest (~> 5.0)
     multi_json (1.10.1)
-    nokogiri (1.6.2.1)
+    nokogiri (1.6.3.1)
       mini_portile (= 0.6.0)
     outcome (1.0.1)
     rake (10.1.1)
     rice (1.6.0)
-    ruby-graphviz (1.2.0)
+    ruby-graphviz (1.2.1)
     rugged (0.21.0)
     thor (0.19.1)
+    unicode_utils (1.4.0)
 
 PLATFORMS
   ruby

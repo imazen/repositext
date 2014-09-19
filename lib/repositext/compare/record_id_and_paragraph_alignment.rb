@@ -115,14 +115,12 @@ class Repositext
       # @param[String] s2
       # @return[Float] 1.0 = identical, 0.0 = no similarity at all
       def self.compute_string_similarity(s1, s2)
-        s1 = s1.downcase
-               .gsub(/\[[^\]]+\]/, ' ') # remove editors notes
-               .gsub(/[^[:alpha:]\n\t\s]/, ' ') # remove all but characters and space
-               .gsub(/[\n\t ]+/, ' ') # collapse space
-        s2 = s2.downcase
-               .gsub(/\[[^\]]+\]/, ' ') # remove editors notes
-               .gsub(/[^[:alpha:]\n\t\s]/, ' ') # remove all but characters and space
-               .gsub(/[\n\t ]+/, ' ') # collapse space
+        s1 = UnicodeUtils.downcase(s1).gsub(/\[[^\]]+\]/, ' ') # remove editors notes
+                                      .gsub(/[^[:alpha:]\n\t\s]/, ' ') # remove all but characters and space
+                                      .gsub(/[\n\t ]+/, ' ') # collapse space
+        s2 = UnicodeUtils.downcase(s2).gsub(/\[[^\]]+\]/, ' ') # remove editors notes
+                                      .gsub(/[^[:alpha:]\n\t\s]/, ' ') # remove all but characters and space
+                                      .gsub(/[\n\t ]+/, ' ') # collapse space
         sim = case
         when s1 == s2
           1.0

@@ -27,6 +27,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency('rugged')
   s.add_runtime_dependency('suspension')
   s.add_runtime_dependency('thor')
+  s.add_runtime_dependency('unicode_utils')
 
   # Test libraries
   s.add_development_dependency "bundler", "~> 1.3"
