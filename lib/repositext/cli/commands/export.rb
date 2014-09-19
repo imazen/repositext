@@ -149,10 +149,11 @@ class Repositext
           kramdown_doc = Kramdown::Document.new(
             '',
             options.merge({
-              :source_filename => filename,
-              :font_name => config.setting(:is_primary_repo) ? 'V-Calisto-St' : 'V-Excelsior LT Std',
-              :title_font_name => 'V-Calisto-St',
               :additional_footer_text => options['additional-footer-text'],
+              :font_name => config.setting(:is_primary_repo) ? 'V-Calisto-St' : 'V-Excelsior LT Std',
+              :header_text => config.setting(:pdf_header_text),
+              :source_filename => filename,
+              :title_font_name => 'V-Calisto-St',
             })
           )
           kramdown_doc.root = root
