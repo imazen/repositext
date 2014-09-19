@@ -15,6 +15,9 @@
 \usepackage{fontspec}
 % turn off ligatures
 \setmainfont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @font_name %>}
+% use different font for titles
+\newfontfamily\titlefont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @title_font_name %>}
+
 
 % needspace to make sure there is no page break in id paragraphs at the end
 \usepackage{needspace}
@@ -114,11 +117,11 @@
   {\par}
 % environment to render idtitle1 paragraphs
 \newenvironment{RtIdTitle1}
-  {\needspace{350\RtRelPt}\vspace*{\fill}\begin{center}\relscale{0.91}}
+  {\needspace{350\RtRelPt}\vspace*{\fill}\begin{center}\titlefont\relscale{0.91}}
   {\end{center}}
 % environment to render idtitle1 paragraphs
 \newenvironment{RtIdTitle2}
-  {\par\begin{center}\relscale{0.73}}
+  {\par\begin{center}\titlefont\relscale{0.73}}
   {\par\end{center}}
 % environment to render meta info
 \newenvironment{RtMetaInfo}
@@ -150,7 +153,7 @@
   {}
 % environment to render # header
 \newenvironment{RtTitle}
-  {\begin{center}\relscale{2}}
+  {\begin{center}\titlefont\relscale{2}}
   {\vspace{24\RtRelPt}\end{center}}
 
 % avoid widows and orphans

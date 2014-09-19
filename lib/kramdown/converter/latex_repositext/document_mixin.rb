@@ -70,6 +70,7 @@ module Kramdown
           @latest_commit_hash = @latest_commit.oid[0,8]
           @scale_factor = size_scale_factor
           @title = document_title
+          @title_font_name = @options[:title_font_name]
           @truncated_title_footer = compute_truncated_title(document_title, 45, 3)
           @truncated_title_header = compute_truncated_title(document_title, 70, 3)
           @page_settings = page_settings_for_latex_geometry_package

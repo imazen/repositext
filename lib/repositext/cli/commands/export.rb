@@ -150,7 +150,8 @@ class Repositext
             '',
             options.merge({
               :source_filename => filename,
-              :font_name => 'en' == config.setting(:language_code_2_chars) ? 'V-Calisto-St' : 'V-Excelsior LT Std',
+              :font_name => config.setting(:is_primary_repo) ? 'V-Calisto-St' : 'V-Excelsior LT Std',
+              :title_font_name => 'V-Calisto-St',
               :additional_footer_text => options['additional-footer-text'],
             })
           )
