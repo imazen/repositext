@@ -55,14 +55,14 @@ module Kramdown
         # @param[String] document_title
         # @return[String]
         def wrap_body_in_template(latex_body, document_title)
-          # assign i_vars referenced in template file
-          @additional_footer_text = @options[:additional_footer_text]
-          @body = latex_body
-          @date_code = @options[:source_filename].split('/')
+          date_code = @options[:source_filename].split('/')
                                                  .last
                                                  .match(/[[:alpha:]]{3}\d{2}-\d{4}[[:alpha:]]?/)
                                                  .to_s
-                                                 .capitalize
+          # assign i_vars referenced in template file
+          @additional_footer_text = @options[:additional_footer_text]
+          @body = latex_body
+          @date_code = date_code.capitalize
           @font_name = @options[:font_name]
           @git_repo = Repositext::Repository.new
           @header_text = ::Kramdown::Converter::LatexRepositext.emulate_small_caps(@options[:header_text])
@@ -75,11 +75,13 @@ module Kramdown
           @title_font_name = @options[:title_font_name]
           @truncated_title_footer = compute_truncated_title(document_title, 45, 3)
           @truncated_title_header = compute_truncated_title(document_title, 70, 3)
+          @version_control_page = @options[:version_control_page] ? compute_version_control_page(@git_repo, date_code) : ''
           # dependency boundary
           @meta_info = include_meta_info ? compute_meta_info(@git_repo, @latest_commit) : ''
 
           erb = ERB.new(latex_template)
           r = erb.result(binding)
+          r
         end
 
         # Computes a latex string for this document's meta info table
@@ -113,6 +115,42 @@ module Kramdown
           t = title.truncate(max_len, separator: /(?<=[[:alpha:]]{#{min_length_of_last_word}})\s/)
           t = ::Kramdown::Converter::LatexRepositext.emulate_small_caps(t)
           t
+        end
+
+        # Returns a list of commits and commit messages for the exported file.
+        # To be used as version_control_page in the exported pdf
+        # @param[Rugged::Repo] git_repo
+        # @param[String] date_code the exported file's date code
+        # @return[String] the version control page as latex string
+        def compute_version_control_page(git_repo, date_code)
+          file_pattern = "*#{ date_code }*"
+          recent_commits_for_file_pattern = git_repo.latest_commits_local(file_pattern)
+
+          # header
+          vcp = "\\clearpage\n"
+          vcp << "\\begin{RtSubTitle}\nVersion Control Info\n\\end{RtSubTitle}\n"
+          vcp << "\\relscale{0.66}\n"
+          # commits table
+          vcp << "\\begin{tabular}{ | l | l | l | p{9cm} |}\n"
+          vcp << "\\hline\n"
+          vcp << "\\textbf{Commit} & \\textbf{Author} & \\textbf{Date} & \\textbf{Commit message} \\\\ \n"
+          vcp << "\\hline\n"
+          recent_commits_for_file_pattern.each do |ca|
+            vcp << [
+              ca[:commit_hash],
+              ca[:author],
+              ca[:date],
+              ca[:message]
+            ].map { |e|
+              e.gsub('_', "\\_")
+            }.join(' & ') # table cells
+            vcp << "\\\\ \n" # end of table row
+            vcp << "\\hline\n"
+          end
+          vcp << "\\end{tabular}\n"
+          # footer
+          vcp << %(\n\n \\caption{The table above lists the 10 most recent git commits that included at least one file matching the pattern #{ file_pattern.inspect }.}\n\n)
+          vcp
         end
 
         # Returns page settings as string that can be passed to latex

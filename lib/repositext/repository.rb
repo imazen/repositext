@@ -79,5 +79,37 @@ class Repositext
       most_recent_commit_oid
     end
 
+    # Returns an array of hashes, one for each of the 10 most recent commits in @repo
+    # @param[String, optional] filepath
+    def latest_commits_local(filepath = '')
+      s, _ = Open3.capture2(
+        [
+          "git",
+          "--git-dir=#{ @repo_path }",
+          "log",
+          "-n10",
+          "--pretty=format:'%h|%an|%ad|%s'",
+          "--date=short",
+          "--",
+          filepath.sub(/#{ @repo.workdir }\//, ''),
+        ].join(' ')
+      )
+      if s.index('|')
+        # Contains commits
+        s.split("\n").map do |line|
+          commit_hash, author, date, message = line.split('|')
+          {
+            :commit_hash => commit_hash,
+            :author => author,
+            :date => date,
+            :message => message,
+          }
+        end
+      else
+        # No commits found, return empty array
+        []
+      end
+    end
+
   end
 end
