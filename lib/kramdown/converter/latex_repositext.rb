@@ -279,6 +279,8 @@ module Kramdown
         lb.gsub!(//, "\\RtEagle")
         # eagle: force space after leading eagle
         lb.gsub!(/(?<=\\RtEagle)\ /, '\\ ')
+        # Decode entity encoded chars
+        lb = Repositext::Utils::EntityEncoder.decode(lb)
         lb
       end
 
