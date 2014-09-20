@@ -63,18 +63,19 @@ module Kramdown
           @additional_footer_text = @options[:additional_footer_text]
           @body = latex_body
           @date_code = date_code.capitalize
-          @font_name = @options[:font_name]
+          @font_name = @options[:is_primary_repo] ? 'V-Calisto-St' : 'V-Excelsior LT Std'
           @git_repo = Repositext::Repository.new
-          @header_text = ::Kramdown::Converter::LatexRepositext.emulate_small_caps(@options[:header_text])
+          @header_text = compute_header_text_latex(@options[:header_text], @options[:is_primary_repo])
+          @header_title = compute_header_title_latex(document_title, @options[:is_primary_repo])
           @include_meta_info = include_meta_info
+          @is_primary_repo = @options[:is_primary_repo]
           @latest_commit = @git_repo.latest_commit(@options[:source_filename])
           @latest_commit_hash = @latest_commit.oid[0,8]
           @page_settings = page_settings_for_latex_geometry_package
           @scale_factor = size_scale_factor
           @title = document_title
-          @title_font_name = @options[:title_font_name]
+          @title_font_name = 'V-Calisto-St'
           @truncated_title_footer = compute_truncated_title(document_title, 45, 3)
-          @truncated_title_header = compute_truncated_title(document_title, 70, 3)
           @version_control_page = @options[:version_control_page] ? compute_version_control_page(@git_repo, date_code) : ''
           # dependency boundary
           @meta_info = include_meta_info ? compute_meta_info(@git_repo, @latest_commit) : ''
@@ -82,6 +83,34 @@ module Kramdown
           erb = ERB.new(latex_template)
           r = erb.result(binding)
           r
+        end
+
+        # @param[String] header_text
+        # @param[Boolean] is_primary_repo
+        def compute_header_text_latex(header_text, is_primary_repo)
+          if is_primary_repo
+            # italic, small caps and large font
+            t = ::Kramdown::Converter::LatexRepositext.emulate_small_caps(header_text)
+            "\\emph{#{ t }}"
+          else
+            # regular, all caps and small font
+            "\\textscale{0.7}{#{ UnicodeUtils.upcase(header_text) }}"
+          end
+        end
+
+        # @param[String] document_title
+        # @param[Boolean] is_primary_repo
+        def compute_header_title_latex(document_title, is_primary_repo)
+          if is_primary_repo
+            # bold, small caps and large font
+            truncated = compute_truncated_title(document_title, 70, 3)
+            small_caps = ::Kramdown::Converter::LatexRepositext.emulate_small_caps(truncated)
+            "\\textbf{#{ small_caps }}"
+          else
+            # regular, all caps and small font
+            truncated = compute_truncated_title(document_title, 100, 3)
+            "\\textscale{0.7}{#{ UnicodeUtils.upcase(document_title) }}"
+          end
         end
 
         # Computes a latex string for this document's meta info table
@@ -112,9 +141,7 @@ module Kramdown
         # @param[Integer] max_len maximum length of returned string
         # @param[Integer] min_length_of_last_word minimum length of last word in returned string
         def compute_truncated_title(title, max_len, min_length_of_last_word)
-          t = title.truncate(max_len, separator: /(?<=[[:alpha:]]{#{min_length_of_last_word}})\s/)
-          t = ::Kramdown::Converter::LatexRepositext.emulate_small_caps(t)
-          t
+          title.truncate(max_len, separator: /(?<=[[:alpha:]]{#{min_length_of_last_word}})\s/)
         end
 
         # Returns a list of commits and commit messages for the exported file.
