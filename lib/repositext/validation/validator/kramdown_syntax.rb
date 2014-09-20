@@ -40,7 +40,7 @@ class Repositext
             if (match = str_sc.scan_until(/\n\s*?\n(\{:[^\}]+\})\s*?\n\s*?\n/))
               errors << Reportable.error(
                 [
-                  @file_to_validate,
+                  @file_to_validate.path,
                   sprintf("line %5s", str_sc.current_line_number)
                 ],
                 ['Disconnected IAL', match[-40..-1].inspect]
@@ -64,7 +64,7 @@ class Repositext
               end
               errors << Reportable.error(
                 [
-                  @file_to_validate,
+                  @file_to_validate.path,
                   sprintf("line %5s", str_sc.current_line_number)
                 ],
                 [msg, match[-40..-1].inspect]
@@ -91,7 +91,7 @@ class Repositext
               sprintf("%-15s %5d", classes.join(', '), count)
             }
             reporter.add_stat(
-              Reportable.stat([@file_to_validate], ['Classes Histogram', classes_histogram])
+              Reportable.stat([@file_to_validate.path], ['Classes Histogram', classes_histogram])
             )
           end
         end
@@ -107,7 +107,7 @@ class Repositext
           if !whitelisted_kramdown_features.include?(el.type)
             errors << Reportable.error(
               [
-                @file_to_validate,
+                @file_to_validate.path,
                 (lo = el.options[:location]) && sprintf("line %5s", lo)
               ].compact,
               [
@@ -128,7 +128,7 @@ class Repositext
             }
               errors << Reportable.error(
                 [
-                  @file_to_validate,
+                  @file_to_validate.path,
                   (lo = el.options[:location]) && sprintf("line %5s", lo)
                 ].compact,
                 [
@@ -181,7 +181,7 @@ class Repositext
             match_data.each do |e|
               errors << Reportable.error(
                 [
-                  @file_to_validate,
+                  @file_to_validate.path,
                   (lo = it[:location]) && sprintf("line %5s", lo)
                 ].compact,
                 ['Leftover kramdown character', e[0]]
@@ -209,7 +209,7 @@ class Repositext
               end
               errors << Reportable.error(
                 [
-                  @file_to_validate,
+                  @file_to_validate.path,
                   sprintf("line %5s", str_sc.current_line_number)
                 ],
                 ['Invalid character', sprintf('U+%04X', match[-1].codepoints.first) + context]
@@ -231,7 +231,7 @@ class Repositext
               sprintf("U+%04x  #{ code.chr('UTF-8') }  %5d", code, count)
             }
             reporter.add_stat(
-              Reportable.stat([@file_to_validate], ['Character Histogram', chars])
+              Reportable.stat([@file_to_validate.path], ['Character Histogram', chars])
             )
           end
         end
@@ -251,14 +251,14 @@ class Repositext
         # @param[Array] errors collector for errors
         # @param[Array] warnings collector for warnings
         def validate_escaped_character_syntax(source, errors, warnings)
-          # Unlike kramdown, in repositext the following characters are note
+          # Unlike kramdown, in repositext the following characters are not
           # escaped: `:`, `[`, `]`, `'`
           str_sc = Kramdown::Utils::StringScanner.new(source)
           while !str_sc.eos? do
             if (match = str_sc.scan_until(/\\[\:\[\]\`]/))
               errors << Reportable.error(
                 [
-                  @file_to_validate,
+                  @file_to_validate.path,
                   sprintf("line %5s", str_sc.current_line_number)
                 ],
                 ['Character that should not be escaped is escaped:', match[-10..-1].inspect]

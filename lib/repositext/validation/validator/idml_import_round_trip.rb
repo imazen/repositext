@@ -7,7 +7,7 @@ class Repositext
 
         # Runs all validations for self
         def run
-          document_to_validate = ::File.binread(@file_to_validate)
+          document_to_validate = ::File.binread(@file_to_validate.path)
           errors, warnings = [], []
 
           catch(:abandon) do
@@ -26,11 +26,11 @@ class Repositext
 
     private
 
-      # @param[String] idml_file
-      def valid_idml_round_trip?(idml_file)
+      # @param[String] idml_file_contents
+      def valid_idml_round_trip?(idml_file_contents)
         # parse Idml
         idml_based_kramdown_doc = @options['idml_parser_class'].new(
-          idml_file
+          idml_file_contents
         ).parse
         idml_based_kramdown_root = idml_based_kramdown_doc.root
         # Serialize kramdown doc to kramdown string
@@ -50,7 +50,7 @@ class Repositext
             false, nil, [],
             diffs.map { |diff|
               Reportable.error(
-                [@file_to_validate],
+                [@file_to_validate.path],
                 ['Roundtrip comparison results in different elements', diff]
               )
             }

@@ -8,11 +8,11 @@ class Repositext
         # Single files
 
         # Validate that every paragraph in the import file begins with a subtitle_mark
-        validate_files(:subtitle_import_files) do |file_name|
-          next  if file_name.index('markers.') # skip markers files
+        validate_files(:subtitle_import_files) do |path|
+          next  if path.index('markers.') # skip markers files
           if @options['is_primary_repo']
             Validator::SubtitleMarkAtBeginningOfEveryParagraph.new(
-              file_name, @logger, @reporter, @options.merge(:content_type => :import)
+              File.open(path), @logger, @reporter, @options.merge(:content_type => :import)
             ).run
           end
         end
@@ -29,9 +29,9 @@ class Repositext
           )
         }
         # Run pairwise validation
-        validate_file_pairs(:content_at_files, si_file_name_proc) do |ca_filename, si_filename|
+        validate_file_pairs(:content_at_files, si_file_name_proc) do |ca, sti|
           Validator::SubtitleImportConsistency.new(
-            [ca_filename, si_filename],
+            [File.open(ca), File.open(sti)],
             @logger,
             @reporter,
             @options.merge(:subtitle_import_consistency_compare_mode => 'pre_import')

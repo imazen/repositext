@@ -8,13 +8,12 @@ class Repositext
 
         # Runs all validations for self
         def run
+          document_to_validate = @file_to_validate.read
           errors, warnings = [], []
 
           catch(:abandon) do
             # @file_to_validate is an array with the paths to the content_at and subtitle_tagging_export files
-            outcome = subtitle_marks_spaced_correctly?(
-              ::File.read(@file_to_validate)
-            )
+            outcome = subtitle_marks_spaced_correctly?(document_to_validate)
 
             if outcome.fail?
               errors += outcome.errors
@@ -51,7 +50,7 @@ class Repositext
               false, nil, [],
               [
                 Reportable.error(
-                  [@file_to_validate], # content_at file
+                  [@file_to_validate.path], # content_at file
                   [
                     'The following captions are too long:',
                     too_long_captions.map { |e|

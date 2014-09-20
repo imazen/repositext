@@ -7,14 +7,14 @@ class Repositext
 
         # Single files
 
-        validate_files(:content_at_files) do |file_name|
-          Validator::KramdownSyntaxAt.new(file_name, @logger, @reporter, @options).run
+        validate_files(:content_at_files) do |path|
+          Validator::KramdownSyntaxAt.new(File.open(path), @logger, @reporter, @options).run
           if @options['is_primary_repo']
-            Validator::SubtitleMarkSpacing.new(file_name, @logger, @reporter, @options).run
+            Validator::SubtitleMarkSpacing.new(File.open(path), @logger, @reporter, @options).run
           end
         end
-        validate_files(:repositext_files) do |file_name|
-          Validator::Utf8Encoding.new(file_name, @logger, @reporter, @options).run
+        validate_files(:repositext_files) do |path|
+          Validator::Utf8Encoding.new(File.open(path), @logger, @reporter, @options).run
         end
 
         # File pairs
@@ -34,15 +34,15 @@ class Repositext
           )
         }
         # Run pairwise validation
-        validate_file_pairs(:content_at_files, stm_csv_file_name_proc) do |ca_filename, stm_csv_filename|
+        validate_file_pairs(:content_at_files, stm_csv_file_name_proc) do |ca, stm_csv|
           # skip if subtitle_markers CSV file doesn't exist
-          next  if !File.exists?(stm_csv_filename)
+          next  if !File.exists?(stm_csv)
           Validator::SubtitleMarkCountsMatch.new(
-            [ca_filename, stm_csv_filename], @logger, @reporter, @options
+            [File.open(ca), File.open(stm_csv)], @logger, @reporter, @options
           ).run
           if @options['is_primary_repo']
             Validator::SubtitleMarkNoSignificantChanges.new(
-              [ca_filename, stm_csv_filename], @logger, @reporter, @options
+              [File.open(ca), File.open(stm_csv)], @logger, @reporter, @options
             ).run
           end
         end

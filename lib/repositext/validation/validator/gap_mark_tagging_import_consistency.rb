@@ -16,15 +16,15 @@ class Repositext
 
         # Runs all validations for self
         def run
+          # @file_to_validate is an array with the content_at and
+          # gap_mark_tagging_import files
+          content_at_file, gap_mark_tagging_import_file = @file_to_validate
           errors, warnings = [], []
 
           catch(:abandon) do
-            # @file_to_validate is an array with the paths to the content_at and
-            # gap_mark_tagging_import files
-            content_at_filename, gap_mark_tagging_import_filename = @file_to_validate
             outcome = contents_match?(
-              ::File.read(content_at_filename),
-              ::File.read(gap_mark_tagging_import_filename)
+              content_at_file.read,
+              gap_mark_tagging_import_file.read
             )
 
             if outcome.fail?
@@ -54,7 +54,7 @@ class Repositext
             # subtitle_marks and gap_marks in both since we expect them to change.
             string_1 = Repositext::Merge::GapMarkTaggingImportIntoContentAt.remove_gap_marks_and_omit_classes(tmp_gap_mark_tagging_export)
             string_2 = Repositext::Merge::GapMarkTaggingImportIntoContentAt.remove_gap_marks_and_omit_classes(gap_mark_tagging_import)
-            error_message = "\n\nText mismatch between gap_mark_tagging_import and content_at in #{ @file_to_validate.last }."
+            error_message = "\n\nText mismatch between gap_mark_tagging_import and content_at in #{ @file_to_validate.last.path }."
           when 'post_import'
             # We re-export the new content_at to gap_mark_tagging and compare the result
             # with gap_mark_tagging_import. We remove subtitle_marks since they
@@ -62,7 +62,7 @@ class Repositext
             # place since they should be identical if everything works correctly.
             string_1 = gap_mark_tagging_import.gsub(/[@]/, '')
             string_2 = tmp_gap_mark_tagging_export.gsub(/[@]/, '')
-            error_message = "\n\nText mismatch between gap_mark_tagging_import and gap_mark_tagging_export from content_at in #{ @file_to_validate.last }."
+            error_message = "\n\nText mismatch between gap_mark_tagging_import and gap_mark_tagging_export from content_at in #{ @file_to_validate.last.path }."
           else
             raise "Invalid compare mode: #{ @options[:gap_mark_tagging_import_consistency_compare_mode].inspect }"
           end

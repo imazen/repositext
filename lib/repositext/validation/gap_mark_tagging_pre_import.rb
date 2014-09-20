@@ -13,9 +13,9 @@ class Repositext
                           .gsub(/\.at\z/, '.gap_mark_tagging.txt')
         }
         # Run pairwise validation
-        validate_file_pairs(:content_at_files, gi_file_name_proc) do |ca_filename, gi_filename|
+        validate_file_pairs(:content_at_files, gi_file_name_proc) do |ca, gi|
           Validator::GapMarkTaggingImportConsistency.new(
-            [ca_filename, gi_filename],
+            [File.open(ca), File.open(gi)],
             @logger,
             @reporter,
             @options.merge(:gap_mark_tagging_import_consistency_compare_mode => 'pre_import')

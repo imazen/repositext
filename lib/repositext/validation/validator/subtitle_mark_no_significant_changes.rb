@@ -7,14 +7,13 @@ class Repositext
 
         # Runs all validations for self
         def run
+          content_at_filename, subtitle_marker_csv_filename = @file_to_validate
           errors, warnings = [], []
 
           catch(:abandon) do
-            content_at_filename, subtitle_marker_csv_filename = @file_to_validate
-
             outcome = significant_changes?(
-              ::File.read(content_at_filename),
-              ::File.read(subtitle_marker_csv_filename)
+              content_at_filename.read,
+              subtitle_marker_csv_filename.read
             )
             if outcome.fail?
               errors += outcome.errors
@@ -72,7 +71,7 @@ class Repositext
               false, nil, [],
               [
                 Reportable.error(
-                  [@file_to_validate.first], # content_at file
+                  [@file_to_validate.first.path], # content_at file
                   [
                     'Subtitle_mark position has changed significantly',
                     significantly_changed_captions.map { |e|

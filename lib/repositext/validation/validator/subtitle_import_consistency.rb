@@ -16,15 +16,15 @@ class Repositext
 
         # Runs all validations for self
         def run
+          # @file_to_validate is an array with the content_at and
+          # subtitle/subtitle_tagging_import files
+          content_at_file, subtitle_import_file = @file_to_validate
           errors, warnings = [], []
 
           catch(:abandon) do
-            # @file_to_validate is an array with the paths to the content_at and
-            # subtitle/subtitle_tagging_import files
-            content_at_filename, subtitle_import_filename = @file_to_validate
             outcome = contents_match?(
-              ::File.read(content_at_filename),
-              ::File.read(subtitle_import_filename)
+              content_at_file.read,
+              subtitle_import_file.read
             )
 
             if outcome.fail?
@@ -63,7 +63,7 @@ class Repositext
             # subtitle_marks and gap_marks in both since we expect them to change.
             tmp_subtitle_export = doc.send(@options['subtitle_converter_method_name'])
             string_1, string_2 = tmp_subtitle_export.gsub(/[%@]/, ''), subtitle_import.gsub(/[%@]/, '')
-            error_message = "\n\nText mismatch between subtitle/subtitle_tagging_import and content_at in #{ @file_to_validate.last }."
+            error_message = "\n\nText mismatch between subtitle/subtitle_tagging_import and content_at in #{ @file_to_validate.last.path }."
           when 'post_import'
             # We re-export the new content_at to subtitle and compare the result
             # with subtitle_import. We leave all subtitle_marks and gap_marks
@@ -73,7 +73,7 @@ class Repositext
             # subtitle_tagging_export since we strip subtitle marks in the latter.
             tmp_subtitle_export = doc.send(@options['subtitle_export_converter_method_name'])
             string_1, string_2 = subtitle_import, tmp_subtitle_export
-            error_message = "\n\nText mismatch between subtitle/subtitle_tagging_import and subtitle_export from content_at in #{ @file_to_validate.last }."
+            error_message = "\n\nText mismatch between subtitle/subtitle_tagging_import and subtitle_export from content_at in #{ @file_to_validate.last.path }."
           else
             raise "Invalid compare mode: #{ @options[:subtitle_import_consistency_compare_mode].inspect }"
           end
@@ -90,7 +90,7 @@ class Repositext
             #   false, nil, [],
             #   [
             #     Reportable.error(
-            #       [@file_to_validate.last], # subtitle/subtitle_tagging_import file
+            #       [@file_to_validate.last.path], # subtitle/subtitle_tagging_import file
             #       [
             #         'Text mismatch between subtitle/subtitle_tagging_import and content_at:',
             #         diffs.inspect

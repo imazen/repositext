@@ -8,11 +8,12 @@ class Repositext
 
         # Runs all validations for self
         def run
+          document_to_validate = @file_to_validate.read
           errors, warnings = [], []
 
           catch(:abandon) do
             outcome = subtitle_mark_at_beginning_of_every_paragraph?(
-              ::File.read(@file_to_validate)
+              document_to_validate
             )
             if outcome.fail?
               errors += outcome.errors
@@ -56,7 +57,7 @@ class Repositext
                 false, nil, [],
                 [
                   Reportable.error(
-                    [@file_to_validate], # content_at file
+                    [@file_to_validate.path], # content_at file
                     [
                       "The following paragraphs don't start with a subtitle_mark:",
                       paragraphs_without_subtitle_mark.map { |e| e.inspect }.join("\n")

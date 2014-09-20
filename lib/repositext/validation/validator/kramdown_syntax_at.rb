@@ -24,7 +24,7 @@ class Repositext
         end
 
         def run
-          document_to_validate = ::File.read(@file_to_validate)
+          document_to_validate = @file_to_validate.read
           errors, warnings = [], []
 
           catch(:abandon) do
@@ -71,7 +71,7 @@ class Repositext
                 if(:record_mark != child.type)
                   warnings << ::Repositext::Validation::Reportable.warning(
                     [
-                      @file_to_validate,
+                      @file_to_validate.path,
                       (lo = el.options[:location]) && sprintf("line %5s", lo)
                     ].compact,
                     [
@@ -95,7 +95,7 @@ class Repositext
                 if(l_kpn != @kpn_tracker + 1)
                   warnings << ::Repositext::Validation::Reportable.warning(
                     [
-                      @file_to_validate,
+                      @file_to_validate.path,
                       (lo = el.options[:location]) && sprintf("line %5s", lo)
                     ].compact,
                     [
@@ -119,7 +119,7 @@ class Repositext
             if(el.value =~ /[\_\^]/)
               warnings << ::Repositext::Validation::Reportable.warning(
                 [
-                  @file_to_validate,
+                  @file_to_validate.path,
                   (lo = el.options[:location]) && sprintf("line %5s", lo)
                 ].compact,
                 [
@@ -147,7 +147,7 @@ class Repositext
             if (match = str_sc.scan_until(/[^\n]{2}\^\^\^/))
               errors << Reportable.error(
                 [
-                  @file_to_validate,
+                  @file_to_validate.path,
                   sprintf("line %5s", str_sc.current_line_number)
                 ],
                 [':record_mark not preceded by blank line', match[-40..-1].inspect]
@@ -167,7 +167,7 @@ class Repositext
                                             .gsub(/\"$/, '') # Remove trailing double quotes (from inspect)
               errors << Reportable.error(
                 [
-                  @file_to_validate,
+                  @file_to_validate.path,
                   sprintf("line %5s", str_sc.current_line_number)
                 ],
                 ['Consecutive :record_marks with no text inbetween', relevant_match_fragment]
@@ -184,7 +184,7 @@ class Repositext
               context_len = [match.size, 40].min
               errors << Reportable.error(
                 [
-                  @file_to_validate,
+                  @file_to_validate.path,
                   sprintf("line %5s", str_sc.current_line_number)
                 ],
                 [

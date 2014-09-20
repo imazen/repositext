@@ -7,14 +7,14 @@ class Repositext
 
         # Single files
 
-        validate_files(:content_at_files) do |filename|
-          Validator::KramdownSyntaxAt.new(filename, @logger, @reporter, @options).run
-          Validator::Utf8Encoding.new(filename, @logger, @reporter, @options).run
+        validate_files(:content_at_files) do |path|
+          Validator::KramdownSyntaxAt.new(File.open(path), @logger, @reporter, @options).run
+          Validator::Utf8Encoding.new(File.open(path), @logger, @reporter, @options).run
           if @options['is_primary_repo']
             Validator::SubtitleMarkAtBeginningOfEveryParagraph.new(
-              filename, @logger, @reporter, @options.merge(:content_type => :content)
+              File.open(path), @logger, @reporter, @options.merge(:content_type => :content)
             ).run
-            Validator::SubtitleMarkSpacing.new(filename, @logger, @reporter, @options).run
+            Validator::SubtitleMarkSpacing.new(File.open(path), @logger, @reporter, @options).run
           end
         end
 
@@ -32,9 +32,9 @@ class Repositext
           )
         }
         # Run pairwise validation
-        validate_file_pairs(:content_at_files, si_filename_proc) do |ca_filename, si_filename|
+        validate_file_pairs(:content_at_files, si_filename_proc) do |ca, sti|
           Validator::SubtitleImportConsistency.new(
-            [ca_filename, si_filename],
+            [File.open(ca), File.open(sti)],
             @logger,
             @reporter,
             @options.merge(:subtitle_import_consistency_compare_mode => 'post_import')
@@ -56,11 +56,11 @@ class Repositext
           )
         }
         # Run pairwise validation
-        validate_file_pairs(:content_at_files, stm_csv_file_name_proc) do |ca_filename, stm_csv_filename|
+        validate_file_pairs(:content_at_files, stm_csv_file_name_proc) do |ca, stm_csv|
           # skip if subtitle_markers CSV file doesn't exist
-          next  if !File.exists?(stm_csv_filename)
+          next  if !File.exists?(stm_csv)
           Validator::SubtitleMarkCountsMatch.new(
-            [ca_filename, stm_csv_filename], @logger, @reporter, @options
+            [File.open(ca), File.open(stm_csv)], @logger, @reporter, @options
           ).run
         end
 

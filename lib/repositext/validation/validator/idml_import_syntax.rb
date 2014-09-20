@@ -4,7 +4,7 @@ class Repositext
       class IdmlImportSyntax < Validator
 
         def run
-          document_to_validate = ::File.binread(@file_to_validate)
+          document_to_validate = ::File.binread(@file_to_validate.path)
           errors, warnings = [], []
 
           catch(:abandon) do
@@ -59,7 +59,7 @@ class Repositext
             {
               'validation_errors' => errors,
               'validation_warnings' => warnings,
-              'validation_file_descriptor' => @file_to_validate,
+              'validation_file_descriptor' => @file_to_validate.path,
               'validation_logger' => @logger,
             }
           )
@@ -80,7 +80,7 @@ class Repositext
             ))
               errors << Reportable.error(
                 [
-                  @file_to_validate,
+                  @file_to_validate.path,
                   sprintf("story %5s", idml_story_name),
                   sprintf("line %5s", str_sc.current_line_number)
                 ],
@@ -103,7 +103,7 @@ class Repositext
               sprintf("U+%04x  #{ code.chr('UTF-8') }  %5d", code, count)
             }
             @reporter.add_stat(
-              Reportable.stat([@file_to_validate], ['Character Histogram', chars])
+              Reportable.stat([@file_to_validate.path], ['Character Histogram', chars])
             )
           end
         end

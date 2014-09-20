@@ -13,7 +13,7 @@ class Repositext
         #
         # Outcome is a good vehicle to return validation outcomes to the run method.
         def run
-          document_to_validate = ::File.read(@file_to_validate)
+          document_to_validate = @file_to_validate.read
           errors, warnings = [], []
 
           catch(:abandon) do
@@ -41,13 +41,13 @@ class Repositext
           # add errors:
           if 'error_condition'
             errors << Reportable.error(
-              [@file_to_validate, 'describe location of error'],
+              [@file_to_validate.path, 'describe location of error'],
               ["Error class", "Error description"]
             )
           end
           if 'warning_condition'
             warnings << Reportable.warning(
-              [@file_to_validate, 'describe location of error'],
+              [@file_to_validate.path, 'describe location of error'],
               ["Warning class", "Warning description"]
             )
           end

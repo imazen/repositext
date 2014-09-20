@@ -7,14 +7,13 @@ class Repositext
 
         # Runs all validations for self
         def run
+          content_at_filename, subtitle_marker_csv_filename = @file_to_validate
           errors, warnings = [], []
 
           catch(:abandon) do
-            content_at_filename, subtitle_marker_csv_filename = @file_to_validate
-
             outcome = subtitle_mark_counts_match?(
-              ::File.read(content_at_filename),
-              ::File.read(subtitle_marker_csv_filename)
+              content_at_filename.read,
+              subtitle_marker_csv_filename.read
             )
             if outcome.fail?
               errors += outcome.errors
@@ -45,7 +44,7 @@ class Repositext
               false, nil, [],
               [
                 Reportable.error(
-                  [@file_to_validate.last],
+                  [@file_to_validate.last.path],
                   [
                     'Subtitle_mark count mismatch',
                     "content_at contains #{ content_at_count }, but subtitle_marker_csv contains #{ subtitle_marker_csv_count } subtitle_marks."

@@ -4,7 +4,7 @@ class Repositext
       class KramdownSyntaxPt < KramdownSyntax
 
         def run
-          document_to_validate = ::File.read(@file_to_validate)
+          document_to_validate = @file_to_validate.read
           errors, warnings = [], []
 
           catch(:abandon) do

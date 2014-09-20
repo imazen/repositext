@@ -7,7 +7,7 @@ class Repositext
 
         # Runs all validations for self
         def run
-          document_to_validate = ::File.read(@file_to_validate)
+          document_to_validate = @file_to_validate.read
           errors, warnings = [], []
 
           catch(:abandon) do
@@ -50,7 +50,7 @@ class Repositext
             false, nil, [],
             diffs.map { |diff|
               Reportable.error(
-                [@file_to_validate],
+                [@file_to_validate.path],
                 ['Roundtrip comparison results in different elements', diff]
               )
             }
