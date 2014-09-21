@@ -1,6 +1,8 @@
 class Repositext
   class Validation
 
+    # This reporter is for testing. It doesn't output anything to keep the
+    # console clean during test runs.
     class ReporterTest
 
       attr_reader :errors, :warnings, :stats
