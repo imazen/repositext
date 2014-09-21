@@ -16,7 +16,7 @@ describe Repositext::Cli::Utils do
     before do
       # Activate FakeFS
       FakeFS.activate!
-      FileSystem.clear
+      FakeFS::FileSystem.clear
       # Redirect console output for clean test logs
       # NOTE: use STDOUT.puts if you want to print something to the test output
       @stderr = $stderr = StringIO.new
@@ -31,6 +31,7 @@ describe Repositext::Cli::Utils do
 
     after do
       FakeFS.deactivate!
+      FakeFS::FileSystem.clear
     end
 
     describe '.change_files_in_place' do

@@ -1,8 +1,7 @@
 # dependencies
 require 'rubygems'
-require 'fakefs/safe'
-require 'minitest'
 require 'minitest/autorun'
+require 'fakefs/safe'
 
 # Gem under test
 require 'repositext'
@@ -11,10 +10,11 @@ include FakeFS
 # NOTE: Use these two callbacks in your specs to activate FakeFS:
 # before do
 #   FakeFS.activate!
-#   FileSystem.clear
+#   FakeFS::FileSystem.clear
 # end
 # after do
 #   FakeFS.deactivate!
+#   FakeFS::FileSystem.clear
 # end
 
 # Returns an absolute path to test_data_sub_path. Base for the relative path is
@@ -34,4 +34,43 @@ end
 def initialize_test_validation(validation_class_name, file_specs, options)
   options = { :logger => 'LoggerTest' }.merge(options)
   Object.const_get("Repositext::Validation::#{ validation_class_name }").new(file_specs, options)
+end
+
+
+# *********************************************
+#
+# Shared spec behaviors
+#
+# *********************************************
+
+# Patch Module to implement 'it' (for shared behaviors)
+class Module
+  def it(description, &block)
+    define_method "test_#{description}", &block
+  end
+end
+
+# Require all shared behaviors
+# `include` them in each spec file they apply to
+require_relative 'shared_spec_behaviors/validators'
+require_relative 'shared_spec_behaviors/validations'
+
+
+
+# *********************************************
+#
+# StringIO that behaves like a file. Used to simulate files in specs
+#
+# *********************************************
+
+class FileLikeStringIO < StringIO
+
+  attr_accessor :path
+
+  # @param[]
+  def initialize(path, *args)
+    super(*args)
+    @path = path
+  end
+
 end

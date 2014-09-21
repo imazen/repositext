@@ -48,6 +48,9 @@ class Repositext
         $stderr.puts '-' * 70
       end
 
+      # This is a method stub to satisfy the Repositext::Validation interface.
+      def run_list; end
+
     private
 
       # @param[String] rtfile_path to the reference config (Rtfile template)
