@@ -261,7 +261,10 @@ module Kramdown
                 \s+ # eagle followed by whitespace
               ){0,2} # repeat up to two times to match "\<gap-mark>\(\emph{others}"
             )
-            ([[:alpha:][:digit:]’#{ Repositext::ELIPSIS }\-\?]+) #  This will be colored red
+            ( #  This will be colored red
+              #{ Repositext::ELIPSIS }? # optional elipsis
+              [[:alpha:][:digit:]’\-\?]+ # words
+            )
           /x,
           '\1' + tmp_gap_mark_number + "\\RtGapMarkText" + '{\2}'
         )
