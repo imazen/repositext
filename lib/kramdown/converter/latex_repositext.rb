@@ -138,7 +138,15 @@ module Kramdown
             # render in RtIdTitle1 environment
             before << "\\begin{RtIdTitle1}\n"
             after << "\n\\end{RtIdTitle1}"
+            # emulate small caps
             inner_text = self.class.emulate_small_caps(inner(el, opts))
+            # differentiate between primary and non-primary repos
+            if !@options[:is_primary_repo]
+              # add space between title and date code
+              inner_text.gsub!(/ [[:alpha:]]{3}\d{2}\-\d{4}/, '\\hspace{2 mm}\0')
+              # make date code smaller
+              inner_text.gsub!(/(?<= )[[:alpha:]]{3}\d{2}\-\d{4}.+/, '\textscale{0.8}{\0}')
+            end
           end
           if el.has_class?('id_title2')
             # render in RtIdTitle2 environment
