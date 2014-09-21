@@ -140,11 +140,9 @@ class Repositext
           # Record_marks_have to be preceded by a blank line.
           # The only exception is the first record_mark in each file.
           str_sc = Kramdown::Utils::StringScanner.new(source)
+          str_sc.skip_until(/\A\^\^\^/) # skip the first record_mark at beginning of source if it exists
           while !str_sc.eos? do
-            # NOTE: This regex won't match the first record_mark at beginning
-            # of file (which isn't preceded by anything). This is ok since we
-            # don't expect it to be preceded by a blank line.
-            if (match = str_sc.scan_until(/[^\n]{2}\^\^\^/))
+            if (match = str_sc.scan_until(/(?<!\n\n)\^\^\^/))
               errors << Reportable.error(
                 [
                   @file_to_validate.path,
@@ -160,7 +158,15 @@ class Repositext
           # Make sure we have no :record_marks with no text between them
           str_sc.reset
           while !str_sc.eos? do
-            if (match = str_sc.scan_until(/\^\^\^[^\n\^]+\s*\^\^\^/))
+            match = str_sc.scan_until(
+              /
+                \^\^\^ # record mark
+                [^\n\^]* # optional IAL on same line as record mark
+                \s* # nothing but optional whitespace
+                \^\^\^ # another record mark
+              /x
+            )
+            if match
               position_of_previous_record_mark = match.rindex('^^^', -4) || 0
               relevant_match_fragment = match[position_of_previous_record_mark..-1].inspect
                                             .gsub(/^\"/, '') # Remove leading double quotes (from inspect)
@@ -180,7 +186,14 @@ class Repositext
           # All record_marks have to be followed by exactly two newlines
           str_sc.reset
           while !str_sc.eos? do
-            if (match = str_sc.scan_until(/\^\^\^[^\n]*(\n[^\n]|\n{3,})/))
+            match = str_sc.scan_until(
+              /
+                \^\^\^ # record mark
+                [^\n\^]* # optional IAL on same line as record mark
+                (?!\n\n[^\n]) # followed by anything other than exactly two newlines
+              /x
+            )
+            if match
               context_len = [match.size, 40].min
               errors << Reportable.error(
                 [
@@ -188,7 +201,7 @@ class Repositext
                   sprintf("line %5s", str_sc.current_line_number)
                 ],
                 [
-                  ':record_mark not followed by blank line',
+                  ':record_mark not followed by two newlines',
                   match[-context_len..-1],
                 ]
               )
