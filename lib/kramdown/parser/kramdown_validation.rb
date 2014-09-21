@@ -1,12 +1,12 @@
 # A customized parser for validation purposes. It has the following modifications
-# from Kramdown::Parser::KramdownVgr:
+# from Kramdown::Parser::Kramdown:
 #
 # * parses all kramdown features, not just repositext ones so that we can
 #   test for whitelisted features only.
 #
 module Kramdown
   module Parser
-    class KramdownValidation < Kramdown::Parser::Kramdown
+    class KramdownValidation < Kramdown::Parser::KramdownRepositext
 
       # Create a new Kramdown parser object with the given +options+.
       def initialize(source, options)
