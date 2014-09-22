@@ -31,9 +31,15 @@ class Repositext
         # @param[String] content
         # @return[Outcome]
         def subtitle_mark_at_beginning_of_every_paragraph?(content)
+          # Early return if content doesn't contain any subtitle_marks
+          return Outcome.new(true, nil)  if !content.index('@')
+          # We only look at text after the first subtitle_mark. Replace all lines
+          # before the first subtitle_mark with empty lines (to keep line location
+          # in error reports accurate)
+          content_from_first_subtitle_mark = remove_all_text_content_before_first_subtitle_mark(content)
           case @options[:content_type]
           when :import
-            paragraphs_without_subtitle_mark = check_import_file(content)
+            paragraphs_without_subtitle_mark = check_import_file(content_from_first_subtitle_mark)
             if paragraphs_without_subtitle_mark.empty?
               Outcome.new(true, nil)
             else
@@ -49,7 +55,7 @@ class Repositext
               )
             end
           when :content
-            paragraphs_without_subtitle_mark = check_content_file(content)
+            paragraphs_without_subtitle_mark = check_content_file(content_from_first_subtitle_mark)
             if paragraphs_without_subtitle_mark.empty?
               Outcome.new(true, nil)
             else
@@ -75,7 +81,6 @@ class Repositext
         # @return[Array<String>] an array of paras that don't start with @
         def check_import_file(content)
           c = content.dup
-          c.gsub!(/\A\[[^\]]+\]\n/, '') # remove title
           c.strip!
           get_paragraphs_that_dont_start_with_subtitle_mark(c)
         end
@@ -88,14 +93,19 @@ class Repositext
         end
 
         def get_paragraphs_that_dont_start_with_subtitle_mark(content)
-          if !content.index('@')
-            # Document doesn't contain subtitle marks, skip it
-            return []
-          end
           # split on para boundaries and find those that don't start with subtitle_mark
           content.strip.split(/\n+/).find_all { |para|
             '@' != para.strip[0]
           }
+        end
+
+        # Keeps only newlines of lines before the first subtitle_mark in txt
+        # @param[String]
+        # @return[String]
+        def remove_all_text_content_before_first_subtitle_mark(txt)
+          substring_to_first_subtitle_mark = txt.match(/\A[^@]*(?=(@|\z))/).to_s
+          only_newlines_preserved = substring_to_first_subtitle_mark.gsub(/[^\n]/, '')
+          txt.sub(substring_to_first_subtitle_mark, only_newlines_preserved)
         end
 
       end
