@@ -190,7 +190,8 @@ class Repositext
               /
                 \^\^\^ # record mark
                 [^\n\^]* # optional IAL on same line as record mark
-                (?!\n\n[^\n]) # followed by anything other than exactly two newlines
+                \n # end of line
+                (?!\n[^\n]) # followed by anything other than exactly one more newline
               /x
             )
             if match
