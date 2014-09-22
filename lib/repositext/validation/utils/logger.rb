@@ -92,14 +92,15 @@ class Repositext
       def log_validation_step(_validator, _io, _success)
         # find longest common prefix between @file_pattern_base_path and _io's filename
         # to remove it from logging output
-        longest_common_prefix = [*_io].inject(@file_pattern_base_path.dup) {|lcp, an_io|
+        io_array = _io.is_a?(Array) ? _io : [_io] # cast _io to array
+        longest_common_prefix = io_array.inject(@file_pattern_base_path.dup) {|lcp, an_io|
           path = an_io.path
           lcp = lcp.chop while lcp != path[0...lcp.length]
           lcp
         }
         parts = [
           '  ',
-          [*_io].map{ |e| e.path }.join(', ').gsub(longest_common_prefix, '').ljust(40),
+          io_array.map{ |e| e.path }.join(', ').gsub(longest_common_prefix, '').ljust(40),
           ' ',
           _validator.class.name.split(/::/).last.ljust(30)
         ]
@@ -109,9 +110,10 @@ class Repositext
       # @param[String, Array,String>] _io
       # @param[Array<String>] _info
       def log_debug_info(_io, _info)
+        io_array = _io === Array ? _io : [_io] # cast _io to array
         parts = [
           '  ',
-          [*_io].map{ |e| e.path }.join(', ').gsub(@file_pattern_base_path, '').ljust(32),
+          io_array.map{ |e| e.path }.join(', ').gsub(@file_pattern_base_path, '').ljust(32),
           ' ',
           _info.join(', ').ljust(30)
         ]
