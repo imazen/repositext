@@ -4,7 +4,7 @@ class Repositext
       # Validates that there is a subtitle_mark at the beginning of every paragraph
       class SubtitleMarkAtBeginningOfEveryParagraph < Validator
 
-        class NoSubtitleMarkAtBeginningOfParagraph < StandardError; end
+        class NoSubtitleMarkAtBeginningOfParagraphError < StandardError; end
 
         # Runs all validations for self
         def run
@@ -47,7 +47,7 @@ class Repositext
               # at the beginning of every paragraph.
               # Normally we'd return a negative outcome (see :content), but in this
               # case we raise an exception.
-              raise NoSubtitleMarkAtBeginningOfParagraph.new(
+              raise NoSubtitleMarkAtBeginningOfParagraphError.new(
                 [
                   "The following paragraphs don't start with a subtitle_mark:",
                   paragraphs_without_subtitle_mark.map { |e| e.inspect }.join("\n")
