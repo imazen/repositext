@@ -20,6 +20,10 @@ describe Repositext::Utils::SubtitleMarkTools do
         "# title\n@word1\n@word2\n\n### @subtitle\n@word3\n",
         " title\n@word1\n@word2\n @subtitle\n@word3\n"
       ],
+      [
+        %(\n\n@para1 *with other tokens*{: .italic}\n\n^^^ {: .rid #rid-64080029 kpn="002"}\n\n@para2),
+        "\n\n@para1 with other tokens\n\n@para2"
+      ]
     ].each do |test_string, xpect|
       it "handles #{ test_string.inspect }" do
         Repositext::Utils::SubtitleMarkTools.send(
