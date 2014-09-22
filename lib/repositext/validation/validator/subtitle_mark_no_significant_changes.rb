@@ -74,6 +74,7 @@ class Repositext
                   [@file_to_validate.first.path], # content_at file
                   [
                     'Subtitle_mark position has changed significantly',
+                    'Review changes and update subtitle_markers_file with `repositext sync subtitle_mark_character_positions`',
                     significantly_changed_captions.map { |e|
                       "On line #{ e[:line_num] }: #{ e[:excerpt] }"
                     }.join("\n")
