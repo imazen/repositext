@@ -252,6 +252,9 @@ module Kramdown
         lb.gsub!(
           /
             #{ gap_mark_complete_regex } # find tmp gap mark number and text
+            ( # capturing group for first group of characters to be colored red
+              #{ Repositext::ELIPSIS }? # optional ellipsis
+            )
             ( # capturing group for characters that are not to be colored red
               (?: # find one of the following, use non-capturing group for grouping only
                 [#{ Regexp.escape(chars_to_skip) }]+ # special chars or delimiters
@@ -266,9 +269,16 @@ module Kramdown
               [[:alpha:][:digit:]’\-\?]+ # words
             )
           /x,
-          '\1' + tmp_gap_mark_number + "\\RtGapMarkText" + '{\2}'
+          # we move the tmp_gap_mark_number to the very beginning so that if we
+          # have an ellipsis before a latex command, the gap_mark_number will be
+          # in front of the entire section that is colored red.
+          # \1: an optional ellipsis (colored red)
+          # \2: an optional latex command or characters not to be colored red
+          # \3: the text to be colored red
+          # OPTIMIZATION: We could skip the first \RtGapMarkText if \1 is blank
+          tmp_gap_mark_number + "\\RtGapMarkText" + '{\1}' + '\2' + "\\RtGapMarkText" + '{\3}'
         )
-        # gap_marks: Move gap_mark number to outside of quotes, parentheses and brackes
+        # Move tmp_gap_mark_number to outside of quotes, parentheses and brackets
         if !['', nil].include?(tmp_gap_mark_number)
           gap_mark_number_regex = Regexp.new(Regexp.escape(tmp_gap_mark_number))
           chars_to_move_outside_of = [
