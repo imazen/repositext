@@ -6,6 +6,7 @@ module Kramdown
     class LatexRepositext < Latex
 
       class LeftoverTempGapMarkError < StandardError; end
+      class LeftoverTempGapMarkNumberError < StandardError; end
 
       # Since our font doesn't have a small caps variant, we have to emulate it
       # for latex.
@@ -301,6 +302,11 @@ module Kramdown
         # Make sure no tmp_gap_marks are left
         if(ltgm = lb.match(/.{0,10}#{ Regexp.escape(tmp_gap_mark_text) }.{0,10}/))
           raise(LeftoverTempGapMarkError.new("Leftover temp gap mark: #{ ltgm.to_s.inspect }"))
+        end
+        if !['', nil].include?(tmp_gap_mark_number)
+          if(ltgmn = lb.match(/.{0,10}#{ Regexp.escape(tmp_gap_mark_number) }.{0,10}/))
+            raise(LeftoverTempGapMarkNumberError.new("Leftover temp gap mark number: #{ ltgmn.to_s.inspect }"))
+          end
         end
         # eagle: replace eagle with latex command for custom formatting
         lb.gsub!(//, "\\RtEagle")
