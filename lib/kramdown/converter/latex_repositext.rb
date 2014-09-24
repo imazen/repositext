@@ -12,6 +12,9 @@ module Kramdown
       # for latex.
       # This is a class method so that we can easily use it from other places.
       def self.emulate_small_caps(txt)
+        # Convert any escaped multibyte characters before we mangle the escaped
+        # strings with SmallCapsEmulation
+        txt = Repositext::Utils::EntityEncoder.decode(txt)
         # wrap all groups of lower case characters (not latex commands!) in RtSmCapsEmulation command
         r = txt.gsub(
           /
@@ -237,6 +240,8 @@ module Kramdown
       # @param[String] latex_body
       def post_process_latex_body(latex_body)
         lb = latex_body.dup
+        # Decode entity encoded chars (do this before any other processing as it may mangle the escaped entity)
+        lb = Repositext::Utils::EntityEncoder.decode(lb)
         # gap_marks: Skip certain characters and find characters to highlight in red
         gap_mark_complete_regex = Regexp.new(Regexp.escape(tmp_gap_mark_complete))
         chars_to_skip = [
@@ -313,8 +318,6 @@ module Kramdown
         lb.gsub!(//, "\\RtEagle")
         # eagle: force space after leading eagle
         lb.gsub!(/(?<=\\RtEagle)\ /, '\\ ')
-        # Decode entity encoded chars
-        lb = Repositext::Utils::EntityEncoder.decode(lb)
         lb
       end
 
