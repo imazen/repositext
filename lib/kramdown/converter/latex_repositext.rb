@@ -194,7 +194,8 @@ module Kramdown
       end
 
       def convert_strong(el, opts)
-        if 'V-Calisto-St' == @options[:font_name]
+
+        if @options[:is_primary_repo]
           # NOTE: There is a strange bug where in the V-Calisto-St font and latex
           # bold and bold-italic are reversed. So whenever I want bold, I have to
           # specify bold-italic and vice versa.
