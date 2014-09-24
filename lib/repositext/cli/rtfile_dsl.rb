@@ -34,7 +34,7 @@ class Repositext
       # @param[String] rtfile the path to the rtfile
       # @param[String, optional] contents allows passing of Rtfile contents as string, for testing.
       def eval_rtfile(rtfile, contents = nil)
-        contents ||= File.open(rtfile, "rb") { |f| f.read }
+        contents ||= File.open(rtfile, 'r', &:read)
         instance_eval(contents, rtfile.to_s, 1)
       rescue SyntaxError => e
         syntax_msg = e.message.gsub("#{ rtfile.to_s }:", 'on line ')
