@@ -5,7 +5,7 @@ module Kramdown
     class LatexRepositext
       module DocumentMixin
 
-        # Create an HtmlDoc converter with the given options.
+        # Create an LatexRepositext Document converter with the given options.
         # @param[Kramdown::Element] root
         # @param[Hash, optional] options
         def initialize(root, options = {})
@@ -108,8 +108,8 @@ module Kramdown
             "\\textbf{#{ small_caps }}"
           else
             # regular, all caps and small font
-            truncated = compute_truncated_title(document_title, 100, 3)
-            "\\textscale{0.7}{#{ UnicodeUtils.upcase(document_title) }}"
+            truncated = compute_truncated_title(document_title, 54, 3)
+            "\\textscale{0.7}{#{ UnicodeUtils.upcase(truncated) }}"
           end
         end
 
@@ -141,7 +141,7 @@ module Kramdown
         # @param[Integer] max_len maximum length of returned string
         # @param[Integer] min_length_of_last_word minimum length of last word in returned string
         def compute_truncated_title(title, max_len, min_length_of_last_word)
-          title.truncate(max_len, separator: /(?<=[[:alpha:]]{#{min_length_of_last_word}})\s/)
+          title.truncate(max_len, separator: /(?<=[[:alpha:]]{#{ min_length_of_last_word }})\s/)
         end
 
         # Returns a list of commits and commit messages for the exported file.
