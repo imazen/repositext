@@ -31,7 +31,7 @@ class Repositext
         # to their positions saved in subtitle_markers.csv
         # Only applied if content_at contains subtitle_marks.
         # @param[String] content_at
-        # @param[CSV] subtitle_marker_csv
+        # @param[CSV String] subtitle_marker_csv
         # @return[Outcome]
         def significant_changes?(content_at, subtitle_marker_csv)
           raise(ArgumentError.new("content_at is empty."))  if content_at.to_s.strip.empty?
@@ -59,7 +59,7 @@ class Repositext
             old_len = old_caption[:char_length]
             new_pos = new_caption[:char_pos]
             new_len = new_caption[:char_length]
-            if subtitle_mark_changed_significantly?(old_pos, old_len, new_pos, new_len)
+            if subtitle_mark_changed_significantly?(old_len, new_len)
               line_num = content_at[0..new_pos].count("\n") + 1
               significantly_changed_captions << { excerpt: new_caption[:excerpt], line_num: line_num }
             end
@@ -85,17 +85,15 @@ class Repositext
           end
         end
 
-        # Returns true if a subtitle_mark is considered to have changed significantly
-        # @param[Integer] old_pos
+        # Returns true if a subtitle_mark's caption length has changed significantly
         # @param[Integer] old_len
-        # @param[Integer] new_pos
         # @param[Integer] new_len
-        def subtitle_mark_changed_significantly?(old_pos, old_len, new_pos, new_len)
-          relative_change = (new_pos - old_pos).abs / old_len.to_f
+        def subtitle_mark_changed_significantly?(old_len, new_len)
+          relative_change = (new_len - old_len).abs / old_len.to_f
           threshold = case old_len
           when 0..24
-            # If a caption size is 0-24 characters in length a position change
-            # of +/- 30% is considered significant
+            # If a caption is 0-24 characters long, a length change of
+            # +/- 30% is considered significant
             0.3
           when 25..60
             0.25
