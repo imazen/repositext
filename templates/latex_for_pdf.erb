@@ -75,7 +75,12 @@
 \fancypagestyle{RtFirstPageStyle}{
   \fancyhf{}
   \renewcommand{\headrulewidth}{0mm} % no line in header
-  \renewcommand{\footrule}{\RtDoubleHRule\par}
+  <% if @is_primary_repo %>
+    % double line in footer
+    \renewcommand{\footrule}{\RtDoubleHRule\par}
+  <% else %>
+    % no line in footer (default)
+  <% end %>
   \RtFooterContent
 }
 
