@@ -81,13 +81,13 @@ class Repositext
 
     # Returns an array of hashes, one for each of the 10 most recent commits in @repo
     # @param[String, optional] filepath
-    def latest_commits_local(filepath = '')
+    def latest_commits_local(filepath = '', max_number_of_commits = 20)
       s, _ = Open3.capture2(
         [
           "git",
           "--git-dir=#{ @repo_path }",
           "log",
-          "-n10",
+          "-n#{ max_number_of_commits }",
           "--pretty=format:'%h|%an|%ad|%s'",
           "--date=short",
           "--",

@@ -153,7 +153,7 @@ class Repositext
               :header_text => config.setting(:pdf_export_header_text),
               :is_primary_repo => config.setting(:is_primary_repo),
               :source_filename => filename,
-              :version_control_page => config.setting(:pdf_export_version_control_page),
+              :version_control_page => options['include-version-control-info'],
             })
           )
           kramdown_doc.root = root

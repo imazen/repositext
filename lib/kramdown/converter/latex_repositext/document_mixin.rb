@@ -76,7 +76,11 @@ module Kramdown
           @title = document_title
           @title_font_name = 'V-Calisto-St'
           @truncated_title_footer = compute_truncated_title(document_title, 45, 3)
-          @version_control_page = @options[:version_control_page] ? compute_version_control_page(@git_repo, date_code) : ''
+          @version_control_page = if @options[:version_control_page]
+            compute_version_control_page(@git_repo, @options[:source_filename])
+          else
+            ''
+          end
           # dependency boundary
           @meta_info = include_meta_info ? compute_meta_info(@git_repo, @latest_commit) : ''
 
@@ -105,7 +109,7 @@ module Kramdown
             # bold, small caps and large font
             truncated = compute_truncated_title(document_title, 70, 3)
             small_caps = ::Kramdown::Converter::LatexRepositext.emulate_small_caps(truncated)
-            "\\textbf{#{ small_caps }}"
+            "\\textbf{#{ small_caps }}" # use bold so that we get bold italic with Calisto
           else
             # regular, all caps and small font
             truncated = compute_truncated_title(document_title, 54, 3)
@@ -147,11 +151,14 @@ module Kramdown
         # Returns a list of commits and commit messages for the exported file.
         # To be used as version_control_page in the exported pdf
         # @param[Rugged::Repo] git_repo
-        # @param[String] date_code the exported file's date code
+        # @param[String] source_file_path the source file's path
         # @return[String] the version control page as latex string
-        def compute_version_control_page(git_repo, date_code)
-          file_pattern = "*#{ date_code }*"
-          recent_commits_for_file_pattern = git_repo.latest_commits_local(file_pattern)
+        def compute_version_control_page(git_repo, source_file_path)
+          max_number_of_commits = 20
+          recent_commits_for_source_file_path = git_repo.latest_commits_local(
+            source_file_path,
+            max_number_of_commits
+          ).reverse # reverse to get oldest first
 
           # header
           vcp = "\\clearpage\n"
@@ -162,21 +169,25 @@ module Kramdown
           vcp << "\\hline\n"
           vcp << "\\textbf{Commit} & \\textbf{Author} & \\textbf{Date} & \\textbf{Commit message} \\\\ \n"
           vcp << "\\hline\n"
-          recent_commits_for_file_pattern.each do |ca|
+          recent_commits_for_source_file_path.each do |ca|
             vcp << [
               ca[:commit_hash],
               ca[:author],
               ca[:date],
               ca[:message]
-            ].map { |e|
-              e.gsub('_', "\\_")
-            }.join(' & ') # table cells
+            ].join(' & ') # table cells
             vcp << "\\\\ \n" # end of table row
             vcp << "\\hline\n"
           end
           vcp << "\\end{tabular}\n"
           # footer
-          vcp << %(\n\n \\caption{The table above lists the 10 most recent git commits that included at least one file matching the pattern #{ file_pattern.inspect }.}\n\n)
+          source_file_name = source_file_path.split('/').last(3).join('/')
+          vcp << [
+            "\n\n \\noindent\\caption{The table above lists the #{ max_number_of_commits } ",
+            "most recent git commits that affected the file ",
+            "#{ source_file_name.inspect }.}\n\n",
+          ].join
+          vcp.gsub!('_', "\\_") # escape underscores for latex
           vcp
         end
 
