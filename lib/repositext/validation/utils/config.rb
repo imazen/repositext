@@ -41,7 +41,7 @@ class Repositext
         0x001D, # information separator three (group separator)
         0x001E, # information separator two (record separator)
         0x001F, # information separator one (unit separator)
-      # 0x0020 space <noBreak>
+      # 0x0020 space
         0x007F, # delete
         0x0080, # <control>
         0x0081, # <control>
@@ -94,7 +94,7 @@ class Repositext
         0x200E, # left-to-right mark
         0x200F, # right-to-left mark
       # 0x2011 nonbreaking hyphen
-      # 0x2028 line separator
+      # 0x2028 line separator (used in IDML stories)
         0x2029, # paragraph separator
         0x202A, # left-to-right embedding
         0x202B, # right-to-left embedding

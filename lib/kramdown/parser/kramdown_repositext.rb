@@ -10,10 +10,11 @@ module Kramdown
       def initialize(source, options)
         super
 
+        # NOTE: the order of parsers is important, don't change it!
         @block_parsers = [:blank_line, :atx_header, :horizontal_rule, :setext_header,
                           :block_extensions, :record_mark, :paragraph]
         @span_parsers =  [:emphasis, :subtitle_mark, :gap_mark,
-                          :span_extensions, :line_break, :escaped_chars]
+                          :span_extensions, :html_entity, :line_break, :escaped_chars]
       end
 
       # @return[Array] array with [root, [warnings]]
