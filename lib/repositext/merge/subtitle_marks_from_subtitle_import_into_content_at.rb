@@ -34,10 +34,18 @@ class Repositext
         # Move subtitle marks that are before headers to inside the header
         # so that headers are recognized by kramdown ('#' at beginning of line)
         new_si.gsub!(/(?<=\n)(@)([#]{1,6}\s+)/, '\2\1')
+
         # Then let TextReplayer take care of the rest
+        # NOTE: I'm adding two newlines to the end of new_si to avoid an issue
+        # with the diff-match-patch algorithm where TextReplayer moves the last
+        # subtitle_mark into the id_title if there is a slight substring match
+        # between the text after the last subtitle_mark (and before id_title)
+        # and the text in the id_title. Adding the two newlines makes the ends
+        # of the two texts more similar and helps DMP come up with a better
+        # match.
         Suspension::TextReplayer.new(
           content_at,
-          new_si,
+          new_si + "\n\n",
           Suspension::REPOSITEXT_TOKENS
         ).replay
       end
