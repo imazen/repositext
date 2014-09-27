@@ -64,6 +64,27 @@ module Kramdown
         "#{ before }#{ inner_text || inner(el, opts) }#{ after }"
       end
 
+      # Patch this method because kramdown's doesn't handle some of the
+      # characters we need to handle.
+      def convert_entity(el, opts)
+        # begin patch JH
+        entity = el.value # Kramdown::Utils::Entities::Entity
+        # first let kramdown give it a shot
+        r = entity_to_latex(entity)
+        if '' == r
+          # kramdown couldn't handle it
+          r = if %w[2011 2028 202F FEFF].include?(sprintf("%04X", entity.code_point))
+            # decode valid characters
+            Repositext::Utils::EntityEncoder.decode(el.options[:original])
+          else
+            # return empty string for invalid characters
+            ''
+          end
+        end
+        r
+        # end patch JH
+      end
+
       # Override this method in any subclasses that render gap_marks
       def convert_gap_mark(el, opts)
         ''
@@ -194,7 +215,6 @@ module Kramdown
       end
 
       def convert_strong(el, opts)
-
         if @options[:is_primary_repo]
           # NOTE: There is a strange bug where in the V-Calisto-St font and latex
           # bold and bold-italic are reversed. So whenever I want bold, I have to

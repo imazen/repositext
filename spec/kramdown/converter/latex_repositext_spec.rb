@@ -2,6 +2,41 @@ require_relative '../../helper'
 
 describe Kramdown::Converter::LatexRepositext do
 
+  describe "#convert_entity" do
+
+    [
+      ["word &amp; word", "word \\&{} word\n\n"],
+      ["word &#x2011; word", "word \u2011 word\n\n"],
+      ["word &#x2028; word", "word \u2028 word\n\n"],
+      ["word &#x202F; word", "word \u202F word\n\n"],
+      ["word &#xFEFF; word", "word \uFEFF word\n\n"],
+    ].each do |test_string, xpect|
+      it "decodes valid encoded entity #{ test_string.inspect }" do
+        doc = Kramdown::Document.new(test_string, :input => 'KramdownRepositext')
+        doc.to_latex_repositext.must_equal(xpect)
+      end
+    end
+
+    [
+      ["word &#x2012; word", "word  word\n\n"],
+    ].each do |test_string, xpect|
+      it "doesn't decode invalid encoded entity #{ test_string.inspect }" do
+        doc = Kramdown::Document.new(test_string, :input => 'KramdownRepositext')
+        doc.to_latex_repositext.must_equal(xpect)
+      end
+    end
+
+    [
+      ["word &#x391; word", "word $A${} word\n\n"], # decimal 913
+    ].each do |test_string, xpect|
+      it "decodes kramdown built in entity #{ test_string.inspect }" do
+        doc = Kramdown::Document.new(test_string, :input => 'KramdownRepositext')
+        doc.to_latex_repositext.must_equal(xpect)
+      end
+    end
+
+  end
+
   describe "#post_process_latex_body" do
 
     [
@@ -27,7 +62,6 @@ describe Kramdown::Converter::LatexRepositext do
       ["<<<gap-mark>>> word1 word2", "\\RtGapMarkText{}\\RtEagle\\ \\RtGapMarkText{word1} word2"], # eagle followed by whitespace not red
       ["<<<gap-mark>>>…word1 word2", "\\RtGapMarkText{…}\\RtGapMarkText{word1} word2"], # ellipsis and first word after gap_mark colored red
       ["<<<gap-mark>>>word1… word2", "\\RtGapMarkText{}\\RtGapMarkText{word1}… word2"], # ellipsis after first word after gap_mark is not red
-      ["&#x2011;", "\u2011"] # decode entity encoded chars
     ].each do |test_string, xpect|
       it "handles #{ test_string.inspect }" do
         c = Kramdown::Converter::LatexRepositext.send(:new, '_', {})
