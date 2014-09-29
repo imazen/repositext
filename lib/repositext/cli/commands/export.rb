@@ -71,16 +71,39 @@ class Repositext
       end
 
       def export_pdf_book(options)
-        # Contains everything
-        case 1
-        when 1
-          export_pdf_base('pdf_book', options.merge('page_settings_key' => :english_regular))
-        when 2
-          export_pdf_base('pdf_book', options.merge('page_settings_key' => :english_bound))
-        when 3
-          export_pdf_base('pdf_book', options.merge('page_settings_key' => :foreign_regular))
-        when 4
-          export_pdf_base('pdf_book', options.merge('page_settings_key' => :foreign_bound))
+        case
+        when config.setting(:is_primary_repo) && true # TODO: add check for bound or regular
+          export_pdf_base(
+            'pdf_book',
+            options.merge(
+              'include-version-control-info' => false,
+              'page_settings_key' => :english_regular,
+            )
+          )
+        when config.setting(:is_primary_repo) && false # TODO: add check for bound or regular
+          export_pdf_base(
+            'pdf_book',
+            options.merge(
+              'include-version-control-info' => false,
+              'page_settings_key' => :english_bound,
+            )
+          )
+        when !config.setting(:is_primary_repo) && true # TODO: add check for bound or regular
+          export_pdf_base(
+            'pdf_book',
+            options.merge(
+              'include-version-control-info' => false,
+              'page_settings_key' => :foreign_regular,
+            )
+          )
+        when !config.setting(:is_primary_repo) && false # TODO: add check for bound or regular
+          export_pdf_base(
+            'pdf_book',
+            options.merge(
+              'include-version-control-info' => false,
+              'page_settings_key' => :foreign_bound,
+            )
+          )
         else
         end
       end
@@ -109,12 +132,23 @@ class Repositext
       end
 
       def export_pdf_web(options)
-        case 1
-        when 1
-          export_pdf_base('pdf_web', options.merge('page_settings_key' => :english_regular))
-        when 2
-          export_pdf_base('pdf_web', options.merge('page_settings_key' => :foreign_regular))
+        case
+        when config.setting(:is_primary_repo)
+          export_pdf_base(
+            'pdf_web',
+            options.merge(
+              'include-version-control-info' => false,
+              'page_settings_key' => :english_regular,
+            )
+          )
         else
+          export_pdf_base(
+            'pdf_web',
+            options.merge(
+              'include-version-control-info' => false,
+              'page_settings_key' => :foreign_regular,
+            )
+          )
         end
       end
 
