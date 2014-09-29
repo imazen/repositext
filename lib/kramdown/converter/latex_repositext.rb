@@ -349,7 +349,7 @@ module Kramdown
       def break_out_of_song(inside_song)
         if inside_song
           @inside_song = false
-          "\\end{RtSong}\n"
+          "\\end{RtSong}\n\n"
         else
           ''
         end
