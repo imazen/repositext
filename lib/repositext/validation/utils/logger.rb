@@ -87,33 +87,52 @@ class Repositext
       end
 
       # @param[Validator] _validator
-      # @param[IO, Array<IO>] _io the source File in which the validation step was defined
+      # @param[IO, String, Array<IO, String>] _io the source file (or path as String) in which the validation step was defined
       # @param[Boolean] _success
       def log_validation_step(_validator, _io, _success)
         # find longest common prefix between @file_pattern_base_path and _io's filename
         # to remove it from logging output
-        io_array = _io.is_a?(Array) ? _io : [_io] # cast _io to array
-        longest_common_prefix = io_array.inject(@file_pattern_base_path.dup) {|lcp, an_io|
-          path = an_io.path
-          lcp = lcp.chop while lcp != path[0...lcp.length]
+        io_or_string_array = _io.is_a?(Array) ? _io : [_io] # cast _io to array
+        string_array = io_or_string_array.map { |e|
+          case e
+          when IO
+            e.path
+          when String
+            e
+          else
+            raise "Handle this: #{ e.inspect }"
+          end
+        }
+        longest_common_prefix = string_array.inject(@file_pattern_base_path.dup) {|lcp, a_path|
+          lcp = lcp.chop while lcp != a_path[0...lcp.length]
           lcp
         }
         parts = [
           '  ',
-          io_array.map{ |e| e.path }.join(', ').gsub(longest_common_prefix, '').ljust(40),
+          string_array.join(', ').gsub(longest_common_prefix, '').ljust(40),
           ' ',
           _validator.class.name.split(/::/).last.ljust(30)
         ]
         _success ? info(parts.join) : error(parts.join)
       end
 
-      # @param[String, Array,String>] _io
+      # @param[IO, String, Array<IO, String>] _io
       # @param[Array<String>] _info
       def log_debug_info(_io, _info)
-        io_array = _io === Array ? _io : [_io] # cast _io to array
+        io_or_string_array = _io.is_a?(Array) ? _io : [_io] # cast _io to array
+        string_array = io_or_string_array.map { |e|
+          case e
+          when IO
+            e.path
+          when String
+            e
+          else
+            raise "Handle this: #{ e.inspect }"
+          end
+        }
         parts = [
           '  ',
-          io_array.map{ |e| e.path }.join(', ').gsub(@file_pattern_base_path, '').ljust(32),
+          string_array.join(', ').gsub(@file_pattern_base_path, '').ljust(32),
           ' ',
           _info.join(', ').ljust(30)
         ]
