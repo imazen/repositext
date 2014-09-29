@@ -355,6 +355,27 @@ module Kramdown
         end
       end
 
+      # Returns a copy of txt with latex special characters escaped for latex.
+      # Inspired by http://tex.stackexchange.com/a/34586
+      # NOTE that Kramdown::Parser::Latex already escapes contents of :text
+      # elements, so we don't need to do that again.
+      # @param[String] txt
+      # @return[String]
+      def escape_latex_text(txt)
+        return txt  unless txt.is_a?(String)
+        r = txt.dup
+        r.gsub!(/(?<!\\)\&/, '\\\&') # ampersand requires special escaping
+        %w[% $ # _ { }].each { |char|
+          r.gsub!(/(?<!\\)#{ Regexp.escape(char) }/, "\\#{ char }")
+        }
+        r.gsub!('~', "\\textasciitilde")
+        r.gsub!('^', "\\textasciicircum")
+        # NOTE: we should also escape backslashes, however the only case we use
+        # backslashes is for escaping, so we won't do that. Otherwise it would
+        # break all the escaped other characters.
+        r
+      end
+
     end
 
   end

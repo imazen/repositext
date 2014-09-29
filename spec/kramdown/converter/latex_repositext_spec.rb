@@ -37,6 +37,42 @@ describe Kramdown::Converter::LatexRepositext do
 
   end
 
+  describe "#escape_latex_text" do
+
+    [
+      ["word & word", "word \\& word"],
+      ["word % word", "word \\% word"],
+      ["word $ word", "word \\$ word"],
+      ["word # word", "word \\# word"],
+      ["word _ word", "word \\_ word"],
+      ["word { word", "word \\{ word"],
+      ["word } word", "word \\} word"],
+      ["word ~ word", "word \\textasciitilde word"],
+      ["word ^ word", "word \\textasciicircum word"],
+    ].each do |test_string, xpect|
+      it "escapes #{ test_string.inspect }" do
+        c = Kramdown::Converter::LatexRepositext.send(:new, '_', {})
+        c.send(:escape_latex_text, test_string).must_equal(xpect)
+      end
+    end
+
+    [
+      ["word \\& word", "word \\& word"],
+      ["word \\% word", "word \\% word"],
+      ["word \\$ word", "word \\$ word"],
+      ["word \\# word", "word \\# word"],
+      ["word \\_ word", "word \\_ word"],
+      ["word \\{ word", "word \\{ word"],
+      ["word \\} word", "word \\} word"],
+    ].each do |test_string, xpect|
+      it "does not escape already escaped character #{ test_string.inspect }" do
+        c = Kramdown::Converter::LatexRepositext.send(:new, '_', {})
+        c.send(:escape_latex_text, test_string).must_equal(xpect)
+      end
+    end
+
+  end
+
   describe "#post_process_latex_body" do
 
     [

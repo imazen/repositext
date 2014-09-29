@@ -60,7 +60,7 @@ module Kramdown
                                                  .match(/[[:alpha:]]{3}\d{2}-\d{4}[[:alpha:]]?/)
                                                  .to_s
           # assign i_vars referenced in template file
-          @additional_footer_text = @options[:additional_footer_text]
+          @additional_footer_text = escape_latex_text(@options[:additional_footer_text])
           @body = latex_body
           @date_code = date_code.capitalize
           @font_name = @options[:is_primary_repo] ? 'V-Calisto-St' : 'V-Excelsior LT Std'
@@ -73,7 +73,7 @@ module Kramdown
           @latest_commit_hash = @latest_commit.oid[0,8]
           @page_settings = page_settings_for_latex_geometry_package
           @scale_factor = size_scale_factor
-          @title = document_title
+          @title = escape_latex_text(document_title)
           @title_font_name = 'V-Calisto-St'
           @truncated_title_footer = compute_truncated_title(document_title, 45, 3)
           @version_control_page = if @options[:version_control_page]
@@ -94,11 +94,13 @@ module Kramdown
         def compute_header_text_latex(header_text, is_primary_repo)
           if is_primary_repo
             # italic, small caps and large font
-            t = ::Kramdown::Converter::LatexRepositext.emulate_small_caps(header_text)
+            t = ::Kramdown::Converter::LatexRepositext.emulate_small_caps(
+              escape_latex_text(header_text)
+            )
             "\\emph{#{ t }}"
           else
             # regular, all caps and small font
-            "\\textscale{0.7}{#{ UnicodeUtils.upcase(header_text) }}"
+            "\\textscale{0.7}{#{ UnicodeUtils.upcase(escape_latex_text(header_text)) }}"
           end
         end
 
@@ -107,12 +109,12 @@ module Kramdown
         def compute_header_title_latex(document_title, is_primary_repo)
           if is_primary_repo
             # bold, small caps and large font
-            truncated = compute_truncated_title(document_title, 70, 3)
+            truncated = escape_latex_text(compute_truncated_title(document_title, 70, 3))
             small_caps = ::Kramdown::Converter::LatexRepositext.emulate_small_caps(truncated)
             "\\textbf{#{ small_caps }}" # use bold so that we get bold italic with Calisto
           else
             # regular, all caps and small font
-            truncated = compute_truncated_title(document_title, 54, 3)
+            truncated = escape_latex_text(compute_truncated_title(document_title, 54, 3))
             "\\textscale{0.7}{#{ UnicodeUtils.upcase(truncated) }}"
           end
         end
@@ -127,11 +129,11 @@ module Kramdown
           r << "\\multicolumn{2}{c}{Revision Information} \\\\\n"
           r << "\\hline\n"
           r << {
-            'Date' => latest_commit.time.strftime('%b %d, %Y'),
-            'Time' => latest_commit.time.strftime('%H:%M%P %z'),
-            'Repository' => git_repo.name,
-            'Branch' => git_repo.current_branch_name,
-            'Latest commit' => latest_commit.oid[0,8],
+            'Date' => escape_latex_text(latest_commit.time.strftime('%b %d, %Y')),
+            'Time' => escape_latex_text(latest_commit.time.strftime('%H:%M%P %z')),
+            'Repository' => escape_latex_text(git_repo.name),
+            'Branch' => escape_latex_text(git_repo.current_branch_name),
+            'Latest commit' => escape_latex_text(latest_commit.oid[0,8]),
           }.map { |k,v| "#{ k } & #{ v } \\\\" }.join("\n")
           r << "\n\\end{tabular}\n"
           r << "\\end{center}\n"
@@ -171,10 +173,10 @@ module Kramdown
           vcp << "\\hline\n"
           recent_commits_for_source_file_path.each do |ca|
             vcp << [
-              ca[:commit_hash],
-              ca[:author],
-              ca[:date],
-              ca[:message]
+              escape_latex_text(ca[:commit_hash]),
+              escape_latex_text(ca[:author]),
+              escape_latex_text(ca[:date]),
+              escape_latex_text(ca[:message]),
             ].join(' & ') # table cells
             vcp << "\\\\ \n" # end of table row
             vcp << "\\hline\n"
@@ -185,9 +187,8 @@ module Kramdown
           vcp << [
             "\n\n \\noindent\\caption{The table above lists the #{ max_number_of_commits } ",
             "most recent git commits that affected the file ",
-            "#{ source_file_name.inspect }.}\n\n",
+            "#{ escape_latex_text(source_file_name.inspect) }.}\n\n",
           ].join
-          vcp.gsub!('_', "\\_") # escape underscores for latex
           vcp
         end
 
