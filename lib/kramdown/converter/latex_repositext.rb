@@ -333,6 +333,10 @@ module Kramdown
         lb.gsub!(//, "\\RtEagle")
         # eagle: force space after leading eagle
         lb.gsub!(/(?<=\\RtEagle)\ /, '\\ ')
+        # Don't break lines between double open quote and apostrophe (via ~)
+        lb.gsub!(
+          "#{ Repositext::D_QUOTE_OPEN } #{ Repositext::APOSTROPHE }",
+          "#{ Repositext::D_QUOTE_OPEN }~#{ Repositext::APOSTROPHE }")
         lb
       end
 

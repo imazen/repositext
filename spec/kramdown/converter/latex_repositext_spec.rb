@@ -105,6 +105,15 @@ describe Kramdown::Converter::LatexRepositext do
       end
     end
 
+    it "adds a tilde between double open quote and apostrophe to avoid line breaks" do
+      c = Kramdown::Converter::LatexRepositext.send(:new, '_', {})
+      c.send(
+        :post_process_latex_body,
+        "#{ Repositext::D_QUOTE_OPEN } #{ Repositext::APOSTROPHE }"
+      ).must_equal(
+        "#{ Repositext::D_QUOTE_OPEN }~#{ Repositext::APOSTROPHE }"
+      )
+    end
   end
 
 end
