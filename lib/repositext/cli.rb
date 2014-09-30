@@ -29,17 +29,21 @@ class Repositext
       File.dirname(__FILE__)
     end
 
-    class_option :rtfile,
-                 :type => :string,
-                 :required => true,
-                 :desc => 'Specifies which Rtfile to use. Defaults to the closest Rtfile found in the directory hierarchy.'
-    class_option :input,
-                 :type => :string,
-                 :desc => 'Specifies the input file pattern. Expects an absolute path pattern that can be used with Dir.glob.'
     class_option :'changed-only',
                  :type => :boolean,
                  :default => false,
                  :desc => 'If true, only files that have been changed or added will be processed.'
+    class_option :debug,
+                 :type => :boolean,
+                 :default => false,
+                 :desc => 'If true, will print debug information related to the command.'
+    class_option :input,
+                 :type => :string,
+                 :desc => 'Specifies the input file pattern. Expects an absolute path pattern that can be used with Dir.glob.'
+    class_option :rtfile,
+                 :type => :string,
+                 :required => true,
+                 :desc => 'Specifies which Rtfile to use. Defaults to the closest Rtfile found in the directory hierarchy.'
     class_option :'skip-git-up-to-date-check',
                  :type => :boolean,
                  :default => false,

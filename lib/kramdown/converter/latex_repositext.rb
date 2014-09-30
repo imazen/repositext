@@ -211,7 +211,13 @@ module Kramdown
         latex_body << break_out_of_song(@inside_song) # close any open song environments
         latex_body = post_process_latex_body(latex_body)
         document_title = (@document_title || '[Untitled]').strip.gsub(/\A\\emph\{(.+)\}/, '\1') # strip surrounding \emph latex command
-        wrap_body_in_template(latex_body, document_title)
+        r = wrap_body_in_template(latex_body, document_title)
+        if @options[:debug]
+          puts('---- Latex source code (start): ' + '-' * 40)
+          puts r.inspect
+          puts('---- Latex source code (end): ' + '-' * 40)
+        end
+        r
       end
 
       def convert_strong(el, opts)
