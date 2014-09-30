@@ -284,7 +284,7 @@ module Kramdown
                 \\[[:alnum:]]+\{ # latex command with opening {
                 | # or
                 \s+ # eagle followed by whitespace
-              ){0,2} # repeat up to two times to match "\<gap-mark>\(\emph{others}"
+              )* # any of these zero or more times to match nested latex commands
             )
             ( #  This will be colored red
               #{ Repositext::ELIPSIS }? # optional elipsis

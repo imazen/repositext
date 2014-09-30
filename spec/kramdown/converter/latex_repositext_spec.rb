@@ -98,6 +98,8 @@ describe Kramdown::Converter::LatexRepositext do
       ["<<<gap-mark>>> word1 word2", "\\RtGapMarkText{}\\RtEagle\\ \\RtGapMarkText{word1} word2"], # eagle followed by whitespace not red
       ["<<<gap-mark>>>…word1 word2", "\\RtGapMarkText{…}\\RtGapMarkText{word1} word2"], # ellipsis and first word after gap_mark colored red
       ["<<<gap-mark>>>word1… word2", "\\RtGapMarkText{}\\RtGapMarkText{word1}… word2"], # ellipsis after first word after gap_mark is not red
+      ["\n\n<<<gap-mark>>>\\textit{\\textbf{“word", "\n\n\\RtGapMarkText{}\\textit{\\textbf{“\\RtGapMarkText{word}"],
+      ["<<<gap-mark>>>(\\emph{others}", "\\RtGapMarkText{}(\\emph{\\RtGapMarkText{others}}"],
     ].each do |test_string, xpect|
       it "handles #{ test_string.inspect }" do
         c = Kramdown::Converter::LatexRepositext.send(:new, '_', {})
