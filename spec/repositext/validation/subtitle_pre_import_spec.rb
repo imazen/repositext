@@ -1,13 +1,18 @@
 require_relative '../../helper'
+require_relative 'shared_spec_behaviors'
 
-describe Repositext::Validation::SubtitlePreImport do
+class Repositext
+  class Validation
+    describe SubtitlePreImport do
 
-  include Repositext::SharedSpecBehaviors::Validations
+      include SharedSpecBehaviors
 
-  before {
-    @common_validation = Repositext::Validation::SubtitlePreImport.new(
-      {:primary => ['_', '_']}, {}
-    )
-  }
+      before {
+        @common_validation = SubtitlePreImport.new(
+          {:primary => ['_', '_']}, {}
+        )
+      }
 
+    end
+  end
 end

@@ -1,13 +1,18 @@
 require_relative '../../helper'
+require_relative 'shared_spec_behaviors'
 
-describe Repositext::Validation::Content do
+class Repositext
+  class Validation
+    describe Content do
 
-  include Repositext::SharedSpecBehaviors::Validations
+      include SharedSpecBehaviors
 
-  before {
-    @common_validation = Repositext::Validation::Content.new(
-      {:primary => ['_', '_']}, {}
-    )
-  }
+      before {
+        @common_validation = Content.new(
+          {:primary => ['_', '_']}, {}
+        )
+      }
 
+    end
+  end
 end

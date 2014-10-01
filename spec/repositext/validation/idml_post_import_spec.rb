@@ -1,13 +1,18 @@
 require_relative '../../helper'
+require_relative 'shared_spec_behaviors'
 
-describe Repositext::Validation::IdmlPostImport do
+class Repositext
+  class Validation
+    describe IdmlPostImport do
 
-  include Repositext::SharedSpecBehaviors::Validations
+      include SharedSpecBehaviors
 
-  before {
-    @common_validation = Repositext::Validation::IdmlPostImport.new(
-      {:primary => ['_', '_']}, {}
-    )
-  }
+      before {
+        @common_validation = IdmlPostImport.new(
+          {:primary => ['_', '_']}, {}
+        )
+      }
 
+    end
+  end
 end

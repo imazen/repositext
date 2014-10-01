@@ -1,5 +1,9 @@
 require_relative '../../../helper'
 
-describe Repositext::Cli::Compare do
-  # TODO: implement specs
+class Repositext
+  class Cli
+    describe Compare do
+      # TODO: implement specs
+    end
+  end
 end

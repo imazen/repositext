@@ -1,4 +1,5 @@
 require_relative '../../../helper'
+require_relative 'shared_spec_behaviors'
 
 class Repositext
   class Validation
@@ -6,7 +7,7 @@ class Repositext
 
       describe KramdownSyntaxAt do
 
-        include Repositext::SharedSpecBehaviors::Validators
+        include SharedSpecBehaviors
 
         describe '#run' do
 

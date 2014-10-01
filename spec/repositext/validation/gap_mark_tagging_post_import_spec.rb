@@ -1,13 +1,18 @@
 require_relative '../../helper'
+require_relative 'shared_spec_behaviors'
 
-describe Repositext::Validation::GapMarkTaggingPostImport do
+class Repositext
+  class Validation
+    describe GapMarkTaggingPostImport do
 
-  include Repositext::SharedSpecBehaviors::Validations
+      include SharedSpecBehaviors
 
-  before {
-    @common_validation = Repositext::Validation::GapMarkTaggingPostImport.new(
-      {:primary => ['_', '_']}, {}
-    )
-  }
+      before {
+        @common_validation = GapMarkTaggingPostImport.new(
+          {:primary => ['_', '_']}, {}
+        )
+      }
 
+    end
+  end
 end

@@ -20,7 +20,7 @@ class Repositext
           'utf8-valid.txt'
         ].each do |file_name|
           it "passes a valid file: #{ file_name }" do
-            Validator::Utf8Encoding.new(
+            Utf8Encoding.new(
               File.open(get_test_data_path_for("/repositext/validation/validator/utf8_encoding/valid/" + file_name)),
               logger,
               reporter,
@@ -45,7 +45,7 @@ class Repositext
           'windows-1256-arabic.txt'
         ].each do |file_name|
           it "flags invalid file #{ file_name }" do
-            Validator::Utf8Encoding.new(
+            Utf8Encoding.new(
               File.open(get_test_data_path_for("/repositext/validation/validator/utf8_encoding/invalid/" + file_name)),
               logger,
               reporter,

@@ -1,14 +1,20 @@
 require_relative '../../helper'
 require 'repositext/validation/a_custom_example' # have to manually require this validation
+require_relative 'shared_spec_behaviors'
 
-describe Repositext::Validation::ACustomExample do
+class Repositext
+  class Validation
 
-  include Repositext::SharedSpecBehaviors::Validations
+    describe ACustomExample do
 
-  before {
-    @common_validation = Repositext::Validation::ACustomExample.new(
-      {:primary => ['_', '_']}, {}
-    )
-  }
+      include SharedSpecBehaviors
 
+      before {
+        @common_validation = ACustomExample.new(
+          {:primary => ['_', '_']}, {}
+        )
+      }
+
+    end
+  end
 end

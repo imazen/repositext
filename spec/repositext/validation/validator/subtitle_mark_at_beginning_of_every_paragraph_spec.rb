@@ -9,7 +9,7 @@ class Repositext
         describe 'subtitle_mark_at_beginning_of_every_paragraph?' do
 
           it 'exits early on files that contain no subtitle_marks' do
-            v = Validator::SubtitleMarkAtBeginningOfEveryParagraph.new('_', '_', '_', { :content_type => :import })
+            v = SubtitleMarkAtBeginningOfEveryParagraph.new('_', '_', '_', { :content_type => :import })
             v.send(
               :subtitle_mark_at_beginning_of_every_paragraph?,
               'text without subtitle_mark'
@@ -17,32 +17,32 @@ class Repositext
           end
 
           it "doesn't raise an exception when given :import as :content_type option" do
-            v = Validator::SubtitleMarkAtBeginningOfEveryParagraph.new('_', '_', '_', { :content_type => :import })
+            v = SubtitleMarkAtBeginningOfEveryParagraph.new('_', '_', '_', { :content_type => :import })
             v.send(:subtitle_mark_at_beginning_of_every_paragraph?, ' ')
             1.must_equal(1)
           end
 
           it "doesn't raise an exception when given :content as :content_type option" do
-            v = Validator::SubtitleMarkAtBeginningOfEveryParagraph.new('_', '_', '_', { :content_type => :import })
+            v = SubtitleMarkAtBeginningOfEveryParagraph.new('_', '_', '_', { :content_type => :import })
             v.send(:subtitle_mark_at_beginning_of_every_paragraph?, ' ')
             1.must_equal(1)
           end
 
           it "raises an exception when given no :content_type option" do
-            v = Validator::SubtitleMarkAtBeginningOfEveryParagraph.new('_', '_', '_', {})
+            v = SubtitleMarkAtBeginningOfEveryParagraph.new('_', '_', '_', {})
             lambda {
               v.send(:subtitle_mark_at_beginning_of_every_paragraph?, '@test')
             }.must_raise ArgumentError
           end
 
           it "raises an exception when given :content_type :import and invalid data" do
-            v = Validator::SubtitleMarkAtBeginningOfEveryParagraph.new('_', '_', '_', { :content_type => :import })
+            v = SubtitleMarkAtBeginningOfEveryParagraph.new('_', '_', '_', { :content_type => :import })
             lambda {
               v.send(
                 :subtitle_mark_at_beginning_of_every_paragraph?,
                 "# header\n\n@para1\n\npara2 without subtitle-mark\n\n"
               )
-            }.must_raise Validator::SubtitleMarkAtBeginningOfEveryParagraph::NoSubtitleMarkAtBeginningOfParagraphError
+            }.must_raise SubtitleMarkAtBeginningOfEveryParagraph::NoSubtitleMarkAtBeginningOfParagraphError
           end
 
         end
@@ -53,7 +53,7 @@ class Repositext
             ["\n\n@para1\n\npara2 without subtitle-mark", ['para2 without subtitle-mark']],
           ].each do |test_string, xpect|
             it "handles #{ test_string.inspect }" do
-              v = Validator::SubtitleMarkAtBeginningOfEveryParagraph.new('_', '_', '_', { })
+              v = SubtitleMarkAtBeginningOfEveryParagraph.new('_', '_', '_', { })
               v.send(
                 :check_import_file,
                 test_string
@@ -68,7 +68,7 @@ class Repositext
             [%(\n\n@para1 *with other tokens*{: .italic}\n\n^^^ {: .rid #rid-64080029 kpn="002"}\n\npara2 without subtitle-mark), ['para2 without subtitle-mark']],
           ].each do |test_string, xpect|
             it "handles #{ test_string.inspect }" do
-              v = Validator::SubtitleMarkAtBeginningOfEveryParagraph.new('_', '_', '_', { })
+              v = SubtitleMarkAtBeginningOfEveryParagraph.new('_', '_', '_', { })
               v.send(
                 :check_content_file,
                 test_string
@@ -83,7 +83,7 @@ class Repositext
             ["\n\n@para1\n\npara2", ['para2']],
           ].each do |test_string, xpect|
             it "handles #{ test_string.inspect }" do
-              v = Validator::SubtitleMarkAtBeginningOfEveryParagraph.new('_', '_', '_', { })
+              v = SubtitleMarkAtBeginningOfEveryParagraph.new('_', '_', '_', { })
               v.send(
                 :get_paragraphs_that_dont_start_with_subtitle_mark,
                 test_string
@@ -99,7 +99,7 @@ class Repositext
             ['_', ''],
           ].each do |test_string, xpect|
             it "handles #{ test_string.inspect }" do
-              v = Validator::SubtitleMarkAtBeginningOfEveryParagraph.new('_', '_', '_', { })
+              v = SubtitleMarkAtBeginningOfEveryParagraph.new('_', '_', '_', { })
               v.send(
                 :remove_all_text_content_before_first_subtitle_mark,
                 test_string

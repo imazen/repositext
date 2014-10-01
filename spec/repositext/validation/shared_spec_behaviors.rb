@@ -1,6 +1,6 @@
 class Repositext
-  module SharedSpecBehaviors
-    module Validations
+  class Validation
+    module SharedSpecBehaviors
 
       # Expects @common_validation to be initialized, like so:
       # before {

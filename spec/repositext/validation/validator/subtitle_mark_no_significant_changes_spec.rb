@@ -9,21 +9,21 @@ class Repositext
         describe 'significant_changes?' do
 
           it 'expects a non-empty content_at' do
-            v = Validator::SubtitleMarkNoSignificantChanges.new('_', '_', '_', {})
+            v = SubtitleMarkNoSignificantChanges.new('_', '_', '_', {})
             lambda {
               v.send(:significant_changes?, ' ', 'subtitle_marker_csv')
             }.must_raise ArgumentError
           end
 
           it 'expects a non-empty subtitle_marker_csv' do
-            v = Validator::SubtitleMarkNoSignificantChanges.new('_', '_', '_', {})
+            v = SubtitleMarkNoSignificantChanges.new('_', '_', '_', {})
             lambda {
               v.send(:significant_changes?, 'content_at', ' ')
             }.must_raise ArgumentError
           end
 
           it "skips content_at files that don't contain subtitle_marks" do
-            v = Validator::SubtitleMarkNoSignificantChanges.new('_', '_', '_', {})
+            v = SubtitleMarkNoSignificantChanges.new('_', '_', '_', {})
             v.send(
               :significant_changes?,
               'content_at without any subtitle_marks',
@@ -58,7 +58,7 @@ class Repositext
             [120, 120, false], # no change
           ].each do |old_len, new_len, xpect|
             it "handles #{ [old_len, new_len] }" do
-              v = Validator::SubtitleMarkNoSignificantChanges.new('_', '_', '_', {})
+              v = SubtitleMarkNoSignificantChanges.new('_', '_', '_', {})
               v.send(
                 :subtitle_mark_changed_significantly?,
                 old_len, new_len

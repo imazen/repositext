@@ -50,12 +50,6 @@ class Module
   end
 end
 
-# Require all shared behaviors
-# `include` them in each spec file they apply to
-require_relative 'shared_spec_behaviors/validators'
-require_relative 'shared_spec_behaviors/validations'
-
-
 
 # *********************************************
 #
