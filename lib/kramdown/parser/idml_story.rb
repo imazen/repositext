@@ -8,8 +8,9 @@ module Kramdown
 
     class IdmlStory < Base
 
-      include Kramdown::AdjacentElementMerger
-      include Kramdown::ImportWhitespaceSanitizer
+      include ::Kramdown::AdjacentElementMerger
+      include ::Kramdown::ImportWhitespaceSanitizer
+      include ::Kramdown::RawTextParser
 
       class InvalidElementException < RuntimeError; end
 
@@ -288,11 +289,8 @@ module Kramdown
             # it after Nokogiri is done parsing since Nokogiri converts all
             # encoded entities to their character representations and thus undoes
             # what we're trying to accomplish here, i.e. it converts &amp; => '&'
-            text_elements = text_elements.map { |te|
-              Repositext::Utils::EntityEncoder.encode(te)
-            }
             while text_elements.length > 0
-              add_text(text_elements.shift)
+              process_and_add_text(text_elements.shift)
               if text_elements.length > 0
                 @tree.children << Element.new(:br, nil, nil, :location => { :line => child.line, :story => @story_name })
               end
@@ -460,6 +458,7 @@ module Kramdown
       def paragraph_style_mappings
         self.class.paragraph_style_mappings
       end
+
     end
 
   end

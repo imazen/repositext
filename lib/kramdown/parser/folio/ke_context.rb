@@ -1,6 +1,8 @@
 # Handles workflow state and context when processing Kramdown elements
 class Kramdown::Parser::Folio::KeContext
 
+  include ::Kramdown::RawTextParser
+
   # Initializes new kramdown::element processing context
   # @param[Hash] attrs
   #     * 'root': the root kramdown element, required
@@ -35,14 +37,8 @@ class Kramdown::Parser::Folio::KeContext
   # @param[String] the_text
   # @param[Nokogiri::XML::Node] xn for warning location
   def add_text_to_current_text_container(the_text, xn)
-    # Entity encode any legitimate special characters.
-    the_text = Repositext::Utils::EntityEncoder.encode(the_text)
-    if(tce = get_current_text_container(xn))
-      if tce.children.last && :text == tce.children.last.type
-        tce.children.last.value << the_text
-      elsif '' != the_text
-        tce.add_child(Kramdown::ElementRt.new(:text, the_text))
-      end
+    if(ctce = get_current_text_container(xn))
+      process_and_add_text(the_text, ctce, :text)
     end
   end
 
