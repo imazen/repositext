@@ -17,6 +17,7 @@ module Kramdown
       text4 = ElementRt.new(:text, "text4")
       text_w_leading_space = ElementRt.new(:text, " leading")
       text_w_trailing_space = ElementRt.new(:text, "trailing ")
+      space_only = ElementRt.new(:text, ' ')
       # TODO: write specs that use these:
       leading_tab = ElementRt.new(:text, "\tleading")
       trailing_tab = ElementRt.new(:text, "trailin\t")
@@ -77,6 +78,18 @@ module Kramdown
                - :em - {"id"=>"em1"}
                  - :text - "trailing"
                - :text - " "
+            )
+        ],
+        [
+          "removes :text nodes and parent :ems if text only contains whitespace",
+          construct_kramdown_rt_tree(
+            [p1, [
+              [em1, [space_only]],
+            ]]
+          ),
+          %( - :p - {"id"=>"p1"}
+               - :text - " "
+               - :em - {"id"=>"em1"}
             )
         ],
       ].each do |desc, kt, xpect|

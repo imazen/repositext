@@ -38,6 +38,8 @@ module Kramdown
         @stack = [] # the parse stack, see #with_stack for details
         @tree = nil # the current kramdown_element
         @story_name = nil # recorded for position information
+        # Re-assign @root to instance of ElementRt, not of Element
+        @root = ElementRt.new(:root, nil, nil, :encoding => (source.encoding rescue nil), :location => 1)
       end
 
       # Called from parse_para and parse_char to manage the stack. Puts the
