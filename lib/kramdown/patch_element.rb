@@ -18,6 +18,38 @@ module Kramdown
                                         .downcase
     end
 
+    # Prints a summary of self on a single line
+    # @param[Integer, optional] _indent_level
+    # @param[Hash, optional] _options
+    # @return[String]
+    def element_summary(_indent_level = 0, _options = {})
+      el_options = {
+        :max_value_length => 80,
+        :indent => '  '
+      }.merge(_options)
+      el_value = value || ''
+      el_indent = el_options[:indent] * _indent_level
+      case el_value
+      when String, Symbol
+        # Print  element's value (e.g., type :text)
+        el_value = el_value.truncate_in_the_middle(el_options[:max_value_length])
+        el_value = el_value.length > 0 ? el_value.inspect : nil
+      when Kramdown::Utils::Entities::Entity
+        # Print :entity's code_point
+        el_value = "code_point: #{ el_value.code_point }"
+      else
+        # Raise on any other cases
+        raise el_value.inspect
+      end
+      [
+        el_indent,
+        ":#{ type }",
+        (attr.inspect  if attr && attr.any?),
+        (options.inspect  if options && options.any?),
+        el_value
+      ].compact.join(" - ")
+    end
+
     # Returns self's classes as array, sorted alphabetically
     def get_classes
       (attr['class'] || '').downcase.split(' ').sort
@@ -63,38 +95,6 @@ module Kramdown
       output << element_summary(_indent_level, _options)
       output << "\n"
       output
-    end
-
-    # Prints a summary of self on a single line
-    # @param[Integer, optional] _indent_level
-    # @param[Hash, optional] _options
-    # @return[String]
-    def element_summary(_indent_level = 0, _options = {})
-      el_options = {
-        :max_value_length => 80,
-        :indent => '  '
-      }.merge(_options)
-      el_value = value || ''
-      el_indent = el_options[:indent] * _indent_level
-      case el_value
-      when String, Symbol
-        # Print  element's value (e.g., type :text)
-        el_value = el_value.truncate_in_the_middle(el_options[:max_value_length])
-        el_value = el_value.length > 0 ? el_value.inspect : nil
-      when Kramdown::Utils::Entities::Entity
-        # Print :entity's code_point
-        el_value = "code_point: #{ el_value.code_point }"
-      else
-        # Raise on any other cases
-        raise el_value.inspect
-      end
-      [
-        el_indent,
-        ":#{ type }",
-        (attr.inspect  if attr && attr.any?),
-        (options.inspect  if options && options.any?),
-        el_value
-      ].compact.join(" - ")
     end
 
     # Returns true if self is of same element type as other_ke.
@@ -153,6 +153,13 @@ module Kramdown
       self.attr['class'] = (attr['class'] || '').split(' ')
                                                 .map { |e| e.gsub(/\A#{ a_class.strip }\z/, '') }
                                                 .join(' ')
+    end
+
+    # Sets classes, overwriting any existing classes
+    # @param[Array<String>] class_names
+    def set_classes(class_names)
+      self.attr['class'] = ''
+      class_names.each { |e| add_class(e) }
     end
 
   end
