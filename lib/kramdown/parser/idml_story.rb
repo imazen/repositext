@@ -109,7 +109,7 @@ module Kramdown
         when *(paragraph_style_mappings.keys.map { |e| 'ParagraphStyle/' + e })
           # A known paragraph style that we have a mapping for
           type, value, attr, options = paragraph_style_mappings[para['AppliedParagraphStyle'].gsub('ParagraphStyle/', '')]
-          Element.new(
+          ElementRt.new(
             type,
             value,
             attr,
@@ -121,7 +121,7 @@ module Kramdown
           )
         when String
           # An unknown paragraph style
-          Element.new(
+          ElementRt.new(
            :p,
            nil,
            {'class' => normalize_style_name(para['AppliedParagraphStyle'])},
@@ -129,9 +129,9 @@ module Kramdown
          )
         else
           # No AppliedParagraphStyle
-          Element.new(:p, nil, nil, :location => l)
+          ElementRt.new(:p, nil, nil, :location => l)
         end
-        @tree.children << el
+        @tree.add_child(el)
         el
       end
 
@@ -184,9 +184,9 @@ module Kramdown
           'Bold Italic' == char['FontStyle']
         )
           # Create pair of nested elements to include both bold and italic styles.
-          parent_el = Element.new(:strong, nil, nil, :location => l)
-          el = Element.new(:em, nil, nil, :location => l)
-          parent_el.children << el
+          parent_el = ElementRt.new(:strong, nil, nil, :location => l)
+          el = ElementRt.new(:em, nil, nil, :location => l)
+          parent_el.add_child(el)
           char_style = :bold_italic
         else
           # TODO: assignment of char_style depends on code execution: if both are present, it will always be 'Italic' and never 'Bold'
@@ -195,7 +195,7 @@ module Kramdown
             'CharacterStyle/Bold' == char['AppliedCharacterStyle'] ||
             'Bold' == char['FontStyle']
           )
-            el = parent_el = Element.new(:strong, nil, nil, :location => l)
+            el = parent_el = ElementRt.new(:strong, nil, nil, :location => l)
             char_style = :bold
           end
 
@@ -204,10 +204,10 @@ module Kramdown
             'Italic' == char['FontStyle']
           )
             if parent_el
-              el = Element.new(:em, nil, nil, :location => l)
-              parent_el.children << el
+              el = ElementRt.new(:em, nil, nil, :location => l)
+              parent_el.add_child(el)
             else
-              el = parent_el = Element.new(:em, nil, nil, :location => l)
+              el = parent_el = ElementRt.new(:em, nil, nil, :location => l)
             end
             char_style = :italic
           end
@@ -217,10 +217,10 @@ module Kramdown
         if 'CharacterStyle/$ID/[No character style]' == char['AppliedCharacterStyle']
           # Preserve FontStyles
           if 'Italic' == char['FontStyle']
-            el = parent_el = Element.new(:em, nil, nil, :location => l)
+            el = parent_el = ElementRt.new(:em, nil, nil, :location => l)
             char_style = :italic
           elsif 'Bold' == char['FontStyle']
-            el = parent_el = Element.new(:strong, nil, nil, :location => l)
+            el = parent_el = ElementRt.new(:strong, nil, nil, :location => l)
             char_style = :bold
           else
             # No FontStyle applied so we don't need to add any parent elements
@@ -229,7 +229,7 @@ module Kramdown
         end
 
         add_class_to_self_or_parent = lambda do |css_class|
-          parent_el = el = Element.new(:em, nil, nil, :location => l) if el.nil?
+          parent_el = el = ElementRt.new(:em, nil, nil, :location => l) if el.nil?
           parent_el.add_class(css_class)
           parent_el.add_class(
             case char_style
@@ -245,7 +245,9 @@ module Kramdown
         add_class_to_self_or_parent.call('smcaps') if 'SmallCaps' == char['Capitalization']
 
         if "Color/GAP RED" == char['FillColor']
-          (el.nil? ? @tree : el).children << Element.new(:gap_mark, nil, nil, :location => l)
+          (el.nil? ? @tree : el).add_child(
+            ElementRt.new(:gap_mark, nil, nil, :location => l)
+          )
         end
 
         if "Color/TRANSLATORS OMIT" == char['FillColor']
@@ -271,7 +273,7 @@ module Kramdown
           add_class_to_self_or_parent.call(normalize_style_name(char['AppliedCharacterStyle']))
         end
 
-        @tree.children << parent_el if !parent_el.nil?
+        @tree.add_child(parent_el)  if !parent_el.nil?
 
         el
       end
@@ -292,7 +294,9 @@ module Kramdown
             while text_elements.length > 0
               process_and_add_text(text_elements.shift)
               if text_elements.length > 0
-                @tree.children << Element.new(:br, nil, nil, :location => { :line => child.line, :story => @story_name })
+                @tree.add_child(
+                  ElementRt.new(:br, nil, nil, :location => { :line => child.line, :story => @story_name })
+                )
               end
             end
           when 'Br'
@@ -348,10 +352,16 @@ module Kramdown
         add_whitespace = lambda do |el, index, text, append|
           l = el.options[:line]
           if index == -1
-            el.children.insert(0, Element.new(:text, text, nil, :location => { :line => l, :story => @story_name }))
+            el.add_child(
+              ElementRt.new(:text, text, nil, :location => { :line => l, :story => @story_name }),
+              0
+            )
             1
           elsif index == el.children.length
-            el.children.insert(index, Element.new(:text, text, nil, :location => { :line =>l, :story => @story_name }))
+            el.add_child(
+              ElementRt.new(:text, text, nil, :location => { :line =>l, :story => @story_name }),
+              index
+            )
             index - 1
           elsif el.children[index].type == :text
             if append
@@ -362,7 +372,10 @@ module Kramdown
               index - 1
             end
           else
-            el.children.insert(index, Element.new(:text, text, nil, :location => { :line =>l, :story => @story_name }))
+            el.add_child(
+              ElementRt.new(:text, text, nil, :location => { :line =>l, :story => @story_name }),
+              index
+            )
             index + (append ? 1 : -1)
           end
         end
