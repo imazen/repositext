@@ -5,6 +5,10 @@ module Kramdown
     # Converts an element tree to the kramdown format.
     class KramdownRepositext < Kramdown
 
+      # Override Kramdown's method which encodes entities as decimal. We want hex.
+      def convert_entity(el, indent)
+        sprintf('&#x%04X;', el.value.code_point)
+      end
 
       # NOTE: We want to change which characters are being escaped when converting
       # to kramdown. And we don't want to monkey patch Kramdown::Converter::Kramdown.
