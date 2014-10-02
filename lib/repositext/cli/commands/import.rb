@@ -74,6 +74,7 @@ class Repositext
         )
         fix_normalize_trailing_newlines(options)
         copy_subtitle_marker_csv_files_to_content(options) # and rename them to our file naming convention
+        sync_subtitle_mark_character_positions(options)
         options['append_to_validation_report'] = true
         validate_subtitle_import(options.merge('run_options' => %w[post_import]))
       end
@@ -91,6 +92,7 @@ class Repositext
         )
         fix_normalize_trailing_newlines(options)
         copy_subtitle_marker_csv_files_to_content(options) # and rename them to our file naming convention
+        sync_subtitle_mark_character_positions(options)
         options['append_to_validation_report'] = true
         validate_subtitle_tagging_import(options.merge('run_options' => %w[post_import]))
       end
