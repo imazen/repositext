@@ -28,7 +28,7 @@ module Kramdown
       if(
         ke.children.empty? || # nothing to merge
         :block == ::Kramdown::Element.category(ke.children.first) || # can't merge paras or headers
-        :entity == ke.type # can't merge entities. They are atomic.
+        :entity == ke.type || # can't merge entities. They are atomic.
         :root == ke.type
       )
         return nil
