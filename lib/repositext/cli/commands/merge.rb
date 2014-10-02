@@ -239,13 +239,11 @@ class Repositext
         base_dir_subtitle_import = config.base_dir(:subtitle_import_dir)
         base_dir_content = options['input_2'] || config.base_dir(:content_dir)
         base_dir_output = options['output'] || config.base_dir(:content_dir)
-        markers_file_regex = /(?<!subtitle_markers)\.csv\z/
 
         $stderr.puts 'Merging :subtitle_mark tokens from subtitle_import into content_at'
         $stderr.puts '-' * 80
         merge_subtitle_marks_from_subtitle_shared_into_content_at(
           input_file_pattern_subtitle_import,
-          markers_file_regex,
           base_dir_subtitle_import,
           base_dir_content,
           options
@@ -260,13 +258,11 @@ class Repositext
         base_dir_subtitle_tagging_import = config.base_dir(:subtitle_tagging_import_dir)
         base_dir_content = options['input_2'] || config.base_dir(:content_dir)
         base_dir_output = options['output'] || config.base_dir(:content_dir)
-        markers_file_regex = /(?<!markers)\.txt\z/
 
         $stderr.puts 'Merging :subtitle_mark tokens from subtitle_tagging_import into content_at'
         $stderr.puts '-' * 80
         merge_subtitle_marks_from_subtitle_shared_into_content_at(
           input_file_pattern_subtitle_tagging_import,
-          markers_file_regex,
           base_dir_subtitle_tagging_import,
           base_dir_content,
           options
@@ -413,13 +409,11 @@ class Repositext
     protected
 
       # @param[String] input_file_pattern_subtitle_import the Dir.glob pattern that describes the input files
-      # @param[Regexp] markers_file_regex the regular expression that is used to exclude marker files based on their name
       # @param[String] base_dir_subtitle_import the base dir for the import files
       # @param[String] base_dir_content the base dir for the content files
       # @param[Hash] options
       def merge_subtitle_marks_from_subtitle_shared_into_content_at(
         input_file_pattern_subtitle_import,
-        markers_file_regex,
         base_dir_subtitle_import,
         base_dir_content,
         options
@@ -430,7 +424,8 @@ class Repositext
         errors_count = 0
 
         Dir.glob(input_file_pattern_subtitle_import).each do |subtitle_import_file_name|
-          if subtitle_import_file_name !~ markers_file_regex # don't include markers files!
+          if subtitle_import_file_name =~ /\.markers\.txt\z/
+            # don't include markers files!
             $stderr.puts " - Skip #{ subtitle_import_file_name }"
             next
           end
