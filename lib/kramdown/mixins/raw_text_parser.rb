@@ -16,9 +16,6 @@ module Kramdown
         # initialize variables in method scope
         current_text_element = nil
         new_el_opts = nil
-        # capture class so that this method works for both Idml import
-        # (using Kramdown::Element) and Folio import (using Kramdown::ElementRt)
-        kramdown_element_class = tree.class
         if tree.children.last && tree.children.last.type == type
           current_text_element = tree.children.last # Use existing text_element
         end
@@ -31,24 +28,26 @@ module Kramdown
         src = Kramdown::Utils::StringScanner.new(raw_text)
         while !src.eos?
           if current_text_element.nil?
-            current_text_element = kramdown_element_class.new(
+            current_text_element = ElementRt.new(
               type,
               '',
               nil,
               new_el_opts
             )
-            tree.children << current_text_element
+            tree.add_child(current_text_element)
           end
           if tmp = src.scan_until(/(?=#{ multibyte_char_re })/)
             current_text_element.value << tmp
             mbc = src.scan(multibyte_char_re)
             val = mbc.codepoints.first
-            tree.children << kramdown_element_class.new(
-              :entity,
-              entity(val),
-              nil,
-              new_el_opts.merge(
-                :original => Repositext::Utils::EntityEncoder.encode(src.matched)
+            tree.add_child(
+              ElementRt.new(
+                :entity,
+                entity(val),
+                nil,
+                new_el_opts.merge(
+                  :original => Repositext::Utils::EntityEncoder.encode(src.matched)
+                )
               )
             )
             current_text_element = nil # reset cte so that a new one is created
