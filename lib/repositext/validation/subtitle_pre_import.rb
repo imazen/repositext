@@ -9,6 +9,7 @@ class Repositext
 
         # Validate that every paragraph in the import file begins with a subtitle_mark
         validate_files(:subtitle_import_files) do |path|
+          Validator::Utf8Encoding.new(File.open(path), @logger, @reporter, @options).run
           next  if path.index('markers.') # skip markers files
           if @options['is_primary_repo']
             Validator::SubtitleMarkAtBeginningOfEveryParagraph.new(

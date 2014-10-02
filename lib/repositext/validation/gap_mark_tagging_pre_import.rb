@@ -4,6 +4,13 @@ class Repositext
 
       # Specifies validations to run before gap_mark_tagging_import.
       def run_list
+        # Single files
+
+        # Validate that every paragraph in the import file begins with a subtitle_mark
+        validate_files(:gap_mark_tagging_import_files) do |path|
+          Validator::Utf8Encoding.new(File.open(path), @logger, @reporter, @options).run
+        end
+
         # Validate that the gap_mark_tagging import still matches content_at
         # Define proc that computes gap_mark_tagging import filename from content_at filename
         gi_file_name_proc = lambda { |input_filename, file_specs|
