@@ -108,10 +108,10 @@ module Kramdown
         # @param[Boolean] is_primary_repo
         def compute_header_title_latex(document_title, is_primary_repo)
           if is_primary_repo
-            # bold, small caps and large font
+            # bold, italic, small caps and large font
             truncated = escape_latex_text(compute_truncated_title(document_title, 70, 3))
             small_caps = ::Kramdown::Converter::LatexRepositext.emulate_small_caps(truncated)
-            "\\textbf{#{ small_caps }}" # use bold so that we get bold italic with Calisto
+            "\\textbf{\\textit{#{ small_caps }}}"
           else
             # regular, all caps and small font
             truncated = escape_latex_text(compute_truncated_title(document_title, 54, 3))

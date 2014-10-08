@@ -221,14 +221,7 @@ module Kramdown
       end
 
       def convert_strong(el, opts)
-        if @options[:is_primary_repo]
-          # NOTE: There is a strange bug where in the V-Calisto-St font and latex
-          # bold and bold-italic are reversed. So whenever I want bold, I have to
-          # specify bold-italic and vice versa.
-          "\\textit{\\textbf{#{ inner(el, opts) }}}"
-        else
-          "\\textbf{#{ inner(el, opts) }}"
-        end
+        "\\textbf{#{ inner(el, opts) }}"
       end
 
       # Override this method in any subclasses that render subtitle_marks
