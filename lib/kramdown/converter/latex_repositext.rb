@@ -185,6 +185,11 @@ module Kramdown
             before << b
             after << a
           end
+          if el.has_class?('q')
+            # render in RtQuestion environment
+            before << "\\begin{RtQuestion}\n"
+            after << "\n\\end{RtQuestion}"
+          end
           if el.has_class?('scr')
             # render in RtScr environment
             before << "\\begin{RtScr}\n"

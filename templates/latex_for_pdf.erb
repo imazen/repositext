@@ -152,6 +152,10 @@
 \newenvironment{RtOmit}
   {\par\color{Green}}
   {\par}
+% environment to render questions
+\newenvironment{RtQuestion}
+  {\par\leftskip=25\RtRelPt \setlength{\parindent}{-25\RtRelPt}}
+  {\par}
 % environment to render scr paragraphs
 \newenvironment{RtScr}
  {\par\leftskip=20\RtRelPt \rightskip=20\RtRelPt \setlength{\parindent}{8\RtRelPt}}
