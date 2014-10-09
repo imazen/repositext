@@ -69,7 +69,7 @@ class Repositext
               # In other words, the root element may only contain elements of type :record_mark
               el.children.each do |child|
                 if(:record_mark != child.type)
-                  warnings << ::Repositext::Validation::Reportable.warning(
+                  warnings << Reportable.error(
                     [
                       @file_to_validate.path,
                       (lo = el.options[:location]) && sprintf("line %5s", lo)
@@ -93,7 +93,7 @@ class Repositext
               else
                 # Subsequent KPN
                 if(l_kpn != @kpn_tracker + 1)
-                  warnings << ::Repositext::Validation::Reportable.warning(
+                  warnings << Reportable.error(
                     [
                       @file_to_validate.path,
                       (lo = el.options[:location]) && sprintf("line %5s", lo)
@@ -153,7 +153,7 @@ class Repositext
             # rather than in #validate_character_inventory, since e.g.,
             # class attrs may contain legitimate underscores.
             if(el.value =~ /[\_\^]/)
-              warnings << ::Repositext::Validation::Reportable.warning(
+              warnings << Reportable.error(
                 [
                   @file_to_validate.path,
                   (lo = el.options[:location]) && sprintf("line %5s", lo)
