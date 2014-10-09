@@ -108,6 +108,42 @@ class Repositext
                 @kpn_tracker = l_kpn
               end
             end
+            # Validates that all p.song paragraphs are preceded by p.stanza or
+            # p.song only. We assume that every p.song is a direct child of a
+            # :record_mark
+            non_blank_children = el.children.find_all { |e| :blank != e.type }
+            first_child = non_blank_children.first
+            if(first_child && :p == first_child.type && first_child.has_class?('song'))
+              # First :p in :record_mark is p.song
+              errors << Reportable.error(
+                [
+                  @file_to_validate.path,
+                  (lo = first_child.options[:location]) && sprintf("line %5s", lo)
+                ].compact,
+                [
+                  'p.song not preceded by p.stanza or p.song',
+                  "Preceded by #{ el.element_summary }",
+                ]
+              )
+            end
+            non_blank_children.each_cons(2) { |first_el, second_el|
+              if(
+                (:p == second_el.type && second_el.has_class?('song')) &&
+                !(:p == first_el.type && (first_el.has_class?('stanza') || first_el.has_class?('song')))
+              )
+                # subsequent p.song preceded by something other than p.stanza or p.song
+                errors << Reportable.error(
+                  [
+                    @file_to_validate.path,
+                    (lo = second_el.options[:location]) && sprintf("line %5s", lo)
+                  ].compact,
+                  [
+                    'p.song not preceded by p.stanza or p.song',
+                    "Preceded by #{ first_el.element_summary }",
+                  ]
+                )
+              end
+            }
           elsif(
             :text == el.type &&
             @options['run_options'].include?('kramdown_syntax_at-no_underscore_or_caret')
