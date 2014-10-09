@@ -214,7 +214,7 @@ module Kramdown
         r = wrap_body_in_template(latex_body, document_title)
         if @options[:debug]
           puts('---- Latex source code (start): ' + '-' * 40)
-          puts r.inspect
+          puts r
           puts('---- Latex source code (end): ' + '-' * 40)
         end
         r
