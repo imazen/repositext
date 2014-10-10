@@ -86,7 +86,19 @@ module Kramdown
         # trim leading and trailing whitespace
         r.strip!
         r << "\n" # add single newline to end of file to comply with repositext file conventions
+        r = add_subtitle_mark_to_beginning_of_first_paragraph(r)
         r
+      end
+
+      # Adds a '@' to the beginning of the first paragraph if txt doesn't contain
+      # any subtitle_marks yet. This is so that the software that uses this file
+      # detects it as a subtitle file
+      # @param[String] txt
+      # @return[String]
+      def add_subtitle_mark_to_beginning_of_first_paragraph(txt)
+        return(txt)  if txt.index('@')
+        # Insert '@' in the first line that contains text and is not a header
+        txt.sub(/(\n)([^\[\s])/, '\1@\2')
       end
 
     end
