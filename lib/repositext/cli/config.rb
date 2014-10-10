@@ -149,6 +149,15 @@ class Repositext
         }
       end
 
+      # Returns the absolute path of primary_repo with a guaranteed trailing
+      # slash at the end
+      def primary_repo_base_dir
+        File.expand_path(
+          setting(:relative_path_to_primary_repo),
+          base_dir(:rtfile_dir)
+        ).sub(/\/?\z/, '') + '/'
+      end
+
     private
 
       # Returns a key's value from container. Raises if an unknown key is requested.

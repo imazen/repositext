@@ -41,6 +41,8 @@ class Repositext
           Repositext::Cli::FILE_SPEC_DELIMITER
         )
         input_base_dir = config.base_dir(input_base_dir_name)
+        # grab source marker_csv file from primary repo
+        input_base_dir.gsub!(config.base_dir(:rtfile_dir), config.primary_repo_base_dir)
         output_base_dir = options['output'] || config.base_dir(:subtitle_export_dir)
 
         Repositext::Cli::Utils.copy_files(

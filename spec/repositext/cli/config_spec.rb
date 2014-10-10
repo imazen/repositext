@@ -240,6 +240,17 @@ class Repositext
           }.must_raise ArgumentError
         end
       end
+
+      describe '#primary_repo_base_dir' do
+        before do
+          config.add_base_dir(:rtfile_dir, '/some/path/to/rtfile')
+          config.add_setting(:relative_path_to_primary_repo, '../rtfile_in_primary_repo')
+        end
+        it "returns an absolute path to primary_repo" do
+          config.primary_repo_base_dir.must_equal('/some/path/to/rtfile_in_primary_repo/')
+        end
+      end
+
     end
   end
 end
