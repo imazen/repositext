@@ -18,8 +18,8 @@ module Kramdown
             headsep: 0.1,
           },
           english_regular: {
-            paperwidth: 5.375,
-            paperheight: 8.4375,
+            paperwidth: 5.4375,
+            paperheight: 8.375,
             inner: 0.4531,
             outer: 0.4844,
             top: 0.7733,
@@ -36,8 +36,8 @@ module Kramdown
             headsep: 0.1,
           },
           foreign_regular: {
-            paperwidth: 5.375,
-            paperheight: 8.4375,
+            paperwidth: 5.4375,
+            paperheight: 8.375,
             inner: 0.625,
             outer: 0.6458,
             top: 0.76,

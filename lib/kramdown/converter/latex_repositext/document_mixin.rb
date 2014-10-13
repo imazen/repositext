@@ -31,10 +31,10 @@ module Kramdown
           page_settings = {
             paperwidth: 8.5,
             paperheight: 11,
-            inner: 1,
-            outer: 1,
-            top: 0.7,
-            bottom: 1.2,
+            inner: 1.417938,
+            outer: 1.457063,
+            top: 1.23225,
+            bottom: 0.854375,
           }
         end
 
