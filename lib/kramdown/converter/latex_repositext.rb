@@ -7,6 +7,7 @@ module Kramdown
 
       class LeftoverTempGapMarkError < StandardError; end
       class LeftoverTempGapMarkNumberError < StandardError; end
+      class SongNotPrecededByStanzaError < StandardError; end
 
       # Since our font doesn't have a small caps variant, we have to emulate it
       # for latex.
@@ -117,6 +118,9 @@ module Kramdown
           after = ''
           inner_text = nil
 
+          # Have to process Song environments before any other classes because of
+          # nested environments. Songs can span multiple paragraphs, so they
+          # need to be the outermost nesting.
           if @inside_song
             case
             when el.has_class?('stanza')
@@ -124,8 +128,6 @@ module Kramdown
               before << break_out_of_song(true)
               before << "\n\\begin{RtSong}\n"
               @inside_song = true # set @inside_song back to true
-              # leave @inside_song true
-              # TODO: print warning, this shouldn't really happen
             when el.has_class?('song')
               # nothing to do, just continue with current RtSong environment
             else
@@ -133,21 +135,18 @@ module Kramdown
               before << break_out_of_song(true)
               @inside_song = false
             end
-          end
-
-          # Have to process Songs before any other classes because of
-          # nested environments. Songs can span multiple paragraphs, so they
-          # need to be the outermost nesting.
-          if el.has_class?('song')
-            # TODO: what to do here? raise warning if not @inside_song?
-          end
-          if el.has_class?('stanza')
-            if !@inside_song
+          else
+            # We're not @inside_song
+            case
+            when el.has_class?('song')
+              # Every .song needs to be @inside_song, preceded by stanza
+              raise(SongNotPrecededByStanzaError.new)
+            when el.has_class?('stanza')
               # start new RtSong environment
               before << "\\begin{RtSong}\n"
               @inside_song = true
             else
-              # case where we're @inside_song is handled higher up
+              # all other cases are independent of @inside_song and are handled below
             end
           end
 
