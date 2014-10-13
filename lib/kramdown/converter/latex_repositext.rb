@@ -7,7 +7,6 @@ module Kramdown
 
       class LeftoverTempGapMarkError < StandardError; end
       class LeftoverTempGapMarkNumberError < StandardError; end
-      class SongNotPrecededByStanzaError < StandardError; end
 
       # Since our font doesn't have a small caps variant, we have to emulate it
       # for latex.
@@ -93,20 +92,18 @@ module Kramdown
 
       # Patch this method to render headers without using latex title
       def convert_header(el, opts)
-        r = break_out_of_song(@inside_song)
         case output_header_level(el.options[:level])
         when 1
           # render in RtTitle environment
           l_title = inner(el, opts)
           @document_title ||= l_title # capture first level 1 header as document title
-          r << "\\begin{RtTitle}\n#{self.class.emulate_small_caps(l_title) }\n\\end{RtTitle}"
+          "\\begin{RtTitle}\n#{self.class.emulate_small_caps(l_title) }\n\\end{RtTitle}"
         when 3
           # render in RtSubTitle environment
-          r << "\\begin{RtSubTitle}\n#{ inner(el, opts) }\n\\end{RtSubTitle}"
+          "\\begin{RtSubTitle}\n#{ inner(el, opts) }\n\\end{RtSubTitle}"
         else
           raise "Unhandled header type: #{ el.inspect }"
         end
-        r
       end
 
       # Patch this method to handle the various repositext paragraph styles.
@@ -117,38 +114,6 @@ module Kramdown
           before = ''
           after = ''
           inner_text = nil
-
-          # Have to process Song environments before any other classes because of
-          # nested environments. Songs can span multiple paragraphs, so they
-          # need to be the outermost nesting.
-          if @inside_song
-            case
-            when el.has_class?('stanza')
-              # close current RtSong environment, open new one
-              before << break_out_of_song(true)
-              before << "\n\\begin{RtSong}\n"
-              @inside_song = true # set @inside_song back to true
-            when el.has_class?('song')
-              # nothing to do, just continue with current RtSong environment
-            else
-              # close RtSong environment
-              before << break_out_of_song(true)
-              @inside_song = false
-            end
-          else
-            # We're not @inside_song
-            case
-            when el.has_class?('song')
-              # Every .song needs to be @inside_song, preceded by stanza
-              raise(SongNotPrecededByStanzaError.new)
-            when el.has_class?('stanza')
-              # start new RtSong environment
-              before << "\\begin{RtSong}\n"
-              @inside_song = true
-            else
-              # all other cases are independent of @inside_song and are handled below
-            end
-          end
 
           if el.has_class?('id_paragraph')
             # render in RtIdParagraph environment
@@ -194,15 +159,23 @@ module Kramdown
             before << "\\begin{RtScr}\n"
             after << "\n\\end{RtScr}"
           end
+          if el.has_class?('song')
+           # render in RtSong environment
+            before << "\\begin{RtSong}\n"
+            after << "\n\\end{RtSong}"
+          end
+          if el.has_class?('stanza')
+           # render in RtStanza environment
+            before << "\\begin{RtStanza}\n"
+            after << "\n\\end{RtStanza}"
+          end
           "#{ before }#{ inner_text || inner(el, opts) }#{ after }\n\n"
         end
       end
 
       # Override this method in any subclasses that render record_marks
       def convert_record_mark(el, opts)
-        r = break_out_of_song(@inside_song)
-        r << inner(el, opts)
-        r
+        inner(el, opts)
       end
 
       # Returns a complete latex document as string.
@@ -210,9 +183,7 @@ module Kramdown
       # @param[Hash] opts
       # @return[String]
       def convert_root(el, opts)
-        @inside_song = false # maintain song wrapping state
         latex_body = inner(el, opts)
-        latex_body << break_out_of_song(@inside_song) # close any open song environments
         latex_body = post_process_latex_body(latex_body)
         document_title = (@document_title || '[Untitled]').strip.gsub(/\A\\emph\{(.+)\}/, '\1') # strip surrounding \emph latex command
         r = wrap_body_in_template(latex_body, document_title)
@@ -348,18 +319,6 @@ module Kramdown
       # Return an array of complete `begin` and `end` latex commands.
       def latex_environment_for_translator_omit
         ['', '']
-      end
-
-      # Returns a snippet that will break out of a song block if inside_song is true.
-      # @param[Boolean] inside_song set to true to force closing of song env.
-      #     falls back to @inside_song state variable.
-      def break_out_of_song(inside_song)
-        if inside_song
-          @inside_song = false
-          "\\end{RtSong}\n\n"
-        else
-          ''
-        end
       end
 
       # Returns a copy of txt with latex special characters escaped for latex.

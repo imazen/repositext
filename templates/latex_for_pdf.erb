@@ -154,16 +154,20 @@
   {\par}
 % environment to render questions
 \newenvironment{RtQuestion}
-  {\par\leftskip=25\RtRelPt \setlength{\parindent}{-25\RtRelPt}}
+  {\par\noindent\hangindent=25\RtRelPt\hangafter=1}
   {\par}
 % environment to render scr paragraphs
 \newenvironment{RtScr}
  {\par\leftskip=20\RtRelPt \rightskip=20\RtRelPt \setlength{\parindent}{8\RtRelPt}}
  {\par}
-% environment to render songs. Wrap in minipage to prevent page break inside a song
+% environment to render stanza paragraphs.
+\newenvironment{RtStanza}
+ {\par\leftskip=60\RtRelPt \rightskip=30\RtRelPt \setlength{\parindent}{-8\RtRelPt}}
+ {\par}
+% environment to render song paragraphs.
 \newenvironment{RtSong}
- {\begin{minipage}{\textwidth}\par\leftskip=60\RtRelPt \rightskip=30\RtRelPt \setlength{\parindent}{-8\RtRelPt}}
- {\par\end{minipage}\vspace{8\RtRelPt}}
+ {\par\leftskip=60\RtRelPt \rightskip=30\RtRelPt \setlength{\parindent}{-8\RtRelPt}\nopagebreak\parskip=0}
+ {\par}
 % environment to render ### header
 \newenvironment{RtSubTitle}
   {\begin{center}\titlefont\relscale{1.5}}
@@ -178,7 +182,7 @@
 \clubpenalty=5000
 
 % set rubber value between paras for flushbottom
-\setlength{\parskip}{3\RtRelPt plus 4\RtRelPt minus 1\RtRelPt}
+\setlength{\parskip}{3\RtRelPt plus 3\RtRelPt minus 0.5\RtRelPt}
 \setlength{\parindent}{18\RtRelPt}
 \setlength{\emergencystretch}{15\RtRelPt} % to prevent lines from sticking out on the right
 
