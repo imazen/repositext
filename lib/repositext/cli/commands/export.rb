@@ -187,6 +187,7 @@ class Repositext
               :font_override => config.setting(:font_override, false),
               :header_text => config.setting(:pdf_export_header_text),
               :is_primary_repo => config.setting(:is_primary_repo),
+              :language_code_2_chars => config.setting(:language_code_2_chars),
               :source_filename => filename,
               :version_control_page => options['include-version-control-info'],
             })

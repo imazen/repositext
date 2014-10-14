@@ -65,13 +65,23 @@ module Kramdown
           @date_code = date_code.capitalize
           @font_name = @options[:font_override] || (@options[:is_primary_repo] ? 'V-Calisto-St' : 'V-Excelsior LT Std')
           @git_repo = Repositext::Repository.new
-          @header_text = compute_header_text_latex(@options[:header_text], @options[:is_primary_repo])
-          @header_title = compute_header_title_latex(document_title, @options[:is_primary_repo])
+          @header_text = compute_header_text_latex(
+            @options[:header_text], 
+            @options[:is_primary_repo],
+            @options[:language_code_2_chars]
+            )
+          @header_title = compute_header_title_latex(
+            document_title,
+            @options[:is_primary_repo],
+            @options[:language_code_2_chars]
+            )
           @include_meta_info = include_meta_info
           @is_primary_repo = @options[:is_primary_repo]
           @latest_commit = @git_repo.latest_commit(@options[:source_filename])
           @latest_commit_hash = @latest_commit.oid[0,8]
+          @page_number_command = compute_page_number_command(@options[:is_primary_repo], @options[:language_code_2_chars])
           @page_settings = page_settings_for_latex_geometry_package
+          @paragraph_number_font_name = @options[:font_override] ? 'V-Excelsior LT Std' : @font_name
           @scale_factor = size_scale_factor
           @title = escape_latex_text(document_title)
           @title_font_name = @options[:font_override] || 'V-Calisto-St'
@@ -91,7 +101,7 @@ module Kramdown
 
         # @param[String] header_text
         # @param[Boolean] is_primary_repo
-        def compute_header_text_latex(header_text, is_primary_repo)
+        def compute_header_text_latex(header_text, is_primary_repo, language_code_2_chars)
           if is_primary_repo
             # italic, small caps and large font
             t = ::Kramdown::Converter::LatexRepositext.emulate_small_caps(
@@ -100,13 +110,17 @@ module Kramdown
             "\\emph{#{ t }}"
           else
             # regular, all caps and small font
-            "\\textscale{0.7}{#{ UnicodeUtils.upcase(escape_latex_text(header_text)) }}"
+            r = "\\textscale{0.7}{#{ UnicodeUtils.upcase(escape_latex_text(header_text)) }}"
+            if 'zh' == language_code_2_chars
+              r = "\\textbf{#{ r }}"
+            end
+            r
           end
         end
 
         # @param[String] document_title
         # @param[Boolean] is_primary_repo
-        def compute_header_title_latex(document_title, is_primary_repo)
+        def compute_header_title_latex(document_title, is_primary_repo, language_code_2_chars)
           if is_primary_repo
             # bold, italic, small caps and large font
             truncated = escape_latex_text(compute_truncated_title(document_title, 70, 3))
@@ -115,7 +129,11 @@ module Kramdown
           else
             # regular, all caps and small font
             truncated = escape_latex_text(compute_truncated_title(document_title, 54, 3))
-            "\\textscale{0.7}{#{ UnicodeUtils.upcase(truncated) }}"
+            r = "\\textscale{0.7}{#{ UnicodeUtils.upcase(truncated) }}"
+            if 'zh' == language_code_2_chars
+              r = "\\textbf{#{ r }}"
+            end
+            r
           end
         end
 
@@ -139,6 +157,20 @@ module Kramdown
           r << "\\end{center}\n"
           r << "\\end{RtMetaInfo}"
           r
+        end
+
+        def compute_page_number_command(is_primary_repo, language_code_2_chars)
+          if is_primary_repo
+            # bold, italic, small caps and large font
+            "\\textbf{\\textit{\\thepage}}"
+          else
+            # regular
+            r = "\\thepage"
+            if 'zh' == language_code_2_chars
+              r = "\\textbf{#{ r }}"
+            end
+            r
+          end
         end
 
         # Returns a version of title that is guaranteed to be no longer than

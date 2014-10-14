@@ -17,7 +17,7 @@
 \setmainfont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @font_name %>}
 % use different font for titles
 \newfontfamily\titlefont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @title_font_name %>}
-
+\newfontfamily\paragraphnumberfont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @paragraph_number_font_name %>}
 
 % needspace to make sure there is no page break in id paragraphs at the end
 \usepackage{needspace}
@@ -64,7 +64,7 @@
     \renewcommand{\headrulewidth}{0mm}
     % no line in footer (default)
   <% end %>
-  \fancyhead[EL,OR]{\thepage} % outside
+  \fancyhead[EL,OR]{<%= @page_number_command %>} % outside
   \fancyhead[ER]{<%= @header_text %>} % inside even
   \fancyhead[OL]{<%= @header_title %>} % inside odd
   \RtFooterContent
@@ -100,8 +100,6 @@
 % showframe to display layout boundaries in the document on every page.
 %\usepackage{showframe}
 
-% command to render eagle smaller than regular text
-\newcommand{\RtEagle}{\textscale{0.67}{}}
 % command to render gap mark. Pass the text to be highlighted as argument.
 \newcommand{\RtGapMarkText}[1]
   {\textcolor{red}{#1}}
@@ -116,7 +114,7 @@
     \stepcounter{RtGapMarkCounter}}
 % command to render paragraph number. Pass the para number as argument.
 \newcommand{\RtParagraphNumber}[1]
-  {\noindent\makebox[\parindent][l]{\raisebox{0.45ex}{{\textscale{0.67}{#1}}}}}
+  {\paragraphnumberfont\noindent\makebox[\parindent][l]{\raisebox{0.45ex}{{\textscale{0.67}{#1}}}}}
 % command to render record_mark. Pass rid as param
 \newcommand{\RtRecordMark}[1]
   {\noindent\colorbox{LightGrey}{Record#1}\par}
@@ -124,6 +122,10 @@
 \newcommand{\RtSmCapsEmulation}[1]
   {\textscale{0.7}{#1}}
 
+% enviroment to render eagle
+\newenvironment{RtEagle}
+  {\paragraphnumberfont }
+  {}
 % environment to render idparagraph paragraphs
 \newenvironment{RtIdParagraph}
   {\setlength{\parindent}{0}\relscale{0.73}}
@@ -160,13 +162,13 @@
 \newenvironment{RtScr}
  {\par\leftskip=20\RtRelPt \rightskip=20\RtRelPt \setlength{\parindent}{8\RtRelPt}}
  {\par}
-% environment to render stanza paragraphs.
-\newenvironment{RtStanza}
- {\par\leftskip=60\RtRelPt \rightskip=30\RtRelPt \setlength{\parindent}{-8\RtRelPt}}
- {\par}
 % environment to render song paragraphs.
 \newenvironment{RtSong}
  {\par\leftskip=60\RtRelPt \rightskip=30\RtRelPt \setlength{\parindent}{-8\RtRelPt}\nopagebreak\parskip=0}
+ {\par}
+% environment to render stanza paragraphs.
+\newenvironment{RtStanza}
+ {\par\leftskip=60\RtRelPt \rightskip=30\RtRelPt \setlength{\parindent}{-8\RtRelPt}}
  {\par}
 % environment to render ### header
 \newenvironment{RtSubTitle}
@@ -185,6 +187,8 @@
 \setlength{\parskip}{3\RtRelPt plus 3\RtRelPt minus 0.5\RtRelPt}
 \setlength{\parindent}{18\RtRelPt}
 \setlength{\emergencystretch}{15\RtRelPt} % to prevent lines from sticking out on the right
+
+\frenchspacing
 
 \begin{document}
 
