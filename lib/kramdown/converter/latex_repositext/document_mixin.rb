@@ -63,7 +63,7 @@ module Kramdown
           @additional_footer_text = escape_latex_text(@options[:additional_footer_text])
           @body = latex_body
           @date_code = date_code.capitalize
-          @font_name = @options[:is_primary_repo] ? 'V-Calisto-St' : 'V-Excelsior LT Std'
+          @font_name = @options[:font_override] || (@options[:is_primary_repo] ? 'V-Calisto-St' : 'V-Excelsior LT Std')
           @git_repo = Repositext::Repository.new
           @header_text = compute_header_text_latex(@options[:header_text], @options[:is_primary_repo])
           @header_title = compute_header_title_latex(document_title, @options[:is_primary_repo])
@@ -74,7 +74,7 @@ module Kramdown
           @page_settings = page_settings_for_latex_geometry_package
           @scale_factor = size_scale_factor
           @title = escape_latex_text(document_title)
-          @title_font_name = 'V-Calisto-St'
+          @title_font_name = @options[:font_override] || 'V-Calisto-St'
           @truncated_title_footer = compute_truncated_title(document_title, 45, 3)
           @version_control_page = if @options[:version_control_page]
             compute_version_control_page(@git_repo, @options[:source_filename])

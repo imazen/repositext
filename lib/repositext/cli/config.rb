@@ -92,8 +92,10 @@ class Repositext
         get_config_val(@kramdown_parsers, name)
       end
 
-      def setting(key)
-        get_config_val(@settings, key)
+      # @param[Symbol] key
+      # @param[Boolean, optional] raise_on_unknown_key, defaults to true. Set to false for optional settings
+      def setting(key, raise_on_unknown_key = true)
+        get_config_val(@settings, key, raise_on_unknown_key)
       end
 
       # Computes a glob pattern from file spec

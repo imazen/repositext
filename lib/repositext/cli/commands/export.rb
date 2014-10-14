@@ -184,6 +184,7 @@ class Repositext
             '',
             options.merge({
               :additional_footer_text => options['additional-footer-text'],
+              :font_override => config.setting(:font_override, false),
               :header_text => config.setting(:pdf_export_header_text),
               :is_primary_repo => config.setting(:is_primary_repo),
               :source_filename => filename,
