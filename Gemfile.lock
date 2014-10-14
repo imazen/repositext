@@ -34,7 +34,7 @@ PATH
       diff_match_patch_native
 
 GEM
-  remote: http://rubygems.org/
+  remote: https://rubygems.org/
   specs:
     awesome_print (1.2.0)
     builder (3.2.2)
