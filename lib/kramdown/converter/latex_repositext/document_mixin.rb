@@ -66,7 +66,7 @@ module Kramdown
           @font_name = @options[:font_override] || (@options[:is_primary_repo] ? 'V-Calisto-St' : 'V-Excelsior LT Std')
           @git_repo = Repositext::Repository.new
           @header_text = compute_header_text_latex(
-            @options[:header_text], 
+            @options[:header_text],
             @options[:is_primary_repo],
             @options[:language_code_2_chars]
             )
@@ -86,6 +86,7 @@ module Kramdown
           @title = escape_latex_text(document_title)
           @title_font_name = @options[:font_override] || 'V-Calisto-St'
           @truncated_title_footer = compute_truncated_title(document_title, 45, 3)
+          @use_cjk_package = 'zh' == @options[:language_code_2_chars]
           @version_control_page = if @options[:version_control_page]
             compute_version_control_page(@git_repo, @options[:source_filename])
           else

@@ -11,6 +11,12 @@
 \newlength{\RtRelPt}
 \setlength{\RtRelPt}{<%= @scale_factor %>pt}
 
+% conditionally apply CJK package for chinese
+<% if @use_cjk_package %>
+  \usepackage{xeCJK}[2011/05/20]
+  \setCJKmainfont{FZShuSong-Z01S}
+<% end %>
+
 % fontspec to use custom fonts
 \usepackage{fontspec}
 % turn off ligatures
