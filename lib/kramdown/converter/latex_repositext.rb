@@ -185,7 +185,10 @@ module Kramdown
       def convert_root(el, opts)
         latex_body = inner(el, opts)
         latex_body = post_process_latex_body(latex_body)
-        document_title = (@document_title || '[Untitled]').strip.gsub(/\A\\emph\{(.+)\}/, '\1') # strip surrounding \emph latex command
+        # strip any latex commands (e.g., emph and textbf) from title
+        document_title = (
+          @document_title || '[Untitled]'
+        ).strip.gsub(/\A(?:\\[[:alpha:]]+\{)+(.+)\}+/, '\1')
         r = wrap_body_in_template(latex_body, document_title)
         if @options[:debug]
           puts('---- Latex source code (start): ' + '-' * 40)
