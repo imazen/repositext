@@ -16,18 +16,18 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 
-  s.add_runtime_dependency('awesome_print')
-  s.add_runtime_dependency('builder')
-  s.add_runtime_dependency('kramdown')
-  s.add_runtime_dependency('logging')
-  s.add_runtime_dependency('nokogiri')
-  s.add_runtime_dependency('outcome')
-  s.add_runtime_dependency('ruby-graphviz')
-  s.add_runtime_dependency('rubyzip')
-  s.add_runtime_dependency('rugged')
-  s.add_runtime_dependency('suspension')
-  s.add_runtime_dependency('thor')
-  s.add_runtime_dependency('unicode_utils')
+  s.add_dependency('awesome_print')
+  s.add_dependency('builder')
+  s.add_dependency('kramdown')
+  s.add_dependency('logging')
+  s.add_dependency('nokogiri')
+  s.add_dependency('outcome')
+  s.add_dependency('ruby-graphviz')
+  s.add_dependency('rubyzip')
+  s.add_dependency('rugged')
+  s.add_dependency('suspension')
+  s.add_dependency('thor')
+  s.add_dependency('unicode_utils')
 
   # Test libraries
   s.add_development_dependency "bundler", "~> 1.3"
