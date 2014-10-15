@@ -423,6 +423,68 @@ class Repositext
         }
       end
 
+      # Generates a report of all editor notes in content AT with more than
+      # char_cutoff characters
+      def report_long_editor_notes(options)
+        input_file_spec = options['input'] || 'content_dir/at_files'
+        content_base_dir = config.base_dir('content_dir')
+        total_file_count = 0
+        total_editor_notes_count = 0
+        long_editor_notes_count = 0
+        long_editor_notes = []
+        char_cutoff = 240
+
+        Repositext::Cli::Utils.read_files(
+          config.compute_glob_pattern(input_file_spec),
+          /\.at\Z/i,
+          nil,
+          "Reading AT files",
+          options
+        ) do |contents, filename|
+          total_file_count += 1
+          str_sc = Kramdown::Utils::StringScanner.new(contents)
+          while !str_sc.eos? do
+            if(str_sc.skip_until(/(?=\[)/))
+              start_line = str_sc.current_line_number
+              if(editor_note = str_sc.scan(/\[[^\]]*\]/))
+                total_editor_notes_count += 1
+                num_chars = editor_note.length
+                next  if num_chars < char_cutoff
+                long_editor_notes_count += 1
+                long_editor_notes << {
+                  :filename => filename,
+                  :line => start_line,
+                  :editor_note => editor_note.truncate_in_the_middle(120),
+                  :num_chars => num_chars,
+                }
+              else
+                raise "Unbalanced bracket"
+              end
+            else
+              str_sc.terminate
+            end
+          end
+        end
+
+        lines = [
+          "Editor notes with more than #{ char_cutoff } characters",
+          '-' * 40,
+        ]
+        long_editor_notes.each { |e|
+          lines << " - #{ e[:filename].split('/').last } - line #{ e[:line] } - #{ e[:num_chars] } chars - #{ e[:editor_note].inspect }"
+        }
+        lines << '-' * 40
+        lines << "Found #{ long_editor_notes_count } of #{ total_editor_notes_count } editor notes with more than #{ char_cutoff } chars in #{ total_file_count } files at #{ Time.now.to_s }."
+        $stderr.puts
+        lines.each { |l| $stderr.puts l }
+        report_file_path = File.join(config.base_dir('reports_dir'), 'long_editor_notes.txt')
+        File.open(report_file_path, 'w') { |f|
+          f.write lines.join("\n")
+          f.write "\n\n"
+          f.write "Command to generate this file: `repositext report long_editor_notes`\n"
+        }
+      end
+
       # Generate summary of paragraphs with class `q` where the contained span
       # is not aligned with the para. In other words: question paras that contain
       # text outside of the span.
