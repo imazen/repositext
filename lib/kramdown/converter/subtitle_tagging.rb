@@ -17,6 +17,11 @@ module Kramdown
         ''
       end
 
+      def add_subtitle_mark_to_beginning_of_first_paragraph(txt)
+        # We don't add subtitle_marks in subtitle_tagging export, return txt as is
+        txt
+      end
+
     end
   end
 end
