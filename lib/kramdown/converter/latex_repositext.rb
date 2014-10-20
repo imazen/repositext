@@ -314,6 +314,8 @@ module Kramdown
         lb.gsub!(
           "#{ Repositext::D_QUOTE_OPEN } #{ Repositext::APOSTROPHE }",
           "#{ Repositext::D_QUOTE_OPEN }~#{ Repositext::APOSTROPHE }")
+        # Remove space after paragraph number to avoid fluctuations in indent
+        lb.gsub!(/(\\RtParagraphNumber\{[^\}]+\})\s*/, '\1')
         lb
       end
 
