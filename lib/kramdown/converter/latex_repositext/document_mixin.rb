@@ -31,10 +31,10 @@ module Kramdown
           page_settings = {
             paperwidth: 8.5,
             paperheight: 11,
-            inner: 1.417938,
-            outer: 1.457063,
-            top: 1.23225,
-            bottom: 0.854375,
+            inner: 1.304655,
+            outer: 1.345345,
+            top: 0.66855,
+            bottom: 1.06154,
           }
         end
 
@@ -108,10 +108,10 @@ module Kramdown
             t = ::Kramdown::Converter::LatexRepositext.emulate_small_caps(
               escape_latex_text(header_text)
             )
-            "\\emph{#{ t }}"
+            "\\textscale{#{ size_scale_factor }}{\\textbf{\\textit{#{ t }}}}"
           else
             # regular, all caps and small font
-            r = "\\textscale{0.7}{#{ UnicodeUtils.upcase(escape_latex_text(header_text)) }}"
+            r = "\\textscale{#{ 0.7 * size_scale_factor }}{#{ UnicodeUtils.upcase(escape_latex_text(header_text)) }}"
             if 'zh' == language_code_2_chars
               r = "\\textbf{#{ r }}"
             end
@@ -126,11 +126,11 @@ module Kramdown
             # bold, italic, small caps and large font
             truncated = escape_latex_text(compute_truncated_title(document_title, 70, 3))
             small_caps = ::Kramdown::Converter::LatexRepositext.emulate_small_caps(truncated)
-            "\\textbf{\\textit{#{ small_caps }}}"
+            "\\textscale{#{ size_scale_factor }}{\\textbf{\\textit{#{ small_caps }}}}"
           else
             # regular, all caps and small font
             truncated = escape_latex_text(compute_truncated_title(document_title, 54, 3))
-            r = "\\textscale{0.7}{#{ UnicodeUtils.upcase(truncated) }}"
+            r = "\\textscale{#{ 0.7 * size_scale_factor }}{#{ UnicodeUtils.upcase(truncated) }}"
             if 'zh' == language_code_2_chars
               r = "\\textbf{#{ r }}"
             end
@@ -163,10 +163,10 @@ module Kramdown
         def compute_page_number_command(is_primary_repo, language_code_2_chars)
           if is_primary_repo
             # bold, italic, small caps and large font
-            "\\textbf{\\textit{\\thepage}}"
+            "\\textscale{#{ size_scale_factor }}{\\textbf{\\textit{\\thepage}}}"
           else
             # regular
-            r = "\\thepage"
+            r = "\\textscale{#{ size_scale_factor }}{\\thepage}"
             if 'zh' == language_code_2_chars
               r = "\\textbf{#{ r }}"
             end
