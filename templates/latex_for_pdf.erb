@@ -25,6 +25,9 @@
 \newfontfamily\titlefont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @title_font_name %>}
 \newfontfamily\paragraphnumberfont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @paragraph_number_font_name %>}
 
+% leading to set leading for document
+\usepackage{leading}
+
 % needspace to make sure there is no page break in id paragraphs at the end
 \usepackage{needspace}
 
@@ -195,6 +198,8 @@
 \setlength{\emergencystretch}{15\RtRelPt} % to prevent lines from sticking out on the right
 
 \frenchspacing
+
+\leading{11.8pt}
 
 \begin{document}
 
