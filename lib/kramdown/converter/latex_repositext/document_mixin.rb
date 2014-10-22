@@ -33,10 +33,10 @@ module Kramdown
             paperheight: 11,
             inner: 1.304655,
             outer: 1.345345,
-            top: 0.61165,
-            bottom: 0.21251,
-            headsep: 0.0988,
-            footskip: 0.45695,
+            top: 0.65065,
+            bottom: 0.27981,
+            headsep: 0.1621,
+            footskip: 0.38965,
           }
         end
 
