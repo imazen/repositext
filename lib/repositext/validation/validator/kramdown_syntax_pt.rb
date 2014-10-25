@@ -5,18 +5,8 @@ class Repositext
 
         def run
           document_to_validate = @file_to_validate.read
-          errors, warnings = [], []
-
-          catch(:abandon) do
-            outcome = valid_kramdown_syntax?(document_to_validate)
-            if outcome.fail?
-              errors += outcome.errors
-              warnings += outcome.warnings
-              #throw :abandon
-            end
-          end
-
-          log_and_report_validation_step(errors, warnings)
+          outcome = valid_kramdown_syntax?(document_to_validate)
+          log_and_report_validation_step(outcome.errors, outcome.warnings)
         end
 
         # Returns an Array of features that are allowed in a PT document. Please

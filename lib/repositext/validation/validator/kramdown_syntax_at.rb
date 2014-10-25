@@ -27,20 +27,13 @@ class Repositext
           document_to_validate = @file_to_validate.read
           errors, warnings = [], []
 
-          catch(:abandon) do
-            outcome = valid_kramdown_syntax?(document_to_validate)
-            if outcome.fail?
-              errors += outcome.errors
-              warnings += outcome.warnings
-              #throw :abandon
-            end
-            outcome = valid_syntax_at?(document_to_validate)
-            if outcome.fail?
-              errors += outcome.errors
-              warnings += outcome.warnings
-              #throw :abandon
-            end
-          end
+          outcome = valid_kramdown_syntax?(document_to_validate)
+          errors += outcome.errors
+          warnings += outcome.warnings
+
+          outcome = valid_syntax_at?(document_to_validate)
+          errors += outcome.errors
+          warnings += outcome.warnings
 
           log_and_report_validation_step(errors, warnings)
         end

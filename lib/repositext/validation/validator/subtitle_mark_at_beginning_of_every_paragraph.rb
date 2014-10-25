@@ -9,20 +9,10 @@ class Repositext
         # Runs all validations for self
         def run
           document_to_validate = @file_to_validate.read
-          errors, warnings = [], []
-
-          catch(:abandon) do
-            outcome = subtitle_mark_at_beginning_of_every_paragraph?(
-              document_to_validate
-            )
-            if outcome.fail?
-              errors += outcome.errors
-              warnings += outcome.warnings
-              #throw :abandon
-            end
-          end
-
-          log_and_report_validation_step(errors, warnings)
+          outcome = subtitle_mark_at_beginning_of_every_paragraph?(
+            document_to_validate
+          )
+          log_and_report_validation_step(outcome.errors, outcome.warnings)
         end
 
       private

@@ -9,20 +9,9 @@ class Repositext
         # Runs all validations for self
         def run
           document_to_validate = @file_to_validate.read
-          errors, warnings = [], []
-
-          catch(:abandon) do
-            # @file_to_validate is an array with the paths to the content_at and subtitle_tagging_export files
-            outcome = subtitle_marks_spaced_correctly?(document_to_validate)
-
-            if outcome.fail?
-              errors += outcome.errors
-              warnings += outcome.warnings
-              #throw :abandon
-            end
-          end
-
-          log_and_report_validation_step(errors, warnings)
+          # @file_to_validate is an array with the paths to the content_at and subtitle_tagging_export files
+          outcome = subtitle_marks_spaced_correctly?(document_to_validate)
+          log_and_report_validation_step(outcome.errors, outcome.warnings)
         end
 
       private

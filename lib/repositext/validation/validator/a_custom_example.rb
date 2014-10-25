@@ -14,18 +14,8 @@ class Repositext
         # Outcome is a good vehicle to return validation outcomes to the run method.
         def run
           document_to_validate = @file_to_validate.read
-          errors, warnings = [], []
-
-          catch(:abandon) do
-            outcome = is_this_valid?(document_to_validate)
-            if outcome.fail?
-              errors += outcome.errors
-              warnings += outcome.warnings
-              #throw :abandon
-            end
-          end
-
-          log_and_report_validation_step(errors, warnings)
+          outcome = is_this_valid?(document_to_validate)
+          log_and_report_validation_step(outcome.errors, outcome.warnings)
         end
 
         # This is where you check the validatable for any issues

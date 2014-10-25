@@ -19,22 +19,11 @@ class Repositext
           # @file_to_validate is an array with the content_at and
           # gap_mark_tagging_import files
           content_at_file, gap_mark_tagging_import_file = @file_to_validate
-          errors, warnings = [], []
-
-          catch(:abandon) do
-            outcome = contents_match?(
-              content_at_file.read,
-              gap_mark_tagging_import_file.read
-            )
-
-            if outcome.fail?
-              errors += outcome.errors
-              warnings += outcome.warnings
-              #throw :abandon
-            end
-          end
-
-          log_and_report_validation_step(errors, warnings)
+          outcome = contents_match?(
+            content_at_file.read,
+            gap_mark_tagging_import_file.read
+          )
+          log_and_report_validation_step(outcome.errors, outcome.warnings)
         end
 
       private

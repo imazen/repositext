@@ -8,21 +8,11 @@ class Repositext
         # Runs all validations for self
         def run
           content_at_filename, subtitle_marker_csv_filename = @file_to_validate
-          errors, warnings = [], []
-
-          catch(:abandon) do
-            outcome = subtitle_mark_counts_match?(
-              content_at_filename.read,
-              subtitle_marker_csv_filename.read
-            )
-            if outcome.fail?
-              errors += outcome.errors
-              warnings += outcome.warnings
-              #throw :abandon
-            end
-          end
-
-          log_and_report_validation_step(errors, warnings)
+          outcome = subtitle_mark_counts_match?(
+            content_at_filename.read,
+            subtitle_marker_csv_filename.read
+          )
+          log_and_report_validation_step(outcome.errors, outcome.warnings)
         end
 
       private
