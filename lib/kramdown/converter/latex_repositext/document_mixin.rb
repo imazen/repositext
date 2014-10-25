@@ -33,15 +33,17 @@ module Kramdown
             paperheight: 11,
             inner: 1.304655,
             outer: 1.345345,
-            top: 0.66855,
-            bottom: 1.06154,
+            top: 0.65065,
+            bottom: 0.27981,
+            headsep: 0.1621,
+            footskip: 0.38965,
           }
         end
 
         # This factor will be applied to all font-metrics to enable enlarged
         # PDFs.
         def size_scale_factor
-          1.25
+          1.3
         end
 
         def include_meta_info
@@ -108,7 +110,7 @@ module Kramdown
             t = ::Kramdown::Converter::LatexRepositext.emulate_small_caps(
               escape_latex_text(header_text)
             )
-            "\\textscale{#{ size_scale_factor }}{\\textbf{\\textit{#{ t }}}}"
+            "\\textscale{#{ 0.909091 * size_scale_factor }}{\\textbf{\\textit{#{ t }}}}"
           else
             # regular, all caps and small font
             r = "\\textscale{#{ 0.7 * size_scale_factor }}{#{ UnicodeUtils.upcase(escape_latex_text(header_text)) }}"
@@ -126,7 +128,7 @@ module Kramdown
             # bold, italic, small caps and large font
             truncated = escape_latex_text(compute_truncated_title(document_title, 70, 3))
             small_caps = ::Kramdown::Converter::LatexRepositext.emulate_small_caps(truncated)
-            "\\textscale{#{ size_scale_factor }}{\\textbf{\\textit{#{ small_caps }}}}"
+            "\\textscale{#{ 0.909091 * size_scale_factor }}{\\textbf{\\textit{#{ small_caps }}}}"
           else
             # regular, all caps and small font
             truncated = escape_latex_text(compute_truncated_title(document_title, 54, 3))
@@ -163,7 +165,7 @@ module Kramdown
         def compute_page_number_command(is_primary_repo, language_code_2_chars)
           if is_primary_repo
             # bold, italic, small caps and large font
-            "\\textscale{#{ size_scale_factor }}{\\textbf{\\textit{\\thepage}}}"
+            "\\textscale{#{ 0.909091 * size_scale_factor }}{\\textbf{\\textit{\\thepage}}}"
           else
             # regular
             r = "\\textscale{#{ size_scale_factor }}{\\thepage}"

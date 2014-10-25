@@ -25,11 +25,19 @@
 \newfontfamily\titlefont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @title_font_name %>}
 \newfontfamily\paragraphnumberfont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @paragraph_number_font_name %>}
 
+% leading to set leading for document
+\usepackage{leading}
+
 % needspace to make sure there is no page break in id paragraphs at the end
 \usepackage{needspace}
 
 % relsize to set font size relative to base font size
 \usepackage{relsize}
+  % forces relsize to scale by the set percentage
+  \renewcommand\RSpercentTolerance{0}
+
+% setspace to ensure single line spacing is used
+\usepackage[singlespacing]{setspace}
 
 % xcolor to color text
 \usepackage[svgnames]{xcolor}
@@ -45,7 +53,7 @@
 \newcommand{\RtDoubleHRule}{
   \begin{minipage}{\textwidth}
   \hrule width \hsize height 0.2\RtRelPt
-  \kern 1\RtRelPt
+  \kern 1.6\RtRelPt
   \hrule width \hsize height 0.2\RtRelPt
   \end{minipage}
 }
@@ -195,6 +203,8 @@
 \setlength{\emergencystretch}{15\RtRelPt} % to prevent lines from sticking out on the right
 
 \frenchspacing
+
+\leading{11.8pt}
 
 \begin{document}
 

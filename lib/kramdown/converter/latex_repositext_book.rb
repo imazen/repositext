@@ -22,9 +22,10 @@ module Kramdown
             paperheight: 8.375,
             inner: 0.4531,
             outer: 0.4844,
-            top: 0.7733,
-            bottom: 0.471,
-            headsep: 0.1,
+            top: 0.4705,
+            bottom: 0.1202,
+            headsep: 0.076,
+            footskip: 0.3515,
           },
           foreign_bound: {
             paperwidth: 5.375,
