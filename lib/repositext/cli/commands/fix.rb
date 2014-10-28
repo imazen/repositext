@@ -74,6 +74,35 @@ class Repositext
         end
       end
 
+      # Insert a record_mark into each content AT file that doesn't contain one
+      # already
+      def fix_insert_record_mark_into_all_at_files(options)
+        input_file_spec = options['input'] || 'content_dir/at_files'
+        repo_base_dir = config.base_dir(:rtfile_dir)
+        primary_repo_base_dir = File.expand_path(
+          config.setting(:relative_path_to_primary_repo),
+          repo_base_dir
+        ) + '/'
+        Repositext::Cli::Utils.change_files_in_place(
+          config.compute_glob_pattern(input_file_spec),
+          /\.at\z/i,
+          "Inserting record_marks into AT files",
+          options
+        ) do |contents, filename|
+          outcome = Repositext::Fix::InsertRecordMarkIntoAllAtFiles.fix(
+            contents,
+            filename,
+            repo_base_dir,
+            primary_repo_base_dir,
+            [
+              config.setting(:language_code_3_chars),
+              config.setting(:primary_repo_lang_code)
+            ]
+          )
+          [outcome]
+        end
+      end
+
       def fix_normalize_editors_notes(options)
         # Don't set default file_spec since this gets called both in folio
         # and idml.
