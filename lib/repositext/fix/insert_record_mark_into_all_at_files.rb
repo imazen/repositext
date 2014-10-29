@@ -23,7 +23,7 @@ class Repositext
 
       # Returns true if text contains no record marks
       def self.contains_no_record_marks?(text)
-        text.index("\n^^^").nil?
+        !text.match(/^\^\^\^/)
       end
 
       # @param[String] text
