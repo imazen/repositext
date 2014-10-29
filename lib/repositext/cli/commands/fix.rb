@@ -83,21 +83,30 @@ class Repositext
           config.setting(:relative_path_to_primary_repo),
           repo_base_dir
         ) + '/'
+        # lambda that converts filename to corresponding filename in primary repo
+        # Default option works when working on content AT files.
+        filename_proc = (
+          options['filename_proc'] || lambda { |filename|
+            filename.gsub(
+              repo_base_dir,
+              primary_repo_base_dir
+            ).gsub(
+              /\/#{ config.setting(:language_code_3_chars) }/,
+              "/#{ config.setting(:primary_repo_lang_code) }"
+            )
+          }
+        )
         Repositext::Cli::Utils.change_files_in_place(
           config.compute_glob_pattern(input_file_spec),
           /\.at\z/i,
           "Inserting record_marks into AT files",
           options
         ) do |contents, filename|
+          corresponding_primary_filename = filename_proc.call(filename)
           outcome = Repositext::Fix::InsertRecordMarkIntoAllAtFiles.fix(
             contents,
             filename,
-            repo_base_dir,
-            primary_repo_base_dir,
-            [
-              config.setting(:language_code_3_chars),
-              config.setting(:primary_repo_lang_code)
-            ]
+            corresponding_primary_filename
           )
           [outcome]
         end

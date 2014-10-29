@@ -8,14 +8,12 @@ class Repositext
       # Uses the first record mark from the corresponding file in the primary_repo
       # @param[String] text
       # @param[String] filename of the file to fix
-      # @param[String] repo_base_dir of the file's repo
-      # @param[String] primary_repo_base_dir
-      # @param[Array<String>] lang_code_transform, tuple of own lang code and primary lang code
+      # @param[String] corresponding_filename of the source file in primary repo
       # @return[Outcome]
-      def self.fix(text, filename, repo_base_dir, primary_repo_base_dir, lang_code_transform)
+      def self.fix(text, filename, corresponding_filename)
         text = text.dup
         outcome = if contains_no_record_marks?(text)
-          insert_record_mark(text, filename, repo_base_dir, primary_repo_base_dir, lang_code_transform)
+          insert_record_mark(text, filename, corresponding_filename)
         else
           Outcome.new(true, { contents: text }, ['File already contains record_marks'])
         end
@@ -30,25 +28,16 @@ class Repositext
 
       # @param[String] text
       # @param[String] filename of the file to fix
-      # @param[String] repo_base_dir of the file's repo
-      # @prram[String] primary_repo_base_dir
-      # @param[Array<String>] lang_code_transform, tuple of own lang code and primary lang code
+      # @param[String] corresponding_filename of the source file in primary repo
       # @return[Outcome]
-      def self.insert_record_mark(text, filename, repo_base_dir, primary_repo_base_dir, lang_code_transform)
-        corresponding_primary_filename = filename.gsub(
-          repo_base_dir,
-          primary_repo_base_dir
-        ).gsub(
-          /\/#{ lang_code_transform.first }/,
-          "/#{ lang_code_transform.last }"
-        )
-        if !File.exists?(corresponding_primary_filename)
-          return Outcome.new(false, nil, ["No corresponding primary file found for #{ filename.inspect }"])
+      def self.insert_record_mark(text, filename, corresponding_filename)
+        if !File.exists?(corresponding_filename)
+          return Outcome.new(false, nil, ["Corresponding primary file not found: #{ corresponding_filename.inspect }"])
         end
-        primary_text = File.read(corresponding_primary_filename)
+        primary_text = File.read(corresponding_filename)
         first_record_mark = primary_text.match(/^\^\^\^[^\n]*\n\n/).to_s
         if '' == first_record_mark
-          return Outcome.new(false, nil, ["Corresponding primary file #{ corresponding_primary_filename.inspect } contained no record marks"])
+          return Outcome.new(false, nil, ["Corresponding primary file #{ corresponding_filename.inspect } contained no record marks"])
         end
         text.insert(0, first_record_mark)
         Outcome.new(true, { contents: text }, ['Successfully inserted record_mark'])

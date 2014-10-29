@@ -143,6 +143,30 @@ class Repositext
         fix_normalize_editors_notes(
           options.merge({ 'input' => 'idml_import_dir/at_files' })
         )
+        # set up filename transform for inserting record_marks
+        repo_base_dir = config.base_dir(:rtfile_dir)
+        primary_repo_base_dir = File.expand_path(
+          config.setting(:relative_path_to_primary_repo),
+          repo_base_dir
+        ) + '/'
+        fix_insert_record_mark_into_all_at_files(
+          options.merge({
+            'input' => 'idml_import_dir/at_files',
+            'filename_proc' => lambda { |filename|
+              filename.gsub(
+                repo_base_dir,
+                primary_repo_base_dir
+              ).gsub(
+                /\/#{ config.setting(:language_code_3_chars) }/,
+                "/#{ config.setting(:primary_repo_lang_code) }"
+              ).gsub(
+                '/idml_import/', '/content/'
+              ).gsub(
+                /\.idml\.at\z/, '.at'
+              )
+            }
+          })
+        )
         options['append_to_validation_report'] = true
         validate_idml_import(options.merge('run_options' => %w[post_import]))
       end
