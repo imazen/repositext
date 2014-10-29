@@ -3,10 +3,16 @@ class Repositext
   # Represents the git content repository
   class Repository
 
-    def initialize
-      @repo = Rugged::Repository.discover(Dir.pwd)
+    # @param[String, optional] path_to_file_in_repo defaults to current directory
+    def initialize(path_to_file_in_repo = Dir.pwd)
+      @repo = Rugged::Repository.discover(path_to_file_in_repo)
       @repo_path = @repo.path
       @head_ref = @repo.head
+    end
+
+    # Returns the path to the directory that contains the `.git` dir
+    def base_dir
+      @repo.workdir
     end
 
     # Returns the repo name, based on name of parent directory
