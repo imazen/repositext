@@ -16,6 +16,17 @@ class Repositext
         basename.match(/\d{2}-\d{4}[[:alpha:]]?/).to_s
       end
 
+      # Extracts a 2-digit year from filename
+      def self.extract_year(filename)
+        extract_date_code(filename).match(/\A\d{2}/).to_s
+      end
+
+      # Extracts a 4-digit product identity id from filename
+      def self.extract_product_identity_id(filename)
+        basename = filename.split('/').last
+        basename.match(/(?<=_)\d{4}(?=\.)/).to_s
+      end
+
     end
   end
 end
