@@ -142,7 +142,7 @@
   {}
 % environment to render idparagraph paragraphs
 \newenvironment{RtIdParagraph}
-  {\setlength{\parindent}{0}\relscale{0.73}}
+  {\setlength{\parindent}{0pt}\relscale{0.73}}
   {\par}
 % environment to render idtitle1 paragraphs
 \newenvironment{RtIdTitle1}
@@ -178,7 +178,7 @@
  {\par}
 % environment to render song paragraphs.
 \newenvironment{RtSong}
- {\par\leftskip=60\RtRelPt \rightskip=30\RtRelPt \setlength{\parindent}{-8\RtRelPt}\nopagebreak\parskip=0}
+ {\par\leftskip=60\RtRelPt \rightskip=30\RtRelPt \setlength{\parindent}{-8\RtRelPt} \nopagebreak \setlength{\parskip}{0pt plus 0pt minus 0pt}}
  {\par}
 % environment to render stanza paragraphs.
 \newenvironment{RtStanza}
