@@ -18,12 +18,13 @@
 <% end %>
 
 % fontspec to use custom fonts
-\usepackage[no-math]{fontspec}
 % turn off ligatures
 \setmainfont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @font_name %>}
+\usepackage{fontspec}
 % use different font for titles
 \newfontfamily\titlefont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @title_font_name %>}
 \newfontfamily\paragraphnumberfont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @paragraph_number_font_name %>}
+\newfontfamily\rtmainfont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @font_name %>}
 
 % leading to set leading for document
 \usepackage{leading}
@@ -128,7 +129,7 @@
     \stepcounter{RtGapMarkCounter}}
 % command to render paragraph number. Pass the para number as argument.
 \newcommand{\RtParagraphNumber}[1]
-  {\paragraphnumberfont\noindent\makebox[\parindent][l]{\raisebox{0.45ex}{{\textscale{0.67}{#1}}}}}
+  {\paragraphnumberfont\noindent\makebox[\parindent][l]{\raisebox{0.45ex}{{\textscale{0.67}{#1}}}}\rtmainfont}
 % command to render record_mark. Pass rid as param
 \newcommand{\RtRecordMark}[1]
   {\noindent\colorbox{LightGrey}{Record#1}\par}
@@ -138,7 +139,7 @@
 
 % enviroment to render eagle
 \newenvironment{RtEagle}
-  {\paragraphnumberfont }
+  {\paragraphnumberfont \rtmainfont}
   {}
 % environment to render idparagraph paragraphs
 \newenvironment{RtIdParagraph}
