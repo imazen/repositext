@@ -1,4 +1,4 @@
-\documentclass[11pt, twoside, openright]{book}
+\documentclass[<%= @font_size %>pt, twoside, openright]{book}
 
 % NOTE: in latex, bp is equivalent to PS points in other programs. A latex
 % pt is different. See 5th bullet here: http://tex.stackexchange.com/a/4244
@@ -205,7 +205,7 @@
 
 \frenchspacing
 
-\leading{11.8pt}
+\leading{<%= @font_leading %>pt} % don't use \RtRelPt here since \rescale already scales all font metrics
 
 \begin{document}
 

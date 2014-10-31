@@ -65,7 +65,9 @@ module Kramdown
           @additional_footer_text = escape_latex_text(@options[:additional_footer_text])
           @body = latex_body
           @date_code = date_code.capitalize
-          @font_name = @options[:font_override] || (@options[:is_primary_repo] ? 'V-Calisto-St' : 'V-Excelsior LT Std')
+          @font_leading = @options[:font_leading_override] || 11.8
+          @font_name = @options[:font_name_override] || (@options[:is_primary_repo] ? 'V-Calisto-St' : 'V-Excelsior LT Std')
+          @font_size = @options[:font_size_override] || 11
           @git_repo = Repositext::Repository.new
           @header_text = compute_header_text_latex(
             @options[:header_text],
@@ -83,10 +85,10 @@ module Kramdown
           @latest_commit_hash = @latest_commit.oid[0,8]
           @page_number_command = compute_page_number_command(@options[:is_primary_repo], @options[:language_code_2_chars])
           @page_settings = page_settings_for_latex_geometry_package
-          @paragraph_number_font_name = @options[:font_override] ? 'V-Excelsior LT Std' : @font_name
+          @paragraph_number_font_name = @options[:font_name_override] ? 'V-Excelsior LT Std' : @font_name
           @scale_factor = size_scale_factor
           @title = escape_latex_text(document_title)
-          @title_font_name = @options[:font_override] || 'V-Calisto-St'
+          @title_font_name = @options[:font_name_override] || 'V-Calisto-St'
           @truncated_title_footer = compute_truncated_title(document_title, 45, 3)
           @use_cjk_package = 'zh' == @options[:language_code_2_chars]
           @version_control_page = if @options[:version_control_page]
