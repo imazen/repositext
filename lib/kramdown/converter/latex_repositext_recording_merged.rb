@@ -20,8 +20,8 @@ module Kramdown
           splits = contents.dup
           # remove unwanted elements
           splits.gsub!(/@/, '') # subtitle marks
-          splits.gsub!(/^\^\^\^[^\n]*\n/, '') # record_marks
-          splits.gsub!(/\n\{\:[^\n]*\n/, '') # block IALs (paragraph classes)
+          splits.gsub!(/^\^\^\^[^\n]*\n/, "\n") # record_marks
+          splits.gsub!(/\n\{\:[^\n]*\n/, "\n") # block IALs (paragraph classes)
 
           # split both files on gap marks or their preceding pararaph numbers
           # The challenge is that we have to split on one of the two:
