@@ -21,10 +21,18 @@ module Kramdown
           # remove unwanted elements
           splits.gsub!(/@/, '') # subtitle marks
           splits.gsub!(/^\^\^\^[^\n]*\n/, '') # record_marks
-          splits.gsub!(/\n\{:[^\n]*\n/) # block IALs (paragraph classes)
-          # split both files on gap marks or preceding pararaph numbers
-          # (exception: gap_marks preceded by "\n*\d+*{: .pn} ")
-          splits.split(/(?=%)/)
+          splits.gsub!(/\n\{\:[^\n]*\n/, '') # block IALs (paragraph classes)
+
+          # split both files on gap marks or their preceding pararaph numbers
+          # The challenge is that we have to split on one of the two:
+          # * '%'
+          # * '*123*{: .pn} %'
+          # In order to do this, we have to temporarily move the gap_mark to
+          # before the .pn, and then after splitting move it back again
+          pn_regex = /\*\d+\*\{: \.pn\}\s/
+          splits.gsub!(/^(#{ pn_regex })(%)/, '\2\1')
+          splits = splits.split(/(?=%)/)
+          splits.map { |e| e.gsub(/^(%)(#{ pn_regex })/, '\2\1') }
         }
         # interleave elements of both arrays, insert hr between each pair and
         # serialize to string for merged AT

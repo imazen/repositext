@@ -8,8 +8,8 @@ module Kramdown
 
         it "handles standard case" do
           target_contents = "# the target title\n\n%target_word\n{: .normal}\n\n%target_word %target_word\n\n"
-          primary_contents = "^^^ {: .rid #rid-123}\n\n# the primary title\n\n@%primary_word\n\n^^^ {: .rid #rid-456}\n\n@%primary_word %primary_word\n\n"
-          xpect = "# the primary title\n\n# the target title\n\n***\n\n%primary_word\n\n%target_word\n\n***\n\n%primary_word\n\n%target_word\n\n***\n\n%primary_word\n\n%target_word\n"
+          primary_contents = "^^^ {: .rid #rid-123}\n\n# the primary title\n\n*123*{: .pn} @%primary_word\n\n^^^ {: .rid #rid-456}\n\n@%primary_word %primary_word\n\n"
+          xpect = "# the primary title\n\n# the target title\n\n***\n\n*123*{: .pn} %primary_word\n\n%target_word\n\n***\n\n%primary_word\n\n%target_word\n\n***\n\n%primary_word\n\n%target_word\n"
           c = LatexRepositextRecordingMerged.custom_pre_process_content(
             target_contents,
             primary_contents
