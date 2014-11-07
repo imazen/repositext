@@ -127,6 +127,47 @@ class Repositext
         )
       end
 
+      def export_pdf_recording_merged(options)
+        # Skip files that don't contain gap_marks
+        skip_file_proc = Proc.new { |contents, filename| !contents.index('%') }
+        # Merge contents of target language and primary language for interleaved
+        # printing
+        pre_process_content_proc = lambda { |contents, filename, options|
+          primary_repo_base_dir = File.expand_path(
+            config.setting('relative_path_to_primary_repo'),
+            config.base_dir(:rtfile_dir)
+          ) + '/'
+          primary_filename = filename.gsub(
+            config.base_dir(:rtfile_dir),
+            primary_repo_base_dir
+          ).gsub(
+            /\/#{ config.setting(:language_code_3_chars) }/,
+            "/#{ config.setting(:primary_repo_lang_code) }"
+          )
+          # input_base_dir: config.base_dir(input_base_dir_name),
+          # language_code_3_chars_primary_repo: config.setting('primary_repo_lang_code'),
+          # relative_path_to_primary_repo: config.setting('relative_path_to_primary_repo'),
+          Kramdown::Converter::LatexRepositextRecordingMerged.custom_pre_process_content(
+            contents,
+            File.read(primary_filename)
+          )
+        }
+        # Adjust latex template
+        post_process_latex_proc = lambda { |latex, options|
+          Kramdown::Converter::LatexRepositextRecordingMerged.custom_post_process_latex(
+            latex
+          )
+        }
+        export_pdf_base(
+          'pdf_recording_merged',
+          options.merge(
+            skip_file_proc: skip_file_proc,
+            pre_process_content_proc: pre_process_content_proc,
+            post_process_latex_proc: post_process_latex_proc,
+          )
+        )
+      end
+
       def export_pdf_translator(options)
         export_pdf_base('pdf_translator', options)
       end
@@ -162,6 +203,16 @@ class Repositext
           Repositext::Cli::FILE_SPEC_DELIMITER
         )
         output_base_dir = options['output'] || config.base_dir("pdf_export_dir")
+        options = options.merge({
+          additional_footer_text: options['additional-footer-text'],
+          font_leading_override: config.setting(:font_leading_override, false),
+          font_name_override: config.setting(:font_name_override, false),
+          font_size_override: config.setting(:font_size_override, false),
+          header_text: config.setting(:pdf_export_header_text),
+          is_primary_repo: config.setting(:is_primary_repo),
+          language_code_3_chars: config.setting(:language_code_3_chars),
+          version_control_page: options['include-version-control-info'],
+        })
         Repositext::Cli::Utils.export_files(
           config.base_dir(input_base_dir_name),
           config.file_pattern(input_file_pattern_name),
@@ -170,9 +221,13 @@ class Repositext
           "Exporting AT files to #{ variant }",
           options
         ) do |contents, filename|
+          options[:source_filename] = filename
           if options[:skip_file_proc] && options[:skip_file_proc].call(contents, filename)
             $stderr.puts " - Skipping #{ filename } - matches options[:skip_file_proc]"
             next([Outcome.new(true, { contents: nil })])
+          end
+          if options[:pre_process_content_proc]
+            contents = options[:pre_process_content_proc].call(contents, filename, options)
           end
           # Since the kramdown parser is specified as module in Rtfile,
           # I can't use the standard kramdown API:
@@ -180,23 +235,13 @@ class Repositext
           # We have to patch a base Kramdown::Document with the root to be able
           # to convert it.
           root, warnings = config.kramdown_parser(:kramdown).parse(contents)
-          kramdown_doc = Kramdown::Document.new(
-            '',
-            options.merge({
-              :additional_footer_text => options['additional-footer-text'],
-              :font_leading_override => config.setting(:font_leading_override, false),
-              :font_name_override => config.setting(:font_name_override, false),
-              :font_size_override => config.setting(:font_size_override, false),
-              :header_text => config.setting(:pdf_export_header_text),
-              :is_primary_repo => config.setting(:is_primary_repo),
-              :language_code_3_chars => config.setting(:language_code_3_chars),
-              :source_filename => filename,
-              :version_control_page => options['include-version-control-info'],
-            })
-          )
+          kramdown_doc = Kramdown::Document.new('', options)
           kramdown_doc.root = root
           latex_converter_method = variant.gsub(/\Apdf/, 'to_latex_repositext')
           latex = kramdown_doc.send(latex_converter_method)
+          if options[:post_process_latex_proc]
+            latex = options[:post_process_latex_proc].call(latex, options)
+          end
           pdf = Repositext::Convert::LatexToPdf.convert(latex)
 
           [
@@ -331,6 +376,7 @@ class Repositext
           pdf_comprehensive
           pdf_plain
           pdf_recording
+          pdf_recording_merged
           pdf_translator
           pdf_web
         ]

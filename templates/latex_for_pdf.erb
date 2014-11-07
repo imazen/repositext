@@ -181,6 +181,10 @@
 \newenvironment{RtSong}
  {\par\leftskip=60\RtRelPt \rightskip=30\RtRelPt \setlength{\parindent}{-8\RtRelPt} \nopagebreak \setlength{\parskip}{0pt plus 0pt minus 0pt}}
  {\par}
+% environment to render split pairs in pdf_recording_merged
+\newenvironment{RtSplitPair}
+  {\begin{minipage}{\textwidth}\setlength{\parskip}{3\RtRelPt}\setlength{\parindent}{18\RtRelPt}}
+  {\end{minipage}}
 % environment to render stanza paragraphs.
 \newenvironment{RtStanza}
  {\par\leftskip=60\RtRelPt \rightskip=30\RtRelPt \setlength{\parindent}{-8\RtRelPt}}
