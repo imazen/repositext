@@ -340,10 +340,10 @@ class Repositext
       # of those in subsequent order without being invalid. So we don't test
       # for s-quote-close.
       # QuoteType is defined by single/double and open/close.
-      # @param[String] source the kramdown source string
-      # @param[Array] errors collector for errors
-      # @param[Array] warnings collector for warnings
-      def report_invalid_typographic_quotes(options)
+      # @param[Hash] options
+      # @param[Integer, optional] context_size, num of chars to add before and
+      #     after excerpt for context, set to zero to include entire line
+      def report_invalid_typographic_quotes(options, context_size = 0)
         s_quote_open_and_d_quote_close = %(‘”)
         d_quote_open = %(“)
         apostrophe = %(’)
@@ -365,7 +365,6 @@ class Repositext
         /mx                                         # NOTE: we don't handle s-quote-close as this is also used for apostrophes
         output_lines = []
         files_hash = {}
-        context_size = 4 # num of chars to add before and after excerpt for context
 
         input_file_spec = options['input'] || 'content_dir/at_files'
         Repositext::Cli::Utils.read_files(
@@ -379,10 +378,22 @@ class Repositext
           while !str_sc.eos? do
             if(match = str_sc.scan_until(invalid_quotes_rx))
               quote_type = match[-1]
+              excerpt = nil
               position_of_previous_quote = match.rindex(quote_type, -2) || 0
-              start_position = [position_of_previous_quote - context_size, 0].max
-              excerpt = match[start_position..-1]
-              excerpt << str_sc.peek(context_size)
+              if 0 == context_size
+                # include entire lines, don't truncate in the middle
+                start_position = match.rindex("\n", position_of_previous_quote) || 0
+                excerpt = match[start_position..-1]
+                text_until_following_newline = str_sc.check_until(/\n/)
+                excerpt << text_until_following_newline
+              else
+                # include context_size chars before and after the quote pair
+                # and truncate in the middle
+                start_position = [position_of_previous_quote - context_size, 0].max
+                excerpt = match[start_position..-1]
+                excerpt << str_sc.peek(context_size)
+                excerpt = excerpt.truncate_in_the_middle(120)
+              end
               excerpt = excerpt.inspect
                                .gsub(/^\"/, '') # Remove leading double quotes (from inspect)
                                .gsub(/\"$/, '') # Remove trailing double quotes (from inspect)
@@ -405,7 +416,7 @@ class Repositext
             total_count += 1
             output_lines << [
               " - #{ sprintf("line %5s", instance[:line]) }",
-              " - |#{ instance[:excerpt].truncate_in_the_middle(120) }|",
+              " - #{ instance[:excerpt] }",
             ].join
           end
         end
