@@ -381,8 +381,9 @@ class Repositext
               excerpt = nil
               position_of_previous_quote = match.rindex(quote_type, -2) || 0
               if 0 == context_size
-                # include entire lines, don't truncate in the middle
-                start_position = match.rindex("\n", position_of_previous_quote) || 0
+                # include entire lines, including the preceding paragraph number,
+                # don't truncate in the middle
+                start_position = match.rindex(/\n\*\d+\*\{: \.pn\}/, position_of_previous_quote) || 0
                 excerpt = match[start_position..-1]
                 text_until_following_newline = str_sc.check_until(/\n/)
                 excerpt << text_until_following_newline
