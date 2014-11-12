@@ -128,7 +128,8 @@ module Kramdown
           end
         end
         return true  if diffs.empty?
-        raise "Mismatch in gap marks:\n#{ diffs.inspect }"
+        error_msg = diffs.unshift("Mismatch in gap marks:").join("\n")
+        raise error_msg
       end
 
     end
