@@ -25,6 +25,19 @@ class Repositext
       end
 
       def import_gap_mark_tagging(options)
+        # NOTE: Normally we don't modify import files, however when getting
+        # gap_mark_tagging import files, e.g., from Chinese, the gap_marks
+        # aren't always in the correct position relative to parens, brackets, etc.
+        # Until we can enforce correct gap_mark positions (e.g., via web UI),
+        # we will make an exception and run the fix_adjust_gap_mark_positions
+        # script on the import file to avoid GapMarkTaggingImportConsistency::TextMismatchError
+        fix_adjust_gap_mark_positions(
+          options.merge(
+            'file_filter' => /\.txt\z/i,
+            'input' => 'gap_mark_tagging_import_dir/txt_files'
+          )
+        )
+
         options['report_file'] = config.compute_glob_pattern(
           'gap_mark_tagging_import_dir/validation_report_file'
         )
@@ -37,6 +50,11 @@ class Repositext
         )
         fix_normalize_trailing_newlines(options)
         options['append_to_validation_report'] = true
+        if 'chn' == config.setting(:language_code_3_chars)
+          # Don't check for gap_marks in invalid positions for chinese since.
+          # The validations rules don't apply to Chinese docs.
+          options['skip_invalid_gap_mark_validation'] = true
+        end
         validate_gap_mark_tagging_import(options.merge('run_options' => %w[post_import]))
       end
 

@@ -28,14 +28,16 @@ class Repositext
       # Moves a gap mark inside or at the end of a word to the beginning of the
       # word. Replaces any gap_marks that are already at the beginning of the word.
       def self.move_gap_marks_to_beginning_of_words!(text)
-        text.gsub!(/%?\b([[:alpha:]]+)%/, '%\1')
+        text.gsub!(/%?\b([[:alpha:]&&[^\p{Han}]]+)%/, '%\1')
       end
 
       # Fixes gap_marks in invalid positions after the standard characters
       def self.fix_standard_chars(text)
         old_at = text.dup
         new_at = ''
-        standard_chars_regex = /[\*“‘’\(\[]+/ # double open quote, single open quote, and apostrophe
+        # asterisk, double open quote, single open quote, apostrophe, opening parens
+        # opening bracket, opening chinese parens
+        standard_chars_regex = /[\*“‘’\(\[\（]+/
         standard_chars_and_gap_mark_regex = /#{ standard_chars_regex }\%/
 
         s = StringScanner.new(old_at)

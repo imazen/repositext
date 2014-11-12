@@ -56,6 +56,7 @@ class Repositext
             if (match = str_sc.scan_until(/(?<=[[:alpha:]\*\"\“\”\'\‘\’\(\[])[%@]/))
               msg = case match[-1]
               when '%'
+                next  if @options['skip_invalid_gap_mark_validation']
                 ':gap_mark (%) at invalid position'
               when '@'
                 ':subtitle_mark (@) at invalid position'

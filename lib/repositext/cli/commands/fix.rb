@@ -17,7 +17,7 @@ class Repositext
         input_file_spec = options['input'] || 'idml_import_dir/at_files'
         Repositext::Cli::Utils.change_files_in_place(
           config.compute_glob_pattern(input_file_spec),
-          /\.at\z/i,
+          options['file_filter'] || /\.at\z/i,
           "Adjusting :gap_mark positions",
           options
         ) do |contents, filename|
