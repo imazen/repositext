@@ -63,7 +63,7 @@ module Kramdown
         ].transpose
          .map { |pair|
            pair.map(&:strip).join("\n\n")
-         }.join("\n\n***\n\n") + "\n"
+         }.join("\n\n***\n\n") + "\n\n***\n"
         r
       end
 
