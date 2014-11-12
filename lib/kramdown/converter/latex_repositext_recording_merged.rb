@@ -18,9 +18,27 @@ module Kramdown
           primary_contents
         ].map { |contents|
           splits = contents.dup
+          # extract contents of id_paragraph for later use
+          id_paragraph = splits.match(
+            /
+              (?<=\n) # preceded by newline
+              [^\n]+ # one or more chars that are not a newline
+              (?=\n#{ Regexp.escape("{: .id_paragraph}") }) # followed by id paragraph class IAL
+            /x
+          ).to_s
+
           # remove unwanted elements
           splits.gsub!(/@/, '') # subtitle marks
           splits.gsub!(/^\^\^\^[^\n]*\n/, "\n") # record_marks
+          # id_title1, id_title2, id_paragraph
+          splits.gsub!(
+            /
+              (?<=\n) # preceded by newline
+              [^\n]+ # one or more chars that are not a newline
+              (?=\n\{\:\s\.(?:id_paragraph|id_title1|id_title2)\}) # followed by id paragraph, id title1 or id title2 class IAL
+            /x,
+            ''
+          )
           splits.gsub!(/\n\{\:[^\n]*\n/, "\n") # block IALs (paragraph classes)
 
           # split both files on gap marks or their preceding pararaph numbers
@@ -32,7 +50,10 @@ module Kramdown
           pn_regex = /\*\d+\*\{: \.pn\}\s/
           splits.gsub!(/^(#{ pn_regex })(%)/, '\2\1')
           splits = splits.split(/(?=%)/)
-          splits.map { |e| e.gsub(/^(%)(#{ pn_regex })/, '\2\1') }
+          splits = splits.map { |e| e.gsub(/^(%)(#{ pn_regex })/, '\2\1') }
+
+          # insert id_paragraph as second split (after title)
+          splits.insert(1, id_paragraph)
         }
         # interleave elements of both arrays, insert hr between each pair and
         # serialize to string for merged AT
@@ -85,15 +106,29 @@ module Kramdown
 
     protected
 
+      # NOTE: This should eventually be handled by Validator::GapMarkCountsMatch
+      # This is just a quick hack so that we can get going. Code is duplicated.
       def self.validate_same_number_of_gap_marks(target_contents, primary_contents)
-        target_count, primary_count = [
-          target_contents,
-          primary_contents
-        ].map { |c|
-          c.count('%')
-        }
-        raise ArgumentError  if target_count != primary_count
-        true
+        primary_contents = primary_contents.gsub(/(?<=\n)\^\^\^[^\n]+\n\n/, '') # remove record_marks
+        primary_lines = primary_contents.split("\n")
+        target_lines = target_contents.split("\n")
+        diffs = []
+        primary_lines.each_with_index do |pl, idx|
+          tl = target_lines[idx]
+          pc = pl.count('%')
+          tc = tl.count('%')
+          if pc != tc
+            diffs << {
+              line: idx + 1,
+              primary_text: pl.inspect,
+              primary_count: pc,
+              target_text: tl.inspect,
+              target_count: tc,
+            }
+          end
+        end
+        return true  if diffs.empty?
+        raise "Mismatch in gap marks:\n#{ diffs.inspect }"
       end
 
     end

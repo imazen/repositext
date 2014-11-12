@@ -247,6 +247,8 @@ module Kramdown
           "'",
           '}',
           '*',
+          '（', # chinese parens
+          '一', # chinese dash
         ].join
         lb.gsub!(
           /

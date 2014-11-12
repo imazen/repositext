@@ -144,9 +144,6 @@ class Repositext
             /\/#{ config.setting(:language_code_3_chars) }/,
             "/#{ config.setting(:primary_repo_lang_code) }"
           )
-          # input_base_dir: config.base_dir(input_base_dir_name),
-          # language_code_3_chars_primary_repo: config.setting('primary_repo_lang_code'),
-          # relative_path_to_primary_repo: config.setting('relative_path_to_primary_repo'),
           Kramdown::Converter::LatexRepositextRecordingMerged.custom_pre_process_content(
             contents,
             File.read(primary_filename)
