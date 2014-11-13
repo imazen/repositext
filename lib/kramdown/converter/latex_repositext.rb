@@ -249,6 +249,7 @@ module Kramdown
           '*',
           '（', # chinese parens
           '一', # chinese dash
+          '《', # chinese left double angle bracket
         ].join
         lb.gsub!(
           /
