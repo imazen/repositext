@@ -18,6 +18,7 @@ class Repositext
         new_at = text.dup
         move_gap_marks_to_beginning_of_words!(new_at)
         new_at = fix_standard_chars(new_at) # can't do in-place
+        new_at = fix_chinese_chars(new_at) # can't do in-place
         new_at = fix_elipsis(new_at) # do this after fixing standard chars, can't do in-place
         # run again at the end to fix any in-word gap_marks that may have been
         # created by the previous steps.
@@ -35,9 +36,9 @@ class Repositext
       def self.fix_standard_chars(text)
         old_at = text.dup
         new_at = ''
-        # asterisk, double open quote, single open quote, apostrophe, opening parens
+        # asterisk, double open quote, single open quote, opening parens
         # opening bracket, opening chinese parens
-        standard_chars_regex = /[\*“‘’\(\[\（]+/
+        standard_chars_regex = /[\*“‘\(\[\（]+/
         standard_chars_and_gap_mark_regex = /#{ standard_chars_regex }\%/
 
         s = StringScanner.new(old_at)
@@ -61,6 +62,15 @@ class Repositext
             s.terminate
           end
         end
+        new_at
+      end
+
+      # Fixes gap_marks for chinese docs
+      def self.fix_chinese_chars(text)
+        new_at = text.dup
+        # Move gap_marks to after single closing quotes/apostrophes (%'c => '%c)
+        chars_regex = "[#{ Regexp.escape([Repositext::APOSTROPHE, Repositext::S_QUOTE_CLOSE].uniq.join) }]"
+        new_at.gsub!(/\%(#{ chars_regex })(?=\p{Han})/, '\1%')
         new_at
       end
 
