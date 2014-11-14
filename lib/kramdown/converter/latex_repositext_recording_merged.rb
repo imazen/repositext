@@ -196,11 +196,9 @@ module Kramdown
             serialized_splits.last << serialized_text
           end
         end
-        # Filter out empty splits
-        splits = serialized_splits.find_all { |e| '' != e.to_s.strip }
 
         # Move gap_marks back to after paragraph numbers
-        splits = splits.map { |e| e.gsub(/^(%)(#{ paragraph_number_regex })/, '\2\1') }
+        splits = serialized_splits.map { |e| e.gsub(/^(%)(#{ paragraph_number_regex })/, '\2\1') }
 
         # insert id_paragraph as second split (after title)
         splits.insert(1, id_paragraph)  unless '' == id_paragraph
@@ -328,7 +326,7 @@ module Kramdown
           end
           next_split_starts_with_gap_mark = span_split[:starts_with_gap_mark]
           # span_split contains gap_marks
-          span_split[:txt].scan(/%?[^%]+/).each do |gap_mark_split|
+          span_split[:txt].scan(/%[^%]*|[^%]+/).each do |gap_mark_split|
             swgm = if next_split_starts_with_gap_mark || gap_mark_split =~ /\A%/
               next_split_starts_with_gap_mark = false
               true
