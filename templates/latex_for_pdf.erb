@@ -13,7 +13,7 @@
 
 % conditionally apply CJK package for chinese
 <% if @use_cjk_package %>
-  \usepackage{xeCJK}[2011/05/20]
+  \usepackage[AutoFakeBold=true]{xeCJK}[2011/05/20]
   \setCJKmainfont{FZShuSong-Z01S}
 <% end %>
 
@@ -24,6 +24,7 @@
 % use different font for titles
 \newfontfamily\titlefont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @title_font_name %>}
 \newfontfamily\paragraphnumberfont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @paragraph_number_font_name %>}
+\newfontfamily\primaryfont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @primary_font_name %>}
 \newfontfamily\rtmainfont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @font_name %>}
 
 % leading to set leading for document
@@ -169,6 +170,10 @@
 \newenvironment{RtOmit}
   {\par\color{Green}}
   {\par}
+% environment to render text in the primary font
+\newenvironment{RtPrimaryFont}
+  {\primaryfont}
+  {}
 % environment to render questions
 \newenvironment{RtQuestion}
   {\par\noindent\hangindent=25\RtRelPt\hangafter=1}

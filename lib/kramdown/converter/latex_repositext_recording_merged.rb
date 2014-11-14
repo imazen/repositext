@@ -7,64 +7,37 @@ module Kramdown
 
       # Called from the export command, merges contents of target and primary
       # languages into a single interleaved kramdown AT document.
+      # Wraps english splits in temporary markers that will be replaced with
+      # Latex environment.
       # @param[String] target_contents kramdown AT source for target language
       # @param[String] primary_contents kramdown AT source for primary language
       # @return[String] interleaved kramdown AT string
       def self.custom_pre_process_content(target_contents, primary_contents)
         validate_same_number_of_gap_marks(target_contents, primary_contents)
         # process each content
-        target_contents_splits, primary_contents_splits = [
-          target_contents,
-          primary_contents
-        ].map { |contents|
-          splits = contents.dup
-          # extract contents of id_paragraph for later use
-          id_paragraph = splits.match(
-            /
-              (?<=\n) # preceded by newline
-              [^\n]+ # one or more chars that are not a newline
-              (?=\n#{ Regexp.escape("{: .id_paragraph}") }) # followed by id paragraph class IAL
-            /x
-          ).to_s
+        target_contents_splits = split_kramdown(target_contents)
+        primary_contents_splits = split_kramdown(primary_contents, true)
 
-          # remove unwanted elements
-          splits.gsub!(/@/, '') # subtitle marks
-          splits.gsub!(/^\^\^\^[^\n]*\n/, "\n") # record_marks
-          # id_title1, id_title2, id_paragraph
-          splits.gsub!(
-            /
-              (?<=\n) # preceded by newline
-              [^\n]+ # one or more chars that are not a newline
-              (?=\n\{\:\s\.(?:id_paragraph|id_title1|id_title2)\}) # followed by id paragraph, id title1 or id title2 class IAL
-            /x,
-            ''
-          )
-          splits.gsub!(/\n\{\:[^\n]*\n/, "\n") # block IALs (paragraph classes)
-
-          # split both files on gap marks or their preceding pararaph numbers
-          # The challenge is that we have to split on one of the two:
-          # * '%'
-          # * '*123*{: .pn} %'
-          # In order to do this, we have to temporarily move the gap_mark to
-          # before the .pn, and then after splitting move it back again
-          pn_regex = /\*\d+\*\{: \.pn\}\s/
-          splits.gsub!(/^(#{ pn_regex })(%)/, '\2\1')
-          splits = splits.split(/(?=%)/)
-          splits = splits.map { |e| e.gsub(/^(%)(#{ pn_regex })/, '\2\1') }
-
-          # insert id_paragraph as second split (after title)
-          splits.insert(1, id_paragraph)
-        }
         # interleave elements of both arrays, insert hr between each pair and
         # serialize to string for merged AT
-        r = [
-          primary_contents_splits,
-          target_contents_splits
-        ].transpose
-         .map { |pair|
-           pair.map(&:strip).join("\n\n")
-         }.join("\n\n***\n\n") + "\n\n***\n"
-        r
+        begin
+          r = [
+            primary_contents_splits,
+            target_contents_splits
+          ].transpose
+           .map { |pair|
+             pair.map(&:strip).join("\n\n")
+           }.join("\n\n***\n\n") + "\n\n***\n"
+          r
+        rescue IndexError => e
+          primary_contents_splits.each_with_index do |pcs, idx|
+            tcs = target_contents_splits[idx]
+            puts '-'
+            puts pcs.inspect
+            puts tcs.inspect
+          end
+          raise ArgumentError.new("After splitting the text, we ended up with different counts of splits.")
+        end
       end
 
       # Called from the export command, makes some modifications to generated
@@ -101,6 +74,13 @@ module Kramdown
           /mx,
           '\1' + "\n\\noindent\\begin{RtSplitPair}" + '\2' + "\n\\end{RtSplitPair}\n"
         )
+        # Insert temporary markers into title. Insert RtPrimaryFont markers
+        # inside the first pair of \begin{RtTitle}...\end{RtTitle}
+        l.sub!(/(?<=#{ Regexp.escape('\\begin{RtTitle}') })/, ".RtPrimaryFontStart.") # after begin
+        l.sub!(/(?=#{ Regexp.escape('\\end{RtTitle}') })/, ".RtPrimaryFontEnd.") # before end
+        # Replace temporary markers with RtPrimaryFont environment
+        l.gsub!(".RtPrimaryFontStart.", "\n\\begin{RtPrimaryFont}\n")
+        l.gsub!(".RtPrimaryFontEnd.", "\n\\end{RtPrimaryFont}\n")
         l
       end
 
@@ -109,9 +89,11 @@ module Kramdown
       # NOTE: This should eventually be handled by Validator::GapMarkCountsMatch
       # This is just a quick hack so that we can get going. Code is duplicated.
       def self.validate_same_number_of_gap_marks(target_contents, primary_contents)
-        primary_contents = primary_contents.gsub(/(?<=\n)\^\^\^[^\n]+\n\n/, '') # remove record_marks
-        primary_lines = primary_contents.split("\n")
-        target_lines = target_contents.split("\n")
+        # remove record_marks in both
+        target_contents = target_contents.gsub(/^\^\^\^[^\n]+\n\n/, '')
+        primary_contents = primary_contents.gsub(/^\^\^\^[^\n]+\n\n/, '')
+        primary_lines = primary_contents.split(/\n+/)
+        target_lines = target_contents.split(/\n+/)
         diffs = []
         primary_lines.each_with_index do |pl, idx|
           tl = target_lines[idx]
@@ -129,7 +111,233 @@ module Kramdown
         end
         return true  if diffs.empty?
         error_msg = diffs.unshift("Mismatch in gap marks:").join("\n")
-        raise error_msg
+        raise ArgumentError.new(error_msg)
+      end
+
+      # Splits kramdown_txt into gaps. Also removes unwanted elements.
+      # @param[String] kramdown_txt
+      # @param[Boolean] is_primary
+      # @return[Array<String>] Array of gaps
+      def self.split_kramdown(kramdown_txt, is_primary = false)
+        contents = kramdown_txt.dup
+        # extract contents of id_paragraph for later use
+        id_paragraph = contents.match(
+          /
+            (?<=\n) # preceded by newline
+            [^\n]+ # one or more chars that are not a newline
+            (?=\n#{ Regexp.escape("{: .id_paragraph}") }) # followed by id paragraph class IAL
+          /x
+        ).to_s.strip
+        paragraph_number_regex = /\*\d+\*\{: \.pn\}\s/
+
+        # remove unwanted elements
+        contents.gsub!(/@/, '') # subtitle marks
+        contents.gsub!(/^\^\^\^[^\n]*\n/, "\n") # record_marks
+        # id_title1, id_title2, id_paragraph
+        contents.gsub!(
+          /
+            (?<=\n) # preceded by newline
+            [^\n]+ # one or more chars that are not a newline
+            \n # newline
+            (?=\{\:\s\.(?:id_paragraph|id_title1|id_title2)\}) # followed by id paragraph, id title1 or id title2 class IAL
+          /x,
+          ''
+        )
+        contents.gsub!(/\n\{\:[^\n]*$/, "") # block IALs (paragraph classes)
+
+        # Move gap_marks to the beginning of their respective contexts:
+        contents.gsub!(
+          /
+            ^ # beginning of line
+            (
+              (?:#{ paragraph_number_regex }) # paragraph number
+              | # or
+              (?:\*\*?) # em or strong
+            ) # one of the contexts
+            (%) # followed by gap mark
+          /x,
+          '\2\1'
+        )
+
+        # Successively split on paragraphs, spans and gap_marks
+        para_splits = split_kramdown_paras(contents)
+        span_splits = split_kramdown_spans(para_splits)
+        gap_mark_splits = split_kramdown_gap_marks(span_splits)
+
+        # Serialize and merge splits
+        serialized_splits = ['']
+        gap_mark_splits.each do |gap_mark_split|
+          serialized_text = [
+            gap_mark_split[:starts_with_gap_mark] ? '%' : nil,
+            gap_mark_split[:parents].first,
+            gap_mark_split[:txt],
+            gap_mark_split[:parents].last
+          ].compact.join
+          # NOTE: remove the second condition to merge paragraphs that don't
+          # start with a gap_mark with the previous pair.
+          if gap_mark_split[:starts_with_gap_mark] || serialized_splits.last =~ /\n\z/
+            # gap_mark_split starts with gap_mark, or previous split ends with newline: create new split
+            serialized_splits << serialized_text
+          else
+            # append to previous split
+            serialized_splits.last << serialized_text
+          end
+        end
+        # Filter out empty splits
+        splits = serialized_splits.find_all { |e| '' != e.to_s.strip }
+
+        # Move gap_marks back to after paragraph numbers
+        splits = splits.map { |e| e.gsub(/^(%)(#{ paragraph_number_regex })/, '\2\1') }
+
+        # insert id_paragraph as second split (after title)
+        splits.insert(1, id_paragraph)  unless '' == id_paragraph
+
+        # Wrap primary gaps in markers so they can be wrapped in latex environment later
+        if is_primary
+          splits = splits.map { |e|
+            if e =~ /\A#/
+              # Don't wrap title in RtPrimaryFont, it doesn't work because it
+              # gets converted to small caps. Have to insert RtPrimaryFont in
+              # latex post processing
+              e
+            elsif e =~ /%/
+              # Change order on leading eagle
+              " .RtPrimaryFontStart.#{ e.gsub("", '') }.RtPrimaryFontEnd."
+            else
+              # wrap, and move start marker to after paragraph numbers
+              ".RtPrimaryFontStart.#{ e }.RtPrimaryFontEnd.".gsub(
+                /(\.RtPrimaryFontStart\.)(#{ paragraph_number_regex })/,
+                '\2\1'
+              )
+            end
+          }
+        end
+
+        splits
+      end
+
+      # Splits kramdown_txt into paragraphs
+      # @param[String] kramdown_txt
+      # @return[Array<Hash>] An array of hashes with :txt, :parents, and
+      #   :starts_with_gap_mark keys for each split
+      def self.split_kramdown_paras(kramdown_txt)
+        kramdown_txt.split(/(?<=\n\n)/).map { |e|
+          starts_with_gap_mark = if e =~ /\A%/
+            e.gsub!(/\A%/, '')
+            true
+          else
+            false
+          end
+          { txt: e, parents: [], starts_with_gap_mark: starts_with_gap_mark }
+        }
+      end
+
+      # Further splits para_splits into spans.
+      # @param[Array<Hash>] para_splits as returned from split_kramdown_paras
+      # @return[Array<Hash>] Array of Hashes, one for each span split
+      def self.split_kramdown_spans(para_splits)
+        span_splits = []
+        para_splits.each do |para_split|
+          if para_split[:txt].index('*').nil?
+            # Return early if this split doesn't contain any spans (em or strong)
+            span_splits << para_split
+            next
+          end
+          # para_split contains spans, use stateful stringscanner
+          str_sc = StringScanner.new(para_split[:txt])
+          next_split_starts_with_gap_mark = para_split[:starts_with_gap_mark]
+          while !str_sc.eos? do
+            # check the varios options, going from specific to general
+            if(gap_mark = str_sc.scan(/%/))
+              next_split_starts_with_gap_mark = true
+            elsif(strong_span_start = str_sc.scan(/\*\*/))
+              # a strong span begins
+              strong_span_contents_and_end = str_sc.scan_until(/\*\*/)
+              raise "Unclosed strong span"  if(strong_span_contents_and_end).nil?
+              swgm = if next_split_starts_with_gap_mark
+                next_split_starts_with_gap_mark = false
+                true
+              else
+                false
+              end
+              span_splits << {
+                txt: strong_span_contents_and_end.gsub(/\*\*\z/, ''),
+                parents: para_split[:parents] + ['**', '**'],
+                starts_with_gap_mark: swgm,
+              }
+            elsif(em_span_start = str_sc.scan(/\*/))
+              # an em span begins
+              em_span_contents_and_end = str_sc.scan_until(/\*/)
+              raise "Unclosed strong span"  if(em_span_contents_and_end).nil?
+              swgm = if next_split_starts_with_gap_mark
+                next_split_starts_with_gap_mark = false
+                true
+              else
+                false
+              end
+              span_splits << {
+                txt: em_span_contents_and_end.gsub(/\*\z/, ''),
+                parents: para_split[:parents] + ['*', '*'],
+                starts_with_gap_mark: swgm,
+              }
+            elsif(plain_text = str_sc.scan(/[^\*]+/))
+              # plain text
+              swgm = if next_split_starts_with_gap_mark
+                next_split_starts_with_gap_mark = false
+                true
+              else
+                false
+              end
+              span_splits << {
+                txt: plain_text,
+                parents: para_split[:parents],
+                starts_with_gap_mark: swgm
+              }
+            else
+              raise str_sc.rest
+            end
+          end
+        end
+        span_splits
+      end
+
+      # Further splits span_splits at gap_marks
+      # @param[Array<Hash>] span_splits as returned from split_kramdown_spans
+      # @return[Array<Hash>] Array of Hashes, one for each gap_mark split
+      def self.split_kramdown_gap_marks(span_splits)
+        # Split on gap_marks
+        gap_mark_splits = []
+        span_splits.each do |span_split|
+          if span_split[:txt].index('%').nil?
+            # Return early if this split doesn't contain any gap_marks
+            gap_mark_splits << span_split
+            next
+          end
+          next_split_starts_with_gap_mark = span_split[:starts_with_gap_mark]
+          # span_split contains gap_marks
+          span_split[:txt].scan(/%?[^%]+/).each do |gap_mark_split|
+            swgm = if next_split_starts_with_gap_mark || gap_mark_split =~ /\A%/
+              next_split_starts_with_gap_mark = false
+              true
+            else
+              false
+            end
+            txt = gap_mark_split.gsub(/\A%/, '')
+            parents = span_split[:parents]
+            # Push trailing whitespace outside of spans
+            if txt =~ /\s\z/ && !parents.last.nil?
+              txt.gsub!(/\s+\z/, '')
+              parents.last << ' '
+            end
+
+            gap_mark_splits << {
+              txt: txt,
+              parents: parents,
+              starts_with_gap_mark: swgm,
+            }
+          end
+        end
+        gap_mark_splits
       end
 
     end

@@ -89,6 +89,7 @@ module Kramdown
           )
           @page_settings = page_settings_for_latex_geometry_package
           @paragraph_number_font_name = @options[:font_name_override] ? 'V-Excelsior LT Std' : @font_name
+          @primary_font_name = 'V-Calisto-St'
           @scale_factor = size_scale_factor
           @title = escape_latex_text(document_title)
           @title_font_name = @options[:font_name_override] || 'V-Calisto-St'
