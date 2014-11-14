@@ -78,6 +78,21 @@ module Kramdown
         # inside the first pair of \begin{RtTitle}...\end{RtTitle}
         l.sub!(/(?<=#{ Regexp.escape('\\begin{RtTitle}') })/, ".RtPrimaryFontStart.") # after begin
         l.sub!(/(?=#{ Regexp.escape('\\end{RtTitle}') })/, ".RtPrimaryFontEnd.") # before end
+        # Fix environment for paragraphs that don't start with gap_marks. I need
+        # to break the RtPrimaryFont environment around the internal paragraph
+        # number
+        # NOTE: I check for ascii chars to detect primary text. That works
+        # when target uses non-ascii text (e.g., chinese), however it will
+        # break if target language uses ascii chars and we may have to find
+        # a different way of doing this.
+        l.gsub!(
+          /
+            (\\RtParagraphNumber\{\d+\}) # RtParagraphNumber command
+            (?!\.RtPrimaryFontStart\.) # not followed by .RtPrimaryFontStart.
+            (?=[a-zA-Z]) # followed by ascii chars to detect english in contrast to chinese
+          /x,
+          '.RtPrimaryFontEnd.\1.RtPrimaryFontStart.'
+        )
         # Replace temporary markers with RtPrimaryFont environment
         l.gsub!(".RtPrimaryFontStart.", "\n\\begin{RtPrimaryFont}\n")
         l.gsub!(".RtPrimaryFontEnd.", "\n\\end{RtPrimaryFont}\n")
@@ -173,9 +188,7 @@ module Kramdown
             gap_mark_split[:txt],
             gap_mark_split[:parents].last
           ].compact.join
-          # NOTE: remove the second condition to merge paragraphs that don't
-          # start with a gap_mark with the previous pair.
-          if gap_mark_split[:starts_with_gap_mark] || serialized_splits.last =~ /\n\z/
+          if gap_mark_split[:starts_with_gap_mark]
             # gap_mark_split starts with gap_mark, or previous split ends with newline: create new split
             serialized_splits << serialized_text
           else
