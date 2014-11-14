@@ -89,7 +89,7 @@ module Kramdown
           /
             (\\RtParagraphNumber\{\d+\}) # RtParagraphNumber command
             (?!\.RtPrimaryFontStart\.) # not followed by .RtPrimaryFontStart.
-            (?=[a-zA-Z]) # followed by ascii chars to detect english in contrast to chinese
+            (?=[\[]*[a-zA-Z]) # followed by optional control char and required ascii char to detect english in contrast to chinese
           /x,
           '.RtPrimaryFontEnd.\1.RtPrimaryFontStart.'
         )
