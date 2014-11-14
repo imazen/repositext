@@ -94,8 +94,8 @@ module Kramdown
           '.RtPrimaryFontEnd.\1.RtPrimaryFontStart.'
         )
         # Replace temporary markers with RtPrimaryFont environment
-        l.gsub!(".RtPrimaryFontStart.", "\n\\begin{RtPrimaryFont}\n")
-        l.gsub!(".RtPrimaryFontEnd.", "\n\\end{RtPrimaryFont}\n")
+        l.gsub!(".RtPrimaryFontStart.", "\\begin{RtPrimaryFont}")
+        l.gsub!(".RtPrimaryFontEnd.", "\\end{RtPrimaryFont}")
         l
       end
 
