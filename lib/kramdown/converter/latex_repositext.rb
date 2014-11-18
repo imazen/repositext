@@ -247,6 +247,7 @@ module Kramdown
           "'",
           '}',
           '*',
+          '［', # chinese bracket
           '（', # chinese parens
           '一', # chinese dash
           '《', # chinese left double angle bracket
