@@ -6,8 +6,11 @@ class Repositext
 
       # Copies subtitle_marker csv files to content for subtitle import. Also renames files like so:
       # 59-0125_0547.markers.txt => eng59-0125_0547.subtitle_markers.csv
+      # @param[Hash] options must contain key 'input' with one of
+      #     * 'subtitle_tagging_import_dir/txt_files' or
+      #     * 'subtitle_import_dir/txt_files'
       def copy_subtitle_marker_csv_files_to_content(options)
-        input_file_spec = options['input'] || 'subtitle_tagging_import_dir/txt_files'
+        input_file_spec = options['input']
         input_base_dir_name, input_file_pattern_name = input_file_spec.split(
           Repositext::Cli::FILE_SPEC_DELIMITER
         )

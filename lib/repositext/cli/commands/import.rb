@@ -91,7 +91,9 @@ class Repositext
           options.merge({ 'input' => 'content_dir/at_files' })
         )
         fix_normalize_trailing_newlines(options)
-        copy_subtitle_marker_csv_files_to_content(options) # and rename them to our file naming convention
+        copy_subtitle_marker_csv_files_to_content(
+          options.merge({ 'input' => 'subtitle_import_dir/txt_files' })
+        )
         sync_subtitle_mark_character_positions(options)
         options['append_to_validation_report'] = true
         validate_subtitle_import(options.merge('run_options' => %w[post_import]))
@@ -109,7 +111,9 @@ class Repositext
           options.merge({ 'input' => 'content_dir/at_files' })
         )
         fix_normalize_trailing_newlines(options)
-        copy_subtitle_marker_csv_files_to_content(options) # and rename them to our file naming convention
+        copy_subtitle_marker_csv_files_to_content(
+          options.merge({ 'input' => 'subtitle_tagging_import_dir/txt_files' })
+        )
         sync_subtitle_mark_character_positions(options)
         options['append_to_validation_report'] = true
         validate_subtitle_tagging_import(options.merge('run_options' => %w[post_import]))
