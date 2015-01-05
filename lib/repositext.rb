@@ -1,3 +1,5 @@
+#require 'ruby-prof'
+
 require 'awesome_print'
 require 'erb'
 require 'find'

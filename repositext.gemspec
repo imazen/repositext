@@ -29,10 +29,10 @@ Gem::Specification.new do |s|
   s.add_dependency('thor')
   s.add_dependency('unicode_utils')
 
-  # Test libraries
-  s.add_development_dependency "bundler", "~> 1.3"
+  s.add_development_dependency('bundler', "~> 1.3")
   s.add_development_dependency('fakefs')
   s.add_development_dependency('rake')
   s.add_development_dependency('minitest')
   s.add_development_dependency('minitest-spec-expect')
+  s.add_development_dependency('ruby-prof')
 end
