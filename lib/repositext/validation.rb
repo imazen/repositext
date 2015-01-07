@@ -41,7 +41,7 @@ class Repositext
     end
 
     def run
-      @logger.validation_header(@file_specs[:primary].join, self)
+      @logger.validation_header(@file_specs[:primary].join, self.class)
       start_time = Time.now
       run_list
       end_time = Time.now
