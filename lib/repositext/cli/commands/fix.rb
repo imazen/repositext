@@ -14,10 +14,13 @@ class Repositext
       # If % directly follows an elipsis, move to the front of the ellipsis
       # (unless where elipsis and % are between two words like so: word…%word)
       def fix_adjust_gap_mark_positions(options)
-        input_file_spec = options['input'] || 'idml_import_dir/at_files'
         Repositext::Cli::Utils.change_files_in_place(
-          config.compute_glob_pattern(input_file_spec),
-          options['file_filter'] || /\.at\z/i,
+          config.compute_glob_pattern(
+            options['base-dir'] || :idml_import_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :at_extension
+          ),
+          options['file_filter'],
           "Adjusting :gap_mark positions",
           options
         ) do |contents, filename|
@@ -34,10 +37,13 @@ class Repositext
       # paragraphs, and that they are preceded by a blank line.
       # @param[Hash] options
       def fix_adjust_merged_record_mark_positions(options)
-        input_file_spec = options['input'] || 'staging_dir/at_files'
         Repositext::Cli::Utils.change_files_in_place(
-          config.compute_glob_pattern(input_file_spec),
-          /\.at\z/i,
+          config.compute_glob_pattern(
+            options['base-dir'] || :staging_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :at_extension
+          ),
+          options['file_filter'],
           "Adjusting merged :record_mark positions",
           options
         ) do |contents, filename|
@@ -48,10 +54,13 @@ class Repositext
 
       # Converts A.M., P.M., A.D. and B.C. to lower case and wraps them in span.smcaps
       def fix_convert_abbreviations_to_lower_case(options)
-        input_file_spec = options['input'] || 'staging_dir/at_files'
         Repositext::Cli::Utils.change_files_in_place(
-          config.compute_glob_pattern(input_file_spec),
-          /\.(at|pt|txt)\z/i,
+          config.compute_glob_pattern(
+            options['base-dir'] || :staging_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :at_extension
+          ),
+          options['file_filter'],
           "Converting abbreviations to lower case",
           options
         ) do |contents, filename|
@@ -62,10 +71,13 @@ class Repositext
 
       # Convert -- and ... and " to typographically correct characters
       def fix_convert_folio_typographical_chars(options)
-        input_file_spec = options['input'] || 'folio_import_dir/at_files'
         Repositext::Cli::Utils.change_files_in_place(
-          config.compute_glob_pattern(input_file_spec),
-          /\.(at|pt|txt)\z/i,
+          config.compute_glob_pattern(
+            options['base-dir'] || :folio_import_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :at_extension
+          ),
+          options['file_filter'],
           "Changing typographical characters in files",
           options
         ) do |contents, filename|
@@ -74,10 +86,14 @@ class Repositext
         end
       end
 
+      # Set file permissions to standard permissions on all newly imported files
+      def fix_import_file_permissions
+        set to 644
+      end
+
       # Insert a record_mark into each content AT file that doesn't contain one
       # already
       def fix_insert_record_mark_into_all_at_files(options)
-        input_file_spec = options['input'] || 'content_dir/at_files'
         repo_base_dir = config.base_dir(:rtfile_dir)
         primary_repo_base_dir = File.expand_path(
           config.setting(:relative_path_to_primary_repo),
@@ -97,8 +113,12 @@ class Repositext
           }
         )
         Repositext::Cli::Utils.change_files_in_place(
-          config.compute_glob_pattern(input_file_spec),
-          /\.at\z/i,
+          config.compute_glob_pattern(
+            options['base-dir'] || :content_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :at_extension
+          ),
+          options['file_filter'],
           "Inserting record_marks into AT files",
           options
         ) do |contents, filename|
@@ -113,15 +133,15 @@ class Repositext
       end
 
       def fix_normalize_editors_notes(options)
-        # Don't set default file_spec since this gets called both in folio
-        # and idml.
-        if options['input'].nil?
-          raise(ArgumentError.new("'input' option is required for this command"))
-        end
-        input_file_spec = options['input']
         Repositext::Cli::Utils.change_files_in_place(
-          config.compute_glob_pattern(input_file_spec),
-          /\.at\z/i,
+          # Don't set default file_spec since this gets called both in folio
+          # and idml.
+          config.compute_glob_pattern(
+            options['base-dir'],
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :at_extension
+          ),
+          options['file_filter'],
           "Normalizing editors notes",
           options
         ) do |contents, filename|
@@ -131,15 +151,15 @@ class Repositext
       end
 
       def fix_normalize_subtitle_mark_before_gap_mark_positions(options)
-        # Don't set default file_spec. Needs to be provided. This could be called
-        # from a number of places.
-        if options['input'].nil?
-          raise(ArgumentError.new("'input' option is required for this command"))
-        end
-        input_file_spec = options['input']
         Repositext::Cli::Utils.change_files_in_place(
-          config.compute_glob_pattern(input_file_spec),
-          /\.at\z/i,
+          # Don't set default file_spec. Needs to be provided. This could be called
+          # from a number of places.
+          config.compute_glob_pattern(
+            options['base-dir'],
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :at_extension
+          ),
+          options['file_filter'],
           "Normalizing subtitle_mark before gap_mark positions.",
           options
         ) do |contents, filename|
@@ -152,9 +172,12 @@ class Repositext
       def fix_normalize_trailing_newlines(options)
         # This would use the input option, however that may not work since
         # we touch lots of directories as part of an import.
-        # input_file_spec = options['input'] || 'rtfile_dir/repositext_files'
         # Repositext::Cli::Utils.change_files_in_place(
-        #   config.compute_glob_pattern(input_file_spec),
+        #   config.compute_glob_pattern(
+        #     options['base-dir'] || :rtfile_dir,
+        #     options['file-selector'] || :all_files,
+        #     options['file-extension'] || :repositext_extensions
+        #   ),
         #   /.\z/i,
         #   "Normalizing trailing newlines",
         #   options
@@ -165,11 +188,11 @@ class Repositext
         which_files = :all # :content_at_only or :all
         case which_files
         when :content_at_only
-          base_dirs = %w[content_dir]
-          file_type = 'at_files'
+          input_base_dirs = %w[content_dir]
+          input_file_extension_name = options['file-extension'] || :at_extension
         when :all
           # Process all subfolders of root. Don't touch files in root.
-          base_dirs = %w[
+          input_base_dirs = %w[
             content_dir
             folio_import_dir
             idml_import_dir
@@ -180,16 +203,19 @@ class Repositext
             subtitle_tagging_export_dir
             subtitle_tagging_import_dir
           ]
-          file_type = 'repositext_files'
+          input_file_extension_name = options['file-extension'] || :repositext_extensions
         else
           raise "Invalid which_files: #{ which_files.inspect }"
         end
-        base_dirs.each do |base_dir_name|
-          input_file_spec = "#{ base_dir_name }/#{ file_type }"
+        input_file_selector = config.compute_file_selector(options['file-selector'] || :all_files)
+        input_base_dirs.each do |input_base_dir_name|
+          input_base_dir = config.compute_base_dir(input_base_dir_name)
+          input_file_extension = config.compute_file_extension(input_file_extension_name)
+          input_file_glob_pattern = [input_base_dir, input_file_selector, input_file_extension].join
           Repositext::Cli::Utils.change_files_in_place(
-            config.compute_glob_pattern(input_file_spec),
-            /.\z/i,
-            "Normalizing trailing newlines in #{ base_dir_name }/#{ file_type }",
+            input_file_glob_pattern,
+            options['file_filter'],
+            "Normalizing trailing newlines in #{ input_file_glob_pattern }",
             options
           ) do |contents, filename|
             [Outcome.new(true, { contents: contents.gsub(/(?<!\n)\n*\z/, "\n") }, [])]
@@ -198,10 +224,13 @@ class Repositext
       end
 
       def fix_remove_underscores_inside_folio_paragraph_numbers(options)
-        input_file_spec = options['input'] || 'folio_import_dir/at_files'
         Repositext::Cli::Utils.change_files_in_place(
-          config.compute_glob_pattern(input_file_spec),
-          /\.at\z/i,
+          config.compute_glob_pattern(
+            options['base-dir'] || :folio_import_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :at_extension
+          ),
+          options['file_filter'],
           "Removing underscores inside folio paragraph numbers",
           options
         ) do |contents, filename|

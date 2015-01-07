@@ -9,7 +9,7 @@ class Repositext
 
       before {
         @common_validation = IdmlPreImport.new(
-          {:primary => ['_', '_']}, {}
+          {:primary => ['_', '_', '_']}, {}
         )
       }
 

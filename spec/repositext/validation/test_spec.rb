@@ -9,7 +9,7 @@ class Repositext
 
       before {
         @common_validation = Test.new(
-          {:primary => ['_', '_']}, {}
+          {:primary => ['_', '_', '_']}, {}
         )
       }
 

@@ -29,7 +29,7 @@ end
 # @param[String] validation_class_name the class name of the validation
 # @param[String] file_specs the file specs required for validation as hash
 #     * keys: name of file_spec
-#     * val: Array of base_dir and file_pattern as strings
+#     * val: Array of base_dir, file_selector and file_extension as strings
 # @param[Hash] options with symbolized keys
 def initialize_test_validation(validation_class_name, file_specs, options)
   options = { :logger => 'LoggerTest' }.merge(options)

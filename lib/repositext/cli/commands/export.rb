@@ -6,20 +6,20 @@ class Repositext
 
       # Export Gap mark Tagging files
       def export_gap_mark_tagging(options)
-        input_file_spec = options['input'] || 'content_dir/at_files'
-        input_base_dir_name, input_file_pattern_name = input_file_spec.split(
-          Repositext::Cli::FILE_SPEC_DELIMITER
-        )
-        output_base_dir = options['output'] || config.base_dir('gap_mark_tagging_export_dir')
+        input_base_dir = config.compute_base_dir(options['base-dir'] || :content_dir)
+        input_file_selector = config.compute_file_selector(options['file-selector'] || :all_files)
+        input_file_extension = config.compute_file_extension(options['file-extension'] || :at_extension)
+        output_base_dir = options['output'] || config.base_dir(:gap_mark_tagging_export_dir)
         Repositext::Cli::Utils.export_files(
-          config.base_dir(input_base_dir_name),
-          config.file_pattern(input_file_pattern_name),
+          input_base_dir,
+          input_file_selector,
+          input_file_extension,
           output_base_dir,
-          /\.at\Z/i,
+          options['file_filter'],
           "Exporting AT files to gap_mark tagging",
           options.merge(
             :output_path_lambda => lambda { |input_filename, output_file_attrs|
-              input_filename.gsub(config.base_dir(input_base_dir_name), output_base_dir)
+              input_filename.gsub(input_base_dir, output_base_dir)
                             .gsub(/\.at\z/, '.gap_mark_tagging.txt')
             }
           )
@@ -35,16 +35,16 @@ class Repositext
 
       # Export AT files in /content to ICML
       def export_icml(options)
-        input_file_spec = options['input'] || 'content_dir/at_files'
-        input_base_dir_name, input_file_pattern_name = input_file_spec.split(
-          Repositext::Cli::FILE_SPEC_DELIMITER
-        )
-        output_base_dir = options['output'] || config.base_dir('icml_export_dir')
+        input_base_dir = config.compute_base_dir(options['base-dir'] || :content_dir)
+        input_file_selector = config.compute_file_selector(options['file-selector'] || :all_files)
+        input_file_extension = config.compute_file_extension(options['file-extension'] || :at_extension)
+        output_base_dir = options['output'] || config.base_dir(:icml_export_dir)
         Repositext::Cli::Utils.export_files(
-          config.base_dir(input_base_dir_name),
-          config.file_pattern(input_file_pattern_name),
+          input_base_dir,
+          input_file_selector,
+          input_file_extension,
           output_base_dir,
-          /\.at\Z/i,
+          options['file_filter'],
           "Exporting AT files to ICML",
           options
         ) do |contents, filename|
@@ -195,11 +195,10 @@ class Repositext
         if !export_pdf_variants.include?(variant)
           raise(ArgumentError.new("Invalid variant: #{ variant.inspect }"))
         end
-        input_file_spec = options['input'] || 'content_dir/at_files'
-        input_base_dir_name, input_file_pattern_name = input_file_spec.split(
-          Repositext::Cli::FILE_SPEC_DELIMITER
-        )
-        output_base_dir = options['output'] || config.base_dir("pdf_export_dir")
+        input_base_dir = config.compute_base_dir(options['base-dir'] || :content_dir)
+        input_file_selector = config.compute_file_selector(options['file-selector'] || :all_files)
+        input_file_extension = config.compute_file_extension(options['file-extension'] || :at_extension)
+        output_base_dir = options['output'] || config.base_dir(:pdf_export_dir)
         options = options.merge({
           additional_footer_text: options['additional-footer-text'],
           font_leading_override: config.setting(:font_leading_override, false),
@@ -211,10 +210,11 @@ class Repositext
           version_control_page: options['include-version-control-info'],
         })
         Repositext::Cli::Utils.export_files(
-          config.base_dir(input_base_dir_name),
-          config.file_pattern(input_file_pattern_name),
+          input_base_dir,
+          input_file_selector,
+          input_file_extension,
           output_base_dir,
-          /\.at\Z/i,
+          options['file_filter'],
           "Exporting AT files to #{ variant }",
           options
         ) do |contents, filename|
@@ -257,16 +257,16 @@ class Repositext
       # Export AT files in /content to plain kramdown (no record_marks,
       # subtitle_marks, or gap_marks)
       def export_plain_kramdown(options)
-        input_file_spec = options['input'] || 'content_dir/at_files'
-        input_base_dir_name, input_file_pattern_name = input_file_spec.split(
-          Repositext::Cli::FILE_SPEC_DELIMITER
-        )
-        output_base_dir = options['output'] || config.base_dir('plain_kramdown_export_dir')
+        input_base_dir = config.compute_base_dir(options['base-dir'] || :content_dir)
+        input_file_selector = config.compute_file_selector(options['file-selector'] || :all_files)
+        input_file_extension = config.compute_file_extension(options['file-extension'] || :at_extension)
+        output_base_dir = options['output'] || config.base_dir(:plain_kramdown_export_dir)
         Repositext::Cli::Utils.export_files(
-          config.base_dir(input_base_dir_name),
-          config.file_pattern(input_file_pattern_name),
+          input_base_dir,
+          input_file_selector,
+          input_file_extension,
           output_base_dir,
-          /\.md\Z/i,
+          options['file_filter'],
           "Exporting AT files to plain kramdown",
           options
         ) do |contents, filename|
@@ -278,17 +278,16 @@ class Repositext
 
       # Export Subtitle files
       def export_subtitle(options)
-        input_file_spec = options['input'] || 'content_dir/at_files'
-        input_base_dir_name, input_file_pattern_name = input_file_spec.split(
-          Repositext::Cli::FILE_SPEC_DELIMITER
-        )
-        input_base_dir = config.base_dir(input_base_dir_name)
-        output_base_dir = options['output'] || config.base_dir('subtitle_export_dir')
+        input_base_dir = config.compute_base_dir(options['base-dir'] || :content_dir)
+        input_file_selector = config.compute_file_selector(options['file-selector'] || :all_files)
+        input_file_extension = config.compute_file_extension(options['file-extension'] || :at_extension)
+        output_base_dir = options['output'] || config.base_dir(:subtitle_export_dir)
         Repositext::Cli::Utils.export_files(
           input_base_dir,
-          config.file_pattern(input_file_pattern_name),
+          input_file_selector,
+          input_file_extension,
           output_base_dir,
-          /\.at\Z/i,
+          options['file_filter'],
           "Exporting AT files to subtitle",
           options.merge(
             :output_path_lambda => lambda { |input_filename, output_file_attrs|
@@ -315,21 +314,21 @@ class Repositext
 
       # Export Subtitle Tagging files
       def export_subtitle_tagging(options)
-        input_file_spec = options['input'] || 'content_dir/at_files'
-        input_base_dir_name, input_file_pattern_name = input_file_spec.split(
-          Repositext::Cli::FILE_SPEC_DELIMITER
-        )
-        output_base_dir = options['output'] || config.base_dir('subtitle_tagging_export_dir')
+        input_base_dir = config.compute_base_dir(options['base-dir'] || :content_dir)
+        input_file_selector = config.compute_file_selector(options['file-selector'] || :all_files)
+        input_file_extension = config.compute_file_extension(options['file-extension'] || :at_extension)
+        output_base_dir = options['output'] || config.base_dir(:subtitle_tagging_export_dir)
         Repositext::Cli::Utils.export_files(
-          config.base_dir(input_base_dir_name),
-          config.file_pattern(input_file_pattern_name),
+          input_base_dir,
+          input_file_selector,
+          input_file_extension,
           output_base_dir,
-          /\.at\Z/i,
+          options['file_filter'],
           "Exporting AT files to subtitle tagging",
           options.merge(
             :output_path_lambda => lambda { |input_filename, output_file_attrs|
               Repositext::Utils::SubtitleFilenameConverter.convert_from_repositext_to_subtitle_export(
-                input_filename.gsub(config.base_dir(input_base_dir_name), output_base_dir),
+                input_filename.gsub(input_base_dir, output_base_dir),
                 output_file_attrs
               )
             }

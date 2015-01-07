@@ -11,7 +11,7 @@ class Repositext
 
       before {
         @common_validation = ACustomExample.new(
-          {:primary => ['_', '_']}, {}
+          {:primary => ['_', '_', '_']}, {}
         )
       }
 

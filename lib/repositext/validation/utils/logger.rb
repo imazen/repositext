@@ -9,13 +9,15 @@ class Repositext
 
       attr_accessor :level
 
-      # @param[String] _file_pattern_base_path
-      # @param[String] _file_pattern
-      # @param[String] _log_level
-      # @param[Repositext::Validation] validation
-      def initialize(_file_pattern_base_path, _file_pattern, _log_level, _validation)
-        @file_pattern = _file_pattern
-        @file_pattern_base_path = _file_pattern_base_path
+      # @param _input_base_dir [String] part of file_spec
+      # @param _file_selector [String] part of file_spec
+      # @param _file_extension [String] part of file_spec
+      # @param _log_level [String] one of 'debug', 'info', 'warning', 'error'
+      # @param validation [Repositext::Validation]
+      def initialize(_input_base_dir, _file_selector, _file_extension, _log_level, _validation)
+        @file_extension = _file_extension
+        @file_selector = _file_selector
+        @input_base_dir = _input_base_dir
         @validation = _validation
         @level = _log_level
 
@@ -54,15 +56,15 @@ class Repositext
       end
 
       # Logs a header for validation
-      # @param[String] _file_pattern
-      # @param[Class] _validation_class
-      def validation_header(_file_pattern, _validation_class)
+      # @param _file_spec [String] the complete glob pattern
+      # @param _validation_class [Class]
+      def validation_header(_file_spec, _validation_class)
         info '=' * 80
         info 'Repositext Validation'
         info '=' * 80
-        info "  - validation:      #{ _validation_class.to_s.split('::').last(2).join('::') }"
-        info "  - file_pattern: #{ _file_pattern }"
-        info "  - log level:    #{ @level }"
+        info "  - validation: #{ _validation_class.to_s.split('::').last(2).join('::') }"
+        info "  - file spec:  #{ _file_spec }"
+        info "  - log level:  #{ @level }"
         info '=' * 80
       end
 
@@ -90,7 +92,7 @@ class Repositext
       # @param[IO, String, Array<IO, String>] _io the source file (or path as String) in which the validation step was defined
       # @param[Boolean] _success
       def log_validation_step(_validator, _io, _success)
-        # find longest common prefix between @file_pattern_base_path and _io's filename
+        # find longest common prefix between @input_base_dir and _io's filename
         # to remove it from logging output
         io_or_string_array = _io.is_a?(Array) ? _io : [_io] # cast _io to array
         string_array = io_or_string_array.map { |e|
@@ -103,7 +105,7 @@ class Repositext
             raise "Handle this: #{ e.inspect }"
           end
         }
-        longest_common_prefix = string_array.inject(@file_pattern_base_path.dup) {|lcp, a_path|
+        longest_common_prefix = string_array.inject(@input_base_dir.dup) {|lcp, a_path|
           lcp = lcp.chop while lcp != a_path[0...lcp.length]
           lcp
         }
@@ -132,7 +134,7 @@ class Repositext
         }
         parts = [
           '  ',
-          string_array.join(', ').gsub(@file_pattern_base_path, '').ljust(32),
+          string_array.join(', ').gsub(@input_base_dir, '').ljust(32),
           ' ',
           _info.join(', ').ljust(30)
         ]

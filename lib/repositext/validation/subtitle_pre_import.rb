@@ -23,8 +23,8 @@ class Repositext
         # Validate that the subtitle/subtitle_tagging import still matches content_at
         # Define proc that computes subtitle/subtitle_tagging import filename from content_at filename
         si_file_name_proc = lambda { |input_filename, file_specs|
-          ca_base_dir, ca_file_pattern = file_specs[:content_at_files]
-          si_base_dir, si_file_pattern = file_specs[:subtitle_import_files]
+          ca_base_dir = file_specs[:content_at_files].first
+          si_base_dir = file_specs[:subtitle_import_files].first
           Repositext::Utils::SubtitleFilenameConverter.convert_from_repositext_to_subtitle_import(
             input_filename.gsub(ca_base_dir, si_base_dir)
           )

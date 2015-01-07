@@ -7,7 +7,11 @@ class Repositext
 
       attr_reader :errors, :warnings, :stats
 
-      def initialize(_file_pattern_base_path, _file_pattern, _validation)
+      # @param _input_base_dir [String]
+      # @param _file_selector [String]
+      # @param _file_extension [String]
+      # @param logger [Logger]
+      def initialize(_input_base_dir, _file_selector, _file_extension, logger)
         @errors = []
         @warnings = []
         @stats = []

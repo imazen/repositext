@@ -57,32 +57,92 @@ class Repositext
         # TODO: spec handling of errors
       end
 
-      describe '#file_pattern' do
-        let(:pattern_name) { :pattern_name }
-        let(:pattern_string) { 'test_file_pattern' }
+      describe '#base_dir' do
+        let(:base_dir_name) { :base_dir_name }
+        let(:base_dir_string) { 'test_base_dir' }
         let(:conf) { MiniTest::Mock.new }
 
         it "handles a block" do
-          conf.expect(:add_file_pattern, nil, [pattern_name, pattern_string])
+          conf.expect(:add_base_dir, nil, [base_dir_name, base_dir_string])
           instance_with_config.config = conf
 
-          instance_with_config.file_pattern(pattern_name) { pattern_string }
+          instance_with_config.base_dir(base_dir_name) { base_dir_string }
 
           assert conf.verify
         end
 
         it "handles a string" do
-          conf.expect(:add_file_pattern, nil, [pattern_name, pattern_string])
+          conf.expect(:add_base_dir, nil, [base_dir_name, base_dir_string])
           instance_with_config.config = conf
 
-          instance_with_config.file_pattern(pattern_name, pattern_string)
+          instance_with_config.base_dir(base_dir_name, base_dir_string)
 
           assert conf.verify
         end
 
         it "raises if not given either string or block" do
           proc {
-            instance.file_pattern(pattern_name)
+            instance.base_dir(base_dir_name)
+          }.must_raise RtfileError
+        end
+      end
+
+      describe '#file_extension' do
+        let(:extension_name) { :extension_name }
+        let(:extension_string) { 'test_file_extension' }
+        let(:conf) { MiniTest::Mock.new }
+
+        it "handles a block" do
+          conf.expect(:add_file_extension, nil, [extension_name, extension_string])
+          instance_with_config.config = conf
+
+          instance_with_config.file_extension(extension_name) { extension_string }
+
+          assert conf.verify
+        end
+
+        it "handles a string" do
+          conf.expect(:add_file_extension, nil, [extension_name, extension_string])
+          instance_with_config.config = conf
+
+          instance_with_config.file_extension(extension_name, extension_string)
+
+          assert conf.verify
+        end
+
+        it "raises if not given either string or block" do
+          proc {
+            instance.file_extension(extension_name)
+          }.must_raise RtfileError
+        end
+      end
+
+      describe '#file_selector' do
+        let(:selector_name) { :selector_name }
+        let(:selector_string) { 'test_file_selector' }
+        let(:conf) { MiniTest::Mock.new }
+
+        it "handles a block" do
+          conf.expect(:add_file_selector, nil, [selector_name, selector_string])
+          instance_with_config.config = conf
+
+          instance_with_config.file_selector(selector_name) { selector_string }
+
+          assert conf.verify
+        end
+
+        it "handles a string" do
+          conf.expect(:add_file_selector, nil, [selector_name, selector_string])
+          instance_with_config.config = conf
+
+          instance_with_config.file_selector(selector_name, selector_string)
+
+          assert conf.verify
+        end
+
+        it "raises if not given either string or block" do
+          proc {
+            instance.file_selector(selector_name)
           }.must_raise RtfileError
         end
       end

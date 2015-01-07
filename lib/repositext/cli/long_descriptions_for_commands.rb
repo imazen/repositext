@@ -112,10 +112,8 @@ class Repositext
         def long_description_for_validate
           %(
             Validates files. Uses Profiles to determine which validations to run.
-            The validate command usually requires the --input option since it
-            has no defaults. The --input option for validation has to use a named
-            file spec like 'content_dir/at_files' and cannot use a dir.glob pattern
-            since it has to extract the base_dir and file_pattern parts.
+            The validate command usually requires the --base-dir, --file-selector,
+            and --file-extension options since it has no defaults.
 
             Available SPECs:
 
@@ -123,7 +121,7 @@ class Repositext
 
             Example:
 
-            bundle exec repositext validate utf8_encoding --input=folio_import_dir/at_files
+            bundle exec repositext validate utf8_encoding --base-dir=/dir1/dir2/folio_import_dir --file-pattern=at_files
           )
         end
 

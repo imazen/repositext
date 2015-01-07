@@ -13,10 +13,17 @@ class Repositext
       # and they don't overwrite any manual corrections prior to when the script
       # stores auto corrections to disk.
       def merge_accepted_corrections_into_content_at(options)
-        input_file_spec_accepted_corrections = 'accepted_corrections_dir/txt_files'
-        input_file_pattern_accepted_corrections = config.compute_glob_pattern(input_file_spec_accepted_corrections)
-        base_dir_accepted_corrections = config.base_dir(:accepted_corrections_dir)
-        base_dir_content = config.base_dir(:content_dir)
+        accepted_corrections_base_dir = config.compute_base_dir(
+          options['base-dir'] ||
+          options['base-dir-1'] ||
+          :accepted_corrections_dir
+        )
+        accepted_corrections_glob_pattern = config.compute_glob_pattern(
+          accepted_corrections_base_dir,
+          options['file-selector'] || :all_files,
+          options['file-extension'] || :txt_extension
+        )
+        content_base_dir = config.compute_base_dir(options['base-dir-2'] || :content_dir)
 
         $stderr.puts 'Merging accepted corrections into content_at'
         $stderr.puts '-' * 80
@@ -26,15 +33,15 @@ class Repositext
         manual_success_count = 0
         errors_count = 0
 
-        Dir.glob(input_file_pattern_accepted_corrections).each do |accepted_corrections_file_name|
+        Dir.glob(accepted_corrections_glob_pattern).each do |accepted_corrections_file_name|
           if accepted_corrections_file_name !~ /\.accepted_corrections\.txt\z/
             next
           end
           total_count += 1
           # prepare paths
           content_at_file_name = accepted_corrections_file_name.gsub(
-            base_dir_accepted_corrections,
-            base_dir_content
+            accepted_corrections_base_dir,
+            content_base_dir
           ).gsub(
             /\.accepted_corrections\.txt\z/, '.at'
           )
@@ -91,11 +98,18 @@ class Repositext
       # Merges gap_mark_tagging_import into content AT.
       # Uses content AT as authority for text.
       def merge_gap_mark_tagging_import_into_content_at(options)
-        input_file_spec_gap_mark_tagging_import = options['input_1'] || 'gap_mark_tagging_import_dir/txt_files'
-        input_file_pattern_gap_mark_tagging_import = config.compute_glob_pattern(input_file_spec_gap_mark_tagging_import)
-        base_dir_gap_mark_tagging_import = config.base_dir(:gap_mark_tagging_import_dir)
-        base_dir_content = options['input_2'] || config.base_dir(:content_dir)
-        base_dir_output = options['output'] || config.base_dir(:content_dir)
+        gap_mark_tagging_import_base_dir = config.compute_base_dir(
+          options['base-dir'] || options['base-dir-1'] || :gap_mark_tagging_import_dir
+        )
+        gap_mark_tagging_import_glob_pattern = config.compute_glob_pattern(
+          gap_mark_tagging_import_base_dir,
+          options['file-selector'] || :all_files,
+          options['file-extension'] || :txt_extension
+        )
+        content_base_dir = config.compute_base_dir(
+          options['base-dir-2'] || :content_dir
+        )
+        output_base_dir = options['output'] || config.base_dir(:content_dir)
 
         $stderr.puts 'Merging :gap_mark tokens from gap_mark_tagging_import into content_at'
         $stderr.puts '-' * 80
@@ -104,15 +118,18 @@ class Repositext
         success_count = 0
         errors_count = 0
 
-        Dir.glob(input_file_pattern_gap_mark_tagging_import).each do |gap_mark_tagging_import_file_name|
+        Dir.glob(gap_mark_tagging_import_glob_pattern).each do |gap_mark_tagging_import_file_name|
           if gap_mark_tagging_import_file_name !~ /\.gap_mark_tagging\.txt\z/
             next
           end
 
           total_count += 1
           # prepare paths
-          content_at_file_name = gap_mark_tagging_import_file_name.gsub(base_dir_gap_mark_tagging_import, base_dir_content)
-                                                          .gsub(/\.gap_mark_tagging\.txt\z/, '.at')
+          content_at_file_name = gap_mark_tagging_import_file_name.gsub(
+            gap_mark_tagging_import_base_dir, content_base_dir
+          ).gsub(
+            /\.gap_mark_tagging\.txt\z/, '.at'
+          )
           output_file_name = content_at_file_name
 
           begin
@@ -147,9 +164,12 @@ class Repositext
       # Uses IDML as authority for text and all tokens except record_marks.
       # If no IDML file is present, uses FOLIO XML as authority for everything.
       def merge_record_marks_from_folio_xml_at_into_idml_at(options)
-        input_folio_base_dir = config.base_dir(:folio_import_dir)
-        input_idml_base_dir = config.base_dir(:idml_import_dir)
-        input_file_pattern = config.file_pattern(:at_files)
+        input_folio_base_dir = config.compute_base_dir(
+          options['base-dir'] || options['base-dir-1'] || :folio_import_dir
+        )
+        input_idml_base_dir = config.compute_base_dir(options['base-dir-2'] || :idml_import_dir)
+        input_file_selector = config.compute_file_selector(options['file-selector'] || :all_files)
+        input_file_extension = config.compute_file_extension(options['file-extension'] || :at_extension)
         output_base_dir = config.base_dir(:staging_dir)
         $stderr.puts 'Merging :record_mark tokens from folio_at into idml_at'
         $stderr.puts '-' * 80
@@ -161,10 +181,9 @@ class Repositext
         folio_not_present_count = 0
         filtered_text_mismatch_count = 0
 
-
         # First get union of all Folio and Idml files
-        folio_files = Dir.glob(File.join(input_folio_base_dir, input_file_pattern))
-        idml_files = Dir.glob(File.join(input_idml_base_dir, input_file_pattern))
+        folio_files = Dir.glob([input_folio_base_dir, input_file_selector, input_file_extension].join)
+        idml_files = Dir.glob([input_idml_base_dir, input_file_selector, input_file_extension].join)
         all_output_files = (folio_files + idml_files).map { |e|
           # process folio files
           e = e.gsub(input_folio_base_dir, output_base_dir)
@@ -234,18 +253,23 @@ class Repositext
       # Merges subtitle_marks from subtitle_import into content AT.
       # Uses content AT as authority for text and all tokens except subtitle_marks.
       def merge_subtitle_marks_from_subtitle_import_into_content_at(options)
-        input_file_spec_subtitle_import = options['input_1'] || 'subtitle_import_dir/txt_files'
-        input_file_pattern_subtitle_import = config.compute_glob_pattern(input_file_spec_subtitle_import)
-        base_dir_subtitle_import = config.base_dir(:subtitle_import_dir)
-        base_dir_content = options['input_2'] || config.base_dir(:content_dir)
-        base_dir_output = options['output'] || config.base_dir(:content_dir)
+        subtitle_import_base_dir = config.compute_base_dir(
+          options['base-dir'] || options['base-dir-1'] || :subtitle_import_dir
+        )
+        subtitle_import_glob_pattern = config.compute_glob_pattern(
+          subtitle_import_base_dir,
+          options['file-selector'] || :all_files,
+          options['file-extension'] || :txt_extension
+        )
+        content_base_dir = config.compute_base_dir(options['base-dir-2'] || :content_dir)
+        output_base_dir = options['output'] || config.base_dir(:content_dir)
 
         $stderr.puts 'Merging :subtitle_mark tokens from subtitle_import into content_at'
         $stderr.puts '-' * 80
         merge_subtitle_marks_from_subtitle_shared_into_content_at(
-          input_file_pattern_subtitle_import,
-          base_dir_subtitle_import,
-          base_dir_content,
+          subtitle_import_glob_pattern,
+          subtitle_import_base_dir,
+          content_base_dir,
           options
         )
       end
@@ -253,18 +277,23 @@ class Repositext
       # Merges subtitle_marks from subtitle_tagging_import into content AT.
       # Uses content AT as authority for text and all tokens except subtitle_marks.
       def merge_subtitle_marks_from_subtitle_tagging_import_into_content_at(options)
-        input_file_spec_subtitle_tagging_import = options['input_1'] || 'subtitle_tagging_import_dir/txt_files'
-        input_file_pattern_subtitle_tagging_import = config.compute_glob_pattern(input_file_spec_subtitle_tagging_import)
-        base_dir_subtitle_tagging_import = config.base_dir(:subtitle_tagging_import_dir)
-        base_dir_content = options['input_2'] || config.base_dir(:content_dir)
-        base_dir_output = options['output'] || config.base_dir(:content_dir)
+        subtitle_tagging_import_base_dir = config.compute_base_dir(
+          options['base-dir'] || options['base-dir-1'] || :subtitle_tagging_import_dir
+        )
+        subtitle_tagging_import_glob_pattern = config.compute_glob_pattern(
+          subtitle_tagging_import_base_dir,
+          options['file-selector'] || :all_files,
+          options['file-extension'] || :txt_extension
+        )
+        content_base_dir = config.compute_base_dir(options['base-dir-2'] || :content_dir)
+        output_base_dir = options['output'] || config.base_dir(:content_dir)
 
         $stderr.puts 'Merging :subtitle_mark tokens from subtitle_tagging_import into content_at'
         $stderr.puts '-' * 80
         merge_subtitle_marks_from_subtitle_shared_into_content_at(
-          input_file_pattern_subtitle_tagging_import,
-          base_dir_subtitle_tagging_import,
-          base_dir_content,
+          subtitle_tagging_import_glob_pattern,
+          subtitle_tagging_import_base_dir,
+          content_base_dir,
           options
         )
       end
@@ -272,12 +301,13 @@ class Repositext
       # Merges titles from folio roundtrip compare txt files into content AT
       # to get correct spelling.
       def merge_titles_from_folio_roundtrip_compare_into_folio_import(options)
-        base_dir_folio_roundtrip_compare = File.join(
-          config.base_dir(:compare_dir), 'folio_source/with_folio_import'
+        folio_roundtrip_compare_base_dir = File.join(
+          config.compute_base_dir(
+            options['base-dir'] || options['base-dir-1'] || :compare_dir
+          ),
+          'folio_source/with_folio_import'
         )
-        file_pattern_folio_roundtrip_compare = config.file_pattern(:txt_files)
-        base_dir_folio_import = config.base_dir(:folio_import_dir)
-
+        folio_import_base_dir = config.compute_base_dir(options['base-dir-2'] || :folio_import_dir)
         markers_file_regex = /(?<!markers)\.txt\z/
 
         $stderr.puts 'Merging titles from folio roundtrip compare into content_at'
@@ -288,22 +318,23 @@ class Repositext
         errors_count = 0
 
         Dir.glob(
-          File.join(base_dir_folio_roundtrip_compare, file_pattern_folio_roundtrip_compare)
+          [
+            folio_roundtrip_compare_base_dir,
+            config.compute_file_selector(options['file-selector'] || :all_files),
+            config.compute_file_extension(options['file-extension'] || :txt_extension)
+          ].join
         ).each do |folio_roundtrip_compare_file_name|
           total_count += 1
           # prepare paths
           content_at_file_name = folio_roundtrip_compare_file_name.gsub(
-            base_dir_folio_roundtrip_compare, # update path
-            base_dir_folio_import
+            folio_roundtrip_compare_base_dir, # update path
+            folio_import_base_dir
           ).gsub(
             /\/+/, '/' # normalize runs of slashes resulting from different directory depths
           ).gsub(
             /\.txt\z/, '.folio.at' # replace file extension
           )
-
-
           output_file_name = content_at_file_name
-
           begin
             outcome = Repositext::Merge::TitlesFromFolioRoundtripCompareIntoContentAt.merge(
               File.read(folio_roundtrip_compare_file_name),
@@ -334,9 +365,18 @@ class Repositext
       # Uses either idml_imported (preference) or folio_imported (fallback) at for content.
       # NOTE: this duplicates a lot of code from merge_record_marks_from_folio_xml_at_into_idml_at
       def merge_use_idml_or_folio(options)
-        input_folio_base_dir = config.base_dir(:folio_import_dir)
-        input_idml_base_dir = config.base_dir(:idml_import_dir)
-        input_file_pattern = config.file_pattern(:at_files)
+        input_folio_base_dir = config.compute_base_dir(
+          options['base-dir'] || options['base-dir-1'] || :folio_import_dir
+        )
+        input_idml_base_dir = config.compute_base_dir(
+          options['base-dir-2'] || :idml_import_dir
+        )
+        input_file_selector = config.compute_file_selector(
+          options['file-selector'] || :all_files
+        )
+        input_file_extension = config.compute_file_extension(
+          options['file-extension'] || :at_extension
+        )
         output_base_dir = config.base_dir(:staging_dir)
         $stderr.puts 'Using either idml_at or folio_at for content_at'
         $stderr.puts '-' * 80
@@ -350,8 +390,8 @@ class Repositext
         # TODO: refactor this method to use Cli::Utils so that the changed-only flag works
 
         # First get union of all Folio and Idml files
-        folio_files = Dir.glob(File.join(input_folio_base_dir, input_file_pattern))
-        idml_files = Dir.glob(File.join(input_idml_base_dir, input_file_pattern))
+        folio_files = Dir.glob([input_folio_base_dir, input_file_selector, input_file_extension].join)
+        idml_files = Dir.glob([input_folio_base_dir, input_file_selector, input_file_extension].join)
         all_output_files = (folio_files + idml_files).map { |e|
           # process folio files
           e = e.gsub(input_folio_base_dir, output_base_dir)
@@ -408,14 +448,14 @@ class Repositext
 
     protected
 
-      # @param[String] input_file_pattern_subtitle_import the Dir.glob pattern that describes the input files
-      # @param[String] base_dir_subtitle_import the base dir for the import files
-      # @param[String] base_dir_content the base dir for the content files
-      # @param[Hash] options
+      # @param input_file_pattern_subtitle_import [String] the Dir.glob pattern that describes the input files
+      # @param subtitle_import_base_dir [String] the base dir for the import files
+      # @param content_base_dir [String] the base dir for the content files
+      # @param options [Hash]
       def merge_subtitle_marks_from_subtitle_shared_into_content_at(
         input_file_pattern_subtitle_import,
-        base_dir_subtitle_import,
-        base_dir_content,
+        subtitle_import_base_dir,
+        content_base_dir,
         options
       )
         start_time = Time.now
@@ -433,7 +473,7 @@ class Repositext
           total_count += 1
           # prepare paths
           content_at_file_name = Repositext::Utils::SubtitleFilenameConverter.convert_from_subtitle_import_to_repositext(
-            subtitle_import_file_name.gsub(base_dir_subtitle_import, base_dir_content)
+            subtitle_import_file_name.gsub(subtitle_import_base_dir, content_base_dir)
           )
           output_file_name = content_at_file_name
 

@@ -7,12 +7,15 @@ class Repositext
       # Compares the files present in the repository with the list of titles from
       # ERP. Lists any files that are missing/added in the repository
       def report_compare_file_inventory_with_erp(options)
-        input_file_spec = options['input'] || 'content_dir/at_files'
         date_codes_from_erp = load_titles_from_erp.keys
         date_codes_from_repo = []
         Repositext::Cli::Utils.read_files(
-          config.compute_glob_pattern(input_file_spec),
-          /\.at\Z/i,
+          config.compute_glob_pattern(
+            options['base-dir'] || :content_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :at_extension
+          ),
+          options['file_filter'],
           nil,
           "Reading AT files",
           options
@@ -53,7 +56,7 @@ class Repositext
         lines << "Found #{ missing_count + added_count } differences in #{ total_count } files at #{ Time.now.to_s }."
         $stderr.puts
         lines.each { |l| $stderr.puts l }
-        report_file_path = File.join(config.base_dir('reports_dir'), 'compare_file_inventory_with_erp.txt')
+        report_file_path = File.join(config.base_dir(:reports_dir), 'compare_file_inventory_with_erp.txt')
         File.open(report_file_path, 'w') { |f|
           f.write lines.join("\n")
           f.write "\n\n"
@@ -64,13 +67,16 @@ class Repositext
       # Compares the titles in Content AT with those from ERP (provided as
       # CSV file in the language repo's `data` directory)
       def report_compare_titles_with_those_of_erp(options)
-        input_file_spec = options['input'] || 'content_dir/at_files'
         titles_from_erp = load_titles_from_erp
         file_count = 0
         titles_with_differences = []
         Repositext::Cli::Utils.read_files(
-          config.compute_glob_pattern(input_file_spec),
-          /\.at\Z/i,
+          config.compute_glob_pattern(
+            options['base-dir'] || :content_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :at_extension
+          ),
+          options['file_filter'],
           nil,
           "Reading AT files",
           options
@@ -112,7 +118,7 @@ class Repositext
         end
         summary_line = "Found #{ lines.length } titles with differences in #{ file_count } files at #{ Time.now.to_s }."
         $stderr.puts summary_line
-        report_file_path = File.join(config.base_dir('reports_dir'), 'compare_titles_with_those_of_erp.txt')
+        report_file_path = File.join(config.base_dir(:reports_dir), 'compare_titles_with_those_of_erp.txt')
         File.open(report_file_path, 'w') { |f|
           f.write "Compare content AT titles with those of ERP\n"
           f.write '-' * 40
@@ -129,18 +135,21 @@ class Repositext
 
       # Generates a list of how each file in content AT was sourced (Folio or Idml)
       def report_content_sources(options)
-        input_file_spec = options['input'] || 'content_dir/at_files'
-        content_base_dir = config.base_dir('content_dir')
-        folio_import_base_dir = config.base_dir('folio_import_dir')
-        idml_import_base_dir = config.base_dir('idml_import_dir')
+        content_base_dir = config.base_dir(:content_dir)
+        folio_import_base_dir = config.base_dir(:folio_import_dir)
+        idml_import_base_dir = config.base_dir(:idml_import_dir)
         total_count = 0
         folio_sourced = []
         idml_sourced = []
         other_sourced = []
 
         Repositext::Cli::Utils.read_files(
-          config.compute_glob_pattern(input_file_spec),
-          /\.at\Z/i,
+          config.compute_glob_pattern(
+            options['base-dir'] || :content_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :at_extension
+          ),
+          options['file_filter'],
           nil,
           "Reading AT files",
           options
@@ -196,7 +205,7 @@ class Repositext
         lines << "Determined sources for #{ total_sourced } of #{ total_count } files at #{ Time.now.to_s }."
         $stderr.puts
         lines.each { |l| $stderr.puts l }
-        report_file_path = File.join(config.base_dir('reports_dir'), 'content_sources.txt')
+        report_file_path = File.join(config.base_dir(:reports_dir), 'content_sources.txt')
         File.open(report_file_path, 'w') { |f|
           f.write lines.join("\n")
           f.write "\n\n"
@@ -206,15 +215,18 @@ class Repositext
 
       # Generates two counts of files: those with gap_marks and those with subtitle_marks
       def report_count_files_with_gap_marks_and_subtitle_marks(options)
-        input_file_spec = options['input'] || 'content_dir/at_files'
-        content_base_dir = config.base_dir('content_dir')
+        content_base_dir = config.base_dir(:content_dir)
         total_count = 0
         with_gap_marks = 0
         with_subtitle_marks = 0
 
         Repositext::Cli::Utils.read_files(
-          config.compute_glob_pattern(input_file_spec),
-          /\.at\Z/i,
+          config.compute_glob_pattern(
+            options['base-dir'] || :content_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :at_extension
+          ),
+          options['file_filter'],
           nil,
           "Reading AT files",
           options
@@ -236,7 +248,7 @@ class Repositext
         lines << "Checked #{ total_count } files at #{ Time.now.to_s }."
         $stderr.puts
         lines.each { |l| $stderr.puts l }
-        report_file_path = File.join(config.base_dir('reports_dir'), 'count_files_with_gap_marks_and_subtitle_marks.txt')
+        report_file_path = File.join(config.base_dir(:reports_dir), 'count_files_with_gap_marks_and_subtitle_marks.txt')
         File.open(report_file_path, 'w') { |f|
           f.write lines.join("\n")
           f.write "\n\n"
@@ -246,11 +258,14 @@ class Repositext
 
       # Generate summary of folio import warnings
       def report_folio_import_warnings(options)
-        input_file_spec = options['input'] || 'folio_import_dir/json_files'
         uniq_warnings = Hash.new(0)
         file_count = 0
         Repositext::Cli::Utils.read_files(
-          config.compute_glob_pattern(input_file_spec),
+          config.compute_glob_pattern(
+            options['base-dir'] || :folio_import_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :json_extension
+          ),
           /\.folio.warnings\.json\Z/i,
           nil,
           "Reading folio import warnings",
@@ -269,7 +284,7 @@ class Repositext
           $stderr.puts l
           w << l
         end
-        report_file_path = File.join(config.base_dir('reports_dir'), 'folio_import_warnings_summary.txt')
+        report_file_path = File.join(config.base_dir(:reports_dir), 'folio_import_warnings_summary.txt')
         File.open(report_file_path, 'w') { |f|
           f.write "Folio Import Warnings Summary\n"
           f.write '-' * 40
@@ -286,12 +301,15 @@ class Repositext
       # Generates a report with gap_mark counts for all content AT files that
       # contain gap_marks
       def report_gap_mark_count(options)
-        input_file_spec = options['input'] || 'content_dir/at_files'
         file_count = 0
         files_with_gap_marks = []
         Repositext::Cli::Utils.read_files(
-          config.compute_glob_pattern(input_file_spec),
-          /\.at\Z/i,
+          config.compute_glob_pattern(
+            options['base-dir'] || :content_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :at_extension
+          ),
+          options['file_filter'],
           nil,
           "Reading AT files",
           options
@@ -315,7 +333,7 @@ class Repositext
         end
         summary_line = "Found #{ lines.length } of #{ file_count } files with gap_marks at #{ Time.now.to_s }."
         $stderr.puts summary_line
-        report_file_path = File.join(config.base_dir('reports_dir'), 'gap_mark_count.txt')
+        report_file_path = File.join(config.base_dir(:reports_dir), 'gap_mark_count.txt')
         File.open(report_file_path, 'w') { |f|
           f.write "Gap_mark count\n"
           f.write '-' * 40
@@ -366,10 +384,13 @@ class Repositext
         output_lines = []
         files_hash = {}
 
-        input_file_spec = options['input'] || 'content_dir/at_files'
         Repositext::Cli::Utils.read_files(
-          config.compute_glob_pattern(input_file_spec),
-          /\.at\Z/i,
+          config.compute_glob_pattern(
+            options['base-dir'] || :content_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :at_extension
+          ),
+          options['file_filter'],
           nil,
           "Reading folio at files",
           options
@@ -424,7 +445,7 @@ class Repositext
         output_lines << "-" * 80
         output_lines << "Found #{ total_count } instances of invalid typographic quotes in #{ files_hash.size } files."
         output_lines.each { |e| $stderr.puts e }
-        report_file_path = File.join(config.base_dir('reports_dir'), 'invalid_typographic_quotes.txt')
+        report_file_path = File.join(config.base_dir(:reports_dir), 'invalid_typographic_quotes.txt')
         File.open(report_file_path, 'w') { |f|
           f.write "Invalid Typographic Quotes in Content\n"
           f.write '-' * 40
@@ -438,8 +459,7 @@ class Repositext
       # Generates a report of all editor notes in content AT with more than
       # char_cutoff characters
       def report_long_editor_notes(options)
-        input_file_spec = options['input'] || 'content_dir/at_files'
-        content_base_dir = config.base_dir('content_dir')
+        content_base_dir = config.base_dir(:content_dir)
         total_file_count = 0
         total_editor_notes_count = 0
         long_editor_notes_count = 0
@@ -447,8 +467,12 @@ class Repositext
         char_cutoff = 240
 
         Repositext::Cli::Utils.read_files(
-          config.compute_glob_pattern(input_file_spec),
-          /\.at\Z/i,
+          config.compute_glob_pattern(
+            options['base-dir'] || :content_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :at_extension
+          ),
+          options['file_filter'],
           nil,
           "Reading AT files",
           options
@@ -489,7 +513,7 @@ class Repositext
         lines << "Found #{ long_editor_notes_count } of #{ total_editor_notes_count } editor notes with more than #{ char_cutoff } chars in #{ total_file_count } files at #{ Time.now.to_s }."
         $stderr.puts
         lines.each { |l| $stderr.puts l }
-        report_file_path = File.join(config.base_dir('reports_dir'), 'long_editor_notes.txt')
+        report_file_path = File.join(config.base_dir(:reports_dir), 'long_editor_notes.txt')
         File.open(report_file_path, 'w') { |f|
           f.write lines.join("\n")
           f.write "\n\n"
@@ -501,12 +525,15 @@ class Repositext
       # is not aligned with the para. In other words: question paras that contain
       # text outside of the span.
       def report_misaligned_question_paragraphs(options)
-        input_file_spec = options['input'] || 'content_dir/at_files'
         file_count = 0
         misaligned_paras = []
         Repositext::Cli::Utils.read_files(
-          config.compute_glob_pattern(input_file_spec),
-          /\.at\z/i,
+          config.compute_glob_pattern(
+            options['base-dir'] || :content_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :at_extension
+          ),
+          options['file_filter'],
           nil,
           "Reading content AT files",
           options
@@ -529,7 +556,7 @@ class Repositext
         misaligned_paras.each do |mp|
           $stderr.puts " - #{ mp }"
         end
-        report_file_path = File.join(config.base_dir('reports_dir'), 'misaligned_question_paragraphs.txt')
+        report_file_path = File.join(config.base_dir(:reports_dir), 'misaligned_question_paragraphs.txt')
         File.open(report_file_path, 'w') { |f|
           f.write "Misaligned question paragraphs\n"
           f.write "\n"
@@ -550,12 +577,15 @@ class Repositext
 
       # Generates a report that counts all kramdown element class combinations it encounters.
       def report_kramdown_element_classes_inventory(options)
-        input_file_spec = options['input'] || 'content_dir/at_files'
         file_count = 0
         class_combinations = {}
         Repositext::Cli::Utils.read_files(
-          config.compute_glob_pattern(input_file_spec),
-          /\.at\Z/i,
+          config.compute_glob_pattern(
+            options['base-dir'] || :content_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :at_extension
+          ),
+          options['file_filter'],
           nil,
           "Reading AT files",
           options
@@ -585,7 +615,7 @@ class Repositext
           end
         end
         lines.each { |e| $stderr.puts e }
-        report_file_path = File.join(config.base_dir('reports_dir'), 'kramdown_element_classes_inventory.txt')
+        report_file_path = File.join(config.base_dir(:reports_dir), 'kramdown_element_classes_inventory.txt')
         File.open(report_file_path, 'w') { |f|
           f.write "Kramdown element classes inventory\n"
           f.write '-' * 40
@@ -626,7 +656,7 @@ class Repositext
           output_lines << ''
         }
         output_lines.each { |e| $stderr.puts e }
-        report_file_path = File.join(config.base_dir('reports_dir'), 'content_quotes_details.txt')
+        report_file_path = File.join(config.base_dir(:reports_dir), 'content_quotes_details.txt')
         File.open(report_file_path, 'w') { |f|
           f.write "Quotes Details in Content\n"
           f.write '-' * 40
@@ -664,7 +694,7 @@ class Repositext
           output_lines << ''
         }
         output_lines.each { |e| $stderr.puts e }
-        report_file_path = File.join(config.base_dir('reports_dir'), 'content_quotes_summary.txt')
+        report_file_path = File.join(config.base_dir(:reports_dir), 'content_quotes_summary.txt')
         File.open(report_file_path, 'w') { |f|
           f.write "Quotes Summary in Content\n"
           f.write '-' * 40
@@ -677,13 +707,16 @@ class Repositext
 
       def report_words_with_apostrophe(options)
         # TODO: add report that shows all words starting with apostrophe that have only one character
-        input_file_spec = options['input'] || 'folio_import_dir/at_files'
         apostrophe_at_beginning = {}
         apostrophe_in_the_middle = {}
         other = {}
-        ouputs_lines = []
+        output_lines = []
         Repositext::Cli::Utils.read_files(
-          config.compute_glob_pattern(input_file_spec),
+          config.compute_glob_pattern(
+            options['base-dir'] || :folio_import_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :at_extension
+          ),
           /\.folio\.at\Z/i,
           nil,
           "Reading folio at files",
@@ -737,7 +770,7 @@ class Repositext
           output_lines << " #{ key } - #{ count }"
         end
         output_lines.each { |e| $stderr.puts e }
-        report_file_path = File.join(config.base_dir('reports_dir'), 'words_with_apostrophe.txt')
+        report_file_path = File.join(config.base_dir(:reports_dir), 'words_with_apostrophe.txt')
         File.open(report_file_path, 'w') { |f|
           f.write "Words with Apostrophe in Folio import\n"
           f.write '-' * 40
@@ -761,11 +794,14 @@ class Repositext
       # @param[String] quote_char the type of quote to detect
       # @param[Hash] options
       def find_all_quote_instances(quote_char, options)
-        input_file_spec = options['input'] || 'content_dir/at_files'
         instances = []
         Repositext::Cli::Utils.read_files(
-          config.compute_glob_pattern(input_file_spec),
-          /\.at\Z/i,
+          config.compute_glob_pattern(
+            options['base-dir'] || :content_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :at_extension
+          ),
+          options['file_filter'],
           nil,
           "Reading content AT files",
           options

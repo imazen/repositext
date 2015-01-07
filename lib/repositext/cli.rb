@@ -4,8 +4,6 @@ class Repositext
     class RtfileError < RuntimeError; end
     class GitRepoNotUpToDateError < RuntimeError; end
 
-    FILE_SPEC_DELIMITER = '/'
-
     include Thor::Actions
     include Cli::RtfileDsl
     include Cli::LongDescriptionsForCommands
@@ -29,6 +27,9 @@ class Repositext
       File.dirname(__FILE__)
     end
 
+    class_option :'base-dir',
+                 :type => :string,
+                 :desc => 'Specifies the input file base directory. Expects a named base_dir from Rtfile or an absolute directory path.'
     class_option :'changed-only',
                  :type => :boolean,
                  :default => false,
@@ -37,9 +38,12 @@ class Repositext
                  :type => :boolean,
                  :default => false,
                  :desc => 'If true, will print debug information related to the command.'
-    class_option :input,
+    class_option :'file-extension',
                  :type => :string,
-                 :desc => 'Specifies the input file pattern. Expects an absolute path pattern that can be used with Dir.glob.'
+                 :desc => 'Specifies the input file extension. Expects a named file_extension from Rtfile or a Glob pattern that can be used with Dir.glob.'
+    class_option :'file-selector',
+                 :type => :string,
+                 :desc => 'Specifies the input file selector. Expects a named file_selector from Rtfile or a Glob pattern that can be used with Dir.glob.'
     class_option :rtfile,
                  :type => :string,
                  :required => true,
@@ -103,12 +107,12 @@ class Repositext
 
     desc 'merge SPEC', 'Merges the contents of two files'
     long_desc long_description_for_merge
-    method_option :input_1,
+    method_option :'base-dir-1',
                   :type => :string,
-                  :desc => 'Specifies the input file pattern for the first file. Expects an absolute path pattern that can be used with Dir.glob.'
-    method_option :input_2,
+                  :desc => 'Specifies the base directory for the first file. Expects a named base_dir from Rtfile or an absolute directory path.'
+    method_option :'base-dir-2',
                   :type => :string,
-                  :desc => 'Specifies the base directory for the second file. Expects an absolute path to a directory.'
+                  :desc => 'Specifies the base directory for the second file. Expects a named base_dir from Rtfile or an absolute directory path.'
     # @param[String] command_spec Specification of the operation
     def merge(command_spec)
       invoke_repositext_command('merge', command_spec, options)
@@ -144,7 +148,7 @@ class Repositext
     method_option :report_file,
                   :type => :string,
                   :default => nil,
-                  :desc => 'Specifies a file name to which a validation report will be written.'
+                  :desc => 'Specifies an absolute file path to which a validation report will be written.'
     method_option :run_options,
                   :type => :array,
                   :default => %w[pre_import post_import],
@@ -154,17 +158,11 @@ class Repositext
     #
     # TODO: implement these command line options:
     #
-    # '-r', '--report_filename PATH', "optional, will write report to the file specified if given. Report will always be printed to STDOUT." do |arg|
+    # '-r', '--report_file PATH', "optional, will write report to the file specified if given. Report will always be printed to STDOUT." do |arg|
     # '-l', '--logger LOGGER', "defaults to 'STDOUT'" do |arg|
     # '-v', '--log_level LOG_LEVEL', "optional, one of 'debug', 'info', 'warn' or 'error'. Defaults to 'info'." do |arg|
     # '-s', '--strictness STRICTNESS', "optional, one of 'strict' or 'loose'. Defaults to 'strict'." do |arg|
     def validate(command_spec)
-      if options['report_file']
-        new_options = options.dup # Thor options are a frozen Hash
-        new_options['report_file'] = config.compute_glob_pattern(options['report_file'])
-      else
-        new_options = options
-      end
       invoke_repositext_command('validate', command_spec, options)
     end
 

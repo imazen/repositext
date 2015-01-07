@@ -13,8 +13,8 @@ class Repositext
           @stdout = $stdout = StringIO.new
         end
 
-        let(:logger) { LoggerTest.new(nil, nil, nil, nil) }
-        let(:reporter) { ReporterTest.new(nil, nil, nil) }
+        let(:logger) { LoggerTest.new(nil, nil, nil, nil, nil) }
+        let(:reporter) { ReporterTest.new(nil, nil, nil, nil) }
 
         [
           'utf8-valid.txt'

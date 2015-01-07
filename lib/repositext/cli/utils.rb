@@ -31,29 +31,30 @@ class Repositext
       end
 
       # Copies files to another location
-      # @param[String] input_base_dir the base_dir path
-      # @param[String] input_file_pattern the input file pattern
-      # @param[String] out_dir the output base directory
+      # @param input_base_dir [String] the base_dir path
+      # @param input_file_selector [String] the input file selector
+      # @param input_file_extension [String] the input file extension
+      # @param out_dir [String] the output base directory
       # @param: See #process_files_helper below for param description
-      def self.copy_files(input_base_dir, input_file_pattern, out_dir, file_filter, description, options)
+      def self.copy_files(input_base_dir, input_file_selector, input_file_extension, out_dir, file_filter, description, options)
         # Change output file path to destination, override in options if filename
         # needs to be changed, too.
         output_path_lambda = options[:output_path_lambda] || lambda do |input_filename|
           input_filename.gsub(input_base_dir, out_dir)
         end
-        file_pattern = input_base_dir + input_file_pattern
-
+        file_pattern = [input_base_dir, input_file_selector, input_file_extension].join
         move_files_helper(
           file_pattern, file_filter, output_path_lambda, description, options.merge(:move_or_copy => :copy)
         )
       end
 
       # Exports files to another format and location
-      # @param[String] input_base_dir the base_dir path
-      # @param[String] input_file_pattern the input file pattern
-      # @param[String] out_dir the output base directory
+      # @param input_base_dir [String] the base_dir path
+      # @param input_file_selector [String] the input file selector
+      # @param input_file_extension [String] the input file extension
+      # @param out_dir [String] the output base directory
       # @param: See #process_files_helper below for param description
-      def self.export_files(input_base_dir, input_file_pattern, out_dir, file_filter, description, options, &block)
+      def self.export_files(input_base_dir, input_file_selector, input_file_extension, out_dir, file_filter, description, options, &block)
         # Change output file path to destination
         output_path_lambda = options[:output_path_lambda] || lambda { |input_filename, output_file_attrs|
           replace_file_extension(
@@ -61,34 +62,34 @@ class Repositext
             output_file_attrs[:extension]
           )
         }
-        file_pattern = input_base_dir + input_file_pattern
-
+        file_pattern = [input_base_dir, input_file_selector, input_file_extension].join
         process_files_helper(
           file_pattern, file_filter, output_path_lambda, description, options, &block
         )
       end
 
       # Moves files to another location
-      # @param[String] input_base_dir the base_dir path
-      # @param[String] input_file_pattern the input file pattern
-      # @param[String] out_dir the output base directory
+      # @param input_base_dir [String] the base_dir path
+      # @param input_file_selector [String] the input file selector
+      # @param input_file_extension [String] the input file extension
+      # @param out_dir [String] the output base directory
       # @param: See #process_files_helper below for param description
-      def self.move_files(input_base_dir, input_file_pattern, out_dir, file_filter, description, options)
+      def self.move_files(input_base_dir, input_file_selector, input_file_extension, out_dir, file_filter, description, options)
         # Change output file path to destination, override in options if filename
         # needs to be changed, too.
         output_path_lambda = options[:output_path_lambda] || lambda do |input_filename|
           input_filename.gsub(input_base_dir, out_dir)
         end
-        file_pattern = input_base_dir + input_file_pattern
-
+        file_pattern = [input_base_dir, input_file_selector, input_file_extension].join
         move_files_helper(
           file_pattern, file_filter, output_path_lambda, description, options
         )
       end
 
       # Reads files
-      # @param[String] input_base_dir the base_dir path
-      # @param[String] input_file_pattern the input file pattern
+      # @param input_base_dir [String] the base_dir path
+      # @param input_file_selector [String] the input file selector
+      # @param input_file_extension [String] the input file extension
       # @param[Proc, nil] file_name_2_proc A proc that computes the filename of
       #     a second file. It receives the name of the first file as a single
       #     argument and is expected to return the full path to the second file.
@@ -366,7 +367,7 @@ class Repositext
       # @param[String] file_pattern the file pattern to print on first line of console
       # @param[Block] the operation for which to print console output
       def self.with_console_output(description, file_pattern, &block)
-        $stderr.puts "#{ description } at #{ file_pattern }."
+        $stderr.puts "#{ description } at #{ file_pattern }"
         $stderr.puts '-' * 80
         start_time = Time.now
         counts = Hash.new(0)

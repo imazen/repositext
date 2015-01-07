@@ -19,13 +19,16 @@ class Repositext
         $stderr.puts "Generating diff report for record_id and paragraph alignment"
         $stderr.puts '-' * 80
         report_name = 'compare_record_id_and_paragraph_alignment'
-        base_dir = config.base_dir('compare_dir')
+        base_dir = config.compute_base_dir(options['base-dir'] || :compare_dir)
         compare_content_with_folio_source_glob_pattern = (
           File.join(
             base_dir,
             'content',
             'with_folio_source',
-            config.file_pattern('txt_files')
+            [
+              config.compute_file_selector(options['file-selector'] || :all_files),
+              config.compute_file_extension(options['file-extension'] || :txt_extension)
+            ].join
           )
         )
         filename_2_proc = Proc.new { |filename_1|
@@ -43,7 +46,7 @@ class Repositext
 
         Repositext::Cli::Utils.read_files(
           compare_content_with_folio_source_glob_pattern,
-          /\.txt\Z/i,
+          options['file_filter'],
           filename_2_proc,
           "Reading /compare/content/with_folio_source files",
           options

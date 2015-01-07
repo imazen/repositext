@@ -9,7 +9,7 @@ class Repositext
 
       before {
         @common_validation = GapMarkTaggingPreImport.new(
-          {:primary => ['_', '_']}, {}
+          {:primary => ['_', '_', '_']}, {}
         )
       }
 

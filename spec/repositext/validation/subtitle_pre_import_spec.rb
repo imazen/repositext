@@ -9,7 +9,7 @@ class Repositext
 
       before {
         @common_validation = SubtitlePreImport.new(
-          {:primary => ['_', '_']}, {}
+          {:primary => ['_', '_', '_']}, {}
         )
       }
 

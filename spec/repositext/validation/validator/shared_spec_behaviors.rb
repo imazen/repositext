@@ -11,8 +11,8 @@ class Repositext
         # @param[Hash, optional] options
         def build_validator_logger_and_reporter(klass, file_to_validate=nil, logger=nil, reporter=nil, options={})
           file_to_validate ||= StringIO.new('a simple string')
-          logger ||= LoggerTest.new(nil, nil, nil, nil)
-          reporter ||= ReporterTest.new(nil, nil, nil)
+          logger ||= LoggerTest.new(nil, nil, nil, nil, nil)
+          reporter ||= ReporterTest.new(nil, nil, nil, nil)
           options = {
             'kramdown_validation_parser_class' => Kramdown::Parser::KramdownValidation,
             'run_options' => [],

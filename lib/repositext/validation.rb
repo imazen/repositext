@@ -17,8 +17,8 @@ class Repositext
     end
 
     # Instantiates a new instance of self.
-    # @param[Hash] file_specs a hash with names as keys and an array with base_dir
-    #     and file_pattern which can be combined to a Dir.glob pattern.
+    # @param[Hash] file_specs a hash with names as keys and an array with base_dir,
+    #     file_selector, and file_extension which can be combined to a Dir.glob pattern.
     # @param[Hash] options with stringified keys
     #     * 'import_parser_class' class of parser to use for parsing import
     #               source document, e.g., Kramdown::Parser::Folio
@@ -75,8 +75,8 @@ class Repositext
 
     # @param[Symbol] file_spec_name
     def validate_files(file_spec_name, &block)
-      base_dir, file_pattern = @file_specs[file_spec_name]
-      Dir.glob(base_dir + file_pattern).each do |file_name|
+      base_dir, file_selector, file_extension = @file_specs[file_spec_name]
+      Dir.glob([base_dir, file_selector, file_extension].join).each do |file_name|
         yield(file_name)
       end
     end
@@ -85,8 +85,8 @@ class Repositext
     # @param[Proc] paired_file_proc a proc that given the primary file path returns
     #     the path to the paired file
     def validate_file_pairs(file_spec_name, paired_file_proc, &block)
-      base_dir, file_pattern = @file_specs[file_spec_name]
-      Dir.glob(base_dir + file_pattern).each do |file_name_one|
+      base_dir, file_selector, file_extension = @file_specs[file_spec_name]
+      Dir.glob([base_dir, file_selector, file_extension].join).each do |file_name_one|
         file_name_two = paired_file_proc.call(file_name_one, @file_specs)
         yield(file_name_one, file_name_two)
       end

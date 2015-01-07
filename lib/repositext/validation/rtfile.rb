@@ -77,7 +77,8 @@ class Repositext
         missing_keys = []
         %w[
           base_dirs
-          file_patterns
+          file_extensions
+          file_selectors
           kramdown_converter_methods
           kramdown_parsers
           settings

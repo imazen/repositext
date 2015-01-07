@@ -12,12 +12,14 @@ class Repositext
 
       attr_reader :errors, :warnings, :stats
 
-      # @param[String] file_pattern_base_path
-      # @param[String] file_pattern
-      # @param[Logger] logger
-      def initialize(file_pattern_base_path, file_pattern, logger)
-        @file_pattern = file_pattern
-        @file_pattern_base_path = file_pattern_base_path
+      # @param _input_base_dir [String]
+      # @param _file_selector [String]
+      # @param _file_extension [String]
+      # @param logger [Logger]
+      def initialize(_input_base_dir, _file_selector, _file_extension, logger)
+        @file_extension = _file_extension
+        @file_selector = _file_selector
+        @input_base_dir = _input_base_dir
         @logger = logger
 
         @errors = []
@@ -30,7 +32,7 @@ class Repositext
       def add_error(_reportable)
         @errors << _reportable
         @logger.error(
-          _reportable.log_to_console.gsub(@file_pattern_base_path, '')
+          _reportable.log_to_console.gsub(@input_base_dir, '')
         )
       end
 
@@ -64,7 +66,7 @@ class Repositext
       def add_warning(_reportable)
         @warnings << _reportable
         @logger.warning(
-          _reportable.log_to_console.gsub(@file_pattern_base_path, '')
+          _reportable.log_to_console.gsub(@input_base_dir, '')
         )
       end
 
@@ -118,27 +120,27 @@ class Repositext
           r = RecursiveDataHash.new
           @errors.each do |error|
             sub = r
-            error.location.each{ |el| sub = sub[el.gsub(@file_pattern_base_path, '')] }
+            error.location.each{ |el| sub = sub[el.gsub(@input_base_dir, '')] }
             sub[:errors] << {
-              :location => error.location.map { |e| e.gsub(@file_pattern_base_path, '') },
+              :location => error.location.map { |e| e.gsub(@input_base_dir, '') },
               :details => error.details,
               :level => error.level
             }
           end
           @warnings.each do |warning|
             sub = r
-            warning.location.each{ |el| sub = sub[el.gsub(@file_pattern_base_path, '')] }
+            warning.location.each{ |el| sub = sub[el.gsub(@input_base_dir, '')] }
             sub[:warnings] << {
-              :location => warning.location.map { |e| e.gsub(@file_pattern_base_path, '') },
+              :location => warning.location.map { |e| e.gsub(@input_base_dir, '') },
               :details => warning.details,
               :level => warning.level
             }
           end
           @stats.each do |stat|
             sub = r
-            stat.location.each{ |el| sub = sub[el.gsub(@file_pattern_base_path, '')] }
+            stat.location.each{ |el| sub = sub[el.gsub(@input_base_dir, '')] }
             sub[:stats] << {
-              :location => stat.location.map { |e| e.gsub(@file_pattern_base_path, '') },
+              :location => stat.location.map { |e| e.gsub(@input_base_dir, '') },
               :details => stat.details,
               :level => stat.level
             }
@@ -171,7 +173,7 @@ class Repositext
             sub = r
             error.details.first(2).each{ |el| sub = sub[el] }
             sub[:errors] << {
-              :location => error.location.map { |e| e.gsub(@file_pattern_base_path, '') },
+              :location => error.location.map { |e| e.gsub(@input_base_dir, '') },
               :details => error.details,
               :level => error.level
             }
@@ -180,7 +182,7 @@ class Repositext
             sub = r
             warning.details.first(2).each{ |el| sub = sub[el] }
             sub[:warnings] << {
-              :location => warning.location.map { |e| e.gsub(@file_pattern_base_path, '') },
+              :location => warning.location.map { |e| e.gsub(@input_base_dir, '') },
               :details => warning.details,
               :level => warning.level
             }
@@ -188,7 +190,7 @@ class Repositext
           @stats.each do |stat|
             sub = r[stat.details.first]
             sub[:stats] << {
-              :location => stat.location.map { |e| e.gsub(@file_pattern_base_path, '') },
+              :location => stat.location.map { |e| e.gsub(@input_base_dir, '') },
               :details => stat.details,
               :level => stat.level
             }

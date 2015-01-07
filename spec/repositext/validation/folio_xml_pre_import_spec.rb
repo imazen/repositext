@@ -9,7 +9,7 @@ class Repositext
 
       before {
         @common_validation = FolioXmlPreImport.new(
-          {:primary => ['_', '_']}, {}
+          {:primary => ['_', '_', '_']}, {}
         )
       }
 

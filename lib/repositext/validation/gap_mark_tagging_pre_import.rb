@@ -14,10 +14,10 @@ class Repositext
         # Validate that the gap_mark_tagging import still matches content_at
         # Define proc that computes gap_mark_tagging import filename from content_at filename
         gi_file_name_proc = lambda { |input_filename, file_specs|
-          ca_base_dir, ca_file_pattern = file_specs[:content_at_files]
-          gi_base_dir, gi_file_pattern = file_specs[:gap_mark_tagging_import_files]
-            input_filename.gsub(ca_base_dir, gi_base_dir)
-                          .gsub(/\.at\z/, '.gap_mark_tagging.txt')
+          ca_base_dir = file_specs[:content_at_files].first
+          gi_base_dir = file_specs[:gap_mark_tagging_import_files].first
+          input_filename.gsub(ca_base_dir, gi_base_dir)
+                        .gsub(/\.at\z/, '.gap_mark_tagging.txt')
         }
         # Run pairwise validation
         validate_file_pairs(:content_at_files, gi_file_name_proc) do |ca, gi|

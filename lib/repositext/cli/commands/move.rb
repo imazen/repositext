@@ -5,17 +5,17 @@ class Repositext
     private
 
       def move_staging_to_content(options)
-        input_file_spec = options['input'] || 'staging_dir/at_files'
-        input_base_dir_name, input_file_pattern_name = input_file_spec.split(
-          Repositext::Cli::FILE_SPEC_DELIMITER
-        )
+        input_base_dir = config.compute_base_dir(options['base-dir'] || :staging_dir)
+        input_file_selector = config.compute_file_selector(options['file-selector'] || :all_files)
+        input_file_extension = config.compute_file_extension(options['file-extension'] || :at_extension)
         output_base_dir = options['output'] || config.base_dir(:content_dir)
 
         Repositext::Cli::Utils.move_files(
-          config.base_dir(input_base_dir_name),
-          config.file_pattern(input_file_pattern_name),
+          input_base_dir,
+          input_file_selector,
+          input_file_extension,
           output_base_dir,
-          /\.at\z/,
+          options['file_filter'],
           "Moving AT files from /staging to /content",
           options
         )

@@ -5,7 +5,7 @@ class Repositext
       # Expects @common_validation to be initialized, like so:
       # before {
       #   @common_validation = Repositext::Validation::ACustomExample.new(
-      #     {:primary => ['_', '_']}, {}
+      #     {:primary => ['_', '_', '_']}, {}
       #   )
       # }
       it 'responds to #run_list' do

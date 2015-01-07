@@ -7,11 +7,12 @@ class Repositext
 
       attr_accessor :level
 
-      # @param[String] _file_pattern_base_path
-      # @param[String] _file_pattern
-      # @param[String] _log_level
-      # @param[Repositext::Validation] validation
-      def initialize(_file_pattern_base_path, _file_pattern, _log_level, _validation)
+      # @param _input_base_dir [String] part of file_spec
+      # @param _file_selector [String] part of file_spec
+      # @param _file_extension [String] part of file_spec
+      # @param _log_level [String] one of 'debug', 'info', 'warning', 'error'
+      # @param validation [Repositext::Validation]
+      def initialize(_input_base_dir, _file_selector, _file_extension, _log_level, _validation)
       end
 
       # @param[Object] loggable
@@ -31,9 +32,9 @@ class Repositext
       end
 
       # Logs a header for validation
-      # @param[String] _file_pattern
-      # @param[Class] _validation_class
-      def validation_header(_file_pattern, _validation_class)
+      # @param _file_spec [String] the complete glob pattern
+      # @param _validation_class [Class]
+      def validation_header(_file_spec, _validation_class)
       end
 
       # @param[Reporter] _reporter

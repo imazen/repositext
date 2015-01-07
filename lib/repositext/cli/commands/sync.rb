@@ -7,9 +7,12 @@ class Repositext
       # Updates the subtitle_mark character positions in *.subtitle_markers.csv
       # in /content
       def sync_subtitle_mark_character_positions(options)
-        input_file_spec = options['input'] || 'content_dir/at_files'
         Repositext::Cli::Utils.convert_files(
-          config.compute_glob_pattern(input_file_spec),
+          config.compute_glob_pattern(
+            options['base-dir'] || :content_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :at_extension
+          ),
           /\.at\z/i,
           "Syncing subtitle_mark character positions from *.at to *.subtitle_markers.csv",
           options.merge(input_is_binary: false)

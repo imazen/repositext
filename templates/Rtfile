@@ -3,17 +3,15 @@
 This is an example Rtfile with default settings that run out of the box.
 Modify the DSL methods below to suit your repository preferences.
 
-Base directories and file patterns are used in combination to specify file sets.
-The convention is to chain them together, separated by a slash:
+Base_dirs, file_selectors, and file_extensions are used in combination to specify file sets.
+Most commands accept 'base-dir', 'file-selector' and 'file-extension' options
+to which you can pass the identifiers used in this Rtfile. Example:
 
-    "<base_dir>/<file_pattern>"
-
-Examples:
-
-* import_folio_dir/at_files
-* idml_import_dir/at_files
-* staging_dir/all_files
-* staging_dir/all_text_files
+    some_command(
+      'base-dir' => :import_folio_dir,
+      'file-selector' => :all_files,
+      'file-extension' => :at_extension
+    )
 
 =end
 
@@ -48,7 +46,7 @@ setting :relative_path_to_primary_repo, '../primary_repo_name'
 #
 # Conventions:
 #  * Append '_dir' to the name so that it can be resolved unambiguously.
-#  * Base dirs do NOT include the trailing '/'.
+#  * Base dirs will include the trailing '/'.
 
 base_dir :accepted_corrections_dir, File.expand_path("accepted_corrections/", File.dirname(__FILE__))
 base_dir :compare_dir, File.expand_path("compare/", File.dirname(__FILE__))
@@ -69,30 +67,55 @@ base_dir :subtitle_import_dir, File.expand_path("subtitle_import/", File.dirname
 base_dir :subtitle_tagging_export_dir, File.expand_path("subtitle_tagging_export/", File.dirname(__FILE__))
 base_dir :subtitle_tagging_import_dir, File.expand_path("subtitle_tagging_import/", File.dirname(__FILE__))
 
-# File patterns
-# -------------
+# File selectors
+# --------------
 
-# Provide a name and a file pattern string for each file pattern.
-# These file patterns will be joined with base_dirs to get a Dir.glob pattern
-# for matching the desired file set.
+# Provide a name and a file selector string for each file set.
+# These file selectors will be joined with base_dirs and file_extensions to get
+# a Dir.glob pattern for matching the desired file set.
 #
 # Conventions:
-#  * Append '_file' or 'files' to the name so that it can be resolved unambiguously.
-#  * File patterns do NOT include the leading '/'.
+#  * Append '_file' or '_files' to the name so that it can be resolved unambiguously.
+#  * File selectors must NOT include a leading or trailing slash '/'.
+#
+# NOTE: You can override the file_selector for each command using the
+# --file-selector command line argument. Some examples for overrides:
+# * --file-selector=**/*{65-0829}_*'
+# * --file-selector=**/*{65-0829,62-0811}_*'
+# * --file-selector=validation_report.txt'
+# * --file-selector=all_files
 
-file_pattern :all_files, '**/*'
-file_pattern :at_files, '**/*.at'
-file_pattern :csv_files, '**/*.csv'
-file_pattern :docx_files, '**/*.docx'
-file_pattern :html_files, '**/*.html'
-file_pattern :icml_files, '**/*.icml'
-file_pattern :idml_files, '**/*.idml'
-file_pattern :json_files, '**/*.json'
-file_pattern :pt_files, '**/*.md'
-file_pattern :repositext_files, '**/*.{at,csv,html,json,md,txt}'
-file_pattern :txt_files, '**/*.txt'
-file_pattern :validation_report_file, 'validation_report.txt'
-file_pattern :xml_files, '**/*.xml'
+file_selector :all_files, '**/*'
+file_selector :validation_report_file, 'validation_report.txt' # use with blank file_extension!
+
+# File extensions
+# ---------------
+
+# Provide a name and a file extension string for each file extension.
+# These file extensions will be joined with base_dirs and file_selectors to get
+# a Dir.glob pattern for matching the desired file set.
+#
+# Conventions:
+#  * Append '_extension' or '_extensions' to the name so that it can be resolved unambiguously.
+#  * File extensions must include a leading '.'.
+#
+# NOTE: You can override the file_extension for each command using the
+# --file-extension command line argument. Some examples for overrides:
+# * --file-extension=.at
+# * --file-extension=.{at,csv,json,md,txt}
+# * --file-extension=repositext_extensions
+
+file_extension :at_extension, '.at'
+file_extension :csv_extension, '.csv'
+file_extension :docx_extension, '.docx'
+file_extension :html_extension, '.html'
+file_extension :icml_extension, '.icml'
+file_extension :idml_extension, '.idml'
+file_extension :json_extension, '.json'
+file_extension :pt_extension, '.md'
+file_extension :repositext_extensions, '.{at,csv,html,json,md,txt}'
+file_extension :txt_extension, '.txt'
+file_extension :xml_extension, '.xml'
 
 # Kramdown Parsers
 # ----------------
