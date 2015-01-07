@@ -80,9 +80,9 @@ base_dir :subtitle_tagging_import_dir, File.expand_path("subtitle_tagging_import
 #
 # NOTE: You can override the file_selector for each command using the
 # --file-selector command line argument. Some examples for overrides:
-# * --file-selector=**/*{65-0829}_*'
-# * --file-selector=**/*{65-0829,62-0811}_*'
-# * --file-selector=validation_report.txt'
+# * --file-selector='**/*{65-0829}_*'
+# * --file-selector='**/*{65-0829,62-0811}_*'
+# * --file-selector=validation_report.txt
 # * --file-selector=all_files
 
 file_selector :all_files, '**/*'
