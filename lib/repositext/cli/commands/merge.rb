@@ -25,8 +25,9 @@ class Repositext
         )
         content_base_dir = config.compute_base_dir(options['base-dir-2'] || :content_dir)
 
-        $stderr.puts 'Merging accepted corrections into content_at'
+        $stderr.puts ''
         $stderr.puts '-' * 80
+        $stderr.puts 'Merging accepted corrections into content_at'
         start_time = Time.now
         total_count = 0
         auto_success_count = 0
@@ -89,10 +90,10 @@ class Repositext
           end
         end
 
-        $stderr.puts '-' * 80
         $stderr.puts "Finished merging #{ total_count } files in #{ Time.now - start_time } seconds:"
         $stderr.puts " - Auto-merges: #{ auto_success_count } files."
         $stderr.puts " - Manual merges: #{ manual_success_count } files."
+        $stderr.puts '-' * 80
       end
 
       # Merges gap_mark_tagging_import into content AT.
@@ -111,8 +112,9 @@ class Repositext
         )
         output_base_dir = options['output'] || config.base_dir(:content_dir)
 
-        $stderr.puts 'Merging :gap_mark tokens from gap_mark_tagging_import into content_at'
+        $stderr.puts ''
         $stderr.puts '-' * 80
+        $stderr.puts 'Merging :gap_mark tokens from gap_mark_tagging_import into content_at'
         start_time = Time.now
         total_count = 0
         success_count = 0
@@ -155,8 +157,8 @@ class Repositext
           end
         end
 
-        $stderr.puts '-' * 80
         $stderr.puts "Finished merging #{ success_count } of #{ total_count } files in #{ Time.now - start_time } seconds."
+        $stderr.puts '-' * 80
       end
 
 
@@ -171,8 +173,9 @@ class Repositext
         input_file_selector = config.compute_file_selector(options['file-selector'] || :all_files)
         input_file_extension = config.compute_file_extension(options['file-extension'] || :at_extension)
         output_base_dir = config.base_dir(:staging_dir)
-        $stderr.puts 'Merging :record_mark tokens from folio_at into idml_at'
+        $stderr.puts ''
         $stderr.puts '-' * 80
+        $stderr.puts 'Merging :record_mark tokens from folio_at into idml_at'
         start_time = Time.now
         total_count = 0
         success_count = 0
@@ -244,10 +247,10 @@ class Repositext
           end
         end
 
-        $stderr.puts '-' * 80
         $stderr.puts "Finished merging #{ success_count } of #{ total_count } files in #{ Time.now - start_time } seconds."
         $stderr.puts " - Folio files not present: #{ folio_not_present_count }"
         $stderr.puts " - IDML files not present: #{ idml_not_present_count }"
+        $stderr.puts '-' * 80
       end
 
       # Merges subtitle_marks from subtitle_import into content AT.
@@ -264,8 +267,9 @@ class Repositext
         content_base_dir = config.compute_base_dir(options['base-dir-2'] || :content_dir)
         output_base_dir = options['output'] || config.base_dir(:content_dir)
 
-        $stderr.puts 'Merging :subtitle_mark tokens from subtitle_import into content_at'
+        $stderr.puts ''
         $stderr.puts '-' * 80
+        $stderr.puts 'Merging :subtitle_mark tokens from subtitle_import into content_at'
         merge_subtitle_marks_from_subtitle_shared_into_content_at(
           subtitle_import_glob_pattern,
           subtitle_import_base_dir,
@@ -288,8 +292,9 @@ class Repositext
         content_base_dir = config.compute_base_dir(options['base-dir-2'] || :content_dir)
         output_base_dir = options['output'] || config.base_dir(:content_dir)
 
-        $stderr.puts 'Merging :subtitle_mark tokens from subtitle_tagging_import into content_at'
+        $stderr.puts ''
         $stderr.puts '-' * 80
+        $stderr.puts 'Merging :subtitle_mark tokens from subtitle_tagging_import into content_at'
         merge_subtitle_marks_from_subtitle_shared_into_content_at(
           subtitle_tagging_import_glob_pattern,
           subtitle_tagging_import_base_dir,
@@ -310,8 +315,9 @@ class Repositext
         folio_import_base_dir = config.compute_base_dir(options['base-dir-2'] || :folio_import_dir)
         markers_file_regex = /(?<!markers)\.txt\z/
 
-        $stderr.puts 'Merging titles from folio roundtrip compare into content_at'
+        $stderr.puts ''
         $stderr.puts '-' * 80
+        $stderr.puts 'Merging titles from folio roundtrip compare into content_at'
         start_time = Time.now
         total_count = 0
         success_count = 0
@@ -358,8 +364,8 @@ class Repositext
           end
         end
 
-        $stderr.puts '-' * 80
         $stderr.puts "Finished merging #{ success_count } of #{ total_count } files in #{ Time.now - start_time } seconds."
+        $stderr.puts '-' * 80
       end
 
       # Uses either idml_imported (preference) or folio_imported (fallback) at for content.
@@ -378,8 +384,9 @@ class Repositext
           options['file-extension'] || :at_extension
         )
         output_base_dir = config.base_dir(:staging_dir)
-        $stderr.puts 'Using either idml_at or folio_at for content_at'
+        $stderr.puts ''
         $stderr.puts '-' * 80
+        $stderr.puts 'Using either idml_at or folio_at for content_at'
         start_time = Time.now
         total_count = 0
         success_count = 0
@@ -435,10 +442,10 @@ class Repositext
           end
         end
 
-        $stderr.puts '-' * 80
         $stderr.puts "Finished merging #{ success_count } of #{ total_count } files in #{ Time.now - start_time } seconds."
         $stderr.puts " - IDML files used: #{ idml_used_count }"
         $stderr.puts " - Folio files used: #{ folio_used_count }"
+        $stderr.puts '-' * 80
       end
 
       def merge_test(options)
@@ -500,8 +507,8 @@ class Repositext
           end
         end
 
-        $stderr.puts '-' * 80
         $stderr.puts "Finished merging #{ success_count } of #{ total_count } files in #{ Time.now - start_time } seconds."
+        $stderr.puts '-' * 80
       end
 
     end

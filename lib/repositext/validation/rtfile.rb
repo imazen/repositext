@@ -25,8 +25,8 @@ class Repositext
 
       def run
         $stderr.puts
+        $stderr.puts '-' * 80
         $stderr.puts "Validating Rtfile at #{ @validated_rtfile_base_dir }"
-        $stderr.puts '-' * 70
         missing_keys = find_missing_keys
         extra_keys = find_extra_keys
         if missing_keys.any?
@@ -45,7 +45,7 @@ class Repositext
         else
           $stderr.puts 'No extra keys found.'
         end
-        $stderr.puts '-' * 70
+        $stderr.puts '-' * 80
       end
 
       # This is a method stub to satisfy the Repositext::Validation interface.

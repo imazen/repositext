@@ -215,7 +215,7 @@ class Repositext
           Repositext::Cli::Utils.change_files_in_place(
             input_file_glob_pattern,
             options['file_filter'],
-            "Normalizing trailing newlines in #{ input_file_glob_pattern }",
+            "Normalizing trailing newlines",
             options
           ) do |contents, filename|
             [Outcome.new(true, { contents: contents.gsub(/(?<!\n)\n*\z/, "\n") }, [])]

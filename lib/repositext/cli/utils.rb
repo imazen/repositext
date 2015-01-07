@@ -367,19 +367,20 @@ class Repositext
       # @param[String] file_pattern the file pattern to print on first line of console
       # @param[Block] the operation for which to print console output
       def self.with_console_output(description, file_pattern, &block)
-        $stderr.puts "#{ description } at #{ file_pattern }"
+        $stderr.puts ''
         $stderr.puts '-' * 80
+        $stderr.puts "#{ description } at #{ file_pattern }"
         start_time = Time.now
         counts = Hash.new(0)
 
         yield(counts)
 
-        $stderr.puts '-' * 80
         $stderr.puts "Finished processing #{ counts[:success] } of #{ counts[:total] } files in #{ Time.now - start_time } seconds."
         $stderr.puts "* #{ counts[:created] } new files created"  if counts[:created] > 0
         $stderr.puts "* #{ counts[:updated] } existing files updated"  if counts[:updated] > 0
         $stderr.puts "* #{ counts[:unchanged] } files left unchanged"  if counts[:unchanged] > 0
         $stderr.puts "* #{ counts[:errors] } errors"  if counts[:errors] > 0
+        $stderr.puts '-' * 80
       end
 
       # Replaces filename's extension with new_extension. If filename doesn't have

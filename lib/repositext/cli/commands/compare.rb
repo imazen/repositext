@@ -16,8 +16,9 @@ class Repositext
       # and paragraph alignment is analyzed.
       def compare_record_id_and_paragraph_alignment(options)
         # generate diff index
-        $stderr.puts "Generating diff report for record_id and paragraph alignment"
+        $stderr.puts ''
         $stderr.puts '-' * 80
+        $stderr.puts "Generating diff report for record_id and paragraph alignment"
         report_name = 'compare_record_id_and_paragraph_alignment'
         base_dir = config.compute_base_dir(options['base-dir'] || :compare_dir)
         compare_content_with_folio_source_glob_pattern = (
@@ -97,8 +98,8 @@ class Repositext
         File.write(index_filename, erb_template.result(binding))
 
         # html_files
-        $stderr.puts "-" * 80
         $stderr.puts "Finished generating #{ success_count } diff reports."
+        $stderr.puts "-" * 80
       end
 
       def diff_test(options)
