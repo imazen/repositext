@@ -39,6 +39,18 @@ class Repositext
           )
         end
 
+        def long_description_for_copy
+          %(
+            Copies files from one location to another.
+
+            Available SPECs:
+
+            Examples:
+
+            * bundle exec rt copy subtitle_marker_csv_files_to_content
+          )
+        end
+
         def long_description_for_fix
           %(
             Modifies files in place. Updates contents of existing files.

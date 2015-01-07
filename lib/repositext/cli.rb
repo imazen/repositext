@@ -80,6 +80,14 @@ class Repositext
     end
 
 
+    desc 'copy SPEC', 'Copies files from one location to another'
+    long_desc long_description_for_copy
+    # @param[String] command_spec Specification of the operation
+    def copy(command_spec)
+      invoke_repositext_command('copy', command_spec, options)
+    end
+
+
     desc 'fix SPEC', 'Modifies files in place'
     long_desc long_description_for_fix
     # @param[String] command_spec Specification of the operation
