@@ -202,7 +202,7 @@ class Repositext
 
                   counts[:success] += 1
                 else
-                  $stderr.puts "  x  Error: #{ message }"
+                  $stderr.puts "  x  Error: #{ outcome.messages.join("\n") }"
                   counts[:errors] += 1
                 end
               end
