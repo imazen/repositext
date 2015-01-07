@@ -375,10 +375,12 @@ class Repositext
 
         yield(counts)
 
-        $stderr.puts "Finished processing #{ counts[:success] } of #{ counts[:total] } files in #{ Time.now - start_time } seconds."
-        $stderr.puts "* #{ counts[:created] } new files created"  if counts[:created] > 0
-        $stderr.puts "* #{ counts[:updated] } existing files updated"  if counts[:updated] > 0
-        $stderr.puts "* #{ counts[:unchanged] } files left unchanged"  if counts[:unchanged] > 0
+        file_pluralizer = lambda { |count| 1 == count ? 'file' : 'files' }
+
+        $stderr.puts "Finished processing #{ counts[:success] } of #{ counts[:total] } #{ file_pluralizer.call(counts[:success]) } in #{ Time.now - start_time } seconds."
+        $stderr.puts "* #{ counts[:created] } new #{ file_pluralizer.call(counts[:created]) } created"  if counts[:created] > 0
+        $stderr.puts "* #{ counts[:updated] } existing #{ file_pluralizer.call(counts[:updated]) } updated"  if counts[:updated] > 0
+        $stderr.puts "* #{ counts[:unchanged] } #{ file_pluralizer.call(counts[:unchanged]) } left unchanged"  if counts[:unchanged] > 0
         $stderr.puts "* #{ counts[:errors] } errors"  if counts[:errors] > 0
         $stderr.puts '-' * 80
       end
