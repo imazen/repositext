@@ -227,7 +227,8 @@ class Repositext
         if raise_on_unknown_key && !container.keys.include?(key)
           raise RtfileError.new("You requested an unknown key: #{ key.inspect }")
         end
-        container[key]
+        # NOTE: Avoid accidental changes to config values via destructive methods or '<<'!!
+        container[key].freeze
       end
 
     end
