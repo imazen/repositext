@@ -398,7 +398,7 @@ class Repositext
 
         # First get union of all Folio and Idml files
         folio_files = Dir.glob([input_folio_base_dir, input_file_selector, input_file_extension].join)
-        idml_files = Dir.glob([input_folio_base_dir, input_file_selector, input_file_extension].join)
+        idml_files = Dir.glob([input_idml_base_dir, input_file_selector, input_file_extension].join)
         all_output_files = (folio_files + idml_files).map { |e|
           # process folio files
           e = e.gsub(input_folio_base_dir, output_base_dir)
