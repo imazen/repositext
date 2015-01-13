@@ -4,14 +4,6 @@ class Repositext
 
     private
 
-      def compare_idml_roundtrip
-      end
-
-      def compare_test(options)
-        # dummy method for testing
-        puts 'compare_test'
-      end
-
       # Generates a diff view of folio source vs. /content where record ids
       # and paragraph alignment is analyzed.
       def compare_record_id_and_paragraph_alignment(options)
@@ -102,9 +94,9 @@ class Repositext
         $stderr.puts "-" * 80
       end
 
-      def diff_test(options)
+      def compare_test(options)
         # dummy method for testing
-        puts 'diff_test'
+        puts 'compare_test'
       end
 
     end
