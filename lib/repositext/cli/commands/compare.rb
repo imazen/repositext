@@ -4,6 +4,16 @@ class Repositext
 
     private
 
+      # Override this method stub to run file comparisons of various Folio
+      # related files, e.g., after Folio XML import.
+      def compare_folio(options)
+      end
+
+      # Override this method stub to run file comparisons of various IDML
+      # related files, e.g., after IDML import.
+      def compare_idml(options)
+      end
+
       # Generates a diff view of folio source vs. /content where record ids
       # and paragraph alignment is analyzed.
       def compare_record_id_and_paragraph_alignment(options)

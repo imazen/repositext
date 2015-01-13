@@ -17,7 +17,8 @@ class Repositext
         )
       end
 
-      # Converts files from one format to another
+      # Converts files from one format to another, keeping directory and file name
+      # and just updating the file extension.
       # @param: See #process_files_helper below for param description
       def self.convert_files(file_pattern, file_filter, description, options, &block)
         # Change file extension only.

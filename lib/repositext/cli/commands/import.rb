@@ -22,6 +22,7 @@ class Repositext
       def import_folio_xml(options)
         import_folio_xml_specific_steps(options)
         import_shared_steps(options)
+        compare_folio(options)
       end
 
       def import_gap_mark_tagging(options)
@@ -75,6 +76,7 @@ class Repositext
       def import_idml(options)
         import_idml_specific_steps(options)
         import_shared_steps(options)
+        compare_idml(options)
       end
 
       def import_subtitle(options)
