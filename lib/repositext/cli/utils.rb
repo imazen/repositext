@@ -312,12 +312,14 @@ class Repositext
       #     :input_is_binary to force File.binread where required
       #     :output_is_binary
       #     :'changed-only'
+      #     :ignore_missing_file2 set to true if you quietly want to ignore missing file2, defaults to false
       # @param[Proc] block A Proc that performs the desired operation on each file.
       #     Arguments to the proc are each file's name and contents.
       def self.read_files_helper(file_pattern, file_filter, file_name_2_proc, description, options, &block)
 
         with_console_output(description, file_pattern) do |counts|
           changed_files = compute_list_of_changed_files(options[:'changed-only'])
+          ignore_missing_file2 = options[:ignore_missing_file2]
           Dir.glob(file_pattern).each do |filename_1|
 
             if file_filter && !(file_filter === filename_1) # file_filter has to be LHS of `===`
@@ -342,12 +344,17 @@ class Repositext
               counts[:success] += 1
               if file_name_2_proc
                 filename_2 = file_name_2_proc.call(filename_1)
-                contents_2 = if options[:input_is_binary]
-                  File.binread(filename_2).freeze
-                else
-                  File.read(filename_2).freeze
+                begin
+                  contents_2 = if options[:input_is_binary]
+                    File.binread(filename_2).freeze
+                  else
+                    File.read(filename_2).freeze
+                  end
+                  block.call(contents_1, filename_1, contents_2, filename_2)
+                rescue SystemCallError => e
+                  # Error: Errno::ENOENT - No such file or directory
+                  raise  unless ignore_missing_file2
                 end
-                block.call(contents_1, filename_1, contents_2, filename_2)
               else
                 block.call(contents_1, filename_1)
               end
