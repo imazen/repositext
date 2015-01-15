@@ -46,7 +46,6 @@ class Repositext
           config.base_dir(:rtfile_dir), config.primary_repo_base_dir
         )
         output_base_dir = options['output'] || config.base_dir(:subtitle_export_dir)
-
         Repositext::Cli::Utils.copy_files(
           primary_repo_input_base_dir,
           input_file_selector,
@@ -56,7 +55,7 @@ class Repositext
           "Copying subtitle marker CSV files from content_dir to subtitle_export_dir",
           options.merge(
             :output_path_lambda => lambda { |input_filename|
-              input_filename.gsub(input_base_dir, output_base_dir)
+              input_filename.gsub(primary_repo_input_base_dir, output_base_dir)
                             .gsub(
                               /\/[[:alpha:]]{3}([^\/\.]+)\.subtitle_markers\.csv/,
                               '/\1.markers.txt'
