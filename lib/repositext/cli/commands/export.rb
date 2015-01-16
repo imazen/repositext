@@ -310,6 +310,19 @@ class Repositext
           [Outcome.new(true, { contents: subtitle, extension: 'txt' })]
         end
         copy_subtitle_marker_csv_files_to_subtitle_export(options)
+        if !config.setting(:is_primary_repo)
+          # When operating on foreign repo, also export subtitles from primary
+          # repo and copy them to this foreign repo's subtitle_export dir.
+          # Recursively call this method with some options modified:
+          primary_repo_rtfile_path = File.join(config.primary_repo_base_dir, 'Rtfile')
+          Repositext::Cli.start([
+            "export",
+            "subtitle",
+            "--file-selector", input_file_selector, # use same file-selector
+            "--rtfile", primary_repo_rtfile_path, # use primary repo's rtfile
+            "--output", output_base_dir, # use this foreign repo's subtitle_export dir
+          ])
+        end
       end
 
       # Export Subtitle Tagging files

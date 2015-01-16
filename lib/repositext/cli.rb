@@ -44,6 +44,9 @@ class Repositext
     class_option :'file-selector',
                  :type => :string,
                  :desc => 'Specifies the input file selector. Expects a named file_selector from Rtfile or a Glob pattern that can be used with Dir.glob.'
+    class_option :output,
+                 :type => :string,
+                 :desc => 'Overrides the output base directory.'
     class_option :rtfile,
                  :type => :string,
                  :required => true,
