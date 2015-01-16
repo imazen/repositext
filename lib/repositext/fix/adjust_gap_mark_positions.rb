@@ -36,9 +36,9 @@ class Repositext
       def self.fix_standard_chars(text)
         old_at = text.dup
         new_at = ''
-        # asterisk, double open quote, single open quote, opening parens
-        # opening bracket, opening chinese parens
-        standard_chars_regex = /[\*“‘\(\[\（]+/
+        # asterisk, double open quote, single open quote, opening parens,
+        # opening bracket, opening chinese parens, opening chinese quote
+        standard_chars_regex = /[\*“‘\(\[\（\《]+/
         standard_chars_and_gap_mark_regex = /#{ standard_chars_regex }\%/
 
         s = StringScanner.new(old_at)

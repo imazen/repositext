@@ -23,6 +23,7 @@ class Repositext
         ['word word word%. ', 'word word %word. '],
         ['word. %w%*ord* word', 'word. %w*ord* word'],
         ['儋圚（%儋圚', '儋圚%（儋圚'],
+        ['圚《%儋', '圚%《儋'],
       ].each do |(txt, xpect)|
         it "handles #{ txt.inspect }" do
           o = AdjustGapMarkPositions.fix(txt, '_')
