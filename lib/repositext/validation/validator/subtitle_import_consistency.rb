@@ -61,7 +61,7 @@ class Repositext
             # Important: We need to always compare with subtitle_export, never
             # subtitle_tagging_export since we strip subtitle marks in the latter.
             tmp_subtitle_export = doc.send(@options['subtitle_export_converter_method_name'])
-            string_1 = subtitle_import.gsub(/@+\n\z/, " @\n") # insert space before subtitle mark after ending eagle
+            string_1 = subtitle_import.gsub(/(?<! )(@+)\n\z/, ' \1' + "\n") # insert space before subtitle marks at the end of the file
             string_2 = tmp_subtitle_export
             error_message = "\n\nText mismatch between subtitle/subtitle_tagging_import and subtitle_export from content_at in #{ @file_to_validate.last.path }."
           else
