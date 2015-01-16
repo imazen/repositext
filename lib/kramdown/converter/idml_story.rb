@@ -216,8 +216,10 @@ module Kramdown
             'Regular'
           end
           attr = {}
-          attr['Underline'] = 'true' if el.has_class?('underline')
-          attr['Capitalization'] = 'SmallCaps' if el.has_class?('smcaps')
+          attr['Capitalization'] = 'SmallCaps'  if el.has_class?('smcaps')
+          attr['Position'] = 'Subscript'  if el.has_class?('subscript')
+          attr['Position'] = 'Superscript'  if el.has_class?('superscript')
+          attr['Underline'] = 'true'  if el.has_class?('underline')
           char_st_rng_tag(orig_el, style, attr, &block)
         else
           char_st_rng_tag(orig_el, 'Regular', &block)

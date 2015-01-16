@@ -82,7 +82,9 @@ class Repositext
             { :name => 'smcaps', :allowed_contexts => [:span] },
             { :name => 'song', :allowed_contexts => [:block] },
             { :name => 'stanza', :allowed_contexts => [:block] },
+            { :name => 'subscript', :allowed_contexts => [:span] },
             { :name => 'subtitle', :allowed_contexts => [:block] },
+            { :name => 'superscript', :allowed_contexts => [:span] },
             { :name => 'underline', :allowed_contexts => [:span] }
           ]
         end

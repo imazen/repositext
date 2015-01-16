@@ -208,6 +208,27 @@ module Kramdown
             ).strip.gsub(/              /, '') + "\n"
           end
 
+          it 'Handles .subscript' do
+            doc = Document.new('*the text*{:.subscript}', :input => 'KramdownRepositext')
+            doc.to_idml_story.must_equal %(
+              <ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/Normal">
+                <CharacterStyleRange Position="Subscript" AppliedCharacterStyle="CharacterStyle/Regular">
+                  <Content>the text</Content>
+                </CharacterStyleRange>
+              </ParagraphStyleRange>
+            ).strip.gsub(/              /, '') + "\n"
+          end
+
+          it 'Handles .superscript' do
+            doc = Document.new('*the text*{:.superscript}', :input => 'KramdownRepositext')
+            doc.to_idml_story.must_equal %(
+              <ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/Normal">
+                <CharacterStyleRange Position="Superscript" AppliedCharacterStyle="CharacterStyle/Regular">
+                  <Content>the text</Content>
+                </CharacterStyleRange>
+              </ParagraphStyleRange>
+            ).strip.gsub(/              /, '') + "\n"
+          end
         end
 
       end
