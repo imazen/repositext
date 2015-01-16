@@ -309,9 +309,12 @@ class Repositext
           subtitle = doc.send(config.kramdown_converter_method(:to_subtitle))
           [Outcome.new(true, { contents: subtitle, extension: 'txt' })]
         end
-        copy_subtitle_marker_csv_files_to_subtitle_export(options)
-        if !config.setting(:is_primary_repo)
-          # When operating on foreign repo, also export subtitles from primary
+        if config.setting(:is_primary_repo)
+          # We're in primary repo, copy subtitle_marker_csv_files to foreign repo
+          # This works because options['output'] points to foreign repo.
+          copy_subtitle_marker_csv_files_to_subtitle_export(options)
+        else
+          # Whe're operating on foreign repo: Export subtitles from primary
           # repo and copy them to this foreign repo's subtitle_export dir.
           # Recursively call this method with some options modified:
           primary_repo_rtfile_path = File.join(config.primary_repo_base_dir, 'Rtfile')
@@ -319,7 +322,7 @@ class Repositext
             "export",
             "subtitle",
             "--file-selector", input_file_selector, # use same file-selector
-            "--rtfile", primary_repo_rtfile_path, # use primary repo's rtfile
+            "--rtfile", primary_repo_rtfile_path, # use primary repo's Rtfile
             "--output", output_base_dir, # use this foreign repo's subtitle_export dir
           ])
         end
