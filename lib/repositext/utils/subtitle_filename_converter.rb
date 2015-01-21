@@ -22,7 +22,7 @@ class Repositext
         %w[mag mg],
         %w[nor no],
         %w[nst nst],
-        %w[por pr],
+        %w[por pt],
         %w[sho sn],
         %w[spn es],
         %w[swa sw],
