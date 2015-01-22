@@ -348,6 +348,60 @@ class Repositext
         }
       end
 
+      # Prints report that counts all html tag/class combinations it encounters.
+      def report_html_tag_classes_inventory(options)
+        file_count = 0
+        tag_classes_inventory = Hash.new(0)
+
+        # Updates tci with xn's inventory
+        # @param parent_stack [Array<String>] contains tag names of parents
+        # @param xn [Nokogiri::XmlNode]
+        # @param tci [Hash] tag_classes_inventory collector
+        tag_classes_inventory_extractor = lambda { |parent_stack, xn, tci|
+          own_key = [xn.name, xn['class']].compact.join('.')
+          k = [
+            parent_stack.join(' > '),
+            ' > ',
+            own_key,
+          ].join
+          tci[k] += 1
+          parent_stack.push(own_key)
+          xn.children.each { |cxn|
+            tag_classes_inventory_extractor.call(parent_stack, cxn, tci)
+          }
+          parent_stack.pop
+        }
+
+        Repositext::Cli::Utils.read_files(
+          config.compute_glob_pattern(
+            options['base-dir'] || :rtfile_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :html_extension
+          ),
+          options['file_filter'],
+          nil,
+          "Reading HTML files",
+          options
+        ) do |contents, filename|
+          file_count += 1
+          html_doc = Nokogiri::HTML(contents)
+          # Compute tag/classes inventory
+          parent_stack = ['body']
+          html_doc.at_css('body').children.each do |cxn|
+            tag_classes_inventory_extractor.call(parent_stack, cxn, tag_classes_inventory)
+          end
+        end
+
+        $stderr.puts 'HTML Tag/Classes inventory'
+        $stderr.puts '-' * 40
+        tag_classes_inventory.to_a.sort.each { |e|
+          $stderr.puts "#{ e.first }: #{ e.last }"
+        }
+        $stderr.puts '-' * 40
+        $stderr.puts "Checked #{ file_count } files at #{ Time.now.to_s }."
+        $stderr.puts "Command to generate this file: `repositext report html_tag_classes_inventory`"
+      end
+
       # Finds invalid quote sequences, e.g., two subsequent open double quotes.
       # An invalid sequence is:
       # * two quotes of same QuoteType with no other quote inbetween (applies to s-quote-open or d-quote-close only)
