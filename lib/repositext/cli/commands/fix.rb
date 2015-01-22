@@ -4,6 +4,26 @@ class Repositext
 
     private
 
+      # Adds line breaks into file's text
+      def fix_add_line_breaks(options)
+        Repositext::Cli::Utils.change_files_in_place(
+          config.compute_glob_pattern(
+            options['base-dir'] || :rtfile_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :html_extension
+          ),
+          options['file_filter'],
+          "Adjusting :gap_mark positions",
+          options
+        ) do |contents, filename|
+          with_line_breaks = contents.gsub('</p><p>', "</p>\n<p>")
+                                     .gsub('</p><blockquote>', "</p>\n<blockquote>")
+                                     .gsub('</blockquote><blockquote>', "</blockquote>\n<blockquote>")
+                                     .gsub('</blockquote><p>', "</blockquote>\n<p>")
+          [Outcome.new(true, { contents: with_line_breaks }, [])]
+        end
+      end
+
       # Move gap_marks (%) to the outside of
       # * asterisks
       # * quotes (primary or secondary)
