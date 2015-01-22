@@ -17,12 +17,9 @@ class Repositext
           "Syncing subtitle_mark character positions from *.at to *.subtitle_markers.csv",
           options.merge(input_is_binary: false)
         ) do |contents, filename|
-          if !contents.index('@')
-            # Don't create a new subtitle_markers CSV file for contents that don't
-            # contain any subtitle_marks
-            []
-          else
-            # this contents contains subtitle_markers
+          if options['is_primary_repo'] && contents.index('@')
+            # This is a file from the primary repo and it contains subtitle_marks:
+            # Create subtitle_markers CSV file.
             stm_csv_path = filename.gsub(/\.at\z/, '.subtitle_markers.csv')
             previous_stm_csv = if File.exists?(stm_csv_path)
               File.read(stm_csv_path)
@@ -33,6 +30,10 @@ class Repositext
               contents, previous_stm_csv
             )
             [Outcome.new(true, { contents: outcome.result, extension: 'subtitle_markers.csv' })]
+          else
+            # Not in primary repo, or file doesn't contain subtitle_marks:
+            # Don't create a new subtitle_markers CSV file.
+            []
           end
         end
       end
