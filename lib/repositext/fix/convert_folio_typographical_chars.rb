@@ -34,8 +34,6 @@ class Repositext
         Outcome.new(true, { contents: text }, [])
       end
 
-    private
-
       # Converts elipses in text in place
       # @param[String] text
       def self.convert_elipses!(text)
