@@ -6,8 +6,9 @@ module Nokogiri
       # @param[String, optional] downstream_path (used for recursion)
       def name_and_class_path(downstream_path = '')
         downstream_path = name_and_class + downstream_path
-        if parent && !parent.xml?
+        if respond_to?(:parent) && parent && !parent.xml?
           # Recurse to parent unless it's the top level XML Document node (.xml?)
+          # or top level HTML Document node (doesn't respond to parent)
           parent.name_and_class_path(' > ' + downstream_path)
         else
           # This is the top level node
