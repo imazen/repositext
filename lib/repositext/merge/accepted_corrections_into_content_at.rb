@@ -13,8 +13,9 @@ class Repositext
       # @param[String] content_at_filename
       # @return[Outcome] the merged document is returned as #result if successful.
       def self.merge_auto(accepted_corrections, content_at, content_at_filename)
-        validate_accepted_corrections_file(accepted_corrections)
-        corrections = extract_corrections(accepted_corrections)
+        sanitized_corrections = sanitize_line_breaks(accepted_corrections)
+        validate_accepted_corrections_file(sanitized_corrections)
+        corrections = extract_corrections(sanitized_corrections)
         validate_corrections(corrections)
         outcome = merge_corrections_into_content_at(:auto, corrections, content_at, content_at_filename)
       end
@@ -26,12 +27,18 @@ class Repositext
       # @param[String] content_at_filename
       # @return[Outcome] the merged document is returned as #result if successful.
       def self.merge_manually(accepted_corrections, content_at, content_at_filename)
-        corrections = extract_corrections(accepted_corrections)
+        sanitized_corrections = sanitize_line_breaks(accepted_corrections)
+        corrections = extract_corrections(sanitized_corrections)
         validate_corrections(corrections)
         outcome = merge_corrections_into_content_at(:manual, corrections, content_at, content_at_filename)
       end
 
     protected
+
+      # Replaces all \r with \n
+      def self.sanitize_line_breaks(txt)
+        txt.gsub("\r", "\n")
+      end
 
       # Validates the contents of the accepted_corrections file before it attempts
       # any parsing.
@@ -49,6 +56,7 @@ class Repositext
           [/–/, 'EN DASH'],
           [/"/, 'Straight double quote'],
           [/'/, 'Straight single quote'],
+          [/\r/, 'Carriage return'],
         ].each do |(regex, description)|
           s = StringScanner.new(txt)
           while !s.eos? do
@@ -57,7 +65,7 @@ class Repositext
               previous_text = txt[0..(s.pos - 1)]
               line_num = previous_text.count("\n") + 1
               context = s.matched[(-[10, s.matched.length].min)..-1] + s.rest[0,10]
-              invalid_chars << " - #{ description } on line #{ line_num }: #{ context }"
+              invalid_chars << " - #{ description } on line #{ line_num }: #{ context.inspect }"
             else
               s.terminate
             end
