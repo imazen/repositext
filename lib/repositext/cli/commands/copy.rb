@@ -4,6 +4,31 @@ class Repositext
 
     private
 
+      # Copies HTML imported AT files to content. Also renames files like so:
+      # eng59-0125_0547.html.at => eng59-0125_0547.at
+      # @param options [Hash]
+      def copy_html_import_to_content(options)
+        input_base_dir = config.compute_base_dir(options['base-dir'] || :html_import_dir)
+        input_file_selector = config.compute_file_selector(options['file-selector'] || :all_files)
+        input_file_extension = config.compute_file_extension(options['file-extension'] || :at_extension)
+        output_base_dir = options['output'] || config.base_dir(:content_dir)
+
+        Repositext::Cli::Utils.copy_files(
+          input_base_dir,
+          input_file_selector,
+          input_file_extension,
+          output_base_dir,
+          options['file_filter'],
+          "Copying HTML imported AT files to content",
+          options.merge(
+            :output_path_lambda => lambda { |input_filename|
+              input_filename.gsub(input_base_dir, output_base_dir)
+                            .gsub(/\.html\.at\z/, '.at')
+            }
+          )
+        )
+      end
+
       # Copies subtitle_marker csv files to content for subtitle import. Also renames files like so:
       # 59-0125_0547.markers.txt => eng59-0125_0547.subtitle_markers.csv
       # @param options [Hash]
