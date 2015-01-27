@@ -84,6 +84,28 @@ class Repositext
         end
       end
 
+      # Validates all files related to html import
+      def validate_html_import(options)
+        options['report_file'] ||= config.compute_glob_pattern(
+          :html_import_dir, :validation_report_file, ''
+        )
+        reset_validation_report(options, 'validate_html_import')
+        input_base_dir = config.compute_base_dir(options['base-dir'] || :html_import_dir)
+        input_file_selector = config.compute_file_selector(options['file-selector'] || :all_files)
+        html_input_file_extension = config.compute_file_extension(options['file-extension'] || :html_extension)
+        file_specs = config.compute_validation_file_specs(
+          primary: [input_base_dir, input_file_selector, html_input_file_extension], # for reporting only
+          input_html_files: [input_base_dir, input_file_selector, html_input_file_extension],
+          imported_at_files: [input_base_dir, input_file_selector, :at_extension],
+        )
+        validation_options = {
+          'kramdown_parser_class' => config.kramdown_parser(:kramdown),
+          'plain_text_converter_method_name' => config.kramdown_converter_method(:to_plain_text),
+          'kramdown_validation_parser_class' => config.kramdown_parser(:kramdown_validation)
+        }.merge(options)
+        Repositext::Validation::HtmlPostImport.new(file_specs, validation_options).run
+      end
+
       # Validates all files related to idml import
       def validate_idml_import(options)
         options['report_file'] ||= config.compute_glob_pattern(
