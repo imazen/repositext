@@ -349,6 +349,14 @@ class Repositext
         fpn
       end
 
+      # Returns the number of the last paragraph.
+      # @param[String] txt
+      # @return[String] the last paragraph number as string
+      def self.compute_last_para_num(txt)
+        # scan returns an array of arrays. We want the first entry of the last array
+        txt.scan(/^\*(\d+[a-z]?)\*\{\: \.pn\}\s/).last.first
+      end
+
       # Extracts relevant paragraphs from txt, based on paragraph_number
       # @param[String] txt the complete text to extract relevant paragraphs from
       # @param[Hash] correction attrs for a single correction
@@ -356,9 +364,12 @@ class Repositext
       def self.extract_relevant_paragraphs(txt, correction)
         # Check if correction was already applied to the relevant paragraph
         # Extract relevant paragraph
-        or_match_on_eagle = if compute_first_para_num(txt) == correction[:paragraph_number].to_s
+        or_match_on_eagle_or_end_of_string = if compute_first_para_num(txt) == correction[:paragraph_number].to_s
           # Don't stop at eagle when looking for paragraph 1, because it would stop at the starting eagle
           ''
+        elsif compute_last_para_num(txt) == correction[:paragraph_number].to_s
+          # We're looking at the last paragraph, stop at eagle first, or end of string if no eagle present
+          '||\z'
         else
           # Stop also at eagle in case we're looking at the last paragraph that doesn't have a subsequent one
           '|'
@@ -374,7 +385,7 @@ class Repositext
             .*? # match anything nongreedily
             (?=(
               #{ dynamic_paragraph_number_regex(stop_para_number, txt) } # stop before next paragraph number
-              #{ or_match_on_eagle }
+              #{ or_match_on_eagle_or_end_of_string }
             ))
           /xm # multiline
         ).to_s
