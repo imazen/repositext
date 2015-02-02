@@ -94,9 +94,10 @@ class Repositext
         copy_subtitle_marker_csv_files_to_content(
           options.merge({ 'base-dir' => :subtitle_import_dir, 'file-extension' => :txt_extension })
         )
-        sync_subtitle_mark_character_positions(
-          options.merge({ 'is_primary_repo' => config.setting(:is_primary_repo) })
-        )
+        if config.setting(:is_primary_repo)
+          # Create subtitle_marker CSV files only when we're working in the primary repo.
+          sync_subtitle_mark_character_positions
+        end
         options['append_to_validation_report'] = true
         validate_subtitle_import(options.merge('run_options' => %w[post_import]))
       end
@@ -116,9 +117,10 @@ class Repositext
         copy_subtitle_marker_csv_files_to_content(
           options.merge({ 'base-dir' => :subtitle_tagging_import_dir, 'file-extension' => :txt_extension })
         )
-        sync_subtitle_mark_character_positions(
-          options.merge({ 'is_primary_repo' => config.setting(:is_primary_repo) })
-        )
+        if config.setting(:is_primary_repo)
+          # Create subtitle_marker CSV files only when we're working in the primary repo.
+          sync_subtitle_mark_character_positions
+        end
         options['append_to_validation_report'] = true
         validate_subtitle_tagging_import(options.merge('run_options' => %w[post_import]))
       end
