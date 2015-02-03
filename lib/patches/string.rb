@@ -44,8 +44,12 @@ class String
     omission = options[:omission] || '…'
     length_with_room_for_omission = max_len - omission.length
     start = if options[:separator]
-      index(options[:separator], -length_with_room_for_omission) ||
-      length - length_with_room_for_omission
+      # need to go back further to allow :separator to occur just before boundary
+      s = index(options[:separator], -(length_with_room_for_omission + options[:separator].length))
+      # if :separator is present and we found s, add separator length back in
+      # to compensate for moving further back
+      # Otherwise compute length without considering :separator
+      s ? s + options[:separator].length : length - length_with_room_for_omission
     else
       length - length_with_room_for_omission
     end

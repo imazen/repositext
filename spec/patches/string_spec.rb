@@ -35,7 +35,8 @@ describe String do
       [[5], "…ord7"],
       [[1_000], "word1 word2 word3 word4 word5 word6 word7"],
       [[5, omission: '%%%'], "%%%d7"],
-      [[20, separator: ' '], "… word5 word6 word7"],
+      [[20, separator: ' '], "…word5 word6 word7"],
+      [[11, separator: ' ', omission: ''], "word6 word7"],
       [[20, separator: 'x'], "…4 word5 word6 word7"],
     ].each do |(args, xpect)|
       it "handles args #{ args.inspect }" do
