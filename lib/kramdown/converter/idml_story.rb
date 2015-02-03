@@ -96,6 +96,16 @@ module Kramdown
         character_style_range_tag_for_el(el)
       end
 
+      def convert_entity(el)
+        if %w[2011 2028 202F FEFF].include?(sprintf("%04X", el.value.code_point))
+          # handle valid characters. Insert entity as decoded character.
+          content_tag(Repositext::Utils::EntityEncoder.decode(el.options[:original]))
+        else
+          # ignore invalid characters
+          ''
+        end
+      end
+
       # @param[Kramdown::Element] el
       def convert_strong(el)
         character_style_range_tag_for_el(el)
