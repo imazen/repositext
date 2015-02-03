@@ -14,17 +14,17 @@
 <body>
   <div class="container">
     <div class="page-header">
-      <h1>Diff report</h1>
+      <h1>Confidence in Record ID alignment report</h1>
     </div>
     <p><a href="<%= @path_to_index %>" class="btn btn-default">Back to Index</a></p>
-    <p>There are <%= @diffs_count %> different records between</p>
+    <p>There are <%= @confidence_levels_count %> records with low confidence.</p>
     <div class="row">
       <div class="col-md-5"><h4><%= @filename_1 %></h4></div>
       <div class="col-md-2">and</div>
       <div class="col-md-5"><h4><%= @filename_2 %></h4></div>
     </div>
     <table class="table">
-      <%= @diffs %>
+      <%= @confidence_levels %>
     </table>
     <p><a href="<%= @path_to_index %>" class="btn btn-default">Back to Index</a></p>
   </div>

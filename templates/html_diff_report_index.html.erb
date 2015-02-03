@@ -14,10 +14,11 @@
 <body>
   <div class="container">
     <div class="page-header">
-      <h1>Diff report index</h1>
+      <h1>Confidence in Record ID alignment reports list</h1>
+      <p>Found <%= @number_of_files_with_low_confidence %> files with low confidence in record id alignment.
     </div>
     <table class="table" style="width: auto;">
-      <%= @diff_html_files %>
+      <%= @confidence_html_files %>
     </table>
   </div>
 </body>
