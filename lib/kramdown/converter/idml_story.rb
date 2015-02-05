@@ -97,13 +97,8 @@ module Kramdown
       end
 
       def convert_entity(el)
-        if %w[2011 2028 202F FEFF].include?(sprintf("%04X", el.value.code_point))
-          # handle valid characters. Insert entity as decoded character.
-          content_tag(Repositext::Utils::EntityEncoder.decode(el.options[:original]))
-        else
-          # ignore invalid characters
-          ''
-        end
+        # Insert entity as decoded character in its own '<content>' tag
+        content_tag(Repositext::Utils::EntityEncoder.decode(el.options[:original]))
       end
 
       # @param[Kramdown::Element] el
