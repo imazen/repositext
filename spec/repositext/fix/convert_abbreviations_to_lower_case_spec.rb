@@ -7,7 +7,8 @@ class Repositext
       [
         ['A.M.', 'A.M.'],
         [' A.M.', ' *a.m.*{: .smcaps}'],
-        ['P.M.', '*p.m.*{: .smcaps}'],
+        ['P.M.', 'P.M.'],
+        [' P.M.', ' *p.m.*{: .smcaps}'],
         ['A.D.', '*a.d.*{: .smcaps}'],
         ['B.C.', '*b.c.*{: .smcaps}'],
         ['a.m.', 'a.m.'],

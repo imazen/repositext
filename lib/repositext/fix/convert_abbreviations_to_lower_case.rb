@@ -15,7 +15,7 @@ class Repositext
       def self.fix(text, filename)
         t = text.dup
         # NOTE: We need negative lookahead 'D' for B.C. to avoid replacement in A.B.C.D.E...
-        t.gsub!(/(?<=\s)A\.M\.|P\.M\.|A\.D\.|(B\.C\.(?!D))/) { |abbr| "*#{ abbr.downcase }*{: .smcaps}" }
+        t.gsub!(/(?<=\s)A\.M\.|(?<=\s)P\.M\.|A\.D\.|(B\.C\.(?!D))/) { |abbr| "*#{ abbr.downcase }*{: .smcaps}" }
         Outcome.new(true, { contents: t }, [])
       end
 
