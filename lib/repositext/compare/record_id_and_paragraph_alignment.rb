@@ -68,7 +68,7 @@ class Repositext
             source_1: token_1[:text],
             source_2: '',
             confidence: nil,
-            css_class: 'unspecified',
+            css_class: 'label-default',
           }
         }
         tokens_2.each { |token_2|
@@ -80,7 +80,7 @@ class Repositext
               source_1: '',
               source_2: token_2[:text],
               confidence: nil,
-              css_class: 'unspecified',
+              css_class: 'label-default',
             }
             combined_tokens << entry
           else
@@ -322,19 +322,21 @@ class Repositext
           %(
             <tr>
               <td style="width: 40%">
-                <p class="#{ collapse_css_class }">#{ e[:source_1] }</p>
+                <div class="#{ collapse_css_class }">#{ e[:source_1].split("\n").map { |e| "<p>#{ e }</p>"}.join }</div>
               </td>
               <td style="width: 20%">
                 <button data-toggle="collapse" data-target=".record-#{ idx }">#{ e[:record_id] }</button>
                 #{ confidence_widget }
               </td>
               <td style="width: 40%">
-                <p class="#{ collapse_css_class }">#{ e[:source_2] }</p>
+                <div class="#{ collapse_css_class }">#{ e[:source_2].split("\n").map { |e| "<p>#{ e }</p>"}.join }</div>
               </td>
             </tr>
           )
         }.join
-        @confidence_levels_count = confidence_levels.length
+        @low_confidence_levels_count = confidence_levels.count { |e|
+          ["label-warning", "label-danger"].include?(e[:css_class])
+        }
         @filename_1 = filename_1
         @filename_2 = filename_2
         @path_to_index = path_to_index
