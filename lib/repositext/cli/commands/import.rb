@@ -96,7 +96,7 @@ class Repositext
         )
         if config.setting(:is_primary_repo)
           # Create subtitle_marker CSV files only when we're working in the primary repo.
-          sync_subtitle_mark_character_positions
+          sync_subtitle_mark_character_positions(options)
         end
         options['append_to_validation_report'] = true
         validate_subtitle_import(options.merge('run_options' => %w[post_import]))
@@ -119,7 +119,7 @@ class Repositext
         )
         if config.setting(:is_primary_repo)
           # Create subtitle_marker CSV files only when we're working in the primary repo.
-          sync_subtitle_mark_character_positions
+          sync_subtitle_mark_character_positions(options)
         end
         options['append_to_validation_report'] = true
         validate_subtitle_tagging_import(options.merge('run_options' => %w[post_import]))
