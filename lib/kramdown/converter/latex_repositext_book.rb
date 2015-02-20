@@ -41,8 +41,8 @@ module Kramdown
             paperheight: 8.375,
             inner: 0.625,
             outer: 0.6458,
-            top: 0.76,
-            bottom: 0.5,
+            top: 0.4229,
+            bottom: 0.1375,
             headsep: 0.1,
           },
         }
