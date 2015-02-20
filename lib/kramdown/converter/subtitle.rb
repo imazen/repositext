@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Converts tree to subtitle text
 module Kramdown
   module Converter
+
+    # Converts tree to subtitle text
     class Subtitle < Base
 
       # Instantiate a Subtitle converter
@@ -17,8 +18,21 @@ module Kramdown
       # @param[Kramdown::Element] el
       # @return[String] the subtitle text
       def convert(el)
-        case
-        when :header == el.type
+        case el.type
+        when :blank
+          # nothing to do
+        when :em
+          if el.has_class?('pn')
+            # replace space after paragraph numbers with 4 spaces. Done in post processing
+            @output << "<<replace space after with 4 spaces>>"
+          end
+        when :entity
+          # Decode whitelisted entities
+          @output << Repositext::Utils::EntityEncoder.decode(el.options[:original])
+        when :gap_mark
+          # export gap_marks
+          @output << gap_mark_output
+        when :header
           # put opening part of header wrapper. Post processing will close it
           case el.options[:level]
           when 1
@@ -30,7 +44,7 @@ module Kramdown
           else
             raise "Unhandled header type: #{ el.inspect }"
           end
-        when :p == el.type
+        when :p
           if %w[id_title1 id_title2 id_paragraph].any? { |e| el.has_class?(e) }
             # mark for deletion in post processing
             @output << "\n\n<<delete this line>>"
@@ -38,21 +52,27 @@ module Kramdown
             # put empty lines between paras
             @output << "\n\n"
           end
-        when :gap_mark == el.type
-          # export gap_marks
-          @output << gap_mark_output
-        when :subtitle_mark == el.type
+        when :hr
+          # nothing to do
+        when :record_mark
+          # nothing to do
+        when :root
+          # nothing to do
+        when :strong
+          # nothing to do
+        when :subtitle_mark
           # export gap_marks
           @output << subtitle_mark_output
-        when :em == el.type && el.has_class?('pn')
-          # replace space after paragraph numbers with 4 spaces. Done in post processing
-          @output << "<<replace space after with 4 spaces>>"
-        when :text == el.type
+        when :text
           # capture value of all :text elements
           @output << el.value
+        else
+          raise "Handle this element: #{ el.inspect }"
         end
+
         # walk the tree
         el.children.each { |e| convert(e) }
+
         if :root == el.type
           # return @output for :root element
           return post_process_output(@output)
