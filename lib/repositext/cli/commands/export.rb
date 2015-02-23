@@ -276,6 +276,35 @@ class Repositext
       end
 
 
+      # Export AT files in /content to plain text
+      def export_plain_text(options)
+        input_base_dir = config.compute_base_dir(options['base-dir'] || :content_dir)
+        input_file_selector = config.compute_file_selector(options['file-selector'] || :all_files)
+        input_file_extension = config.compute_file_extension(options['file-extension'] || :at_extension)
+        output_base_dir = options['output'] || config.base_dir(:plain_text_export_dir)
+        Repositext::Cli::Utils.export_files(
+          input_base_dir,
+          input_file_selector,
+          input_file_extension,
+          output_base_dir,
+          options['file_filter'],
+          "Exporting AT files to plain text",
+          options
+        ) do |contents, filename|
+          # Since the kramdown parser is specified as module in Rtfile,
+          # I can't use the standard kramdown API:
+          # `doc = Kramdown::Document.new(contents, :input => 'kramdown_repositext')`
+          # We have to patch a base Kramdown::Document with the root to be able
+          # to convert it.
+          root, warnings = config.kramdown_parser(:kramdown).parse(contents)
+          doc = Kramdown::Document.new('')
+          doc.root = root
+          txt = doc.send(config.kramdown_converter_method(:to_plain_text))
+          [Outcome.new(true, { contents: txt, extension: 'txt' })]
+        end
+      end
+
+
       # Export Subtitle files
       def export_subtitle(options)
         input_base_dir = config.compute_base_dir(options['base-dir'] || :content_dir)
