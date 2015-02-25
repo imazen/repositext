@@ -112,15 +112,27 @@ module Kramdown
         diffs = []
         primary_lines.each_with_index do |pl, idx|
           tl = target_lines[idx]
-          pc = pl.count('%')
-          tc = tl.count('%')
-          if pc != tc
+          if tl
+            # there is a corresponding target_line
+            pc = pl.count('%')
+            tc = tl.count('%')
+            if pc != tc
+              diffs << {
+                line: idx + 1,
+                primary_text: pl.inspect,
+                primary_count: pc,
+                target_text: tl.inspect,
+                target_count: tc,
+              }
+            end
+          else
+            # no corresponding target_line found
             diffs << {
               line: idx + 1,
               primary_text: pl.inspect,
               primary_count: pc,
               target_text: tl.inspect,
-              target_count: tc,
+              target_count: nil,
             }
           end
         end
