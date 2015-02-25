@@ -137,6 +137,38 @@ class Repositext
                 )
               end
             }
+          elsif(:p == el.type)
+            if(
+              el.has_class?('normal') &&
+              el.descendants.any? { |el_desc| el_desc.has_class?('pn') }
+            )
+              # p.normal contains a paragraph number
+              errors << Reportable.error(
+                [
+                  @file_to_validate.path,
+                  (lo = el.options[:location]) && sprintf("line %5s", lo)
+                ].compact,
+                [
+                  'p.normal contains a paragraph number',
+                  "In text: #{ el.value.inspect }"
+                ]
+              )
+            elsif(
+              el.has_class?('normal_pn') &&
+              el.descendants.none? { |el_desc| el_desc.has_class?('pn') }
+            )
+              # p.normal_pn does not contain a paragraph number
+              errors << Reportable.error(
+                [
+                  @file_to_validate.path,
+                  (lo = el.options[:location]) && sprintf("line %5s", lo)
+                ].compact,
+                [
+                  'p.normal_pn does not contain a paragraph number',
+                  "In text: #{ el.value.inspect }"
+                ]
+              )
+            end
           elsif(
             :text == el.type &&
             @options['run_options'].include?('kramdown_syntax_at-no_underscore_or_caret')

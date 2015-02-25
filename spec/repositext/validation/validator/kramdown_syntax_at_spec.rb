@@ -75,6 +75,30 @@ class Repositext
           end
         end
 
+        describe '#validation_hook_on_element' do
+          [
+            ["^^^\n\nsong para right after record mark\n{: .song}", 1],
+            ["*1*{: .pn} p.normal_pn with pn\n{: .normal_pn}", 0],
+            ["p.normal_pn without pn\n{: .normal_pn}", 1],
+            ["*1*{: .pn} p.normal with pn\n{: .normal}", 1],
+            ["p.normal without pn\n{: .normal}", 0],
+          ].each do |test_string, xpect|
+            it "handles #{ test_string.inspect }" do
+              validator, logger, reporter = build_validator_logger_and_reporter(
+                KramdownSyntaxAt,
+                FileLikeStringIO.new('_path', '_txt')
+              )
+              errors = []
+              warnings = []
+              kramdown_doc = Kramdown::Document.new(test_string, { :input => 'KramdownRepositext' })
+              validator.send(
+                :validation_hook_on_element, kramdown_doc.root.children.first, errors, warnings
+              )
+              errors.size.must_equal(xpect)
+            end
+          end
+        end
+
 
       end
 
