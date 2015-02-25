@@ -18,6 +18,14 @@ module Kramdown
                                         .downcase
     end
 
+    # Returns self's descendants as flat array
+    def descendants
+      children.inject([]) { |m,child|
+        m << child
+        m += child.descendants
+      }
+    end
+
     # Prints a summary of self on a single line
     # @param[Integer, optional] _indent_level
     # @param[Hash, optional] _options

@@ -36,6 +36,24 @@ module Kramdown
       end
     end
 
+    describe "#descendants" do
+      it "returns children" do
+        p = Element.new(:p)
+        children = 5.times.map { Element.new(:text) }
+        p.children = children
+        p.descendants.must_equal children
+      end
+
+      it "returns grand children" do
+        p = Element.new(:p)
+        child = Element.new(:em)
+        grand_children = 5.times.map { Element.new(:text) }
+        p.children = [child]
+        child.children = grand_children
+        p.descendants.must_equal [child, grand_children].flatten
+      end
+    end
+
     describe "#has_class?" do
       it "returns true if it has class" do
         e = Element.new(:text, nil, 'class' => 'class1 class2')
