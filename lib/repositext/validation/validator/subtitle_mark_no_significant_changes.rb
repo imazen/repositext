@@ -51,7 +51,11 @@ class Repositext
             new_len = new_caption[:char_length]
             if subtitle_mark_changed_significantly?(old_len, new_len)
               line_num = content_at[0..new_pos].count("\n") + 1
-              significantly_changed_captions << { excerpt: new_caption[:excerpt], line_num: line_num }
+              significantly_changed_captions << {
+                excerpt: new_caption[:excerpt],
+                line_num: line_num,
+                subtitle_index: idx
+              }
             end
           }
           if significantly_changed_captions.empty?
@@ -66,7 +70,7 @@ class Repositext
                     'Subtitle caption length has changed significantly',
                     'Review changes and update subtitle_markers_file with `repositext sync subtitle_mark_character_positions`',
                     significantly_changed_captions.map { |e|
-                      "On line #{ e[:line_num] }: #{ e[:excerpt] }"
+                      "Subtitle index #{ e[:subtitle_index] } on line #{ e[:line_num] }: #{ e[:excerpt] }"
                     }.join("\n")
                   ]
                 )
