@@ -339,12 +339,14 @@ class Repositext
         end
       end
 
+      PARA_NUM_REGEX = /^[@%]{0,2}\*(\d+[a-z]?)\*\{\: \.pn\}/
+
       # Returns the number of the first paragraph. Normally '1', however there
       # are exceptions.
       # @param[String] txt
       # @return[String] the first paragraph number as string
       def self.compute_first_para_num(txt)
-        fpn = (txt.match(/\n[@%]{0,2}\*(\d+)\*\{\:\s\.pn\}/)[1].to_s.to_i - 1).to_s
+        fpn = (txt.match(PARA_NUM_REGEX)[1].to_s.to_i - 1).to_s
         fpn = '1'  if '0' == fpn # in case first para has a number
         fpn
       end
@@ -354,7 +356,7 @@ class Repositext
       # @return[String] the last paragraph number as string
       def self.compute_last_para_num(txt)
         # scan returns an array of arrays. We want the first entry of the last array
-        txt.scan(/^\*(\d+[a-z]?)\*\{\: \.pn\}\s/).last.first
+        txt.scan(PARA_NUM_REGEX).last.first
       end
 
       # Extracts relevant paragraphs from txt, based on paragraph_number

@@ -6,15 +6,31 @@ class Repositext
 
       describe 'compute_first_para_num' do
         [
-          ["\n*1*{: .pn}", '1'],
-          ["\n*2*{: .pn}", '1'],
-          ["\n@*3*{: .pn}", '2'],
-          ["\n%*4*{: .pn}", '3'],
-          ["\n@%*5*{: .pn}", '4'],
+          ["*1*{: .pn} the first para\n\n*141*{: .pn}", '1'],
+          ["*2*{: .pn} the first para\n\n*141*{: .pn}", '1'],
+          ["@*3*{: .pn} the first para\n\n*141*{: .pn}", '2'],
+          ["%*4*{: .pn} the first para\n\n*141*{: .pn}", '3'],
+          ["@%*5*{: .pn} the first para\n\n*141*{: .pn}", '4'],
         ].each do |test_string, xpect|
           it "handles #{ test_string.inspect }" do
             AcceptedCorrectionsIntoContentAt.send(
               :compute_first_para_num, test_string
+            ).must_equal(xpect)
+          end
+        end
+      end
+
+      describe 'compute_last_para_num' do
+        [
+          ["*1*{: .pn} the first para\n\n*141*{: .pn}", '141'],
+          ["*1*{: .pn} the first para\n\n@*142*{: .pn}", '142'],
+          ["*1*{: .pn} the first para\n\n%*143*{: .pn}", '143'],
+          ["*1*{: .pn} the first para\n\n@%*144*{: .pn}", '144'],
+          ["*1*{: .pn} the first para\n\n*145a*{: .pn}", '145a'],
+        ].each do |test_string, xpect|
+          it "handles #{ test_string.inspect }" do
+            AcceptedCorrectionsIntoContentAt.send(
+              :compute_last_para_num, test_string
             ).must_equal(xpect)
           end
         end
