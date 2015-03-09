@@ -60,6 +60,14 @@ module Kramdown
             before << '\\RtParagraphNumber{'
             after << '}'
           end
+          if el.has_class?('subscript')
+            before << '\\textsubscript{'
+            after << '}'
+          end
+          if el.has_class?('superscript')
+            before << '\\textsuperscript{'
+            after << '}'
+          end
         end
         "#{ before }#{ inner_text || inner(el, opts) }#{ after }"
       end
