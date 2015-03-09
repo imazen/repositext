@@ -186,12 +186,48 @@ module Kramdown
             end
           end
 
-          it 'Handles .underline' do
-            doc = Document.new('*the text*{:.underline}', :input => 'KramdownRepositext')
+          it 'Handles .bold' do
+            doc = Document.new('*the text*{:.bold}', :input => 'KramdownRepositext')
             doc.to_idml_story.must_equal %(
               <ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/Normal">
-                <CharacterStyleRange Underline="true" AppliedCharacterStyle="CharacterStyle/Regular">
+                <CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Bold">
                   <Content>the text</Content>
+                </CharacterStyleRange>
+              </ParagraphStyleRange>
+            ).strip.gsub(/              /, '') + "\n"
+          end
+
+          it 'Handles .bold.italic' do
+            doc = Document.new('*the text*{:.bold.italic}', :input => 'KramdownRepositext')
+            doc.to_idml_story.must_equal %(
+              <ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/Normal">
+                <CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Bold Italic">
+                  <Content>the text</Content>
+                </CharacterStyleRange>
+              </ParagraphStyleRange>
+            ).strip.gsub(/              /, '') + "\n"
+          end
+
+          it 'Handles .italic' do
+            doc = Document.new('*the text*{:.italic}', :input => 'KramdownRepositext')
+            doc.to_idml_story.must_equal %(
+              <ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/Normal">
+                <CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Italic">
+                  <Content>the text</Content>
+                </CharacterStyleRange>
+              </ParagraphStyleRange>
+            ).strip.gsub(/              /, '') + "\n"
+          end
+
+          it 'Handles .pn' do
+            doc = Document.new('*142*{: .pn} and more text', :input => 'KramdownRepositext')
+            doc.to_idml_story.must_equal %(
+              <ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/Normal">
+                <CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph Number">
+                  <Content>142</Content>
+                </CharacterStyleRange>
+                <CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+                  <Content> and more text</Content>
                 </CharacterStyleRange>
               </ParagraphStyleRange>
             ).strip.gsub(/              /, '') + "\n"
@@ -209,21 +245,44 @@ module Kramdown
           end
 
           it 'Handles .subscript' do
-            doc = Document.new('*the text*{:.subscript}', :input => 'KramdownRepositext')
+            doc = Document.new('normal text*subscript*{: .subscript}more normal text', :input => 'KramdownRepositext')
             doc.to_idml_story.must_equal %(
               <ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/Normal">
+                <CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+                  <Content>normal text</Content>
+                </CharacterStyleRange>
                 <CharacterStyleRange Position="Subscript" AppliedCharacterStyle="CharacterStyle/Regular">
-                  <Content>the text</Content>
+                  <Content>subscript</Content>
+                </CharacterStyleRange>
+                <CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+                  <Content>more normal text</Content>
                 </CharacterStyleRange>
               </ParagraphStyleRange>
             ).strip.gsub(/              /, '') + "\n"
           end
 
           it 'Handles .superscript' do
-            doc = Document.new('*the text*{:.superscript}', :input => 'KramdownRepositext')
+            doc = Document.new('normal text*superscript*{: .superscript}more normal text', :input => 'KramdownRepositext')
             doc.to_idml_story.must_equal %(
               <ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/Normal">
+                <CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+                  <Content>normal text</Content>
+                </CharacterStyleRange>
                 <CharacterStyleRange Position="Superscript" AppliedCharacterStyle="CharacterStyle/Regular">
+                  <Content>superscript</Content>
+                </CharacterStyleRange>
+                <CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">
+                  <Content>more normal text</Content>
+                </CharacterStyleRange>
+              </ParagraphStyleRange>
+            ).strip.gsub(/              /, '') + "\n"
+          end
+
+          it 'Handles .underline' do
+            doc = Document.new('*the text*{:.underline}', :input => 'KramdownRepositext')
+            doc.to_idml_story.must_equal %(
+              <ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/Normal">
+                <CharacterStyleRange Underline="true" AppliedCharacterStyle="CharacterStyle/Regular">
                   <Content>the text</Content>
                 </CharacterStyleRange>
               </ParagraphStyleRange>

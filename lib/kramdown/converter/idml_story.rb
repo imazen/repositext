@@ -211,12 +211,16 @@ module Kramdown
           char_st_rng_tag(orig_el, 'Bold', &block)
         elsif el.type == :em
           # We use :em to represent spans. Compute class for span:
-          style = if el.has_class?('italic') && el.has_class?('bold')
+          style = case
+          when el.has_class?('bold') && el.has_class?('italic')
+            # Most restrictive condition, check first
             'Bold Italic'
-          elsif el.has_class?('bold')
+          when el.has_class?('bold')
             'Bold'
-          elsif el.has_class?('italic') || '' == el.attr['class'].to_s
+          when el.has_class?('italic') || '' == el.attr['class'].to_s
             'Italic'
+          when el.has_class?('pn')
+            'Paragraph Number'
           else
             'Regular'
           end
@@ -226,6 +230,8 @@ module Kramdown
           attr['Position'] = 'Superscript'  if el.has_class?('superscript')
           attr['Underline'] = 'true'  if el.has_class?('underline')
           char_st_rng_tag(orig_el, style, attr, &block)
+        elsif :gap_mark == el.type
+          char_st_rng_tag(orig_el, nil, { 'FillColor' => "Color/GAP RED" }, &block)
         else
           char_st_rng_tag(orig_el, 'Regular', &block)
         end
