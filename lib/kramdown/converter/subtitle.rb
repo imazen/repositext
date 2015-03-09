@@ -119,7 +119,7 @@ module Kramdown
       def add_subtitle_mark_to_beginning_of_first_paragraph(txt)
         return(txt)  if txt.index('@')
         # Insert '@' in the first line that contains text and is not a header
-        txt.sub(/(\n)([^\[\s])/, '\1@\2')
+        txt.sub(/(\n)(?!(\s|\[\|\#))/, '\1@')
       end
 
     end
