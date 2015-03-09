@@ -223,7 +223,7 @@ module Kramdown
             doc = Document.new('*142*{: .pn} and more text', :input => 'KramdownRepositext')
             doc.to_idml_story.must_equal %(
               <ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/Normal">
-                <CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph Number">
+                <CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Paragraph number">
                   <Content>142</Content>
                 </CharacterStyleRange>
                 <CharacterStyleRange AppliedCharacterStyle="CharacterStyle/Regular">

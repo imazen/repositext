@@ -220,7 +220,7 @@ module Kramdown
           when el.has_class?('italic') || '' == el.attr['class'].to_s
             'Italic'
           when el.has_class?('pn')
-            'Paragraph Number'
+            'Paragraph number'
           else
             'Regular'
           end
