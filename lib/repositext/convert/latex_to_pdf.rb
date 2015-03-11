@@ -14,12 +14,15 @@ class Repositext
 
       class XelatexNotInstalledError < ::StandardError; end
 
+      # @param latex [String] a latex document
+      # @return [PDF] a pdf binary string
       def self.convert(latex)
         xelatex_location = `which xelatex`.strip
         if '' == xelatex_location || !FileTest.executable?(xelatex_location)
           raise(XelatexNotInstalledError.new('Could not find xelatex. Please install xelatex to generate PDFs.'))
         end
-        r = nil
+        pdf = ''
+        log = ''
         Dir.mktmpdir { |tmp_dir|
           latex_filename = File.join(tmp_dir, 'tmp.tex')
           File.write(latex_filename, latex)
@@ -32,19 +35,22 @@ class Repositext
             latex_filename,
           ].join(' ')
           `#{ command }`
+          tex_file_contents = File.read(File.join(tmp_dir, 'tmp.tex'))
+          log_file_contents = File.read(File.join(tmp_dir, 'tmp.log'))
           # puts '-' * 80
           # puts Dir.entries(tmp_dir)
           # puts '-' * 80
-          # puts File.read(File.join(tmp_dir, 'tmp.tex'))
+          # puts tex_file_contents
           # puts '-' * 80
-          # puts File.read(File.join(tmp_dir, 'tmp.log'))
+          # puts log_file_contents
           # puts '-' * 80
+
           pdf_filename = File.join(tmp_dir, 'tmp.pdf')
-          r = File.binread(pdf_filename)
+          pdf = File.binread(pdf_filename)
         }
         # TODO: consider not removing the tmp dir on exception so that the log
         # can be inspected. Or print out log on exception.
-        r
+        pdf
       end
 
     end
