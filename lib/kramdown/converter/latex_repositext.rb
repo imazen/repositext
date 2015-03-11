@@ -104,7 +104,9 @@ module Kramdown
         when 1
           # render in RtTitle environment
           l_title = inner(el, opts)
-          @document_title ||= l_title # capture first level 1 header as document title
+          # capture first level 1 header as document title
+          @document_title_plain_text ||= el.to_plain_text
+          @document_title_latex ||= l_title
           "\\begin{RtTitle}\n#{self.class.emulate_small_caps(l_title) }\n\\end{RtTitle}"
         when 3
           # render in RtSubTitle environment
@@ -193,11 +195,13 @@ module Kramdown
       def convert_root(el, opts)
         latex_body = inner(el, opts)
         latex_body = post_process_latex_body(latex_body)
-        # strip any latex commands (e.g., emph and textbf) from title
-        document_title = (
-          @document_title || '[Untitled]'
-        ).strip.gsub(/\A(?:\\[[:alpha:]]+\{)+(.+)\}+/, '\1')
-        r = wrap_body_in_template(latex_body, document_title)
+        document_title_plain_text = (
+          @document_title_plain_text || '[Untitled]'
+        ).strip
+        document_title_latex = (
+          @document_title_latex || '[Untitled]'
+        )
+        r = wrap_body_in_template(latex_body, document_title_plain_text, document_title_latex)
         if @options[:debug]
           puts('---- Latex source code (start): ' + '-' * 40)
           puts r
@@ -235,7 +239,7 @@ module Kramdown
 
       # Override this method in any subclasses that wrap the latex body with
       # a preamble to make a complete latex document.
-      def wrap_body_in_template(latex_body, document_title)
+      def wrap_body_in_template(latex_body, document_title_plain_text, document_title_latex)
         latex_body
       end
 

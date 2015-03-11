@@ -53,14 +53,18 @@ module Kramdown
       protected
 
         # Returns a complete latex document as string.
-        # @param[String] latex_body
-        # @param[String] document_title
+        # @param latex_body [String]
+        # @param document_title_plain_text [String]
+        # @param document_title_latex [String]
         # @return[String]
-        def wrap_body_in_template(latex_body, document_title)
+        def wrap_body_in_template(latex_body, document_title_plain_text, document_title_latex)
+          # Assign l_vars not used in template
           date_code = @options[:source_filename].split('/')
                                                  .last
                                                  .match(/[[:alpha:]]{3}\d{2}-\d{4}[[:alpha:]]?/)
                                                  .to_s
+          git_repo = Repositext::Repository.new
+          latest_commit = git_repo.latest_commit(@options[:source_filename])
           # assign i_vars referenced in template file
           @additional_footer_text = escape_latex_text(@options[:additional_footer_text])
           @body = latex_body
@@ -68,21 +72,20 @@ module Kramdown
           @font_leading = @options[:font_leading_override] || 11.8
           @font_name = @options[:font_name_override] || (@options[:is_primary_repo] ? 'V-Calisto-St' : 'V-Excelsior LT Std')
           @font_size = @options[:font_size_override] || 11
-          @git_repo = Repositext::Repository.new
           @header_text = compute_header_text_latex(
             @options[:header_text],
             @options[:is_primary_repo],
             @options[:language_code_3_chars]
-            )
+          )
           @header_title = compute_header_title_latex(
-            document_title,
+            document_title_plain_text,
+            document_title_latex,
             @options[:is_primary_repo],
             @options[:language_code_3_chars]
-            )
+          )
           @include_meta_info = include_meta_info
           @is_primary_repo = @options[:is_primary_repo]
-          @latest_commit = @git_repo.latest_commit(@options[:source_filename])
-          @latest_commit_hash = @latest_commit.oid[0,8]
+          @latest_commit_hash = latest_commit.oid[0,8]
           @page_number_command = compute_page_number_command(
             @options[:is_primary_repo],
             @options[:language_code_3_chars]
@@ -91,17 +94,18 @@ module Kramdown
           @paragraph_number_font_name = @options[:font_name_override] ? 'V-Excelsior LT Std' : @font_name
           @primary_font_name = 'V-Calisto-St'
           @scale_factor = size_scale_factor
-          @title = escape_latex_text(document_title)
           @title_font_name = @options[:font_name_override] || 'V-Calisto-St'
-          @truncated_title_footer = compute_truncated_title(document_title, 45, 3)
+          @truncated_title_footer = compute_truncated_title(
+            document_title_plain_text, document_title_latex, 45, 3
+          )
           @use_cjk_package = ['chn'].include?(@options[:language_code_3_chars])
           @version_control_page = if @options[:version_control_page]
-            compute_version_control_page(@git_repo, @options[:source_filename])
+            compute_version_control_page(git_repo, @options[:source_filename])
           else
             ''
           end
           # dependency boundary
-          @meta_info = include_meta_info ? compute_meta_info(@git_repo, @latest_commit) : ''
+          @meta_info = include_meta_info ? compute_meta_info(git_repo, latest_commit) : ''
 
           erb = ERB.new(latex_template)
           r = erb.result(binding)
@@ -127,17 +131,20 @@ module Kramdown
           end
         end
 
-        # @param[String] document_title
-        # @param[Boolean] is_primary_repo
-        def compute_header_title_latex(document_title, is_primary_repo, language_code_3_chars)
+        # @param document_title_plain_text [String]
+        # @param document_title_latex [String]
+        # @param is_primary_repo [Boolean]
+        # @param language_code_3_chars [String]
+        # @return [String]
+        def compute_header_title_latex(document_title_plain_text, document_title_latex, is_primary_repo, language_code_3_chars)
           if is_primary_repo
             # bold, italic, small caps and large font
-            truncated = escape_latex_text(compute_truncated_title(document_title, 70, 3))
+            truncated = compute_truncated_title(document_title_plain_text, document_title_latex, 63, 3)
             small_caps = ::Kramdown::Converter::LatexRepositext.emulate_small_caps(truncated)
             "\\textscale{#{ 0.909091 * size_scale_factor }}{\\textbf{\\textit{#{ small_caps }}}}"
           else
             # regular, all caps and small font
-            truncated = escape_latex_text(compute_truncated_title(document_title, 54, 3))
+            truncated = compute_truncated_title(document_title_plain_text, document_title_latex, 54, 3)
             r = "\\textscale{#{ 0.7 * size_scale_factor }}{#{ UnicodeUtils.upcase(truncated) }}"
             if 'chn' == language_code_3_chars
               r = "\\textbf{#{ r }}"
@@ -183,12 +190,105 @@ module Kramdown
         end
 
         # Returns a version of title that is guaranteed to be no longer than
-        # max_len
-        # @param[String] title the title without any latex commands
-        # @param[Integer] max_len maximum length of returned string
-        # @param[Integer] min_length_of_last_word minimum length of last word in returned string
-        def compute_truncated_title(title, max_len, min_length_of_last_word)
-          title.truncate(max_len, separator: /(?<=[[:alpha:]]{#{ min_length_of_last_word }})\s/)
+        # max_len (after removing all latex markup) while maintaining valid
+        # latex markup.
+        #
+        # This is how it works:
+        # title_latex:     \emph{word} \emph{and some really long text to get truncation word \textscale{0.7}{word word word} word}
+        # plain text mask:                                                                                         xxxxxxxxx xxxxx
+        # title_plain_text:      word        and some really long text to get truncation word                 word word word  word
+        # trunc_title_pt:        word        and some really long text to get truncation word                 word…
+        # result:          \emph{word} \emph{and some really long text to get truncation word \textscale{0.7}{word…}}
+        #
+        # Three strings we work with:
+        #   * title_plain_text (full plain text version of title)
+        #   * title_latex (title with latex markup)
+        #   * truncated_title_plain_text (truncated plain text version of title)
+        # Types of chars encountered:
+        #   * latex_command
+        #   * opening_brace
+        #   * back_to_back_braces
+        #   * closing_brace
+        #   * matching_plain_text_char
+        #   * other_char (e.g., latex function argument)
+        # State_variables:
+        #   * plain_text_index (current position in plain_text_title)
+        #   * brace_nesting_level (to balance braces)
+        #   * reached_truncation_length (false until truncation length is reached)
+        #
+        # @param title_plain_text [String] the title in plain text format.
+        # @param title_latex [String] the title in latex format.
+        # @param max_len [Integer] maximum length of returned string.
+        # @param min_length_of_last_word [Integer] minimum length of last word in returned string
+        def compute_truncated_title(title_plain_text, title_latex, max_len, min_length_of_last_word)
+          # Nothing to do if title_plain_text is already short enough
+          return title_latex  if title_plain_text.length <= max_len
+
+          truncated_title_plain_text = title_plain_text.truncate(
+            max_len,
+            separator: /(?<=[[:alpha:]]{#{ min_length_of_last_word }})\s/,
+            omission: '…',
+          )
+
+          brace_nesting_level = 0 # to keep track whether we're inside latex braces
+          plain_text_index = 0 # position of plain_text we match
+          reached_truncation_length = false # keep track of whether we've reached truncation point
+          new_title_latex = ''
+
+          open_brace_regex = /\{/
+          back_to_back_braces_regex = /\}\{/
+          closing_brace_regex = /\}/
+          latex_command_regex = /\\[a-z]+/i
+
+          s = StringScanner.new(title_latex)
+          while !s.eos? do
+            # check for various character types in descending specificity
+            if (latex_cmd = s.scan(latex_command_regex))
+              # latex command, capture, leave brace_nesting_level unchanged
+              new_title_latex << latex_cmd
+            elsif (back_to_back_braces = s.scan(back_to_back_braces_regex))
+              # back to back braces, capture, leave brace_nesting_level unchanged
+              new_title_latex << back_to_back_braces
+            elsif (open_brace = s.scan(open_brace_regex))
+              # open brace, capture, increase nesting level
+              new_title_latex << open_brace
+              brace_nesting_level += 1
+            elsif (closing_brace = s.scan(closing_brace_regex))
+              # closing brace, capture, decrease nesting level
+              raise "Invalid latex braces: #{ title_latex.inspect }"  if brace_nesting_level <= 0
+              new_title_latex << closing_brace
+              brace_nesting_level -= 1
+            elsif (
+              matching_plain_text_char = s.scan(
+                Regexp.new(
+                  Regexp.escape(
+                    title_plain_text[plain_text_index]
+                  )
+                )
+              )
+            )
+              # match with current plain text character
+              if !reached_truncation_length
+                # still room, use char from truncated string (so we get ellipsis)
+                new_title_latex << truncated_title_plain_text[plain_text_index]
+              end
+              plain_text_index += 1
+              # detect whether we've reached truncation length
+              if truncated_title_plain_text[plain_text_index].nil?
+                reached_truncation_length = true
+              end
+            else
+              # other character, capture
+              new_title_latex << s.getch
+            end
+            if brace_nesting_level <= 0 && reached_truncation_length
+              # We've reached the end of truncated plain_text string,
+              # we're not in a latex command, and all latex braces have been
+              # closed.
+              s.terminate
+            end
+          end
+          new_title_latex
         end
 
         # Returns a list of commits and commit messages for the exported file.
