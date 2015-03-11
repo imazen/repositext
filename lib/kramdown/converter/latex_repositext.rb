@@ -107,6 +107,12 @@ module Kramdown
           # capture first level 1 header as document title
           @document_title_plain_text ||= el.to_plain_text
           @document_title_latex ||= l_title
+          # Fix issue where superscript fontsize in RtTitle is not scaled down
+          # Convert "\textsuperscript{1}"
+          # To "\textsuperscript{\textscale{0.7}{1}}"
+          l_title = l_title.gsub(
+            /(?<=\\textsuperscript\{)([^\}]+)(?=\})/, "\\textscale{0.7}{" + '\1}'
+          )
           "\\begin{RtTitle}\n#{self.class.emulate_small_caps(l_title) }\n\\end{RtTitle}"
         when 3
           # render in RtSubTitle environment
