@@ -135,5 +135,19 @@ module Kramdown
       end
     end
 
+    describe "#to_plain_text" do
+      it "converts an element and its descendants to plain text" do
+        p = Element.new(:p)
+        child = Element.new(:em)
+        p.children = [child]
+        grand_children = [
+          Element.new(:text, 'word1 '),
+          Element.new(:text, 'word2'),
+        ]
+        child.children = grand_children
+        p.to_plain_text.must_equal("word1 word2\n")
+      end
+    end
+
   end
 end

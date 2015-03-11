@@ -170,5 +170,17 @@ module Kramdown
       class_names.each { |e| add_class(e) }
     end
 
+    # Returns plain_text version of self and all descendants
+    # @param collector [String, optional] for recursive calls
+    # @param return [String]
+    def to_plain_text(collector = '')
+      before, after = Kramdown::Converter::PlainText.convert_el(self)
+      collector << before  if before
+      # walk the tree
+      children.each { |e| e.to_plain_text(collector) }
+      collector << after  if after
+      collector
+    end
+
   end
 end

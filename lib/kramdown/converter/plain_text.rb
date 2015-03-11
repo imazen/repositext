@@ -14,10 +14,11 @@ module Kramdown
         @plain_text = '' # collector for plain text string
       end
 
-      # Extracts plain text from tree
-      # @param[Kramdown::Element] el
-      # @return[String] the plain text
-      def convert(el)
+      # Extract conversion dispatcher into class method so that we can use it
+      # from other places (e.g., when patching Kramdown::Element#to_plain_text)
+      # @param el [Kramdown::Element]
+      # @return [Array<String>, Nil] tuple of before and after text or nil if nothing to do
+      def self.convert_el(el)
         case el.type
         when :a
           # nothing to do
@@ -27,18 +28,18 @@ module Kramdown
           # nothing to do
         when :entity
           # Decode whitelisted entities
-          @plain_text << Repositext::Utils::EntityEncoder.decode(el.options[:original])
+          [Repositext::Utils::EntityEncoder.decode(el.options[:original]), nil]
         when :gap_mark
           # nothing to do
         when :header
           # add a new line for each header
-          @plain_text << "\n"
+          [nil, "\n"]
         when :hr
           # put 7 asterisks on new line.
-          @plain_text << "\n* * * * * * *"
+          ["* * * * * * *\n", nil]
         when :p
           # add a new line for each paragraph
-          @plain_text << "\n"
+          [nil, "\n"]
         when :record_mark
           # nothing to do
         when :root
@@ -49,13 +50,23 @@ module Kramdown
           # nothing to do
         when :text
           # capture value of all :text elements
-          @plain_text << el.value
+          [el.value, nil]
         else
           raise "Handle this element: #{ el.inspect }"
         end
+      end
+
+      # Extracts plain text from tree
+      # @param[Kramdown::Element] el
+      # @return[String] the plain text
+      def convert(el)
+        before, after = self.class.convert_el(el)
+        @plain_text << before  if before
 
         # walk the tree
         el.children.each { |e| convert(e) }
+
+        @plain_text << after  if after
 
         if :root == el.type
           # return @plain_text for :root element
