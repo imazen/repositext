@@ -510,6 +510,60 @@ class Repositext
         }
       end
 
+      # Generates a report that counts all kramdown element class combinations it encounters.
+      def report_kramdown_element_classes_inventory(options)
+        file_count = 0
+        class_combinations = {}
+        Repositext::Cli::Utils.read_files(
+          config.compute_glob_pattern(
+            options['base-dir'] || :content_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :at_extension
+          ),
+          options['file_filter'],
+          nil,
+          "Reading AT files",
+          options
+        ) do |contents, filename|
+          # Since the kramdown parser is specified as module in Rtfile,
+          # I can't use the standard kramdown API:
+          # `doc = Kramdown::Document.new(contents, :input => 'kramdown_repositext')`
+          # We have to patch a base Kramdown::Document with the root to be able
+          # to convert it.
+          root, warnings = config.kramdown_parser(:kramdown).parse(contents)
+          doc = Kramdown::Document.new('')
+          doc.root = root
+          doc_class_combinations = doc.to_report_kramdown_element_classes_inventory
+          doc_class_combinations.each do |et, class_combinations_hash|
+            class_combinations[et] ||= Hash.new(0)
+            class_combinations_hash.each do |cc, count|
+              class_combinations[et][cc] += count
+            end
+          end
+          file_count += 1
+        end
+        lines = []
+        class_combinations.each do |(ke_type, class_combinations_hash)|
+          lines << " - #{ ke_type }:"
+          class_combinations_hash.each do |(classes_combination, count)|
+            lines << "   - #{ classes_combination }: #{ count }"
+          end
+        end
+        lines.each { |e| $stderr.puts e }
+        report_file_path = File.join(config.base_dir(:reports_dir), 'kramdown_element_classes_inventory.txt')
+        File.open(report_file_path, 'w') { |f|
+          f.write "Kramdown element classes inventory\n"
+          f.write '-' * 40
+          f.write "\n"
+          f.write lines.join("\n")
+          f.write "\n"
+          f.write '-' * 40
+          f.write "\n"
+          f.write "Extracted combinations of kramdown element classes from #{ file_count } files at #{ Time.now.to_s }.\n\n"
+          f.write "Command to generate this file: `repositext report kramdown_element_classes_inventory`\n"
+        }
+      end
+
       # Generates a report of all editor notes in content AT with more than
       # char_cutoff characters
       def report_long_editor_notes(options)
@@ -626,60 +680,6 @@ class Repositext
           f.write "\n"
           f.write "Found #{ misaligned_paras.length } paragraphs in #{ file_count } files at #{ Time.now.to_s }.\n\n"
           f.write "Command to generate this file: `repositext report misaligned_question_paragraphs`\n"
-        }
-      end
-
-      # Generates a report that counts all kramdown element class combinations it encounters.
-      def report_kramdown_element_classes_inventory(options)
-        file_count = 0
-        class_combinations = {}
-        Repositext::Cli::Utils.read_files(
-          config.compute_glob_pattern(
-            options['base-dir'] || :content_dir,
-            options['file-selector'] || :all_files,
-            options['file-extension'] || :at_extension
-          ),
-          options['file_filter'],
-          nil,
-          "Reading AT files",
-          options
-        ) do |contents, filename|
-          # Since the kramdown parser is specified as module in Rtfile,
-          # I can't use the standard kramdown API:
-          # `doc = Kramdown::Document.new(contents, :input => 'kramdown_repositext')`
-          # We have to patch a base Kramdown::Document with the root to be able
-          # to convert it.
-          root, warnings = config.kramdown_parser(:kramdown).parse(contents)
-          doc = Kramdown::Document.new('')
-          doc.root = root
-          doc_class_combinations = doc.to_report_kramdown_element_classes_inventory
-          doc_class_combinations.each do |et, class_combinations_hash|
-            class_combinations[et] ||= Hash.new(0)
-            class_combinations_hash.each do |cc, count|
-              class_combinations[et][cc] += count
-            end
-          end
-          file_count += 1
-        end
-        lines = []
-        class_combinations.each do |(ke_type, class_combinations_hash)|
-          lines << " - #{ ke_type }:"
-          class_combinations_hash.each do |(classes_combination, count)|
-            lines << "   - #{ classes_combination }: #{ count }"
-          end
-        end
-        lines.each { |e| $stderr.puts e }
-        report_file_path = File.join(config.base_dir(:reports_dir), 'kramdown_element_classes_inventory.txt')
-        File.open(report_file_path, 'w') { |f|
-          f.write "Kramdown element classes inventory\n"
-          f.write '-' * 40
-          f.write "\n"
-          f.write lines.join("\n")
-          f.write "\n"
-          f.write '-' * 40
-          f.write "\n"
-          f.write "Extracted combinations of kramdown element classes from #{ file_count } files at #{ Time.now.to_s }.\n\n"
-          f.write "Command to generate this file: `repositext report kramdown_element_classes_inventory`\n"
         }
       end
 
