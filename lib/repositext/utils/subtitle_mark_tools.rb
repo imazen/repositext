@@ -11,16 +11,8 @@ class Repositext
       # all tokens except :subtitle_mark.
       # @param[String] txt
       def self.extract_body_text_with_subtitle_marks_only(txt)
-        content = txt.dup
         # Remove id title and paragraph
-        content.gsub!(
-          /
-            [^\n]+\n # the line before a line that contains '.id_title1'
-            [^\n]+\.id_title1 # line that contains id_title
-            .* # anything after the line that contains .id_title
-          /mx, # multiline so that the last .* matches multiple lines to the end of file
-          ''
-        )
+        content = Repositext::Utils::IdPageRemover.remove(txt)
 
         # Remove all tokens but :subtitle_mark from content_at
         content_with_subtitle_marks_only = Suspension::TokenRemover.new(
