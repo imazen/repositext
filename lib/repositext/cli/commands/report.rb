@@ -402,6 +402,68 @@ class Repositext
         $stderr.puts "Command to generate this file: `repositext report html_tag_classes_inventory`"
       end
 
+      # Generates a report that highlights the following:
+      # * Any files that don't have an eagle at the beginning of the second record
+      # * Any files that don't have an eagle at the end of the last record
+      #   (before id page if it exists)
+      # * Any records other than the second or last in each file that contain an eagle
+      # Allows exemption of records from the above rules.
+      def report_invalid_eagles(options)
+        file_count = 0
+        issues = {}
+        Repositext::Cli::Utils.read_files(
+          config.compute_glob_pattern(
+            options['base-dir'] || :content_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :at_extension
+          ),
+          options['file_filter'],
+          nil,
+          "Reading content AT files",
+          options
+        ) do |contents, filename|
+          # parse AT, use converter to generate warnings
+          # Since the kramdown parser is specified as module in Rtfile,
+          # I can't use the standard kramdown API:
+          # `doc = Kramdown::Document.new(contents, :input => 'kramdown_repositext')`
+          # We have to patch a base Kramdown::Document with the root to be able
+          # to convert it.
+          contents_without_id_page = Repositext::Utils::IdPageRemover.remove(contents)
+          root, warnings = config.kramdown_parser(:kramdown).parse(contents_without_id_page)
+          doc = Kramdown::Document.new('')
+          doc.root = root
+          file_issues = doc.to_report_invalid_eagles
+          if file_issues.any?
+            issues[filename] = file_issues
+            file_issues.each { |issue|
+              $stderr.puts "   - #{ issue.inspect }"
+            }
+          end
+          file_count += 1
+        end
+        report_file_path = File.join(config.base_dir(:reports_dir), 'invalid_eagles.txt')
+        File.open(report_file_path, 'w') { |f|
+          f.write "Invalid eagles\n"
+          f.write "==============\n"
+          f.write "\n"
+          # Sort by filename
+          issues.sort { |a,b| a.first <=> b.first }.each do |(filename, file_issues)|
+            f.write '-' * 40
+            f.write "\n"
+            f.write filename
+            f.write "\n"
+            file_issues.each do |file_issue|
+              f.write " - #{ file_issue[:issue] }, record_id: #{ file_issue[:record_id] }"
+              f.write "\n"
+            end
+          end
+          f.write '-' * 40
+          f.write "\n"
+          f.write "Found #{ issues.length } of #{ file_count } files with issues at #{ Time.now.to_s }.\n\n"
+          f.write "Command to generate this file: `repositext report invalid_eagles`\n"
+        }
+      end
+
       # Finds invalid quote sequences, e.g., two subsequent open double quotes.
       # An invalid sequence is:
       # * two quotes of same QuoteType with no other quote inbetween (applies to s-quote-open or d-quote-close only)
