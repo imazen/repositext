@@ -174,22 +174,17 @@ class Repositext
           options.merge({ 'base-dir' => :idml_import_dir, 'file-extension' => :at_extension })
         )
         # set up filename transform for inserting record_marks
-        repo_base_dir = config.base_dir(:rtfile_dir)
-        primary_repo_base_dir = File.expand_path(
-          config.setting(:relative_path_to_primary_repo),
-          repo_base_dir
-        ) + '/'
         fix_insert_record_mark_into_all_at_files(
           options.merge({
             'base-dir' => :idml_import_dir,
             'file-extension' => :at_extension,
             'filename_proc' => lambda { |filename|
-              filename.gsub(
-                repo_base_dir,
-                primary_repo_base_dir
-              ).gsub(
-                /\/#{ config.setting(:language_code_3_chars) }/,
-                "/#{ config.setting(:primary_repo_lang_code) }"
+              Repositext::Utils::CorrespondingPrimaryFileFinder.find(
+                filename: filename,
+                language_code_3_chars: config.setting(:language_code_3_chars),
+                rtfile_dir: config.base_dir(:rtfile_dir),
+                relative_path_to_primary_repo: config.setting(:relative_path_to_primary_repo),
+                primary_repo_lang_code: config.setting(:primary_repo_lang_code)
               ).gsub(
                 '/idml_import/', '/content/'
               ).gsub(

@@ -133,16 +133,12 @@ class Repositext
         # Merge contents of target language and primary language for interleaved
         # printing
         pre_process_content_proc = lambda { |contents, filename, options|
-          primary_repo_base_dir = File.expand_path(
-            config.setting('relative_path_to_primary_repo'),
-            config.base_dir(:rtfile_dir)
-          ) + '/'
-          primary_filename = filename.gsub(
-            config.base_dir(:rtfile_dir),
-            primary_repo_base_dir
-          ).gsub(
-            /\/#{ config.setting(:language_code_3_chars) }/,
-            "/#{ config.setting(:primary_repo_lang_code) }"
+          primary_filename = Repositext::Utils::CorrespondingPrimaryFileFinder.find(
+            filename: filename,
+            language_code_3_chars: config.setting(:language_code_3_chars),
+            rtfile_dir: config.base_dir(:rtfile_dir),
+            relative_path_to_primary_repo: config.setting(:relative_path_to_primary_repo),
+            primary_repo_lang_code: config.setting(:primary_repo_lang_code)
           )
           Kramdown::Converter::LatexRepositextRecordingMerged.custom_pre_process_content(
             contents,

@@ -114,21 +114,16 @@ class Repositext
       # Insert a record_mark into each content AT file that doesn't contain one
       # already
       def fix_insert_record_mark_into_all_at_files(options)
-        repo_base_dir = config.base_dir(:rtfile_dir)
-        primary_repo_base_dir = File.expand_path(
-          config.setting(:relative_path_to_primary_repo),
-          repo_base_dir
-        ) + '/'
         # lambda that converts filename to corresponding filename in primary repo
         # Default option works when working on content AT files.
         filename_proc = (
           options['filename_proc'] || lambda { |filename|
-            filename.gsub(
-              repo_base_dir,
-              primary_repo_base_dir
-            ).gsub(
-              /\/#{ config.setting(:language_code_3_chars) }/,
-              "/#{ config.setting(:primary_repo_lang_code) }"
+            Repositext::Utils::CorrespondingPrimaryFileFinder.find(
+              filename: filename,
+              language_code_3_chars: config.setting(:language_code_3_chars),
+              rtfile_dir: config.base_dir(:rtfile_dir),
+              relative_path_to_primary_repo: config.setting(:relative_path_to_primary_repo),
+              primary_repo_lang_code: config.setting(:primary_repo_lang_code)
             )
           }
         )

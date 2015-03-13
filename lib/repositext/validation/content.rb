@@ -22,12 +22,12 @@ class Repositext
         # Validate that there are no significant changes to subtitle_mark positions.
         # Define proc that computes subtitle_mark_csv filename from content_at filename
         stm_csv_file_name_proc = lambda { |input_filename, file_specs|
-          input_filename.gsub( # update path
-            @options['primary_repo_transforms'][:base_dir][:from],
-            @options['primary_repo_transforms'][:base_dir][:to]
-          ).gsub( # update language code
-            /(?<=\/)#{ @options['primary_repo_transforms'][:language_code][:from] }(?=\d)/,
-            @options['primary_repo_transforms'][:language_code][:to]
+          Repositext::Utils::CorrespondingPrimaryFileFinder.find(
+            filename: input_filename,
+            language_code_3_chars: @options['primary_repo_transform_params'][:language_code_3_chars],
+            rtfile_dir: @options['primary_repo_transform_params'][:rtfile_dir],
+            relative_path_to_primary_repo: @options['primary_repo_transform_params'][:relative_path_to_primary_repo],
+            primary_repo_lang_code: @options['primary_repo_transform_params'][:primary_repo_lang_code]
           ).gsub( # update file extension
             /\.at\z/,
             '.subtitle_markers.csv'
