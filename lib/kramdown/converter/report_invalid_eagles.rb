@@ -81,22 +81,40 @@ module Kramdown
       def check_for_invalid_eagles(records_with_eagles, number_of_records, second_record_id, last_record_id)
         rwe = records_with_eagles.dup
         r = []
-        if !(se = rwe.delete(2))
-          r << { record_id: second_record_id, issue: :starting_eagle_missing }
-        elsif :first != se[:eagle_position]
-          r << { record_id: se[:record_id], issue: :starting_eagle_in_unexpected_location }
+        if !exempted_record_ids.include?(second_record_id)
+          if !(se = rwe.delete(2))
+            r << { record_id: second_record_id, issue: :starting_eagle_missing }
+          elsif :first != se[:eagle_position]
+            r << { record_id: se[:record_id], issue: :starting_eagle_in_unexpected_location }
+          end
         end
-        if !(ee = rwe.delete(number_of_records))
-          r << { record_id: last_record_id, issue: :ending_eagle_missing }
-        elsif :last != ee[:eagle_position]
-          r << { record_id: ee[:record_id], issue: :ending_eagle_in_unexpected_location }
+        if !exempted_record_ids.include?(last_record_id)
+          if !(ee = rwe.delete(number_of_records))
+            r << { record_id: last_record_id, issue: :ending_eagle_missing }
+          elsif :last != ee[:eagle_position]
+            r << { record_id: ee[:record_id], issue: :ending_eagle_in_unexpected_location }
+          end
         end
         if rwe.any?
           r += rwe.map { |record_number, eagle_attrs|
+            next  if exempted_record_ids.include?(eagle_attrs[:record_id])
             { record_id: eagle_attrs[:record_id], issue: :unexpected_eagle }
           }
         end
         r
+      end
+
+      # Returns a list of exempted record_ids (these are allowed to have invalid eagles)
+      def exempted_record_ids
+        %w[
+          rid-47020013
+          rid-53010011
+          rid-53030011
+          rid-55010011
+          rid-62191809
+          rid-62200019
+          rid-62100013
+        ]
       end
 
     end
