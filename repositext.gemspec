@@ -5,8 +5,8 @@ Gem::Specification.new do |s|
   s.name        = "repositext"
   s.version     = '0.0.1'
   s.platform    = Gem::Platform::RUBY
-  s.authors     = ["Nathanael Jones", "Jo Hund"]
-  s.email       = ["nathanael.jones@gmail.com"]
+  s.authors     = ["Jo Hund", "Nathanael Jones"]
+  s.email       = ["jhund@clearcove.ca"]
   s.homepage    = "http://github.com/imazen/repositext"
   s.summary     = %q{Customized parser/converter for repositext}
   s.description = ""
@@ -18,6 +18,9 @@ Gem::Specification.new do |s|
 
   s.add_dependency('awesome_print')
   s.add_dependency('builder')
+  # I would have liked to use diff_match_patch which we already use for suspension, however
+  # there was no simple way to do line diffing in DMP, so I use this gem for now.
+  s.add_dependency('diff-lcs')
   s.add_dependency('kramdown')
   s.add_dependency('logging')
   s.add_dependency('nokogiri')

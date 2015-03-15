@@ -138,6 +138,25 @@ class Repositext
         end
       end
 
+      def validate_paragraph_style_consistency(options)
+        options['report_file'] ||= config.compute_glob_pattern(
+          :reports_dir, :validation_report_file, ''
+        )
+        reset_validation_report(options, 'validate_paragraph_style_consistency')
+        input_base_dir = config.compute_base_dir(options['base-dir'] || :content_dir)
+        input_file_selector = config.compute_file_selector(options['file-selector'] || :all_files)
+        file_specs = config.compute_validation_file_specs(
+          primary: [input_base_dir, input_file_selector, :at_extension], # for reporting only
+          content_at_files: [input_base_dir, input_file_selector, :at_extension],
+        )
+        validation_options = {
+          'is_primary_repo' => config.setting(:is_primary_repo),
+          'kramdown_parser_class' => config.kramdown_parser(:kramdown),
+          'primary_repo_transform_params' => primary_repo_transform_params,
+        }.merge(options)
+        Repositext::Validation::ParagraphStyleConsistency.new(file_specs, validation_options).run
+      end
+
       def validate_rtfile(options)
         Repositext::Validation::Rtfile.new(
           config.compute_base_dir(options['base-dir'] || :rtfile_dir) + 'Rtfile',
