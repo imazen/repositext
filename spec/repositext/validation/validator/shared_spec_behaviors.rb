@@ -5,7 +5,7 @@ class Repositext
 
         # Returns an array with validator, logger, and reporter instances
         # @param[Class] klass a validator class
-        # @param[IO, optional] file_to_validate
+        # @param[IO, Array<IO>, optional] file_to_validate
         # @param[Logger, optional] logger
         # @param[Reporter, optional] reporter
         # @param[Hash, optional] options
