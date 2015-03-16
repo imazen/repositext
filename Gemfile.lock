@@ -11,6 +11,7 @@ PATH
     repositext (0.0.1)
       awesome_print
       builder
+      diff-lcs
       kramdown
       logging
       nokogiri
@@ -38,6 +39,7 @@ GEM
   specs:
     awesome_print (1.2.0)
     builder (3.2.2)
+    diff-lcs (1.2.5)
     diff_match_patch_native (1.0.2)
       rice (>= 1.4.2)
     fakefs (0.5.0)

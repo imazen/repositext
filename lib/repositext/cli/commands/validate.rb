@@ -139,8 +139,9 @@ class Repositext
       end
 
       def validate_paragraph_style_consistency(options)
-        options['report_file'] ||= config.compute_glob_pattern(
-          :reports_dir, :validation_report_file, ''
+        options['report_file'] ||= File.join(
+          config.compute_base_dir(:reports_dir),
+          'validate_paragraph_style_consistency.txt'
         )
         reset_validation_report(options, 'validate_paragraph_style_consistency')
         input_base_dir = config.compute_base_dir(options['base-dir'] || :content_dir)
