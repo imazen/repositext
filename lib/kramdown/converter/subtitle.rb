@@ -99,9 +99,6 @@ module Kramdown
         r.gsub!(/<<replace space after with 4 spaces>>([^\s]*)\s*/, '\1    ')
         # close wrap title in brackets and pipes
         r.gsub!(/(?<=\[\|#)([^\n]*)/, '\1|]')
-        # remove beginning and ending eagles
-        # TODO: Leave them in once subtitling uses new apps that display the eagle correctly
-        r.gsub!(/ ? ?/, '')
         # move subtitle marks that are inside header wrappers to before the wrapper
         r.gsub!(/(?<=\n)(\[\|[#]+\s+)(@)/, '\2\1')
         # trim leading and trailing whitespace
