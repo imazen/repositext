@@ -74,6 +74,28 @@ class Repositext
               break
             end
           end
+          # Detect paragraphs that are not followed by two newlines.
+          str_sc.reset
+          while !str_sc.eos? do
+            if (match = str_sc.scan_until(/
+              \n\{:[^}]*\} # block IAL
+              (?=( # followed by one of
+                \n[^\n] # single newline
+                | # OR
+                \n{3,} # 3 or more newlines
+              ))
+            /x))
+              errors << Reportable.error(
+                [
+                  @file_to_validate.path,
+                  sprintf("line %5s", str_sc.current_line_number)
+                ],
+                ['Paragraph not followed by exactly 2 newlines']
+              )
+            else
+              break
+            end
+          end
         end
 
         # @param[String] source the kramdown source string

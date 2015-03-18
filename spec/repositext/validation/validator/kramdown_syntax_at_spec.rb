@@ -31,6 +31,23 @@ class Repositext
 
         end
 
+        describe '#valid_kramdown_syntax?' do
+          [
+            ["paragraph followed by single newline\n{: .normal}\nnext para", false],
+            ["paragraph followed by two newlines\n{: .normal}\n\nnext para", true],
+            ["paragraph followed by three newlines\n{: .normal}\n\n\nnext para", false],
+            ["paragraph followed by ten newlines\n{: .normal}\n\n\n\n\n\n\n\n\n\nnext para", false],
+          ].each do |test_string, xpect|
+            it "handles #{ test_string.inspect }" do
+              validator, logger, reporter = build_validator_logger_and_reporter(
+                KramdownSyntaxAt,
+                FileLikeStringIO.new('_path', '_txt')
+              )
+              validator.valid_kramdown_syntax?(test_string).success.must_equal(xpect)
+            end
+          end
+        end
+
         describe '#valid_syntax_at?' do
           [
             ["valid kramdown AT", true],
