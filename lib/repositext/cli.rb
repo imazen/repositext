@@ -55,7 +55,6 @@ class Repositext
                  :type => :boolean,
                  :default => false,
                  :desc => 'If true, skips the check to make sure that the local repo is up-to-date with origin/master.'
-
     # Override original initialize so that the options hash is not frozen. We
     # need to modify it.
     def initialize(args=[], options={}, config={})
@@ -149,6 +148,9 @@ class Repositext
 
     desc 'sync SPEC', 'Syncs data between different file types in /content'
     long_desc long_description_for_sync
+    method_option :'auto-insert-missing-subtitle-marks',
+                  :type => :boolean,
+                  :desc => 'Automatically inserts missing subtitle marks into subtitle_marker files based on subtitles in /content AT'
     # @param[String] command_spec Specification of the operation
     def sync(command_spec)
       invoke_repositext_command('sync', command_spec, options)
@@ -197,6 +199,9 @@ class Repositext
 
     desc 'import SPEC', 'Imports files and merges changes into /content'
     long_desc long_description_for_import
+    method_option :'auto-insert-missing-subtitle-marks',
+                  :type => :boolean,
+                  :desc => 'Automatically inserts missing subtitle marks into subtitle_marker files based on subtitles in /content AT'
     # @param[String] command_spec Specification of the operation
     def import(command_spec)
       check_that_current_branch_is_up_to_date_with_origin_master

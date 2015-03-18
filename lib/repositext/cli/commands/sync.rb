@@ -26,7 +26,9 @@ class Repositext
               nil
             end
             outcome = Repositext::Sync::SubtitleMarkCharacterPositions.sync(
-              contents, previous_stm_csv
+              contents,
+              previous_stm_csv,
+              options['auto-insert-missing-subtitle-marks']
             )
             [Outcome.new(true, { contents: outcome.result, extension: 'subtitle_markers.csv' })]
           else
