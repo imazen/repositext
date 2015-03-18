@@ -256,6 +256,51 @@ class Repositext
         }
       end
 
+      # Generates a report with all content AT files that contain subtitles. This is based
+      # on the presence of a subtitle markers CSV file that contains non-zero
+      # timestamps.
+      def report_files_with_subtitles(options)
+        total_csv_file_count = 0
+        files_with_subtitles = []
+
+        Repositext::Cli::Utils.read_files(
+          config.compute_glob_pattern(
+            options['base-dir'] || :content_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :csv_extension
+          ),
+          options['file_filter'] || /\.subtitle_markers\.csv\z/,
+          nil,
+          "Reading subtitle marker CSV files",
+          options
+        ) do |contents, filename|
+          total_csv_file_count += 1
+          uniq_first_col_vals = contents.scan(/^\d+/).uniq
+          if ['0'] != uniq_first_col_vals
+            # File has non-zero timestamps
+            file_base_name = filename.split('/').last
+            files_with_subtitles << file_base_name.gsub(/\.subtitle_markers\.csv\z/, '.at')
+            $stderr.puts " - #{ file_base_name }"
+          end
+        end
+
+        summary_line = "Found #{ files_with_subtitles.length } of #{ total_csv_file_count } CSV files with subtitles at #{ Time.now.to_s }."
+        $stderr.puts summary_line
+        report_file_path = File.join(config.base_dir(:reports_dir), 'files_with_subtitles.txt')
+        File.open(report_file_path, 'w') { |f|
+          f.write "Files with subtitles\n"
+          f.write '-' * 40
+          f.write "\n"
+          f.write files_with_subtitles.join("\n")
+          f.write "\n"
+          f.write '-' * 40
+          f.write "\n"
+          f.write summary_line
+          f.write "\n\n"
+          f.write "Command to generate this file: `repositext report files_with_subtitles`\n"
+        }
+      end
+
       # Generate summary of folio import warnings
       def report_folio_import_warnings(options)
         uniq_warnings = Hash.new(0)
