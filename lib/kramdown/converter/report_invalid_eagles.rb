@@ -114,6 +114,8 @@ module Kramdown
           rid-62191809
           rid-62200019
           rid-62100013
+          rid-65260019
+          rid-65270919
         ]
       end
 
