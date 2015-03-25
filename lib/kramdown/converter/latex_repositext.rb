@@ -114,6 +114,16 @@ module Kramdown
             /(?<=\\textsuperscript\{)([^\}]+)(?=\})/, "\\textscale{0.7}{" + '\1}'
           )
           "\\begin{RtTitle}\n#{self.class.emulate_small_caps(l_title) }\n\\end{RtTitle}"
+        when 2
+          # render in RtTitle2 environment
+          l_title = inner(el, opts)
+          # Fix issue where superscript fontsize in RtTitle is not scaled down
+          # Convert "\textsuperscript{1}"
+          # To "\textsuperscript{\textscale{0.7}{1}}"
+          l_title = l_title.gsub(
+            /(?<=\\textsuperscript\{)([^\}]+)(?=\})/, "\\textscale{0.7}{" + '\1}'
+          )
+          "\\begin{RtTitle2}\n#{self.class.emulate_small_caps(l_title) }\n\\end{RtTitle2}"
         when 3
           # render in RtSubTitle environment
           "\\begin{RtSubTitle}\n#{ inner(el, opts) }\n\\end{RtSubTitle}"

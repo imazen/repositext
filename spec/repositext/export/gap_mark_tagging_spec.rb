@@ -24,6 +24,7 @@ class Repositext
           ["span IALs are removed{: .class}", "span IALs are removed"],
           ["(underscore placeholder)s are processed", "_s are processed"],
           ["# headers are preserved", "# headers are preserved"],
+          ["## headers are preserved", "# headers are preserved"],
           ["### headers are preserved", "### headers are preserved"],
           ["block IALs are preserved\n{: .class}\n", "block IALs are preserved\n{: .class}\n"],
           ["%gap marks are preserved", "%gap marks are preserved"],

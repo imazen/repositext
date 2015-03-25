@@ -10,6 +10,8 @@ module Kramdown
       [
         [%(the body), %(the body)],
         [%(# the header), %(the header)],
+        [%(## the header), %(the header)],
+        [%(### the header), %(the header)],
         [%(*the em*), %(the em)],
         [%(**the strong**), %(the strong)],
         [%(para 1\n\npara 2), %(para 1\npara 2)],

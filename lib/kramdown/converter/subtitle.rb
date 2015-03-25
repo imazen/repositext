@@ -38,6 +38,9 @@ module Kramdown
           when 1
             # render as H1
             @output << "\n[|# "
+          when 2
+            # render as H2
+            @output << "\n[|## "
           when 3
             # render as H3
             @output << "\n\n[|### "
