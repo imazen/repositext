@@ -138,6 +138,24 @@ class Repositext
         end
       end
 
+      # Validates that plain text of idml import AT is consistent with plain text of content AT
+      def validate_idml_import_consistency(options)
+        options['report_file'] ||= config.compute_glob_pattern(
+          :idml_import_dir, :validation_report_file, ''
+        )
+        reset_validation_report(options, 'validate_idml_import')
+        input_base_dir = config.compute_base_dir(options['base-dir'] || :idml_import_dir)
+        input_file_selector = config.compute_file_selector(options['file-selector'] || :all_files)
+        input_file_extension = config.compute_file_extension(
+          options['file-extension'] || :at_extension
+        )
+        file_specs = config.compute_validation_file_specs(
+          primary: [input_base_dir, input_file_selector, input_file_extension], # for reporting only
+          idml_import_at_files: [input_base_dir, input_file_selector, input_file_extension],
+        )
+        Repositext::Validation::IdmlImportConsistency.new(file_specs, options).run
+      end
+
       def validate_paragraph_style_consistency(options)
         options['report_file'] ||= File.join(
           config.compute_base_dir(:reports_dir),

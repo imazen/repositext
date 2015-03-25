@@ -4,6 +4,9 @@ class Repositext
 
       # Specifies validations to run related to Idml import.
       def run_list
+
+        # Single files
+
         validate_files(:imported_repositext_files) do |path|
           Validator::Utf8Encoding.new(
             File.open(path), @logger, @reporter, @options
@@ -15,6 +18,7 @@ class Repositext
             File.open(path), @logger, @reporter, @options
           ).run
         end
+
       end
 
     end
