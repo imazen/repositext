@@ -81,6 +81,7 @@ class Repositext
           [
             ["\n\n@para1\n\n@para2", []],
             ["\n\n@para1\n\npara2", ['para2']],
+            ["\n\n@para1\n\npa@ra2\n\npara3@\n\npara4", ['pa@ra2', 'para3@', 'para4']],
           ].each do |test_string, xpect|
             it "handles #{ test_string.inspect }" do
               v = SubtitleMarkAtBeginningOfEveryParagraph.new('_', '_', '_', { })

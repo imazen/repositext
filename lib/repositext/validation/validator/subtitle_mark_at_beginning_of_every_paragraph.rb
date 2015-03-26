@@ -51,15 +51,15 @@ class Repositext
             else
               Outcome.new(
                 false, nil, [],
-                [
+                paragraphs_without_subtitle_mark.map { |para|
                   Reportable.error(
                     [@file_to_validate.path], # content_at file
                     [
-                      "The following paragraphs don't start with a subtitle_mark:",
-                      paragraphs_without_subtitle_mark.map { |e| e.inspect }.join("\n")
+                      "The following paragraph doesn't start with a subtitle_mark:",
+                      para.inspect
                     ]
                   )
-                ]
+                }
               )
             end
           else
