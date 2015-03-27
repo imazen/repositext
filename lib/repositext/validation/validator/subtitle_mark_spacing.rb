@@ -21,35 +21,40 @@ class Repositext
         # @param[String] content_at
         # @return[Outcome]
         def subtitle_marks_spaced_correctly?(content_at)
-          content_with_subtitle_marks_only = Repositext::Utils::SubtitleMarkTools.extract_body_text_with_subtitle_marks_only(content_at)
-          if !content_with_subtitle_marks_only.index('@')
-            # Document doesn't contain subtitle marks, skip it
-            return Outcome.new(true, nil)
-          end
+          # Early return if content doesn't contain any subtitle_marks
+          return Outcome.new(true, nil)  if !content_at.index('@')
 
-          captions = Repositext::Utils::SubtitleMarkTools.extract_captions(
-            content_with_subtitle_marks_only,
-            true
-          )
-          too_long_captions = captions.find_all { |caption| caption[:char_length] > 120 }
+          too_long_captions = find_too_long_captions(content_at)
           if too_long_captions.empty?
             Outcome.new(true, nil)
           else
             Outcome.new(
               false, nil, [],
-              [
+              too_long_captions.map { |(line, length, excerpt)|
                 Reportable.error(
-                  [@file_to_validate.path], # content_at file
+                  [@file_to_validate.path, "line #{ line }"], # content_at file
                   [
-                    'The following captions are too long:',
-                    too_long_captions.map { |e|
-                      "#{ e.length } chars: #{ e.inspect }"
-                    }.join("\n")
+                    'Subtitle caption is too long:',
+                    %(#{ length } characters in caption "#{ excerpt }"),
                   ]
                 )
-              ]
+              }
             )
           end
+        end
+
+        def find_too_long_captions(txt)
+          content_with_subtitle_marks_only = Repositext::Utils::SubtitleMarkTools.extract_body_text_with_subtitle_marks_only(
+            txt
+          )
+          captions = Repositext::Utils::SubtitleMarkTools.extract_captions(
+            content_with_subtitle_marks_only,
+            true
+          )
+          captions.find_all { |caption| caption[:char_length] > 120 }
+                  .map { |e|
+                    [e[:line], e[:char_length], e[:excerpt]]
+                  }
         end
 
       end

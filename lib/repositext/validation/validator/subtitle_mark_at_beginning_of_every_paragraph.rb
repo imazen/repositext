@@ -2,6 +2,9 @@ class Repositext
   class Validation
     class Validator
       # Validates that there is a subtitle_mark at the beginning of every paragraph
+      # after the second record_id. We assume that every document has at least
+      # two record_ids. This is a fair assumption since this validation is only
+      # run on the primary repository.
       class SubtitleMarkAtBeginningOfEveryParagraph < Validator
 
         class NoSubtitleMarkAtBeginningOfParagraphError < StandardError; end
@@ -17,19 +20,20 @@ class Repositext
 
       private
 
-        # Checks that every paragraph begins with a subtitle_mark
-        # @param[String] content
-        # @return[Outcome]
+        # Checks that every paragraph in content begins with a subtitle_mark
+        # @param content [String]
+        # @return [Outcome]
         def subtitle_mark_at_beginning_of_every_paragraph?(content)
           # Early return if content doesn't contain any subtitle_marks
           return Outcome.new(true, nil)  if !content.index('@')
-          # We only look at text after the first subtitle_mark. Replace all lines
-          # before the first subtitle_mark with empty lines (to keep line location
+          # We only look at text after the second record_id. Replace all lines
+          # before the second record_id with empty lines (to keep line location
           # in error reports accurate)
-          content_from_first_subtitle_mark = remove_all_text_content_before_first_subtitle_mark(content)
+          content_from_second_record_id = remove_all_text_content_before_second_record_id(content)
           case @options[:content_type]
           when :import
-            paragraphs_without_subtitle_mark = check_import_file(content_from_first_subtitle_mark)
+            # In this mode we raise an exception if we find any paragraphs
+            paragraphs_without_subtitle_mark = check_import_file(content_from_second_record_id)
             if paragraphs_without_subtitle_mark.empty?
               Outcome.new(true, nil)
             else
@@ -45,17 +49,18 @@ class Repositext
               )
             end
           when :content
-            paragraphs_without_subtitle_mark = check_content_file(content_from_first_subtitle_mark)
+            # In this mode we only report errors if we find any paragraphs
+            paragraphs_without_subtitle_mark = check_content_file(content_from_second_record_id)
             if paragraphs_without_subtitle_mark.empty?
               Outcome.new(true, nil)
             else
               Outcome.new(
                 false, nil, [],
-                paragraphs_without_subtitle_mark.map { |para|
+                paragraphs_without_subtitle_mark.map { |(line, para)|
                   Reportable.error(
-                    [@file_to_validate.path], # content_at file
+                    [@file_to_validate.path, line], # content_at file
                     [
-                      "The following paragraph doesn't start with a subtitle_mark:",
+                      "Paragraph doesn't start with a subtitle_mark:",
                       para.inspect
                     ]
                   )
@@ -67,35 +72,52 @@ class Repositext
           end
         end
 
-        # @param[String] content
-        # @return[Array<String>] an array of paras that don't start with @
+        # @param content [String]
+        # @return (see #get_paragraphs_that_dont_start_with_subtitle_mark)
         def check_import_file(content)
-          c = content.dup
-          c.strip!
-          get_paragraphs_that_dont_start_with_subtitle_mark(c)
+          # No need to strip other tokens since the subtitle import files have them stripped already
+          get_paragraphs_that_dont_start_with_subtitle_mark(content)
         end
 
         # @param[String] content
-        # @return[Array<String>] an array of paras that don't start with @
+        # @return (see #get_paragraphs_that_dont_start_with_subtitle_mark)
         def check_content_file(content)
           content_with_subtitle_marks_only = Repositext::Utils::SubtitleMarkTools.extract_body_text_with_subtitle_marks_only(content)
           get_paragraphs_that_dont_start_with_subtitle_mark(content_with_subtitle_marks_only)
         end
 
+        # @return [Array<Array<String>>] an array of arrays with line numbers and paras that don't start with @
         def get_paragraphs_that_dont_start_with_subtitle_mark(content)
           # split on para boundaries and find those that don't start with subtitle_mark
-          content.strip.split(/\n+/).find_all { |para|
-            '@' != para.strip[0]
+          content.split(/\n/).each_with_index.inject([]) { |m, (para, line_idx)|
+            if '' != para && '@' != para.strip[0]
+              m << ["line #{ line_idx + 1}", para]
+            end
+            m
           }
         end
 
-        # Keeps only newlines of lines before the first subtitle_mark in txt
+        # Empties all lines up to the second record_id
         # @param[String]
         # @return[String]
-        def remove_all_text_content_before_first_subtitle_mark(txt)
-          substring_to_first_subtitle_mark = txt.match(/\A[^@]*(?=(@|\z))/).to_s
-          only_newlines_preserved = substring_to_first_subtitle_mark.gsub(/[^\n]/, '')
-          txt.sub(substring_to_first_subtitle_mark, only_newlines_preserved)
+        def remove_all_text_content_before_second_record_id(txt)
+          # split text into lines
+          lines = txt.split("\n")
+          # empty all lines up to second record_id
+          record_id_counter = 0
+          lines.each_with_index do |line, idx|
+            record_id_counter += 1  if /\A\^\^\^/ =~ line
+            lines[idx] = ''
+            break  if record_id_counter >= 2
+          end
+          if record_id_counter < 2
+            # No second record_id found, return original text
+            puts 'Warning: Could not find second record_id'
+            txt
+          else
+            # return modified text
+            lines.join("\n")
+          end
         end
 
       end

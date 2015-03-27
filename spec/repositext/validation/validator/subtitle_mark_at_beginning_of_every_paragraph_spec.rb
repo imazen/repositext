@@ -50,7 +50,7 @@ class Repositext
         describe 'check_import_file' do
           [
             ["\n\n@para1\n\n@para2", []],
-            ["\n\n@para1\n\npara2 without subtitle-mark", ['para2 without subtitle-mark']],
+            ["\n\n@para1\n\npara2 without subtitle-mark", [['line 5', 'para2 without subtitle-mark']]],
           ].each do |test_string, xpect|
             it "handles #{ test_string.inspect }" do
               v = SubtitleMarkAtBeginningOfEveryParagraph.new('_', '_', '_', { })
@@ -64,8 +64,14 @@ class Repositext
 
         describe 'check_content_file' do
           [
-            [%(\n\n@para1 *with other tokens*{: .italic}\n\n^^^ {: .rid #rid-64080029 kpn="002"}\n\n@para2), []],
-            [%(\n\n@para1 *with other tokens*{: .italic}\n\n^^^ {: .rid #rid-64080029 kpn="002"}\n\npara2 without subtitle-mark), ['para2 without subtitle-mark']],
+            [
+              %(\n\n@para1 *with other tokens*{: .italic}\n\n^^^ {: .rid #rid-64080029 kpn="002"}\n\n@para2),
+              []
+            ],
+            [
+              %(\n\n@para1 *with other tokens*{: .italic}\n\n^^^ {: .rid #rid-64080029 kpn="002"}\n\npara2 without subtitle-mark),
+              [['line 7', 'para2 without subtitle-mark']]
+            ],
           ].each do |test_string, xpect|
             it "handles #{ test_string.inspect }" do
               v = SubtitleMarkAtBeginningOfEveryParagraph.new('_', '_', '_', { })
@@ -80,8 +86,14 @@ class Repositext
         describe 'get_paragraphs_that_dont_start_with_subtitle_mark' do
           [
             ["\n\n@para1\n\n@para2", []],
-            ["\n\n@para1\n\npara2", ['para2']],
-            ["\n\n@para1\n\npa@ra2\n\npara3@\n\npara4", ['pa@ra2', 'para3@', 'para4']],
+            ["\n\n@para1\n\npara2", [['line 5', 'para2']]],
+            [
+              "\n\n@para1\n\npa@ra2\n\npara3@\n\npara4", [
+                ['line 5', 'pa@ra2'],
+                ['line 7', 'para3@'],
+                ['line 9', 'para4'],
+              ]
+            ],
           ].each do |test_string, xpect|
             it "handles #{ test_string.inspect }" do
               v = SubtitleMarkAtBeginningOfEveryParagraph.new('_', '_', '_', { })
@@ -93,16 +105,16 @@ class Repositext
           end
         end
 
-        describe 'remove_all_text_content_before_first_subtitle_mark' do
+        describe 'remove_all_text_content_before_second_record_id' do
           [
-            ["# header\n\n@para1\n", "\n\n@para1\n"],
-            ["# header\n\n@para1\n\n@para2", "\n\n@para1\n\n@para2"],
-            ['_', ''],
+            ["^^^\n\n# header\n\n^^^\n\n@para1\n", "\n\n\n\n\n\n@para1"],
+            ["^^^\n\n# header\n\n^^^\n\n@para1\n\n@para2", "\n\n\n\n\n\n@para1\n\n@para2"],
+            ['leaves text without two record_marks intact', 'leaves text without two record_marks intact'],
           ].each do |test_string, xpect|
             it "handles #{ test_string.inspect }" do
               v = SubtitleMarkAtBeginningOfEveryParagraph.new('_', '_', '_', { })
               v.send(
-                :remove_all_text_content_before_first_subtitle_mark,
+                :remove_all_text_content_before_second_record_id,
                 test_string
               ).must_equal(xpect)
             end
