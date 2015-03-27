@@ -54,7 +54,7 @@ class Repositext
               significantly_changed_captions << {
                 excerpt: new_caption[:excerpt],
                 line_num: line_num,
-                subtitle_index: idx
+                subtitle_index: idx + 1 # subtitle_index is '1'-based in the other workflow tools
               }
             end
           }
