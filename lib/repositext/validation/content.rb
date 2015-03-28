@@ -8,6 +8,7 @@ class Repositext
         # Single files
 
         validate_files(:content_at_files) do |path|
+          Validator::EaglesConnectedToParagraph.new(File.open(path), @logger, @reporter, @options).run
           Validator::KramdownSyntaxAt.new(File.open(path), @logger, @reporter, @options).run
           if @options['is_primary_repo']
             Validator::SubtitleMarkSpacing.new(
