@@ -26,14 +26,11 @@ class Repositext
         def subtitle_mark_at_beginning_of_every_paragraph?(content)
           # Early return if content doesn't contain any subtitle_marks
           return Outcome.new(true, nil)  if !content.index('@')
-          # We only look at text after the second record_id. Replace all lines
-          # before the second record_id with empty lines (to keep line location
-          # in error reports accurate)
-          content_from_second_record_id = remove_all_text_content_before_second_record_id(content)
           case @options[:content_type]
           when :import
             # In this mode we raise an exception if we find any paragraphs
-            paragraphs_without_subtitle_mark = check_import_file(content_from_second_record_id)
+            content_without_headers = empty_header_lines(content)
+            paragraphs_without_subtitle_mark = check_import_file(content_without_headers)
             if paragraphs_without_subtitle_mark.empty?
               Outcome.new(true, nil)
             else
@@ -50,6 +47,10 @@ class Repositext
             end
           when :content
             # In this mode we only report errors if we find any paragraphs
+            # We only look at text after the second record_id. Replace all lines
+            # before the second record_id with empty lines (to keep line location
+            # in error reports accurate)
+            content_from_second_record_id = remove_all_text_content_before_second_record_id(content)
             paragraphs_without_subtitle_mark = check_content_file(content_from_second_record_id)
             if paragraphs_without_subtitle_mark.empty?
               Outcome.new(true, nil)
@@ -95,6 +96,12 @@ class Repositext
             end
             m
           }
+        end
+
+        # Empties all header lines on an import file ("[|# Header text|]")
+        # @param txt [String]
+        def empty_header_lines(txt)
+          txt.gsub(/^\[\|[^\]\n]+\](?=\n)/, '')
         end
 
         # Empties all lines up to the second record_id

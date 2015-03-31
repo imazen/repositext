@@ -121,6 +121,21 @@ class Repositext
           end
         end
 
+        describe 'empty_header_lines' do
+          [
+            ["[|# Header text|]\n\n@ word word\n", "\n\n@ word word\n"],
+            ["[|# Header text|]\n\n@ word word\n\n[|# Header text|]\n\n@ word word", "\n\n@ word word\n\n\n\n@ word word"],
+          ].each do |test_string, xpect|
+            it "handles #{ test_string.inspect }" do
+              v = SubtitleMarkAtBeginningOfEveryParagraph.new('_', '_', '_', { })
+              v.send(
+                :empty_header_lines,
+                test_string
+              ).must_equal(xpect)
+            end
+          end
+        end
+
       end
 
     end
