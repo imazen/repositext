@@ -139,12 +139,19 @@ module Kramdown
         def compute_header_title_latex(document_title_plain_text, document_title_latex, is_primary_repo, language_code_3_chars)
           if is_primary_repo
             # bold, italic, small caps and large font
+            # NOTE: All titles are wrapped in <em>, so that will take care of the italics part.
+            # That means we don't need to add it here.
             truncated = compute_truncated_title(document_title_plain_text, document_title_latex, 63, 3)
             small_caps = ::Kramdown::Converter::LatexRepositext.emulate_small_caps(truncated)
-            "\\textscale{#{ 0.909091 * size_scale_factor }}{\\textbf{\\textit{#{ small_caps }}}}"
+            "\\textscale{#{ 0.909091 * size_scale_factor }}{\\textbf{#{ small_caps }}}"
           else
             # regular, all caps and small font
             truncated = compute_truncated_title(document_title_plain_text, document_title_latex, 54, 3)
+            # NOTE: This is really screwed up, but it works:
+            # For foreign we don't want italic. However the title is wrapped in <em>.
+            # The italic is neutralized because the upcase command converts
+            # "\emph" => "\EMPH" which is not recognized by latex, so no italics is applied.
+            # So for the time being I'll leave it as is.
             r = "\\textscale{#{ 0.7 * size_scale_factor }}{#{ UnicodeUtils.upcase(truncated) }}"
             if 'chn' == language_code_3_chars
               r = "\\textbf{#{ r }}"
