@@ -68,8 +68,9 @@ class Repositext
 
         describe '#extract_paragraph_styles' do
           [
-            ["para\n{: .normal}", ['', '{: .normal}']],
-            ["para with .omit\n{: .normal .omit}", ['', '{: .normal}']],
+            ["para\n{: .normal}", ['', '.normal']],
+            ["para with .omit last\n{: .normal .omit}", ['', '.normal']],
+            ["para with .omit first\n{: .omit .stanza}", ['', '.stanza']],
           ].each do |test_string, xpect|
             it "handles #{ test_string.inspect }" do
               validator, logger, reporter = build_validator_logger_and_reporter(

@@ -53,7 +53,10 @@ class Repositext
           }.inject([]) { |m,e|
             # Remove .omit classes. They are expected to be different between
             # primary and foreign languages.
-            m << e.gsub(/\s*\.omit\s*/, '')
+            r = e.gsub(/\s*\.omit\s*/, ' ')
+            # Remove everything but paragraph class names
+            r = r.scan(/\.\w+/)
+            m << r.join(' ')
           }
         end
 
