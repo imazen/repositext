@@ -4,7 +4,7 @@ class Repositext
 
       # Returns array with headers for subtitle_markers CSV file
       def self.csv_headers
-        ['relativeMS', 'samples', 'charPos', 'charLength']
+        ['relativeMS', 'samples', 'charLength']
       end
 
       # Returns just the body text of txt. Strips id_title and id_paragraph and
@@ -16,7 +16,7 @@ class Repositext
         # Remove id title and paragraph
         content = Repositext::Utils::IdPageRemover.remove(txt)
 
-        # Replace certain block elements with spaces. This is necessary to
+        # Replace certain block elements with empty strings. This is necessary to
         # preserve line number consistency. Suspension::TokenRemover would
         # remove the block's entire line, introducing errors in line numbers for
         # subsequent lines.
@@ -34,7 +34,6 @@ class Repositext
       # @param txt_is_already_cleaned_up [Boolean] set to true if txt has already
       #   been processed through extract_body_text_with_subtitle_marks_only
       # @return[Array<Hash>] with the following keys for each caption:
-      #   :char_pos
       #   :char_length
       #   :line
       #   :excerpt
@@ -45,24 +44,20 @@ class Repositext
         end
 
         captions = []
-        current_char_pos = 1
         line_count = 1
         content.split('@').each_with_index { |caption, idx|
           if 0 == idx
             # handle text before the first subtitle_mark (Not a caption!)
-            current_char_pos += caption.length
             line_count += caption.count("\n")
             next
           end
           # Remove leading and trailing whitespace from caption when determining its length
           captions << {
-            char_pos: current_char_pos,
             char_length: caption.strip.length,
             line: line_count,
             excerpt: "@#{ caption.truncate(40) }"
           }
-          # update current_char_pos, add 1 for removed subtitle_mark (split)
-          current_char_pos += (1 + caption.length)
+          # update line count
           line_count += caption.count("\n")
         }
         captions

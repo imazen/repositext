@@ -2,7 +2,7 @@ class Repositext
   class Sync
     class SubtitleMarkCharacterPositions
 
-      # Synchronizes subtitle_mark character positions from content_at into
+      # Synchronizes subtitle_mark character lengths from content_at into
       # content *.subtitle_markers.csv.
       # Creates the csv file if it doesn't exist already.
       # @param content_at [String] current content_at text
@@ -13,7 +13,7 @@ class Repositext
       # @return[Outcome] the sync'd csv string is returned as #result if successful.
       def self.sync(content_at, existing_stm_csv, auto_insert_missing_subtitle_marks)
         # Compute new stm_positions
-        new_stm_positions_and_lengths = Repositext::Utils::SubtitleMarkTools.extract_captions(content_at)
+        new_stm_lengths = Repositext::Utils::SubtitleMarkTools.extract_captions(content_at)
         # Prepare temporary CSV array with correct number of data rows, no headers
         tmp_csv_array = if existing_stm_csv && !auto_insert_missing_subtitle_marks
           # Load existing CSV, extract existing vals
@@ -25,21 +25,19 @@ class Repositext
         else
           # No existing CSV, create an array with correct number of rows.
           # Sets relativeMS and samples to 0
-          new_stm_positions_and_lengths.map { |e| [0,0] }
+          new_stm_lengths.map { |e| [0,0] }
         end
         # make sure that both counts are identical
-        if new_stm_positions_and_lengths.length != tmp_csv_array.length
-          # TODO: maybe we have to make them the same length, if stm was added or removed
-          raise "Different counts: #{ tmp_csv_array.length } -> #{ new_stm_positions_and_lengths.length }"
+        if new_stm_lengths.length != tmp_csv_array.length
+          raise "Different counts: #{ tmp_csv_array.length } -> #{ new_stm_lengths.length }"
         end
         # merge new positions and lengths into existing array
         merged_csv_array = tmp_csv_array.each_with_index.map { |existing_row, idx|
-          new_row = new_stm_positions_and_lengths[idx]
+          new_row = new_stm_lengths[idx]
           [
             existing_row[0], # 'relativeMS' from existing CSV
             existing_row[1], # 'samples' from existing CSV
-            new_row[:char_pos], # 'charPos' from new_stm_positions_and_lengths
-            new_row[:char_length], # 'charLength' from new_stm_positions_and_lengths
+            new_row[:char_length], # 'charLength' from new_stm_lengths
           ]
         }
         # Convert to CSV

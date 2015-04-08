@@ -15,10 +15,10 @@ class Repositext
               "3\t1",
             ].join("\n"),
             [
-              "relativeMS\tsamples\tcharPos\tcharLength",
-              "1\t1\t1\t5",
-              "2\t1\t7\t5",
-              "3\t1\t13\t3",
+              "relativeMS\tsamples\tcharLength",
+              "1\t1\t5",
+              "2\t1\t5",
+              "3\t1\t3",
               ''
             ].join("\n"),
           ],
@@ -26,17 +26,17 @@ class Repositext
             "@23456@89012@456",
             nil,
             [
-              "relativeMS\tsamples\tcharPos\tcharLength",
-              "\t\t1\t5",
-              "\t\t7\t5",
-              "\t\t13\t3",
+              "relativeMS\tsamples\tcharLength",
+              "0\t0\t5",
+              "0\t0\t5",
+              "0\t0\t3",
               ''
             ].join("\n"),
           ],
         ].each do |content_at, existing_stm_csv, xpect|
           it "handles #{ content_at.inspect }" do
             SubtitleMarkCharacterPositions.send(
-              :sync, content_at, existing_stm_csv
+              :sync, content_at, existing_stm_csv, false
             ).result.must_equal(xpect)
           end
         end
