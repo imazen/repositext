@@ -256,6 +256,52 @@ class Repositext
         }
       end
 
+      # Reports files that contain editors notes with multiple paragraphs
+      def report_files_with_multi_para_editors_notes(options)
+        multi_para_editors_notes = []
+        total_file_count = 0
+        mpen_files_count = 0
+
+        Repositext::Cli::Utils.read_files(
+          config.compute_glob_pattern(
+            options['base-dir'] || :content_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :at_extension
+          ),
+          options['file_filter'],
+          nil,
+          "Reading AT files",
+          options
+        ) do |contents, filename|
+          total_file_count += 1
+          mpen = contents.scan(/(\[[^\]]+\n[^\]]+\])/)
+          if mpen.any?
+            mpen_files_count += 1
+            $stderr.puts " - #{ filename }"
+          end
+          mpen.each do |match|
+            multi_para_editors_notes << { filename: filename, contents: match }
+            $stderr.puts "   - #{ match.inspect }"
+          end
+        end
+
+        summary_line = "Found #{ multi_para_editors_notes.length } editors notes with multiple paragraphs in #{ mpen_files_count } of #{ total_file_count } files at #{ Time.now.to_s }."
+        $stderr.puts summary_line
+        report_file_path = File.join(config.base_dir(:reports_dir), 'files_with_multi_para_editors_notes.txt')
+        File.open(report_file_path, 'w') { |f|
+          f.write "Files with long editors notes\n"
+          f.write '-' * 40
+          f.write "\n"
+          f.write multi_para_editors_notes.join("\n")
+          f.write "\n"
+          f.write '-' * 40
+          f.write "\n"
+          f.write summary_line
+          f.write "\n\n"
+          f.write "Command to generate this file: `repositext report files_with_multi_para_editors_notes`\n"
+        }
+      end
+
       # Generates a report with all content AT files that contain subtitles. This is based
       # on the presence of a subtitle markers CSV file that contains non-zero
       # timestamps.
