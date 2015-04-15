@@ -48,6 +48,9 @@ class Repositext
       end
 
       # Converts apostrophes in text in place
+      # NOTE: This is a rule of thumb and doesn't work 100%.
+      # It was used during initial import to convert as many as possible.
+      # Manual cleanup was required after.
       # @param[String] text
       def self.convert_apostrophes!(text)
         # words with omitted leading characters (e.g., `'cause` for `because`)
