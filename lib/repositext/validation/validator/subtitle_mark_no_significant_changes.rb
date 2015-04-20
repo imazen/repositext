@@ -44,42 +44,57 @@ class Repositext
             return Outcome.new(true, nil)
           end
 
-          significantly_changed_captions = []
+          changed_captions = []
           previous_stm_lengths.each_with_index { |old_caption, idx|
             new_caption = new_captions[idx]
             old_len = old_caption[:char_length]
             new_len = new_caption[:char_length]
-            if subtitle_mark_changed_significantly?(old_len, new_len)
-              significantly_changed_captions << {
+            change_severity = compute_subtitle_mark_change(old_len, new_len)
+            if change_severity
+              changed_captions << {
+                severity: change_severity,
                 excerpt: new_caption[:excerpt],
                 line_num: new_caption[:line],
                 subtitle_index: idx + 1 # subtitle_index is '1'-based in the other workflow tools
               }
             end
           }
-          if significantly_changed_captions.empty?
+          if changed_captions.empty?
             Outcome.new(true, nil)
           else
             Outcome.new(
               false, nil, [],
-              significantly_changed_captions.map { |e|
-                Reportable.error(
-                  [@file_to_validate.first.path], # content_at file
-                  [
-                    'Subtitle caption length has changed significantly',
-                    'Review changes and update subtitle_markers_file with `repositext sync subtitle_mark_character_positions`',
-                    "Subtitle ##{ e[:subtitle_index] } on line #{ e[:line_num] }: #{ e[:excerpt] }"
-                  ]
-                )
+              changed_captions.map { |e|
+                case e[:severity]
+                when :insignificant
+                  Reportable.warning(
+                    [@file_to_validate.first.path], # content_at file
+                    [
+                      'Subtitle caption length has changed insignificantly',
+                      "Subtitle ##{ e[:subtitle_index] } on line #{ e[:line_num] }: #{ e[:excerpt] }"
+                    ]
+                  )
+                when :significant
+                  Reportable.error(
+                    [@file_to_validate.first.path], # content_at file
+                    [
+                      'Subtitle caption length has changed significantly',
+                      'Review changes and update subtitle_markers_file with `repositext sync subtitle_mark_character_positions`',
+                      "Subtitle ##{ e[:subtitle_index] } on line #{ e[:line_num] }: #{ e[:excerpt] }"
+                    ]
+                  )
+                else
+                  raise "Invalid severity: #{ e.inspect }"
+                end
               }
             )
           end
         end
 
-        # Returns true if a subtitle_mark's caption length has changed significantly
+        # Returns :insignificant or :significant if a subtitle_mark's caption length has changed
         # @param[Integer] old_len
         # @param[Integer] new_len
-        def subtitle_mark_changed_significantly?(old_len, new_len)
+        def compute_subtitle_mark_change(old_len, new_len)
           relative_change = (new_len - old_len).abs / old_len.to_f
           threshold = case old_len
           when 0..24
@@ -93,7 +108,15 @@ class Repositext
           else
             raise "Found subtitle_mark spacing > 120 (#{ old_len })."
           end
-          relative_change >= threshold
+          if 0 == relative_change
+            nil
+          elsif relative_change < threshold
+            :insignificant
+          elsif relative_change >= threshold
+            :significant
+          else
+            raise "Handle this: #{ relative_change.inspect }"
+          end
         end
 
       end

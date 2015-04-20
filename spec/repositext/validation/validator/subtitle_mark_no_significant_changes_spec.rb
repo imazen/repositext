@@ -33,34 +33,34 @@ class Repositext
 
         end
 
-        describe 'subtitle_mark_changed_significantly?' do
+        describe 'compute_subtitle_mark_change' do
           [
-            [1, 1, false], # no change
-            [1, 2, true], # > +30%
-            [24, 16, true], # < -30%
-            [24, 17, false], # > -30%
-            [24, 31, false], # < +30%
-            [24, 32, true], # > +30%
-            [25, 18, true], # < -25%
-            [25, 19, false], # > -25%
-            [25, 31, false], # < +25%
-            [25, 32, true], # > +25%
-            [60, 45, true], # < -25%
-            [60, 46, false], # > -25%
-            [60, 74, false], # < +25%
-            [60, 75, true], # > +25%
-            [61, 48, true], # < -20%
-            [61, 49, false], # > -20%
-            [61, 73, false], # < +20%
-            [61, 74, true], # > +20%
-            [120, 95, true], # < -20%
-            [120, 97, false], # > -20%
-            [120, 120, false], # no change
+            [1, 1, nil], # no change
+            [1, 2, :significant], # > +30%
+            [24, 16, :significant], # < -30%
+            [24, 17, :insignificant], # > -30%
+            [24, 31, :insignificant], # < +30%
+            [24, 32, :significant], # > +30%
+            [25, 18, :significant], # < -25%
+            [25, 19, :insignificant], # > -25%
+            [25, 31, :insignificant], # < +25%
+            [25, 32, :significant], # > +25%
+            [60, 45, :significant], # < -25%
+            [60, 46, :insignificant], # > -25%
+            [60, 74, :insignificant], # < +25%
+            [60, 75, :significant], # > +25%
+            [61, 48, :significant], # < -20%
+            [61, 49, :insignificant], # > -20%
+            [61, 73, :insignificant], # < +20%
+            [61, 74, :significant], # > +20%
+            [120, 95, :significant], # < -20%
+            [120, 97, :insignificant], # > -20%
+            [120, 120, nil], # no change
           ].each do |old_len, new_len, xpect|
             it "handles #{ [old_len, new_len] }" do
               v = SubtitleMarkNoSignificantChanges.new('_', '_', '_', {})
               v.send(
-                :subtitle_mark_changed_significantly?,
+                :compute_subtitle_mark_change,
                 old_len, new_len
               ).must_equal(xpect)
             end
