@@ -10,6 +10,12 @@ class Repositext
         ['word @% word', 'word @% word'],
         ['%@ word', '@% word'],
         ['@% word', '@% word'],
+        [' %@@@word', '@% @@word'],
+        [' @@@%word', '@% @@word'],
+        [' %word', '% word'],
+        [' @word', '@ word'],
+        [' @@@@@word', '@ @@@@word'],
+        ['@% @@word', '@% @@word'],
       ].each do |(txt, xpect)|
         it "handles #{ txt.inspect }" do
           o = NormalizeSubtitleMarkBeforeGapMarkPositions.fix(txt, '_')
