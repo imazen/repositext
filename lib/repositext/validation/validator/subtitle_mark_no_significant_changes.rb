@@ -62,18 +62,16 @@ class Repositext
           else
             Outcome.new(
               false, nil, [],
-              [
+              significantly_changed_captions.map { |e|
                 Reportable.error(
                   [@file_to_validate.first.path], # content_at file
                   [
                     'Subtitle caption length has changed significantly',
                     'Review changes and update subtitle_markers_file with `repositext sync subtitle_mark_character_positions`',
-                    significantly_changed_captions.map { |e|
-                      "Subtitle ##{ e[:subtitle_index] } on line #{ e[:line_num] }: #{ e[:excerpt] }"
-                    }.join("\n")
+                    "Subtitle ##{ e[:subtitle_index] } on line #{ e[:line_num] }: #{ e[:excerpt] }"
                   ]
                 )
-              ]
+              }
             )
           end
         end
