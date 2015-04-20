@@ -38,8 +38,10 @@ class Repositext
           new_captions = Repositext::Utils::SubtitleMarkTools.extract_captions(content_at)
           # make sure that both counts are identical
           if new_captions.length != previous_stm_lengths.length
-            # TODO: maybe we have to make them the same length, if stm was added or removed
-            raise "Different counts: #{ previous_stm_lengths.length } -> #{ new_captions.length }"
+            # There is a mismatch in subtitle_mark counts between CSV file and
+            # content_at. It makes no sense to run this validator unless the
+            # counts match. We just skip it silently.
+            return Outcome.new(true, nil)
           end
 
           significantly_changed_captions = []
