@@ -30,12 +30,12 @@ class Repositext
           else
             Outcome.new(
               false, nil, [],
-              too_long_captions.map { |(line, length, excerpt)|
+              too_long_captions.map { |(line, length, idx, excerpt)|
                 Reportable.error(
                   [@file_to_validate.path, "line #{ line }"], # content_at file
                   [
                     'Subtitle caption is too long:',
-                    %(#{ length } characters in caption "#{ excerpt }"),
+                    %(#{ length } characters in caption ##{ idx } "#{ excerpt }"),
                   ]
                 )
               }
@@ -53,7 +53,7 @@ class Repositext
           )
           captions.find_all { |caption| caption[:char_length] > 120 }
                   .map { |e|
-                    [e[:line], e[:char_length], e[:excerpt]]
+                    [e[:line], e[:char_length], e[:index], e[:excerpt]]
                   }
         end
 

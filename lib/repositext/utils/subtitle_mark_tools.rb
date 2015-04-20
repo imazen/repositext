@@ -55,7 +55,8 @@ class Repositext
           captions << {
             char_length: caption.strip.length,
             line: line_count,
-            excerpt: "@#{ caption.truncate(40) }"
+            excerpt: "@#{ caption.truncate(40) }",
+            index: idx,
           }
           # update line count
           line_count += caption.count("\n")

@@ -69,7 +69,7 @@ class Repositext
                     'Subtitle caption length has changed significantly',
                     'Review changes and update subtitle_markers_file with `repositext sync subtitle_mark_character_positions`',
                     significantly_changed_captions.map { |e|
-                      "Subtitle index #{ e[:subtitle_index] } on line #{ e[:line_num] }: #{ e[:excerpt] }"
+                      "Subtitle ##{ e[:subtitle_index] } on line #{ e[:line_num] }: #{ e[:excerpt] }"
                     }.join("\n")
                   ]
                 )
