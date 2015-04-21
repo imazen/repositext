@@ -54,6 +54,7 @@ class Repositext
           str_sc.reset
           while !str_sc.eos? do
             if (match = str_sc.scan_until(/(?<=[[:alpha:]\*\"\“\”\'\‘\’\(\[])[%@]/))
+              next  if "…*@" == match[-3..-1] # allow subtitle marks after ellipsis and asterisk
               msg = case match[-1]
               when '%'
                 next  if @options['skip_invalid_gap_mark_validation']
