@@ -566,9 +566,10 @@ class Repositext
       # for s-quote-close.
       # QuoteType is defined by single/double and open/close.
       # @param[Hash] options
-      # @param[Integer, optional] context_size, num of chars to add before and
-      #     after excerpt for context, set to zero to include entire line
-      def report_invalid_typographic_quotes(options, context_size = 0)
+      def report_invalid_typographic_quotes(options)
+        # For primary repo we want limited context, and for foreign we want
+        # all text from paragraph number
+        context_size = config.setting(:is_primary_repo) ? 5 : 0
         s_quote_open_and_d_quote_close = %(‘”)
         d_quote_open = %(“)
         apostrophe = %(’)
@@ -611,7 +612,7 @@ class Repositext
               if 0 == context_size
                 # include entire lines, including the preceding paragraph number,
                 # don't truncate in the middle
-                start_position = match.rindex(/\n\*\d+\*\{: \.pn\}/, position_of_previous_quote) || 0
+                start_position = match.rindex(/\n[@%]*\*\d+\*\{: \.pn\}/, position_of_previous_quote) || 0
                 excerpt = match[start_position..-1]
                 text_until_following_newline = str_sc.check_until(/\n/)
                 excerpt << text_until_following_newline
