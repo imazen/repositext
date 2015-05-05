@@ -86,14 +86,15 @@ class Repositext
 
           let(:out_dir) { '/directory_2/' }
           let(:out_file_pattern) { "#{ out_dir }*.out" }
-          let(:in_base_dir) { '/directory_1/' }
-          let(:files_only_pattern) { '*.in' } # This contains only the portion after base_dir
+          let(:input_base_dir) { '/directory_1/' }
+          let(:input_file_selector) { '**/*' }
+          let(:input_file_extension) { '*.in' } # This contains only the portion after base_dir
 
           before do
             # Prepare output dir
             FileUtils.mkdir('/directory_2')
             # Execute method under test
-            mod.export_files(in_base_dir, files_only_pattern, out_dir, in_file_filter, desc, {}) do |contents, filename|
+            mod.export_files(input_base_dir, input_file_selector, input_file_extension, out_dir, in_file_filter, desc, {}) do |contents, filename|
               [Outcome.new(true, { :contents => out_cont, :extension => 'out' }, ['msg'])]
             end
           end
@@ -116,8 +117,9 @@ class Repositext
 
           let(:out_dir) { '/directory_2/' }
           let(:out_file_pattern) { "#{ out_dir }*.in" } # extension is .in since we're just moving
-          let(:in_base_dir) { '/directory_1/' }
-          let(:in_files_only_pattern) { '*.in' } # This contains only the portion after base_dir
+          let(:input_base_dir) { '/directory_1/' }
+          let(:input_file_selector) { '**/*' }
+          let(:input_file_extension) { '*.in' } # This contains only the portion after base_dir
 
           before do
             # Count number of input files before we delete them
@@ -125,7 +127,7 @@ class Repositext
             # Prepare output dir
             FileUtils.mkdir('/directory_2')
             # Execute method under test
-            mod.move_files(in_base_dir, in_files_only_pattern, out_dir, in_file_filter, desc, {})
+            mod.move_files(input_base_dir, input_file_selector, input_file_extension, out_dir, in_file_filter, desc, {})
           end
 
           it 'removes existing files' do

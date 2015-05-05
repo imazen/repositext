@@ -41,10 +41,10 @@ class Repositext
             "@23456@89012@456@8",
             true,
             [
-              { char_length: 5, line: 1, excerpt: "@23456" },
-              { char_length: 5, line: 1, excerpt: "@89012" },
-              { char_length: 3, line: 1, excerpt: "@456" },
-              { char_length: 1, line: 1, excerpt: "@8" },
+              { char_length: 5, line: 1, excerpt: "@23456", index: 1 },
+              { char_length: 5, line: 1, excerpt: "@89012", index: 2 },
+              { char_length: 3, line: 1, excerpt: "@456", index: 3 },
+              { char_length: 1, line: 1, excerpt: "@8", index: 4 },
             ]
           ],
           [
@@ -56,27 +56,27 @@ class Repositext
             "@with unicode@123@456\n@123",
             true,
             [
-              { char_length: 12, line: 1, excerpt: "@with unicode" },
-              { char_length: 4, line: 1, excerpt: "@123" },
-              { char_length: 3, line: 1, excerpt: "@456\n" },
-              { char_length: 3, line: 2, excerpt: "@123" },
+              { char_length: 12, line: 1, excerpt: "@with unicode", index: 1 },
+              { char_length: 4, line: 1, excerpt: "@123", index: 2 },
+              { char_length: 3, line: 1, excerpt: "@456\n", index: 3 },
+              { char_length: 3, line: 2, excerpt: "@123", index: 4 },
             ]
           ],
           [
             "@ with leading whitespace@with trailing whitespace @123",
             true,
             [
-              { char_length: 23, line: 1, excerpt: "@ with leading whitespace" },
-              { char_length: 24, line: 1, excerpt: "@with trailing whitespace " },
-              { char_length: 3, line: 1, excerpt: "@123" },
+              { char_length: 23, line: 1, excerpt: "@ with leading whitespace", index: 1 },
+              { char_length: 24, line: 1, excerpt: "@with trailing whitespace ", index: 2 },
+              { char_length: 3, line: 1, excerpt: "@123", index: 3 },
             ]
           ],
           [
             "word\n\n@with multiple\nlines\n@another one",
             true,
             [
-              { char_length: 19, line: 3, excerpt: "@with multiple\nlines\n" },
-              { char_length: 11, line: 5, excerpt: "@another one" },
+              { char_length: 19, line: 3, excerpt: "@with multiple\nlines\n", index: 1 },
+              { char_length: 11, line: 5, excerpt: "@another one", index: 2 },
             ]
           ],
         ].each do |test_string, txt_is_already_cleaned_up, xpect|

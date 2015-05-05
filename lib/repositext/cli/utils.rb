@@ -36,6 +36,9 @@ class Repositext
       # @param input_file_selector [String] the input file selector
       # @param input_file_extension [String] the input file extension
       # @param out_dir [String] the output base directory
+      # @param file_filter [Trequal]
+      # @param description [String]
+      # @param options [Hash]
       # @param: See #process_files_helper below for param description
       def self.copy_files(input_base_dir, input_file_selector, input_file_extension, out_dir, file_filter, description, options)
         # Change output file path to destination, override in options if filename
@@ -54,6 +57,9 @@ class Repositext
       # @param input_file_selector [String] the input file selector
       # @param input_file_extension [String] the input file extension
       # @param out_dir [String] the output base directory
+      # @param file_filter [Trequal]
+      # @param description [String]
+      # @param options [Hash]
       # @param: See #process_files_helper below for param description
       def self.export_files(input_base_dir, input_file_selector, input_file_extension, out_dir, file_filter, description, options, &block)
         # Change output file path to destination
@@ -74,6 +80,9 @@ class Repositext
       # @param input_file_selector [String] the input file selector
       # @param input_file_extension [String] the input file extension
       # @param out_dir [String] the output base directory
+      # @param file_filter [Trequal]
+      # @param description [String]
+      # @param options [Hash]
       # @param: See #process_files_helper below for param description
       def self.move_files(input_base_dir, input_file_selector, input_file_extension, out_dir, file_filter, description, options)
         # Change output file path to destination, override in options if filename
