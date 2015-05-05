@@ -255,6 +255,7 @@ class Repositext
           '',
           "Your local '#{ git_repo.current_branch_name }' branch is not up-to-date with origin/master.",
           'Please get the updates from origin/master first before running a repositext command.',
+          "The remote reported #{ latest_commit_sha_remote } as its latest commit sha1.",
           'You can bypass this check by appending "--skip-git-up-to-date-check=true" to the repositext command'
         ].join("\n"))
       end
