@@ -67,6 +67,14 @@ module Kramdown
         e = Element.new(:text, nil, 'class' => 'class1 class2')
         e.has_class?(' class1 ').must_equal true
       end
+      it "handles multiple classes as argument (pos)" do
+        e = Element.new(:text, nil, 'class' => 'class1')
+        e.has_class?('class1 class2').must_equal true
+      end
+      it "handles multiple classes as argument (neg)" do
+        e = Element.new(:text, nil, 'class' => 'class1')
+        e.has_class?(' class2 class3').must_equal false
+      end
     end
 
     describe "#inspect_tree" do

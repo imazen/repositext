@@ -63,10 +63,12 @@ module Kramdown
       (attr['class'] || '').downcase.split(' ').sort
     end
 
-    # Returns true if self has a_class
-    # @param[String] a_class
-    def has_class?(a_class)
-      get_classes.any? { |e| e == a_class.strip.downcase }
+    # Returns true if self has any of the classes in class_names
+    # @param class_names [String] string with one or more class names, separated by space
+    def has_class?(class_names)
+      class_names.strip.downcase.split(' ').compact.any? { |other_class|
+        get_classes.any? { |e| e == other_class }
+      }
     end
 
     # Returns a tree representation of self and its descendants.
