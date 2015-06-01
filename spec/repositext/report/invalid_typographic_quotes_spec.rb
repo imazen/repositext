@@ -40,6 +40,10 @@ class Repositext
           %(sequence of two ”d_quote_close’ word” with apostrophe inbetween),
           [['_', [{ line: 1 , excerpt: %(sequence of two ”d_quote_close’ word”) }]]]
         ],
+        [
+          %(“word word ’n word: “word”),
+          [['_', [{ line: 1 , excerpt: %(“word word ’n word: “) }]]]
+        ],
       ].each do |(txt, xpect)|
         it "handles #{ txt.inspect }" do
           r = InvalidTypographicQuotes.new(0)
