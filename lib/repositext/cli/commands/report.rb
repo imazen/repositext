@@ -555,42 +555,13 @@ class Repositext
         }
       end
 
-      # Finds invalid quote sequences, e.g., two subsequent open double quotes.
-      # An invalid sequence is:
-      # * two quotes of same QuoteType with no other quote inbetween (applies to s-quote-open or d-quote-close only)
-      # * two d-quote-open with no other quote or paragraph boundary inbetween.
-      #   When a quote spans multiple paragraphs, only the last para has a d-quote-close
-      #   but all paras start with d-quote-open.
-      # Note that s-quote-close is also used as apostrophe, and we could have multiple
-      # of those in subsequent order without being invalid. So we don't test
-      # for s-quote-close.
-      # QuoteType is defined by single/double and open/close.
+      # Finds invalid quote sequences. See class for details.
       # @param[Hash] options
       def report_invalid_typographic_quotes(options)
         # For primary repo we want limited context, and for foreign we want
         # all text from paragraph number
         context_size = config.setting(:is_primary_repo) ? 5 : 0
-        s_quote_open_and_d_quote_close = %(‘”)
-        d_quote_open = %(“)
-        apostrophe = %(’)
-        straight_quotes = %("')
-        newline = %(\n)
-        all_quotes = [s_quote_open_and_d_quote_close, d_quote_open, apostrophe, straight_quotes].join
-        invalid_quotes_rx = /
-          (?:                                       # this non-capturing group handles s-quote-open and d-quote-close
-            ([#{ s_quote_open_and_d_quote_close }]) # one of s-quote-open or d-quote-close
-            [^#{ all_quotes }]*                     # zero or more non-quote chars inbetween
-            \1                                      # same quote type as capture group 1
-          )
-          |
-          (?:                                       # this non-capturing group handles d-quote-open
-            #{ d_quote_open }                       # d-quote-open
-            [^#{ all_quotes + newline }]*           # zero or more non-quote or para chars inbetween
-            #{ d_quote_open }                       # d-quote-open
-          )
-        /mx                                         # NOTE: we don't handle s-quote-close as this is also used for apostrophes
-        output_lines = []
-        files_hash = {}
+        report = Repositext::Report::InvalidTypographicQuotes.new(context_size)
 
         Repositext::Cli::Utils.read_files(
           config.compute_glob_pattern(
@@ -603,44 +574,13 @@ class Repositext
           "Reading folio at files",
           options
         ) do |contents, filename|
-          str_sc = Kramdown::Utils::StringScanner.new(contents)
-          while !str_sc.eos? do
-            if(match = str_sc.scan_until(invalid_quotes_rx))
-              quote_type = match[-1]
-              excerpt = nil
-              position_of_previous_quote = match.rindex(quote_type, -2) || 0
-              if 0 == context_size
-                # include entire lines, including the preceding paragraph number,
-                # don't truncate in the middle
-                start_position = match.rindex(/\n[@%]*\*\d+\*\{: \.pn\}/, position_of_previous_quote) || 0
-                excerpt = match[start_position..-1]
-                text_until_following_newline = str_sc.check_until(/\n/)
-                excerpt << text_until_following_newline
-              else
-                # include context_size chars before and after the quote pair
-                # and truncate in the middle
-                start_position = [position_of_previous_quote - context_size, 0].max
-                excerpt = match[start_position..-1]
-                excerpt << str_sc.peek(context_size)
-                excerpt = excerpt.truncate_in_the_middle(120)
-              end
-              excerpt = excerpt.inspect
-                               .gsub(/^\"/, '') # Remove leading double quotes (from inspect)
-                               .gsub(/\"$/, '') # Remove trailing double quotes (from inspect)
-              files_hash[filename] ||= []
-              files_hash[filename] << {
-                :line => str_sc.current_line_number,
-                :excerpt => excerpt,
-              }
-            else
-              break
-            end
-          end
+          report.process(contents, filename)
         end
+        output_lines = []
         output_lines << "Detecting invalid typographic quotes"
         output_lines << '-' * 80
         total_count = 0
-        files_hash.to_a.sort { |a,b| a.first <=> b.first }.each do |(filename, instances)|
+        report.results.each do |(filename, instances)|
           output_lines << "File: #{ filename }"
           instances.each do |instance|
             total_count += 1
@@ -651,7 +591,7 @@ class Repositext
           end
         end
         output_lines << "-" * 80
-        output_lines << "Found #{ total_count } instances of invalid typographic quotes in #{ files_hash.size } files."
+        output_lines << "Found #{ total_count } instances of invalid typographic quotes in #{ report.results.size } files."
         output_lines.each { |e| $stderr.puts e }
         report_file_path = File.join(config.base_dir(:reports_dir), 'invalid_typographic_quotes.txt')
         File.open(report_file_path, 'w') { |f|
