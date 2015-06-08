@@ -89,12 +89,13 @@ class Repositext
 
         describe '#compute_paragraph_style_diff' do
           [
-            [['{: .normal}'], ['{: .normal}'], []],
-            [['{: .normal1}'], ['{: .normal2}'], [:different_style_in_foreign]],
-            [['', ''], ['', '{: .normal}', ''], [:missing_style_in_foreign]],
-            [['', '{: .normal}', ''], ['', ''], [:extra_style_in_foreign]],
-            [['{: .normal}', '{: .normal}', '{: .normal}'], ['{: .normal_pn}', '{: .normal}', '{: .normal}'], []],
-          ].each do |test_styles_f, test_styles_p, xpect|
+            [['{: .normal}'], ['{: .normal}'], true, []],
+            [['{: .normal1}'], ['{: .normal2}'], true, [:different_style_in_foreign]],
+            [['', ''], ['', '{: .normal}', ''], true, [:missing_style_in_foreign]],
+            [['', '{: .normal}', ''], ['', ''], true, [:extra_style_in_foreign]],
+            [['{: .normal}'], ['{: .normal_pn}'], true, [:different_style_in_foreign]],
+            [['{: .normal}'], ['{: .normal_pn}'], false, []],
+          ].each do |test_styles_f, test_styles_p, distinguish_between_normal_and_normal_pn, xpect|
             it "handles #{ test_styles_f.inspect }" do
               validator, logger, reporter = build_validator_logger_and_reporter(
                 ParagraphStyleConsistency,
@@ -103,9 +104,32 @@ class Repositext
                   FileLikeStringIO.new('_path', '_txt'),
                 ]
               )
+              validator.distinguish_between_normal_and_normal_pn = distinguish_between_normal_and_normal_pn
               validator.send(
                 :compute_paragraph_style_diff, test_styles_f, test_styles_p
               ).map { |e| e[:type] }.must_equal(xpect)
+            end
+          end
+        end
+
+        describe '#foreign_has_paragraph_numbers?' do
+          [
+            ["1 para 1\n\n2 para 2", true],
+            ["para 1\n\npara 2", false],
+            ["1 para 1\n\n2 para 2\n\npara 3", true],
+            ["1 para 1\n\npara 2\n\npara 3", false],
+          ].each do |foreign_test_doc, xpect|
+            it "handles #{ foreign_test_doc.inspect }" do
+              validator, logger, reporter = build_validator_logger_and_reporter(
+                ParagraphStyleConsistency,
+                [
+                  FileLikeStringIO.new('_path', '_txt'),
+                  FileLikeStringIO.new('_path', '_txt'),
+                ]
+              )
+              validator.send(
+                :foreign_has_paragraph_numbers?, foreign_test_doc
+              ).must_equal(xpect)
             end
           end
         end

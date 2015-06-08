@@ -4,6 +4,8 @@ class Repositext
       # Validates that two files' paragraphs have identical styles applied.
       class ParagraphStyleConsistency < Validator
 
+        attr_accessor :distinguish_between_normal_and_normal_pn # for testing
+
         # Runs all validations for self
         def run
           foreign_file, primary_file = @file_to_validate
@@ -16,6 +18,13 @@ class Repositext
         # @param[String] primary_doc
         # @return[Outcome]
         def paragraph_styles_consistent?(foreign_doc, primary_doc)
+          # If the foreign file has no paragraph numbers, then we make no distinction
+          # between .normal and .normal_pn. This is true for some legacy files.
+          # We detect the presence of paragraph numbers in the foreign file,
+          # and if the foreign file appears to have paragraph numbers, then
+          # we distinguish between .normal and .normal_pn.
+          @distinguish_between_normal_and_normal_pn = foreign_has_paragraph_numbers?(foreign_doc)
+
           foreign_doc_paragraph_styles = extract_paragraph_styles(foreign_doc)
           primary_doc_paragraph_styles = extract_paragraph_styles(primary_doc)
 
@@ -66,7 +75,7 @@ class Repositext
         # @param styles_p [Array<String>] one entry per line in primary file.
         # @return [Array<Hash>] one entry for each diff.
         def compute_paragraph_style_diff(styles_f, styles_p)
-          if styles_f.none? { |e| !e.nil? && e.index('.normal_pn') }
+          if !@distinguish_between_normal_and_normal_pn
             # Foreign doesn't contain any paragraph numbers. In that case,
             # .normal and .normal_pn should be treated as equal.
             styles_p.each { |e|
@@ -110,6 +119,14 @@ class Repositext
             end
             m
           }
+        end
+
+        def foreign_has_paragraph_numbers?(foreign_doc)
+          paragraph_number_count = foreign_doc.scan(/^[^\d\n]{0,2}\d+(?![\d\.])/).size
+          block_level_elements_count = foreign_doc.split("\n\n").length
+          return false  if 0 == block_level_elements_count
+          # return true if more than 50% of block level elements contain a para number
+          (paragraph_number_count / block_level_elements_count.to_f) > 0.5
         end
 
       end
