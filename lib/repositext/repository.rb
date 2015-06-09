@@ -28,6 +28,12 @@ class Repositext
     # * #oid (the sha of the commit)
     def latest_commit(filename)
       @repo.lookup(latest_commit_sha_local(filename))
+    rescue Rugged::InvalidError => e
+      puts
+      puts "There was a problem retrieving the latest remote git commit for #{ filename }"
+      puts "Make sure that this file has been pushed at least once to the remote."
+      puts
+      raise e
     end
 
     # Returns name of currently checked out branch
