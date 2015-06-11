@@ -31,8 +31,9 @@ module Kramdown
 
       # Parse the record mark at the current location
       def parse_record_mark
+        start_line_number = @src.current_line_number
         if @src.scan(RECORD_MARK)
-          @tree = el = new_block_el(:record_mark, nil, nil, :category => :block)
+          @tree = el = new_block_el(:record_mark, nil, nil, category: :block, location: start_line_number)
           parse_attribute_list(@src[2], el.options[:ial] ||= Utils::OrderedHash.new) if @src[1]
           @root.children << el
           true
@@ -47,8 +48,9 @@ module Kramdown
 
       # Parse subtitle mark at current location.
       def parse_subtitle_mark
+        start_line_number = @src.current_line_number
         @src.pos += @src.matched_size
-        @tree.children << Element.new(:subtitle_mark, nil, nil, :category => :span)
+        @tree.children << Element.new(:subtitle_mark, nil, nil, :category => :span, location: start_line_number)
       end
       define_parser(:subtitle_mark, SUBTITLE_MARK, SUBTITLE_MARK)
 
@@ -57,8 +59,9 @@ module Kramdown
 
       # Parse gap mark at current location.
       def parse_gap_mark
+        start_line_number = @src.current_line_number
         @src.pos += @src.matched_size
-        @tree.children << Element.new(:gap_mark, nil, nil, :category => :span)
+        @tree.children << Element.new(:gap_mark, nil, nil, :category => :span, location: start_line_number)
       end
       define_parser(:gap_mark, GAP_MARK, GAP_MARK)
 
