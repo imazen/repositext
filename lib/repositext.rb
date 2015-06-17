@@ -41,6 +41,7 @@ require 'repositext/constants'
 
 require 'kramdown/converter/graphviz'
 require 'kramdown/converter/html_doc'
+require 'kramdown/converter/html_repositext'
 require 'kramdown/converter/icml'
 require 'kramdown/converter/idml_story'
 require 'kramdown/converter/latex_repositext'
