@@ -493,6 +493,48 @@ class Repositext
         $stderr.puts "Command to generate this file: `repositext report html_tag_classes_inventory`"
       end
 
+      # Prints report with all words that contain 'oe' and their counts
+      def report_inventory_of_words_with_oe(options)
+        file_count = 0
+        words_with_oe = Hash.new(0)
+        word_with_oe_regex = /\b\w{0,100}oe\w{0,100}\b/i
+        before_word_with_oe_regex = /(?=#{ word_with_oe_regex })/
+
+        Repositext::Cli::Utils.read_files(
+          config.compute_glob_pattern(
+            options['base-dir'] || :content_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :at_extension
+          ),
+          options['file_filter'],
+          nil,
+          "Reading Content AT files",
+          options
+        ) do |contents, filename|
+          file_count += 1
+          # Extract words with oe
+          str_sc = Kramdown::Utils::StringScanner.new(contents)
+          while !str_sc.eos? do
+            if(str_sc.skip_until(before_word_with_oe_regex))
+              word_with_oe = str_sc.scan(word_with_oe_regex)
+              next  if '' == word_with_oe
+              words_with_oe[word_with_oe] += 1
+            else
+              str_sc.terminate
+            end
+          end
+        end
+
+        $stderr.puts 'Words with oe'
+        $stderr.puts '-' * 40
+        words_with_oe.to_a.sort.each { |e|
+          $stderr.puts "#{ e.first }: #{ e.last }"
+        }
+        $stderr.puts '-' * 40
+        $stderr.puts "Checked #{ file_count } files at #{ Time.now.to_s }."
+        $stderr.puts "Command to generate this file: `repositext report inventory_of_words_with_oe`"
+      end
+
       # Generates a report that highlights the following:
       # * Any files that don't have an eagle at the beginning of the second record
       # * Any files that don't have an eagle at the end of the last record
