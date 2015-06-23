@@ -138,9 +138,10 @@ class Repositext
               end
             }
           elsif(:p == el.type)
+            el_descendants = el.descendants
             if(
               el.has_class?('normal') &&
-              el.descendants.any? { |el_desc| el_desc.has_class?('pn') }
+              el_descendants.any? { |el_desc| el_desc.has_class?('pn') }
             )
               # p.normal contains a paragraph number
               errors << Reportable.error(
@@ -155,7 +156,7 @@ class Repositext
               )
             elsif(
               el.has_class?('normal_pn') &&
-              el.descendants.none? { |el_desc| el_desc.has_class?('pn') }
+              el_descendants.none? { |el_desc| el_desc.has_class?('pn') }
             )
               # p.normal_pn does not contain a paragraph number
               errors << Reportable.error(
@@ -165,6 +166,21 @@ class Repositext
                 ].compact,
                 [
                   'p.normal_pn does not contain a paragraph number',
+                  "In text: #{ el.value.inspect }"
+                ]
+              )
+            elsif(
+              !el.has_class?('normal_pn') &&
+              el_descendants.any? { |el_desc| el_desc.has_class?('pn') }
+            )
+              # para with class other than .normal_pn contains a paragraph number
+              errors << Reportable.error(
+                [
+                  @file_to_validate.path,
+                  (lo = el.options[:location]) && sprintf("line %5s", lo)
+                ].compact,
+                [
+                  'para with class other than .normal_pn contains a paragraph number',
                   "In text: #{ el.value.inspect }"
                 ]
               )
