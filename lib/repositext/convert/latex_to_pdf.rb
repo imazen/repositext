@@ -6,6 +6,18 @@
   of output files, not just one).
 * I can use stdin to xelatex to avoid the input file.
 
+I'm collecting text fragments in logs of aborted jobs to detect issues during export:
+
+* 'job aborted'
+* 'Emergency stop.'
+* 'Overfull \hbox (22.5pt too wide) in paragraph at lines 853--862'
+* 'Underfull \hbox (badness 1009) in paragraph at lines 786--787'
+* 'Undefined control sequence'
+* 'Package microtype Error'
+
+* 'file:line:error style messages enabled.' # don't match on this! find other instances of error
+* 'No complaints by nag'
+
 =end
 
 class Repositext

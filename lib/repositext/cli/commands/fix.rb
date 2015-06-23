@@ -108,7 +108,7 @@ class Repositext
 
       # Set file permissions to standard permissions on all newly imported files
       def fix_import_file_permissions
-        set to 644
+        # set to 644
       end
 
       # Insert a record_mark into each content AT file that doesn't contain one
@@ -223,6 +223,8 @@ class Repositext
           raise "Invalid which_files: #{ which_files.inspect }"
         end
         input_file_selector = config.compute_file_selector(options['file-selector'] || :all_files)
+        # TODO: parallelize this since it's a cartesian product of 9 directories and possibly
+        # hundreds of entries in --file-selector
         input_base_dirs.each do |input_base_dir_name|
           input_base_dir = config.compute_base_dir(input_base_dir_name)
           input_file_extension = config.compute_file_extension(input_file_extension_name)
