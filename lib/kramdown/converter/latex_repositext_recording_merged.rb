@@ -101,6 +101,8 @@ module Kramdown
 
     protected
 
+      # TODO: compare paragraph counts in both, print warning if they are different.
+
       # NOTE: This should eventually be handled by Validator::GapMarkCountsMatch
       # This is just a quick hack so that we can get going. Code is duplicated.
       def self.validate_same_number_of_gap_marks(target_contents, primary_contents)

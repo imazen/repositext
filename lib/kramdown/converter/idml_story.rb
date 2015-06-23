@@ -87,8 +87,7 @@ module Kramdown
         character_style_range_tag_for_el(el)
         # Transform text contents:
         #   * Remove line breaks from text nodes
-        t = el.value.gsub(/\n/, ' ')
-        content_tag(unescape_brackets(t))
+        content_tag(el.value.gsub(/\n/, ' '))
       end
 
       # @param[Kramdown::Element] el

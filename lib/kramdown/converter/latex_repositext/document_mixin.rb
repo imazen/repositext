@@ -1,5 +1,21 @@
 # -*- coding: utf-8 -*-
 # TODO: use kramdown's templating
+
+=begin
+
+How to handle variants
+
+PDF type         English                 Foreign
+-----------------------------------------------------------------
+Plain            use command line flag   Override true
+Translator       use command line flag   Override true
+Recording        use command line flag   use command line flag
+Book  Override   false                   Override false
+Web Override     false                   Override false
+Comprehensive    use command line flag   use command line flag
+
+=end
+
 module Kramdown
   module Converter
     class LatexRepositext

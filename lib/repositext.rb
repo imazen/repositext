@@ -51,7 +51,6 @@ require 'kramdown/converter/latex_repositext/render_subtitle_and_gap_marks_mixin
 require 'kramdown/converter/report_kramdown_element_classes_inventory'
 require 'kramdown/converter/report_misaligned_question_paragraphs'
 require 'kramdown/converter/kramdown_repositext'
-require 'kramdown/converter/patch_base'
 require 'kramdown/converter/plain_text'
 require 'kramdown/converter/subtitle'
 require 'kramdown/element_rt'
