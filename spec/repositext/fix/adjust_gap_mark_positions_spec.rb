@@ -13,6 +13,7 @@ class Repositext
         ['*“‘([%word]', '%*“‘([word]'],
         ['* %word*', '* %word*'],
         [' …%word', ' %…word'],
+        [':…%word', ':%…word'],
         ['word…%word', 'word…%word'],
         ["a‘%word'", "%a‘word'"], # single open quote
         ['(word1)…*%word2', '(word1)…%*word2'],
