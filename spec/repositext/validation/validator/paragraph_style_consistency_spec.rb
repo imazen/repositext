@@ -117,7 +117,8 @@ class Repositext
             ["1 para 1\n\n2 para 2", true],
             ["para 1\n\npara 2", false],
             ["1 para 1\n\n2 para 2\n\npara 3", true],
-            ["1 para 1\n\npara 2\n\npara 3", false],
+            ["1 para 1\n\npara 2\n\npara 3", true],
+            ["1 para 1\n\npara 2\n\npara 3\n\npara 4", false],
           ].each do |foreign_test_doc, xpect|
             it "handles #{ foreign_test_doc.inspect }" do
               validator, logger, reporter = build_validator_logger_and_reporter(

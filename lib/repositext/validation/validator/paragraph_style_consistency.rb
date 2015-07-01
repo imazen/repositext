@@ -124,9 +124,10 @@ class Repositext
         def foreign_has_paragraph_numbers?(foreign_doc)
           paragraph_number_count = foreign_doc.scan(/^[^\d\n]{0,2}\d+(?![\d\.])/).size
           block_level_elements_count = foreign_doc.split("\n\n").length
+
           return false  if 0 == block_level_elements_count
-          # return true if more than 50% of block level elements contain a para number
-          (paragraph_number_count / block_level_elements_count.to_f) > 0.5
+          # return true if more than 30% of block level elements contain a para number
+          (paragraph_number_count / block_level_elements_count.to_f) > 0.3
         end
 
       end
