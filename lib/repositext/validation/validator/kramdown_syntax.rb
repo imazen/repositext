@@ -97,6 +97,21 @@ class Repositext
               break
             end
           end
+          # Detect multiple adjacent spaces
+          str_sc.reset
+          while !str_sc.eos? do
+            if (match = str_sc.scan_until(/ {2,}/))
+              errors << Reportable.error(
+                [
+                  @file_to_validate.path,
+                  sprintf("line %5s", str_sc.current_line_number)
+                ],
+                ['More than one adjacent space character']
+              )
+            else
+              break
+            end
+          end
         end
 
         # @param[String] source the kramdown source string
