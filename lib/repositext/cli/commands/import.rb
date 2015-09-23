@@ -115,11 +115,11 @@ class Repositext
           options.merge({ 'base-dir' => :content_dir, 'file-extension' => :at_extension })
         )
         fix_normalize_trailing_newlines(options)
-        copy_subtitle_marker_csv_files_to_content(
-          options.merge({ 'base-dir' => :subtitle_import_dir, 'file-extension' => :txt_extension })
-        )
         if config.setting(:is_primary_repo)
-          # Create subtitle_marker CSV files only when we're working in the primary repo.
+          # Handle subtitle_marker CSV files only when we're working in the primary repo.
+          copy_subtitle_marker_csv_files_to_content(
+            options.merge({ 'base-dir' => :subtitle_import_dir, 'file-extension' => :txt_extension })
+          )
           sync_subtitle_mark_character_positions(options)
         end
         options['append_to_validation_report'] = true
@@ -138,11 +138,11 @@ class Repositext
           options.merge({ 'base-dir' => :content_dir, 'file-extension' => :at_extension })
         )
         fix_normalize_trailing_newlines(options)
-        copy_subtitle_marker_csv_files_to_content(
-          options.merge({ 'base-dir' => :subtitle_tagging_import_dir, 'file-extension' => :txt_extension })
-        )
         if config.setting(:is_primary_repo)
-          # Create subtitle_marker CSV files only when we're working in the primary repo.
+          # Handle subtitle_marker CSV files only when we're working in the primary repo.
+          copy_subtitle_marker_csv_files_to_content(
+            options.merge({ 'base-dir' => :subtitle_tagging_import_dir, 'file-extension' => :txt_extension })
+          )
           sync_subtitle_mark_character_positions(options)
         end
         options['append_to_validation_report'] = true
