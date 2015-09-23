@@ -27,6 +27,38 @@ class Repositext
         Repositext::Validation::Content.new(file_specs, validation_options).run
       end
 
+      # Validates all files related to docx import
+      def validate_docx_import(options)
+        options['report_file'] ||= config.compute_glob_pattern(
+          :docx_import_dir, :validation_report_file, ''
+        )
+        reset_validation_report(options, 'validate_docx_import')
+        input_base_dir = config.compute_base_dir(options['base-dir'] || :docx_import_dir)
+        input_file_selector = config.compute_file_selector(options['file-selector'] || :all_files)
+        docx_sources_file_extension = config.compute_file_extension(
+          options['file-extension'] || :docx_extension
+        )
+        file_specs = config.compute_validation_file_specs(
+          primary: [input_base_dir, input_file_selector, docx_sources_file_extension], # for reporting only
+          docx_sources: [input_base_dir, input_file_selector, docx_sources_file_extension],
+          imported_at_files: [input_base_dir, input_file_selector, :at_extension],
+          imported_repositext_files: [input_base_dir, input_file_selector, :repositext_extensions],
+        )
+        validation_options = {
+          'docx_parser_class' => config.kramdown_parser(:docx),
+          'docx_validation_parser_class' => config.kramdown_parser(:docx_validation),
+          'kramdown_converter_method_name' => config.kramdown_converter_method(:to_at),
+          'kramdown_parser_class' => config.kramdown_parser(:kramdown),
+          'kramdown_validation_parser_class' => config.kramdown_parser(:kramdown_validation),
+        }.merge(options)
+        if options['run_options'].include?('pre_import')
+          Repositext::Validation::DocxPreImport.new(file_specs, validation_options).run
+        end
+        if options['run_options'].include?('post_import')
+          Repositext::Validation::DocxPostImport.new(file_specs, validation_options).run
+        end
+      end
+
       # Validates all files related to folio xml import
       def validate_folio_xml_import(options)
         options['report_file'] ||= config.compute_glob_pattern(:folio_import_dir, :validation_report_file, '')

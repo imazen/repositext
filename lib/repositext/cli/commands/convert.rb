@@ -4,6 +4,32 @@ class Repositext
 
     private
 
+      # Convert DOCX files in /import_docx to AT
+      def convert_docx_to_at(options)
+        Repositext::Cli::Utils.convert_files(
+          config.compute_glob_pattern(
+            options['base-dir'] || :docx_import_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :docx_extension
+          ),
+          options['file_filter'],
+          "Converting DOCX files to AT kramdown",
+          options.merge(input_is_binary: true)
+        ) do |zip_archive_contents, filename|
+          document_xml_contents = extract_word_document_xml_from_zip_archive(
+            zip_archive_contents
+          )
+          root, warnings = config.kramdown_parser(:docx).parse(document_xml_contents)
+          kramdown_doc = Kramdown::Document.new(
+            '',
+            { line_width: 100000 } # set to very large value so that each para is on a single line
+          )
+          kramdown_doc.root = root
+          at = kramdown_doc.send(config.kramdown_converter_method(:to_at))
+          [Outcome.new(true, { contents: at, extension: 'docx.at' })]
+        end
+      end
+
       def convert_folio_xml_to_at(options)
         Repositext::Cli::Utils.convert_files(
           config.compute_glob_pattern(
@@ -49,6 +75,21 @@ class Repositext
       def convert_test(options)
         # dummy method for testing
         puts 'convert_test'
+      end
+
+    private
+
+      # Returns contents of word/document.xml file in zip_archive_contents
+      # @param zip_archive_contents [String] the binary contents of zip archive
+      # @return [String] XML source of word/document.xml
+      def extract_word_document_xml_from_zip_archive(zip_archive_contents)
+        word_document_xml = nil
+        Zip::File.open_buffer(zip_archive_contents) do |zipped_files|
+          word_document_xml = zipped_files.get_entry(
+            'word/document.xml'
+          ).get_input_stream.read
+        end
+        word_document_xml
       end
 
     end

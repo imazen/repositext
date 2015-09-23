@@ -4,18 +4,42 @@ class Repositext
 
     private
 
-      # Import from all sources and merge into /content
+      # Import from IDML and Folio sources and merge into /content
       def import_all(options)
-        import_docx_specific_steps(options)
         import_folio_xml_specific_steps(options)
         import_idml_specific_steps(options)
         import_shared_steps(options)
       end
 
-      # Import DOCX and merge into /content
+      # Import DOCX and merge/overwrite??? into /content
       def import_docx(options)
-        import_docx_specific_steps(options)
-        import_shared_steps(options)
+        options['report_file'] ||= config.compute_glob_pattern(
+          :docx_import_dir, :validation_report_file, ''
+        )
+        options['append_to_validation_report'] = false
+        reset_validation_report(options, 'import_docx')
+        validate_docx_import(options.merge('run_options' => %w[pre_import]))
+        convert_docx_to_at(options)
+        fix_normalize_trailing_newlines(options)
+        fix_adjust_gap_mark_positions(options)
+        # fix_normalize_editors_notes(
+        #   options.merge({ 'base-dir' => :idml_import_dir, 'file-extension' => :at_extension })
+        # )
+        options['append_to_validation_report'] = true
+        validate_docx_import(options.merge('run_options' => %w[post_import]))
+        # fix_convert_abbreviations_to_lower_case(options) # run after merge_record_marks...
+        # fix_normalize_subtitle_mark_before_gap_mark_positions(
+        #   options.merge({ 'base-dir' => :staging_dir, 'file-extension' => :at_extension })
+        # )
+        fix_normalize_trailing_newlines(options)
+        copy_docx_import_to_content(options)
+        fix_insert_record_mark_into_all_at_files(options)
+        options['report_file'] ||= config.compute_glob_pattern(
+          :content_dir, :validation_report_file, ''
+        )
+        options['append_to_validation_report'] = false
+        reset_validation_report(options, 'import_docx')
+        validate_content(options.merge('run_options' => []))
       end
 
       # Import FOLIO XML and merge into /content
@@ -197,7 +221,7 @@ class Repositext
         validate_idml_import(options.merge('run_options' => %w[post_import]))
       end
 
-      # Specifies all shared steps that need to run after each import
+      # Specifies all shared steps that need to run after each Folio/IDML import
       def import_shared_steps(options)
         case config.setting(:folio_import_strategy)
         when :merge_record_ids_into_idml
