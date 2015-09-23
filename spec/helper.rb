@@ -54,6 +54,13 @@ end
 # *********************************************
 #
 # StringIO that behaves like a file. Used to simulate files in specs
+# Use like so:
+#
+#     FileLikeStringIO.new('/io/path', 'IO contents')
+#
+# or
+#
+#     FileLikeStringIO.new('/io/path', 'IO contents', 'w+')
 #
 # *********************************************
 
