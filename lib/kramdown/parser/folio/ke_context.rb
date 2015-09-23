@@ -1,14 +1,14 @@
 # Handles workflow state and context when processing Kramdown elements
 class Kramdown::Parser::Folio::KeContext
 
-  include ::Kramdown::RawTextParser
+  include ::Kramdown::KeContextMixin
 
   # Initializes new kramdown::element processing context
   # @param[Hash] attrs
   #     * 'root': the root kramdown element, required
-  # @param[Kramdown::Parser::Folio] folio_parser instance of folio parser so that
+  # @param[Kramdown::Parser::Folio] parser instance of folio parser so that
   #     we can trigger warnings
-  def initialize(attrs, folio_parser)
+  def initialize(attrs, parser)
     @cx = {
       # Stack of Kramdown elements into which to insert text content. Can be [p, span, header].
       # Update stack around calls to process_xml_node.
@@ -29,34 +29,7 @@ class Kramdown::Parser::Folio::KeContext
       # The current year_id (vgr)
       'year_id' => nil,
     }.merge(attrs)
-    @folio_parser = folio_parser
-  end
-
-  # Adds the_text to current_text_container, creating a new text
-  # element if necessary. Entity encodes allowed unicode characters.
-  # @param[String] the_text
-  # @param[Nokogiri::XML::Node] xn for warning location
-  def add_text_to_current_text_container(the_text, xn)
-    if(ctce = get_current_text_container(xn))
-      process_and_add_text(the_text, ctce, :text)
-    end
-  end
-
-  # Returns value of attr_name, aises warning if attr_name returns nil
-  # @param[String] attr_name
-  # @param[Nokogiri::XML::Node] xn for warning location info
-  # @param[Boolean, optional] warn_if_nil generate warning if desired attr is nil
-  def get(attr_name, xn, warn_if_nil=true)
-    if (v = @cx[attr_name.to_s]).nil? && warn_if_nil
-      @folio_parser.add_warning(xn, "#{ attr_name } is nil.")
-    end
-    v
-  end
-
-  # Returns the current text container from stack
-  # @param[Nokogiri::XML::Node] xn for warning location
-  def get_current_text_container(xn)
-    get('text_container_stack', xn).last
+    @parser = parser
   end
 
   def inspect
@@ -101,7 +74,7 @@ class Kramdown::Parser::Folio::KeContext
       if @cx['distinct_p_referenceline_contents'].keys.any?
         # We already have other contents. We used to raise a warning,
         # however we anticipate differences, so we're not adding warnings.
-        # @folio_parser.add_warning(
+        # @parser.add_warning(
         #   xn,
         #   [
         #     "Inconsistent text contents of p.reference_line:",
@@ -112,39 +85,11 @@ class Kramdown::Parser::Folio::KeContext
         #   ].join(' ')
         # )
         # and send to deleted text
-        @folio_parser.add_deleted_text(xn, sanitized_content)
+        @parser.add_deleted_text(xn, sanitized_content)
       end
     end
     # increment count
     @cx['distinct_p_referenceline_contents'][sanitized_content] += 1
-  end
-
-  # Replaces current text container with new_text_container
-  # @param[Kramdown::ElementRt] new_text_container_ke
-  # @return[Kramdown::ElementRt] the previous text container
-  def replace_current_text_container_with(new_text_container_ke)
-    prev_text_container = @cx['text_container_stack'].pop
-    @cx['text_container_stack'].push(new_text_container_ke)
-    prev_text_container
-  end
-
-  # Set a ke_context attribute
-  # @param[String] attr_name
-  # @param[Object] attr_value
-  def set(attr_name, attr_value)
-    @cx[attr_name.to_s] = attr_value
-  end
-
-  # Adds an attribute to current p's IAL. Raises warning if p is nil.
-  # @param[Nokogiri::XML::Node] xn the xn that wanted to access current p
-  # @param[String] attr_name
-  # @param[Object] attr_value
-  def set_attr_on_p(xn, attr_name, attr_value)
-    if @cx['p'].nil?
-      @folio_parser.add_warning(xn, 'No containing p')
-      return false
-    end
-    @cx['p'].attr[attr_name] = attr_value
   end
 
   # Adds an attribute to current record_mark's IAL.
@@ -155,27 +100,17 @@ class Kramdown::Parser::Folio::KeContext
   # @param[Object] attr_value
   def set_attr_on_record_mark(xn, attr_name, attr_value, expect_nil = false)
     if @cx['record_mark'].nil?
-      @folio_parser.add_warning(xn, "#{ xn.name_and_class } outside of record_mark")
+      @parser.add_warning(xn, "#{ xn.name_and_class } outside of record_mark")
       return false
     end
     if expect_nil && (existing_attr_val = !@cx['record_mark'].attr[attr_name]).nil?
-      @folio_parser.add_warning(
+      @parser.add_warning(
         xn,
         "Expected record.attr[#{ attr_name }] to be nil, but was #{ existing_attr_val.inspect }"
       )
       return false
     end
     @cx['record_mark'].attr[attr_name] = attr_value
-  end
-
-  # Manages the text_container_stack around processing of an XML node
-  # @param[Kramdown::ElementRt] new_text_container
-  # @param[OpenStruct] parent_xn_context
-  def with_text_container_stack(new_text_container_ke)
-    @cx['text_container_stack'].push(new_text_container_ke)
-    yield
-  ensure
-    @cx['text_container_stack'].pop
   end
 
 end
