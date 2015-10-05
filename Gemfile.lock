@@ -1,8 +1,21 @@
+GIT
+  remote: https://github.com/bloomrain/alignment
+  revision: 2b861c3b8844dd3d8f89335fd1a85b1b86b12d85
+  specs:
+    alignment (0.2.0)
+
+GIT
+  remote: https://github.com/diasks2/pragmatic_segmenter
+  revision: b89583d7c24308a62aa80ae2bea9d9427b5614a5
+  specs:
+    pragmatic_segmenter (0.3.3)
+
 PATH
   remote: .
   specs:
     repositext (0.0.1)
       activesupport (~> 4.2)
+      alignment
       awesome_print
       builder
       diff-lcs
@@ -11,6 +24,7 @@ PATH
       nokogiri
       outcome
       parallel
+      pragmatic_segmenter
       ruby-graphviz
       rubyzip
       rugged
@@ -75,11 +89,13 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  alignment!
   bundler (~> 1.3)
   fakefs
   kramdown!
   minitest
   minitest-spec-expect
+  pragmatic_segmenter!
   rake
   repositext!
   ruby-prof

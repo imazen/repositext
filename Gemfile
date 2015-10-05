@@ -11,3 +11,7 @@ gem 'suspension', path: '../suspension'
 # While we may have pending patches, use local kramdown with patches.
 # NOTE: You need to check out the 'gemfile' branch to make it work.
 gem 'kramdown', path: '../kramdown'
+
+
+gem 'alignment', git: 'https://github.com/bloomrain/alignment'
+gem 'pragmatic_segmenter', git: 'https://github.com/diasks2/pragmatic_segmenter'
