@@ -256,6 +256,28 @@ class Repositext
         }
       end
 
+      # Generates a report with subtitle_mark counts for all content AT files.
+      def report_count_subtitle_marks(options)
+        file_count = 0
+        subtitle_marks_count = 0
+        Repositext::Cli::Utils.read_files(
+          config.compute_glob_pattern(
+            options['base-dir'] || :content_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :at_extension
+          ),
+          options['file_filter'],
+          nil,
+          "Reading AT files",
+          options
+        ) do |contents, filename|
+          subtitle_marks_count += contents.count('@')
+          file_count += 1
+        end
+        lines = []
+        $stderr.puts "Found #{ subtitle_marks_count } subtitle_marks in #{ file_count } files at #{ Time.now.to_s }."
+      end
+
       # Reports files that contain editors notes with multiple paragraphs
       def report_files_with_multi_para_editors_notes(options)
         multi_para_editors_notes = []
