@@ -1,5 +1,13 @@
 #require 'ruby-prof'
 
+# 3rd party libraries
+
+# Selectively include ActiveSupport features we want
+require 'active_support/core_ext/module/delegation'
+require 'active_support/core_ext/object/blank'
+require 'active_support/core_ext/string/access'
+require 'active_support/core_ext/string/filters'
+
 require 'awesome_print'
 require 'diff/lcs'
 require 'erb'
