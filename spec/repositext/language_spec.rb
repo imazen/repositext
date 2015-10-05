@@ -5,9 +5,6 @@ class Repositext
 
   describe Language do
 
-    let(:contents) { 'contents' }
-    let(:language) { Language::English.new }
-
     describe '.find_by_code' do
 
       it 'finds by 2 character language code' do
