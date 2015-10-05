@@ -15,6 +15,7 @@ class Repositext
     include Cli::Merge
     include Cli::Move
     include Cli::Report
+    include Cli::Split
     include Cli::Sync
     include Cli::Validate
 
@@ -161,6 +162,13 @@ class Repositext
       invoke_repositext_command('report', command_spec, options)
     end
 
+
+    desc 'split SPEC', 'Splits files in /content'
+    long_desc long_description_for_split
+    # @param[String] command_spec Specification of the operation
+    def split(command_spec)
+      invoke_repositext_command('split', command_spec, options)
+    end
 
     desc 'sync SPEC', 'Syncs data between different file types in /content'
     long_desc long_description_for_sync

@@ -110,6 +110,16 @@ class Repositext
           )
         end
 
+        def long_description_for_split
+          %(
+            Splits files in /content.
+
+            Available SPECs:
+
+            subtitles - splits subtitles
+          )
+        end
+
         def long_description_for_sync
           %(
             Syncs data between different file types in /content.
