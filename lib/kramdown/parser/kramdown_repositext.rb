@@ -55,6 +55,11 @@ module Kramdown
       define_parser(:subtitle_mark, SUBTITLE_MARK, SUBTITLE_MARK)
 
 
+      # TODO: We want to be able to escape percent signs with a leading
+      # backslash '\'. This is not trivial as we need to modify Kramdown's
+      # :escaped_chars parser. It uses a previously defined constant
+      # ESCAPED_CHARS, and kramdown may not allow redefinition of parsers...
+      # (double check latest claim).
       GAP_MARK = /%/
 
       # Parse gap mark at current location.
