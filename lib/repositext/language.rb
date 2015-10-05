@@ -20,10 +20,6 @@ class Repositext
       Object.const_get("Repositext::Language::#{ lang_attrs[:name] }").new
     end
 
-    def char_length_factor
-      raise "Implement me in subclass"
-    end
-
     # @return [Symbol] 2 character language code
     def code_2_chars
       self.class.find_by(:name, self.class.name.split('::').last)[:code2]
