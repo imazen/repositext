@@ -30,14 +30,6 @@ require 'unicode_utils/downcase'
 require 'unicode_utils/upcase'
 require 'zip'
 
-# Establish namespace and class inheritance before we require nested classes
-# Otherwise we get a subclass mismatch error because Cli is initialized as
-# standalone class (not inheriting from Thor)
-class Repositext
-  class Cli < Thor
-  end
-end
-
 # repositext libraries
 
 require 'patches/array'
