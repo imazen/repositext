@@ -13,25 +13,6 @@ class String
     r
   end
 
-  # Truncates self, removing the end of the string. It truncates on whitespace
-  # only and requires a min word length for the last word.
-  # @param[Integer] max_len
-  # @param[Hash, optional] options
-  #     * omission: the string to use for indication truncation, default: '…'
-  #     * separator: where to truncate, e.g., ' ' for space
-  def truncate(max_len, options = {})
-    return dup unless length > max_len
-
-    omission = options[:omission] || '…'
-    length_with_room_for_omission = max_len - omission.length
-    stop = if options[:separator]
-      rindex(options[:separator], length_with_room_for_omission) || length_with_room_for_omission
-    else
-      length_with_room_for_omission
-    end
-    "#{ self[0, stop] }#{ omission }"
-  end
-
   # Truncates self, removing the beginning of the string. It truncates on whitespace
   # only and requires a min word length for the last word.
   # @param[Integer] max_len
