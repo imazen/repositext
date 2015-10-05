@@ -16,6 +16,9 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 
+  s.add_dependency('activesupport', '~> 4.2')
+  # We vendored this gem, so we can't list it as dependency as it would get installed again, and the vendored version wouldn't get used.
+  # s.add_dependency('alignment')
   s.add_dependency('awesome_print')
   s.add_dependency('builder')
   # I would have liked to use diff_match_patch which we already use for suspension, however
@@ -26,6 +29,8 @@ Gem::Specification.new do |s|
   s.add_dependency('nokogiri')
   s.add_dependency('outcome')
   s.add_dependency('parallel')
+  # We vendored this gem, so we can't list it as dependency as it would get installed again, and the vendored version wouldn't get used.
+  # s.add_dependency('pragmatic_segmenter')
   s.add_dependency('ruby-graphviz')
   s.add_dependency('rubyzip')
   s.add_dependency('rugged')
