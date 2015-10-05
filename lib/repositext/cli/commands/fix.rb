@@ -4,6 +4,51 @@ class Repositext
 
     private
 
+      # Adds initial persistent subtitle ids to all subtitle_marker.csv files
+      def fix_add_initial_persistent_subtitle_ids(options)
+        Repositext::Cli::Utils.change_files_in_place(
+          config.compute_glob_pattern(
+            options['base-dir'] || :content_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :csv_extension
+          ),
+          options['file_filter'] || /\.subtitle_markers\.csv\z/i,
+          "Adding initial persistent subtitle ids",
+          options
+        ) do |contents, filename|
+          # Inserts a fourth column for persistentId
+          # relativeMS  samples charLength
+          # 0 0 47
+          # ->
+          # relativeMS  samples charLength persistentId
+          # 0 0 47  Ag57
+          lines = contents.split("\n")
+          num_subtitles = lines.compact.length - 1
+          inventory_file = File.open(
+            File.join(config.base_dir(:data_dir), 'subtitle_persistent_ids.txt'),
+            'r+'
+          )
+          spids = Repositext::Entity::SubtitleMark::PersistentIdGenerator.new(
+            inventory_file
+          ).generate(
+            num_subtitles
+          )
+          contents_with_spids = lines.map.each_with_index { |e, idx|
+            if 0 == idx
+              [e, 'spid'].join("\t") # add new column header to first line
+            elsif e =~ /\A\d/
+              # append SPID to all lines that start with a digit
+              spid = spids.pop
+              raise "Not enough spids!"  if spid.nil?
+              [e, spid].join("\t")
+            else
+              e # return empty lines as is
+            end
+          }.join("\n")
+          [Outcome.new(true, { contents: contents_with_spids }, [])]
+        end
+      end
+
       # Adds line breaks into file's text
       def fix_add_line_breaks(options)
         Repositext::Cli::Utils.change_files_in_place(
