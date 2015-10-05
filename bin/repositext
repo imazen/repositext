@@ -1,14 +1,14 @@
 #!/usr/bin/env ruby
 require 'repositext'
 
-rtfile = Repositext::Cli.find_rtfile
+rtfile_path = Repositext::Cli.find_rtfile
 
 if 'init' == ARGV.first
   # Ignore any exising rtfile as it may be invalid
   Repositext::Cli.start(ARGV + ['--rtfile', nil])
-elsif rtfile
+elsif rtfile_path
   # Execute command after loading rtfile
-  Repositext::Cli.start(ARGV + ['--rtfile', rtfile])
+  Repositext::Cli.start(ARGV + ['--rtfile', rtfile_path])
 else
   $stderr.puts "No Rtfile found! Please use `rt init` to create an Rtfile in the current working directory."
 end
