@@ -239,6 +239,10 @@ class Repositext
       @config = a_config
     end
 
+    def repository
+      @repository ||= Repository.new(config)
+    end
+
     # Invokes the command derived from main_command and command_spec
     # @param[String] main_command
     # @param[String] command_spec
@@ -266,15 +270,14 @@ class Repositext
     # Raises an exception if it is not.
     def check_that_current_branch_is_up_to_date_with_origin_master
       return true  if options['skip-git-up-to-date-check']
-      git_repo = Repositext::Repository.new
-      latest_commit_sha_remote = git_repo.latest_commit_sha_remote
+      latest_commit_sha_remote = repository.latest_commit_sha_remote
       begin
-        latest_local_commit = git_repo.lookup(latest_commit_sha_remote)
+        latest_local_commit = repository.lookup(latest_commit_sha_remote)
       rescue Rugged::OdbError => e
         # Couldn't find remote's latest commit in local repo, raise error
         raise GitRepoNotUpToDateError.new([
           '',
-          "Your local '#{ git_repo.current_branch_name }' branch is not up-to-date with origin/master.",
+          "Your local '#{ repository.current_branch_name }' branch is not up-to-date with origin/master.",
           'Please get the updates from origin/master first before running a repositext command.',
           "The remote reported #{ latest_commit_sha_remote } as its latest commit sha1.",
           'You can bypass this check by appending "--skip-git-up-to-date-check=true" to the repositext command'
