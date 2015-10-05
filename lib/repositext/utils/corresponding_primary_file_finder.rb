@@ -1,3 +1,4 @@
+# TODO: Delete this once all code is migrated to Repositext::RFile
 class Repositext
   class Utils
     class CorrespondingPrimaryFileFinder

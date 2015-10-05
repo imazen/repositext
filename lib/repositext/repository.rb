@@ -1,11 +1,38 @@
 class Repositext
 
-  # Represents the git content repository
+  # Represents a git content repository
   class Repository
 
-    # @param[String, optional] path_to_file_in_repo defaults to current directory
-    def initialize(path_to_file_in_repo = Dir.pwd)
-      @repo = Rugged::Repository.discover(path_to_file_in_repo)
+    attr_reader :config
+
+    delegate :add_base_dir,
+             :add_file_extension,
+             :add_file_selector,
+             :add_kramdown_converter_method,
+             :add_kramdown_parser,
+             :add_setting,
+             :base_dir,
+             :compute_base_dir,
+             :compute_file_extension,
+             :compute_file_selector,
+             :compute_glob_pattern,
+             :compute_validation_file_specs,
+             :file_extension,
+             :file_selector,
+             :get_config_val,
+             :initialize,
+             :kramdown_converter_method,
+             :kramdown_parser,
+             :primary_repo_base_dir,
+             :setting,
+             to: :config,
+             prefix: :config
+
+    # @param config [Repositext::Cli::Config] the repo's config object, based on Rtfile
+    def initialize(config)
+      raise ArgumentError.new("config is blank")  if config.blank?
+      @config = config
+      @repo = Rugged::Repository.discover(config_base_dir(:rtfile_dir))
       @repo_path = @repo.path
       @head_ref = @repo.head
     end
@@ -15,9 +42,35 @@ class Repositext
       @repo.workdir
     end
 
-    # Returns the repo name, based on name of parent directory
-    def name
-      @repo.workdir.split('/').last
+    def corresponding_primary_repository
+      primary_rtfile_path = File.join(corresponding_primary_repo_base_dir, 'Rtfile')
+      primary_config = Repositext::Cli::Config.new(primary_rtfile_path)
+      primary_config.eval
+      self.class.new(primary_config)
+    end
+
+    def corresponding_primary_repo_base_dir
+      File.expand_path(
+        config_setting(:relative_path_to_primary_repo),
+        config_base_dir(:rtfile_dir)
+      ) + '/'
+    end
+
+    # Returns name of currently checked out branch
+    def current_branch_name
+      @head_ref.name.sub(/^refs\/heads\//, '')
+    end
+
+    def inspect
+      %(#<#{ self.class.name }:#{ object_id } #name=#{ name.inspect })
+    end
+
+    def is_primary_repo
+      config_setting(:is_primary_repo)
+    end
+
+    def language
+      Repositext::Language.find_by_code(config_setting(:language_code_3_chars))
     end
 
     # Returns sha of latest commit that included filename
@@ -34,19 +87,6 @@ class Repositext
       puts "Make sure that this file has been pushed at least once to the remote."
       puts
       raise e
-    end
-
-    # Returns name of currently checked out branch
-    def current_branch_name
-      @head_ref.name.sub(/^refs\/heads\//, '')
-    end
-
-    # Delegates #lookup method to Rugged::Repository
-    def lookup(oid)
-      @repo.lookup(oid)
-    rescue Rugged::InvalidError => e
-      puts "Lookup of oid in remote didn't work. If this is a new repository, at least one commit needs to be at the remote."
-      raise
     end
 
     # We shell out to git log to get the latest commit's sha. This is orders of
@@ -121,6 +161,19 @@ class Repositext
         # No commits found, return empty array
         []
       end
+    end
+
+    # Delegates #lookup method to Rugged::Repository
+    def lookup(oid)
+      @repo.lookup(oid)
+    rescue Rugged::InvalidError => e
+      puts "Lookup of oid in remote didn't work. If this is a new repository, at least one commit needs to be at the remote."
+      raise
+    end
+
+    # Returns the repo name, based on name of parent directory
+    def name
+      @repo.workdir.split('/').last
     end
 
   end

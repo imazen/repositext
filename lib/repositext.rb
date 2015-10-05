@@ -37,6 +37,8 @@ class Repositext
   end
 end
 
+# repositext libraries
+
 require 'patches/array'
 require 'patches/nokogiri_xml_node'
 require 'patches/string'
@@ -45,7 +47,6 @@ require 'repositext/constants'
 
 # The requires are grouped by levels of dependencies, where lower groups depend on
 # higher level groups.
-
 
 # Dependency boundary
 
@@ -81,7 +82,10 @@ require 'kramdown/parser/idml_validation'
 require 'kramdown/parser/kramdown_repositext'
 require 'kramdown/parser/kramdown_validation'
 require 'kramdown/patch_element'
+require 'repositext/language'
+require 'repositext/r_file'
 require 'repositext/repository'
+require 'repositext/text'
 require 'repositext/utils/array_differ'
 require 'repositext/utils/corresponding_primary_file_finder'
 require 'repositext/utils/entity_encoder'
@@ -123,6 +127,9 @@ require 'repositext/fix/insert_record_mark_into_all_at_files'
 require 'repositext/fix/normalize_editors_notes'
 require 'repositext/fix/normalize_subtitle_mark_before_gap_mark_positions'
 require 'repositext/fix/remove_underscores_inside_folio_paragraph_numbers'
+require 'repositext/language/afrikaans'
+require 'repositext/language/english'
+require 'repositext/language/spanish'
 require 'repositext/merge/accepted_corrections_into_content_at'
 require 'repositext/merge/gap_mark_tagging_import_into_content_at'
 require 'repositext/merge/record_marks_from_folio_xml_at_into_idml_at'

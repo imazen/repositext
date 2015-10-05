@@ -1,0 +1,59 @@
+class Repositext
+  class RFile
+
+    # Represents a content file in repositext.
+
+    attr_reader :contents, :filename, :language, :repository
+
+    delegate :corresponding_primary_repository,
+             :is_primary_repo,
+             :corresponding_primary_repo_base_dir,
+             to: :repository
+
+    # @param contents [String]
+    # @param filename [String]
+    # @param repository [Repositext::Repository] the repository this file belongs to
+    def initialize(contents, language, filename, repository=nil)
+      raise ArgumentError.new("Invalid contents: #{ contents.inspect }")  unless contents.is_a?(String)
+      raise ArgumentError.new("Invalid language: #{ language.inspect }")  unless language.is_a?(Language)
+      raise ArgumentError.new("Invalid filename: #{ filename.inspect }")  unless filename.is_a?(String)
+      raise ArgumentError.new("Invalid repository: #{ repository.inspect }")  unless (repository.nil? || repository.is_a?(Repository))
+      @contents = contents
+      @language = language
+      @filename = filename
+      @repository = repository
+    end
+
+    def corresponding_primary_contents
+      corresponding_primary_file.contents
+    end
+
+    def corresponding_primary_file
+      return self  if is_primary_repo
+
+      self.class.new(
+        File.read(corresponding_primary_filename),
+        corresponding_primary_repository.language,
+        corresponding_primary_filename,
+        corresponding_primary_repository
+      )
+    end
+
+    def corresponding_primary_filename
+      return filename  if is_primary_repo
+
+      primary_filename = filename.sub(
+        repository.config_base_dir(:rtfile_dir),
+        corresponding_primary_repo_base_dir
+      ).sub(
+        /\/#{ repository.config_setting(:language_code_3_chars) }/,
+        "/#{ repository.config_setting(:primary_repo_lang_code) }"
+      )
+    end
+
+    def inspect
+      %(#<#{ self.class.name }:#{ object_id } @contents=#{ contents.truncate(50).inspect } @filename=#{ filename.inspect } @repository=#{ repository.inspect })
+    end
+
+  end
+end
