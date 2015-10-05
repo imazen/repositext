@@ -145,6 +145,8 @@ class Repositext
       #     :input_is_binary to force File.binread where required
       #     :output_is_binary
       #     :'changed-only'
+      #     :repository
+      #     :use_new_repositext_file_api
       # @param[Proc] block A Proc that performs the desired operation on each file.
       #     Arguments to the proc are each file's name and contents.
       #     Calling block is expected to return an Array of Outcome objects, one
@@ -177,7 +179,18 @@ class Repositext
               else
                 File.read(filename).freeze
               end
-              outcomes = block.call(contents, filename)
+              outcomes = if options[:use_new_repositext_file_api]
+                # use new api
+                # TODO: once all calls use new API, move assignment of repo and language out of loop
+                repository = options[:repository]
+                language = repository.language
+                block.call(
+                  Repositext::RFile.new(contents, language, filename, repository)
+                )
+              else
+                # use old api
+                block.call(contents, filename)
+              end
 
               outcomes.each do |outcome|
                 if outcome.success
