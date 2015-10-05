@@ -5,13 +5,6 @@ class Repositext
     # result to a file, but directly to the console.
     class Rtfile
 
-      # Create a dummy container to include RtfileDsl module so that we can load
-      # reference config
-      class ReferenceConfigContainer
-        include Repositext::Cli::RtfileDsl
-        attr_accessor :config
-      end
-
       # @param[String] rtfile_base_dir the directory in which the rtfile is located
       # @param[Repositext::Cli::Config] config
       def initialize(rtfile_base_dir, config)
@@ -56,10 +49,7 @@ class Repositext
       # @param[String] rtfile_path to the reference config (Rtfile template)
       # @return[Repositext::Cli::Config] a reference config
       def load_reference_config(rtfile_path)
-        rcc = ReferenceConfigContainer.new
-        rcc.config = Repositext::Cli::Config.new
-        rcc.eval_rtfile(rtfile_path)
-        rcc.config
+        Repositext::Cli::Config.new(rtfile_path).tap(&:eval)
       end
 
       # Finds keys that are in @reference_config but not in @validated_config

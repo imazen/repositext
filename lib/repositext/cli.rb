@@ -5,7 +5,6 @@ class Repositext
     class GitRepoNotUpToDateError < RuntimeError; end
 
     include Thor::Actions
-    include Cli::RtfileDsl
     include Cli::LongDescriptionsForCommands
 
     include Cli::Compare
@@ -25,6 +24,23 @@ class Repositext
     # For rtfile template loading
     def self.source_root
       File.dirname(__FILE__)
+    end
+
+    # Tries to find Rtfile, starting in current working directory and
+    # traversing up the directory hierarchy until it finds an Rtfile or
+    # reaches the file system root.
+    # NOTE: This code is inspired by Bundler's find_gemfile
+    # @return [String, nil] path to closest Rtfile or nil if none found.
+    def self.find_rtfile
+      previous = nil
+      current  = Dir.getwd
+
+      until !File.directory?(current) || current == previous
+        filename = File.join(current, 'Rtfile')
+        return filename  if File.file?(filename)
+        current, previous = File.expand_path("..", current), current
+      end
+      nil
     end
 
     class_option :'base-dir',
@@ -211,7 +227,12 @@ class Repositext
   private
 
     def config
-      @config ||= Cli::Config.new
+      @config ||= (
+        # TODO: replace with tap
+        c = Cli::Config.new(options['rtfile'])
+        c.eval
+        c
+      )
     end
     # This writer is used for testing to inject a mock config
     def config=(a_config)

@@ -1,31 +1,13 @@
 # Defines the DSL that can be used in Rtfiles
 class Repositext
   class Cli
-    module RtfileDsl
+    class RtfileParser
 
-      def self.included(base)
-        base.extend ClassMethods
-      end
+      attr_reader :config
 
-      module ClassMethods
-
-        # Tries to find Rtfile, starting in current working directory and
-        # traversing up the directory hierarchy until it finds an Rtfile or
-        # reaches the file system root.
-        # NOTE: This code is inspired by Bundler's find_gemfile
-        # @return [String, nil] path to closest Rtfile or nil if none found.
-        def find_rtfile
-          previous = nil
-          current  = Dir.getwd
-
-          until !File.directory?(current) || current == previous
-            filename = File.join(current, 'Rtfile')
-            return filename  if File.file?(filename)
-            current, previous = File.expand_path("..", current), current
-          end
-          nil
-        end
-
+      # @param config_object [Repositext::Cli::Config]
+      def initialize(config)
+        @config = config
       end
 
       # Evaluates contents of Rtfile. Rtfile can call the DSL methods defined

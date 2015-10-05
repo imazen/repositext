@@ -7,13 +7,18 @@ class Repositext
       FILE_EXTENSION_NAME_REGEX = /\A\w+_extensions?\z/
       FILE_SELECTOR_NAME_REGEX = /\A\w+_files?\z/
 
-      def initialize
+      def initialize(rtfile_path)
+        @rtfile_path = rtfile_path
         @base_dirs = {}
         @file_selectors = {}
         @file_extensions = {}
         @kramdown_converter_methods = {}
         @kramdown_parsers = {}
         @settings = {}
+      end
+
+      def eval
+        RtfileParser.new(self).eval_rtfile(@rtfile_path)
       end
 
       # Use this method in DSL methods to add a base directory to config
