@@ -46,7 +46,8 @@ class Repositext
         end
       end
 
-      let(:config) { Repositext::Cli::Config.new }
+      let(:rtfile_path) { 'Rtfile' }
+      let(:config) { Repositext::Cli::Config.new(rtfile_path) }
 
       describe '#add_base_dir' do
         it "adds a base dir" do

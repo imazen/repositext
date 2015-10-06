@@ -51,7 +51,7 @@ class Repositext
         import
       ].each do |command|
         it "responds to '#{ command }'" do
-          out = capture_io { Cli.start([command, 'test', '--rtfile', nil]) }.join.strip
+          out = capture_io { Cli.start([command, 'test', '--rtfile', nil, '--skip-git-up-to-date-check']) }.join.strip
           out.must_include "#{ command }_test"
         end
       end

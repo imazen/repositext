@@ -54,6 +54,41 @@ class Repositext
 
           end
 
+          describe 'Spanish' do
+
+            let(:specific_foreign_language) { Language::Spanish.new }
+
+            [
+              [
+                '53-0609a para 88 etc.',
+                '88 palabra palabra, palabra palabra: “palabra palabra palabra palabra palabra palabra palabra, palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra; ¡palabra palabra palabra palabra palabra!”. ¡palabra!',
+                '@88 word word, word word, “word word word word word word word, @word word word word word word word word word word word. @word word word word!” word!',
+                [
+                  [
+                    [
+                      "@88 word word, word word, “word word word word word word word, @word word word word word word word word word word word. @word word word word!” word!",
+                      "88 palabra palabra, palabra palabra: “palabra palabra palabra palabra palabra palabra palabra, palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra; ¡palabra palabra palabra palabra palabra!”. ¡palabra!"
+                    ]
+                  ]
+                ],
+              ],
+            ].each do |desc, foreign_contents, primary_contents, xpect|
+
+              it "handles #{ desc.inspect }" do
+                foreign_sequence = Sequence.new(foreign_contents, specific_foreign_language)
+                primary_sequence = Sequence.new(primary_contents, primary_language)
+                r = BilingualSequencePair.new(primary_sequence, foreign_sequence).aligned_paragraph_pairs
+                r.map { |bilingual_paragraph_pair|
+                  bilingual_paragraph_pair.aligned_text_pairs.map { |bilingual_text_pair|
+                    [bilingual_text_pair.primary_text.contents, bilingual_text_pair.foreign_text.contents]
+                  }
+                }.must_equal(xpect)
+              end
+
+            end
+
+          end
+
         end
 
       end
