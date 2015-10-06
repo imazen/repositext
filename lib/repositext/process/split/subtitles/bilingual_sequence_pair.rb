@@ -31,9 +31,9 @@ class Repositext
             min = nil
             means = []
             medians = []
-            bilingual_paragraph_pairs.each { |e|
-              max = [max, e.confidence_stats[:max]].compact.max
-              min = [min, e.confidence_stats[:min]].compact.min
+            aligned_paragraph_pairs.each { |e|
+              max = max.nil? ? e.confidence_stats[:max] : [max, e.confidence_stats[:max]].max
+              min = min.nil? ? e.confidence_stats[:min] : [min, e.confidence_stats[:min]].min
               means << e.confidence_stats[:mean]
               medians << e.confidence_stats[:median]
             }
@@ -42,6 +42,7 @@ class Repositext
               min: min,
               mean: means.mean,
               median: medians.median,
+              count: aligned_paragraph_pairs.length,
             }
           end
 
