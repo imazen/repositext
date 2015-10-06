@@ -3,6 +3,8 @@ class Repositext
 
     # Represents a content file in repositext.
 
+    include ContentAtSpecific
+
     attr_reader :contents, :filename, :language, :repository
 
     delegate :corresponding_primary_repository,
