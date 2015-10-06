@@ -41,6 +41,18 @@ class Repositext
             @foreign_text = foreign_text
           end
 
+          # Return Hash with the following keys: max, min, mean, median
+          def confidence_stats
+            c = confidence
+            {
+              max: c,
+              min: c,
+              mean: c,
+              median: c,
+              count: 1,
+            }
+          end
+
           def confidence
             if 0.0 == min_word_length
               # One of the contents is a gap, no confidence in alignment
@@ -110,16 +122,6 @@ class Repositext
             %(#<#{ self.class.name }:#{ object_id } @primary_text=#{ @primary_text.inspect } @foreign_text=#{ @foreign_text.inspect } @confidence=#{ confidence }>)
           end
 
-          # def length_ratio_in_chars
-          #   @length_ratio_in_chars ||= (
-          #     if 0 == min_char_length
-          #       0.0
-          #     else
-          #       foreign_text.length_in_chars / primary_text.length_in_chars.to_f
-          #     end
-          #   )
-          # end
-
           def length_ratio_in_words
             if 0 == min_word_length
               0.0
@@ -133,26 +135,12 @@ class Repositext
             length_ratio_in_words >= lower_bound && length_ratio_in_words <= upper_bound
           end
 
-          # def max_char_length
-          #   @max_char_length ||= [
-          #     primary_text.length_in_chars,
-          #     foreign_text.length_in_chars(adjusted: true),
-          #   ].max
-          # end
-
           def max_word_length
             [
               primary_text.length_in_words,
               foreign_text.length_in_words,
             ].max
           end
-
-          # def min_char_length
-          #   @min_char_length ||= [
-          #     primary_text.length_in_chars,
-          #     foreign_text.length_in_chars(adjusted: true),
-          #   ].min
-          # end
 
           def min_word_length
             [

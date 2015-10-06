@@ -28,4 +28,20 @@ class Array
     end
   end
 
+  def mean
+    return nil  if empty?
+    inject(:+).to_f / length
+  end
+
+  def median
+    return nil  if empty?
+    sorted = sort
+    len = length
+    if 1 == len % 2
+      sorted[len/2]
+    else
+      (sorted[len/2 - 1] + sorted[len/2]).to_f / 2
+    end
+  end
+
 end

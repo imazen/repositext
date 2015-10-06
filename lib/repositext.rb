@@ -30,6 +30,14 @@ require 'unicode_utils/downcase'
 require 'unicode_utils/upcase'
 require 'zip'
 
+# Establish namespace and class inheritance for Cli before we require nested
+# classes. Otherwise we get a subclass mismatch error because Cli is initialized as
+# standalone class (not inheriting from Thor)
+class Repositext
+  class Cli < Thor
+  end
+end
+
 # repositext libraries
 
 require 'patches/array'
@@ -190,6 +198,7 @@ require 'repositext/cli/commands/split'
 require 'repositext/cli/commands/sync'
 require 'repositext/cli/commands/validate'
 require 'repositext/cli/config'
+require 'repositext/process/split/subtitles/bilingual_sequence_pair'
 require 'repositext/process/split/subtitles/bilingual_paragraph_pair'
 require 'repositext/process/split/subtitles/bilingual_text_pair'
 require 'repositext/process/split/subtitles/paragraph'
