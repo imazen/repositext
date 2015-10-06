@@ -2,7 +2,7 @@ require_relative '../../../helper'
 
 module Kramdown
   module Parser
-    class KramdownRepositext
+    describe KramdownRepositext do
       describe 'Unsupported span parsers' do
 
         [
@@ -14,11 +14,11 @@ module Kramdown
           [:link, "simple [URL]()", " - :root - {:encoding=>#<Encoding:UTF-8>, :location=>1, :abbrev_defs=>{}}\n   - :p - {:location=>1}\n     - :text - {:location=>1} - \"simple [URL]()\"\n"],
           [:smart_quotes, %("_Hurrah!_"), " - :root - {:encoding=>#<Encoding:UTF-8>, :location=>1, :abbrev_defs=>{}}\n   - :p - {:location=>1}\n     - :text - {:location=>1} - \"\\\"\"\n     - :em - {:location=>1}\n       - :text - {:location=>1} - \"Hurrah!\"\n     - :text - {:location=>1} - \"\\\"\"\n"],
           [:span_html, %(<a href="test">title</a> is a title.), " - :root - {:encoding=>#<Encoding:UTF-8>, :location=>1, :abbrev_defs=>{}}\n   - :p - {:location=>1}\n     - :text - {:location=>1} - \"<a href=\\\"test\\\">title</a> is a title.\"\n"],
-          [:typographic_syms, %(This is... something---this too--! << keep these >> and leave the 'single' and "double" quotes as is.), " - :root - {:encoding=>#<Encoding:UTF-8>, :location=>1, :abbrev_defs=>{}}\n   - :p - {:location=>1}\n     - :text - {:location=>1} - \"This is... something---this too--! << kee [...]  the 'single' and \\\"double\\\" quotes as is.\"\n"]
+          [:typographic_syms, %(This is... something---this too--! << keep these >> and leave the 'single' and "double" quotes as is.), %( - :root - {:encoding=>#<Encoding:UTF-8>, :location=>1, :abbrev_defs=>{}}\n   - :p - {:location=>1}\n     - :text - {:location=>1} - \"This is... something---this too--! << kee [...]  the 'single' and \\\"double\\\" quotes as is.\"\n)]
         ].each do |parser_attrs|
           parser_name, kramdown_in, xpect = parser_attrs
           it "doesn't parse #{ parser_name }" do
-            doc = Document.new(kramdown_in, { :input => 'KramdownRepositext' })
+            doc = Kramdown::Document.new(kramdown_in, { :input => 'KramdownRepositext' })
             doc.root.inspect_tree.must_equal xpect
          end
         end
