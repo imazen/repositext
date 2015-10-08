@@ -25,6 +25,7 @@ Gem::Specification.new do |s|
   s.add_dependency('diff-lcs')
   s.add_dependency('kramdown')
   s.add_dependency('logging')
+  s.add_dependency('needleman_wunsch_aligner')
   s.add_dependency('nokogiri')
   s.add_dependency('outcome')
   s.add_dependency('parallel')

@@ -11,7 +11,7 @@ class Repositext
           @primary_file = primary_file
         end
 
-        # @return [Outcome]
+        # @return [Outcome] with foreign content AT as String in result.
         def split
           primary_sequence = compute_primary_sequence(@primary_file.contents, @primary_file.language)
           foreign_sequence = compute_foreign_sequence(@foreign_file.contents, @foreign_file.language)
@@ -31,9 +31,10 @@ class Repositext
 
       private
 
-        # @param txt [String] the primary contents
+        # @param txt [String] the primary contents in KramdownRepositext format.
         # @param language [Language] the primary language
-        # @return [Sequence]
+        # @return [Sequence] A sequence object with all tokens except headers
+        #    and subtitle_marks removed.
         def compute_primary_sequence(txt, language)
           primary_contents_with_subtitles_only = Suspension::TokenRemover.new(
             txt,
@@ -47,9 +48,9 @@ class Repositext
           Sequence.new(primary_contents_with_subtitles_only, language)
         end
 
-        # @param txt [String] the foreign contents
+        # @param txt [String] the foreign contents in KramdownRepositext format.
         # @param language [Language] the foreign language
-        # @return [Sequence]
+        # @return [Sequence] a sequence object with all tokens except headers removed.
         def compute_foreign_sequence(txt, language)
           foreign_contents_without_tokens = Suspension::TokenRemover.new(
             txt,
@@ -63,9 +64,10 @@ class Repositext
           Sequence.new(foreign_contents_without_tokens, language)
         end
 
-        # Returns foreign text with subtitles inserted.
+        # Returns foreign plain text with subtitles inserted.
         # @param bilingual_paragraph_pairs [Array<BilingualParagraphPair>]
-        # @return [String]
+        #     With primary and foreign plain text.
+        # @return [String] foreign plain text with subtitles.
         def copy_subtitles_to_foreign_plain_text(bilingual_paragraph_pairs)
           r = bilingual_paragraph_pairs.map { |bilingual_paragraph_pair|
             bilingual_paragraph_pair.aligned_text_pairs.map { |btp|
@@ -77,14 +79,14 @@ class Repositext
           decode_document_after_paragraph_splitting(r)
         end
 
-        # Decodes a document for paragraph splitting
+        # Encodes a document for paragraph splitting.
         # @param txt [String]
         # @return [String]
         def encode_document_for_paragraph_splitting(txt)
           txt.gsub(/^#([^\n]+)\n\n/, '#\1' + "\n")
         end
 
-        # Encodes a document after paragraph splitting
+        # Decodes a document after paragraph splitting.
         # @param txt [String]
         # @return [String]
         def decode_document_after_paragraph_splitting(txt)
@@ -92,9 +94,9 @@ class Repositext
         end
 
         # Inserts subtitles from primary_text into foreign_text
-        # @param primary_text [String]
-        # @param foreign_text [String]
-        # @return [String] the foreign text with subtitles inserted.
+        # @param primary_text [String] as plain text with subtitles
+        # @param foreign_text [String] as plain text without subtitles
+        # @return [String] the foreign plain text with subtitles inserted.
         def insert_subtitles_into_foreign_text(primary_text, foreign_text)
           subtitle_count = primary_text.count('@')
           if 0 == subtitle_count
@@ -109,16 +111,16 @@ class Repositext
           end
         end
 
-        # @param foreign_text [Text] The foreign content AT with subtitles placed
-        # @return [String] the adjusted contents
+        # @param foreign_text [Text] The foreign content AT with subtitles placed.
+        # @return [String] the foreign content AT with adjusted subtitles.
         def adjust_subtitles(foreign_text)
           Fix::MoveSubtitleMarksToNearbySentenceBoundaries.new(foreign_text).fix.result
         end
 
         # Inserts multiple subtitles based on word interpolation.
-        # @param primary_text [String] a sentence or paragraph
-        # @param foreign_text [String] a sentence or paragraph
-        # @return [String] foreign text with subtitles inserted.
+        # @param primary_text [String] a sentence or paragraph of plain text
+        # @param foreign_text [String] a sentence or paragraph of plain text
+        # @return [String] foreign plain text with subtitles inserted.
         def interpolate_multiple_subtitles(primary_text, foreign_text)
           primary_words = primary_text.split(' ')
           primary_subtitle_indexes = primary_words.each_with_index.inject([]) { |m, (word, idx)|

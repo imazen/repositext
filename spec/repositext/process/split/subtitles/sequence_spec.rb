@@ -36,6 +36,22 @@ class Repositext
             end
           end
 
+          describe '#as_kramdown_doc' do
+
+            it "converts self to kramdown doc" do
+              t = Sequence.new("# the title\nAnd a paragraph\n", language)
+              t.as_kramdown_doc.root.inspect_tree.must_equal(
+                %( - :root - {:encoding=>#<Encoding:UTF-8>, :location=>1, :abbrev_defs=>{}}
+                     - :header - {:level=>1, :raw_text=>\"the title\", :location=>1}
+                       - :text - {:location=>1} - \"the title\"
+                     - :p - {:location=>2}
+                       - :text - {:location=>2} - \"And a paragraph\"
+                  ).gsub(/\n                  /, "\n")
+              )
+            end
+
+          end
+
           describe '#split_into_paragraphs' do
             [
               [

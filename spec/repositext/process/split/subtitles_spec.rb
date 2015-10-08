@@ -11,16 +11,16 @@ class Repositext
         let(:primary_language) { Language::English.new }
         let(:foreign_lines) {
           [
-            '1 palabra1 palabra2 palabra3 palabra4',
-            '2 palabra1 palabra2. palabra3 palabra4',
-            '3 palabra1. palabra2 palabra3. palabra4',
+            '*1*{: pn} palabra1 palabra2 palabra3 palabra4',
+            '*2*{: pn} palabra1 palabra2. palabra3 palabra4',
+            '*3*{: pn} palabra1. palabra2 palabra3. palabra4',
           ]
         }
         let(:primary_lines) {
           [
-            '@1 word1 word2 word3 word4',
-            '@2 word1 word2. @word3 word4',
-            '@3 word1. @word2 word3. @word4',
+            '@*1*{: pn} word1 word2 word3 word4',
+            '@*2*{: pn} word1 word2. @word3 word4',
+            '@*3*{: pn} word1. @word2 word3. @word4',
           ]
         }
         let(:foreign_contents) { (foreign_lines.map { |e| "#{ e }\n{: .normal}" }.join("\n\n")) + "\n" }
@@ -36,13 +36,13 @@ class Repositext
           it 'handles default data' do
             subtitle_splitter.split.result.must_equal(
               [
-                '@1 palabra1 palabra2 palabra3 palabra4',
+                '@*1*{: pn} palabra1 palabra2 palabra3 palabra4',
                 '{: .normal}',
                 '',
-                '@2 palabra1 palabra2. @palabra3 palabra4',
+                '@*2*{: pn} palabra1 palabra2. @palabra3 palabra4',
                 '{: .normal}',
                 '',
-                '@3 palabra1. @palabra2 palabra3. @palabra4',
+                '@*3*{: pn} palabra1. @palabra2 palabra3. @palabra4',
                 '{: .normal}',
                 '',
               ].join("\n")
@@ -57,17 +57,17 @@ class Repositext
               [
                 '53-0609a para 88 etc.',
                 [
-                  '*88*{: .pn} Él dijo, Dios dijo: “He conocido la integridad de tu corazón, y por esa razón te he guardado de no pecar contra Mí; ¡pero ese es Mi profeta!”. ¡Aleluya!',
+                  '*88*{: .pn} palabra palabra, Palabra palabra: “Palabra palabra palabra palabra palabra palabra palabra, palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra PaLABRA; ¡palabra palabra palabra Palabra palabra!”. ¡Palabra!',
                   '{: .normal_pn}',
                   '',
                 ].join("\n"),
                 [
-                  '@*88*{: .pn} %He said, God said, “I knowed the integrity of your heart, @and that’s the reason I kept you from sinning against Me. @But that’s My prophet!” Hallelujah!',
+                  '@*88*{: .pn} %Word word, Word word, “WORD word word word word word word, @word word’word word word WORD word word word word word Word. @Word word’word Word word!” Word!',
                   '{: .normal_pn}',
                   '',
                 ].join("\n"),
                 [
-                  '@*88*{: .pn} Él dijo, Dios dijo: “He conocido la integridad de tu corazón, @y por esa razón te he guardado de no pecar contra Mí; @¡pero ese es Mi profeta!”. ¡Aleluya!',
+                  '@*88*{: .pn} palabra palabra, Palabra palabra: “Palabra palabra palabra palabra palabra palabra palabra, @palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra PaLABRA; @¡palabra palabra palabra Palabra palabra!”. ¡Palabra!',
                   '{: .normal_pn}',
                   '',
                 ].join("\n"),
@@ -90,19 +90,21 @@ class Repositext
           it 'handles default data' do
             r = subtitle_splitter.send(:compute_primary_sequence, primary_contents, primary_language)
             r.paragraphs.first.language.must_equal(primary_language)
-            r.paragraphs.map { |paragraph| paragraph.contents }.must_equal(primary_lines)
+            r.paragraphs.map { |paragraph| paragraph.contents }.must_equal(
+              ["@1 word1 word2 word3 word4", "@2 word1 word2. @word3 word4", "@3 word1. @word2 word3. @word4"]
+            )
           end
 
           [
             [
               '53-0609a para 88 etc.',
               [
-                '@*88*{: .pn} %He said, God said, “I knowed the integrity of your heart, @and that’s the reason I kept you from sinning against Me. @But that’s My prophet!” Hallelujah!',
+                '@*88*{: .pn} %Word word, Word word, “WORD word word word word word word, @word word’word word word WORD word word word word word Word. @Word word’word Word word!” Word!',
                 '{: .normal_pn}',
                 '',
               ].join("\n"),
               [
-                '@88 He said, God said, “I knowed the integrity of your heart, @and that’s the reason I kept you from sinning against Me. @But that’s My prophet!” Hallelujah!',
+                '@88 Word word, Word word, “WORD word word word word word word, @word word’word word word WORD word word word word word Word. @Word word’word Word word!” Word!',
               ]
             ],
           ].each do |desc, primary_contents, xpect|
@@ -121,7 +123,9 @@ class Repositext
           it 'handles default data' do
             r = subtitle_splitter.send(:compute_foreign_sequence, foreign_contents, foreign_language)
             r.paragraphs.first.language.must_equal(foreign_language)
-            r.paragraphs.map { |paragraph| paragraph.contents }.must_equal(foreign_lines)
+            r.paragraphs.map { |paragraph| paragraph.contents }.must_equal(
+              ["1 palabra1 palabra2 palabra3 palabra4", "2 palabra1 palabra2. palabra3 palabra4", "3 palabra1. palabra2 palabra3. palabra4"]
+            )
           end
 
           describe 'Spanish' do
@@ -132,12 +136,12 @@ class Repositext
               [
                 '53-0609a para 88 etc.',
                 [
-                  '*88*{: .pn} Él dijo, Dios dijo: “He conocido la integridad de tu corazón, y por esa razón te he guardado de no pecar contra Mí; ¡pero ese es Mi profeta!”. ¡Aleluya!',
+                  '*88*{: .pn} palabra palabra, Palabra palabra: “Palabra palabra palabra palabra palabra palabra palabra, palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra PaLABRA; ¡palabra palabra palabra Palabra palabra!”. ¡Palabra!',
                   '{: .normal_pn}',
                   '',
                 ].join("\n"),
                 [
-                  '88 Él dijo, Dios dijo: “He conocido la integridad de tu corazón, y por esa razón te he guardado de no pecar contra Mí; ¡pero ese es Mi profeta!”. ¡Aleluya!',
+                  '88 palabra palabra, Palabra palabra: “Palabra palabra palabra palabra palabra palabra palabra, palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra PaLABRA; ¡palabra palabra palabra Palabra palabra!”. ¡Palabra!',
                 ]
               ],
             ].each do |desc, foreign_contents, xpect|
@@ -200,7 +204,7 @@ class Repositext
             primary_text = primary_lines.first
             foreign_text = foreign_lines.first
             r = subtitle_splitter.send(:insert_subtitles_into_foreign_text, primary_text, foreign_text)
-            r.must_equal("@1 palabra1 palabra2 palabra3 palabra4")
+            r.must_equal("@*1*{: pn} palabra1 palabra2 palabra3 palabra4")
           end
 
         end
@@ -221,7 +225,7 @@ class Repositext
             primary_text = primary_lines.last
             foreign_text = foreign_lines.last
             r = subtitle_splitter.send(:interpolate_multiple_subtitles, primary_text, foreign_text)
-            r.must_equal("@3 palabra1. @palabra2 palabra3. @palabra4")
+            r.must_equal("@*3*{: pn} palabra1. @palabra2 palabra3. @palabra4")
           end
 
         end

@@ -8,9 +8,9 @@ class Repositext
 
           # Creates an instance of self from two aligned sequences with unaligned
           # paragraphs.
-          # @param primary_sequence [Sequence]
-          # @param foreign_sequence [Sequence]
-          # @return [BilingualSequencePair]
+          # @param primary_sequence [Sequence] primary plain text
+          # @param foreign_sequence [Sequence] foreign plain text
+          # @return [BilingualSequencePair] with aligned plain text paragraphs
           def initialize(primary_sequence, foreign_sequence)
             raise ArgumentError.new("Invalid primary_sequence: #{ primary_sequence.inspect }")  unless primary_sequence.is_a?(Sequence)
             raise ArgumentError.new("Invalid foreign_sequence: #{ foreign_sequence.inspect }")  unless foreign_sequence.is_a?(Sequence)
@@ -18,14 +18,16 @@ class Repositext
             @foreign_sequence = foreign_sequence
           end
 
-          # Returns aligned
+          # Returns aligned paragraph pairs
+          # @return [Array<BilingualParagraphPair>]
           def aligned_paragraph_pairs
             @aligned_paragraph_pairs ||= compute_aligned_paragraph_pairs(
               @primary_sequence, @foreign_sequence
             )
           end
 
-          # Return Hash with the following keys: max, min, mean, median
+          # Returns paragraphs' aggregated confidence stats.
+          # @return [Hash]
           def confidence_stats
             max = nil
             min = nil
@@ -49,14 +51,14 @@ class Repositext
         private
 
           # Aligns paragraphs of primary_sequence and foreign_sequence.
-          # @param primary_sequence [Sequence]
-          # @param foreign_sequence [Sequence]
+          # @param primary_sequence [Sequence] primary plain text
+          # @param foreign_sequence [Sequence] foreign plain text
           # @return [Array<BilingualParagraphPair>] Array of aligned paragraph pairs.
           def compute_aligned_paragraph_pairs(primary_sequence, foreign_sequence)
-            primary_sequence.paragraphs.each_with_index.map { |primary_paragraph, idx|
-              foreign_paragraph = foreign_sequence.paragraphs[idx]
-              BilingualParagraphPair.new(primary_paragraph, foreign_paragraph)
-            }
+            ParagraphsAligner.new(
+              primary_sequence,
+              foreign_sequence
+            ).align.result
           end
 
         end

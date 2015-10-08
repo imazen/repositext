@@ -14,7 +14,7 @@ class Repositext
           let(:primary_language) { Language::English.new }
           let(:foreign_paragraph) { Paragraph.new(foreign_contents, foreign_language) }
           let(:primary_paragraph) { Paragraph.new(primary_contents, primary_language) }
-          let(:bilingual_paragraph_pair) { BilingualParagraphPair.new(primary_paragraph, foreign_paragraph) }
+          let(:bilingual_paragraph_pair) { BilingualParagraphPair.new(primary_paragraph, foreign_paragraph, 1.0) }
 
           describe '#aligned_text_pairs' do
 
@@ -42,7 +42,8 @@ class Repositext
               bilingual_paragraph_pair.send(
                 :compute_aligned_text_pairs,
                 primary_paragraph,
-                foreign_paragraph
+                foreign_paragraph,
+                1.0
               ).map { |btp|
                 [btp.primary_contents, btp.foreign_contents]
               }.must_equal([[primary_contents, foreign_contents]])
@@ -73,7 +74,8 @@ class Repositext
                   r = bilingual_paragraph_pair.send(
                     :compute_aligned_text_pairs,
                     primary_paragraph,
-                    foreign_paragraph
+                    foreign_paragraph,
+                    1.0
                   )
                   r.map { |bilingual_text_pair|
                     [bilingual_text_pair.primary_contents, bilingual_text_pair.foreign_contents]
@@ -92,7 +94,8 @@ class Repositext
               bilingual_paragraph_pair.send(
                 :compute_raw_aligned_text_pairs,
                 primary_paragraph,
-                foreign_paragraph
+                foreign_paragraph,
+                1.0
               ).map { |btp|
                 [btp.primary_contents, btp.foreign_contents]
               }.must_equal([[primary_contents, foreign_contents]])
@@ -126,7 +129,8 @@ class Repositext
                   r = bilingual_paragraph_pair.send(
                     :compute_raw_aligned_text_pairs,
                     primary_paragraph,
-                    foreign_paragraph
+                    foreign_paragraph,
+                    1.0
                   )
                   r.map { |bilingual_text_pair|
                     [bilingual_text_pair.primary_contents, bilingual_text_pair.foreign_contents]
@@ -170,7 +174,8 @@ class Repositext
                 r = bilingual_paragraph_pair.send(
                   :compute_raw_aligned_text_pairs,
                   Paragraph.new(primary_contents, primary_language),
-                  Paragraph.new(foreign_contents, foreign_language)
+                  Paragraph.new(foreign_contents, foreign_language),
+                  1.0
                 )
                 r.map { |btp|
                   [btp.primary_contents, btp.foreign_contents]

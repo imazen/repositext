@@ -20,6 +20,14 @@ class Repositext
             @paragraphs ||= split_into_paragraphs(contents, language)
           end
 
+          def as_kramdown_doc(options={})
+            options = {
+              input: 'KramdownRepositext',
+              line_width: 100000, # set to very large value so that each para is on a single line
+            }.merge(options)
+            Kramdown::Document.new(contents, options)
+          end
+
         private
 
           # Splits contents into paragraphs

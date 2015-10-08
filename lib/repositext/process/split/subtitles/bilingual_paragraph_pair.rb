@@ -9,17 +9,18 @@ class Repositext
           # Creates an instance of self from two aligned paragraphs with unaligned sentences.
           # @param primary_paragraph [Paragraph]
           # @param foreign_paragraph [Paragraph]
-          def initialize(primary_paragraph, foreign_paragraph)
+          def initialize(primary_paragraph, foreign_paragraph, confidence=1.0)
             raise ArgumentError.new("Invalid primary_paragraph: #{ primary_paragraph.inspect }")  unless primary_paragraph.is_a?(Paragraph)
             raise ArgumentError.new("Invalid foreign_paragraph: #{ foreign_paragraph.inspect }")  unless foreign_paragraph.is_a?(Paragraph)
             @primary_paragraph = primary_paragraph
             @foreign_paragraph = foreign_paragraph
+            @confidence = confidence
           end
 
           # Returns aligned text pairs based on sentences.
           def aligned_text_pairs
             @aligned_text_pairs ||= compute_aligned_text_pairs(
-              @primary_paragraph, @foreign_paragraph
+              @primary_paragraph, @foreign_paragraph, @confidence
             )
           end
 
@@ -44,32 +45,51 @@ class Repositext
             }
           end
 
+          def primary_contents
+            @primary_paragraph.contents
+          end
+
+          def foreign_contents
+            @foreign_paragraph.contents
+          end
+
         private
 
           # @param primary_paragraph [Paragraph]
           # @param foreign_paragraph [paragraph]
           # @return [Array<BilingualTextPair>]
-          def compute_aligned_text_pairs(primary_paragraph, foreign_paragraph)
+          def compute_aligned_text_pairs(primary_paragraph, foreign_paragraph, confidence)
             merge_low_confidence_text_pairs(
               merge_text_pairs_with_gaps(
-                compute_raw_aligned_text_pairs(primary_paragraph, foreign_paragraph)
+                compute_raw_aligned_text_pairs(primary_paragraph, foreign_paragraph, confidence)
               )
             )
           end
 
-          def compute_raw_aligned_text_pairs(primary_paragraph, foreign_paragraph)
-            Alignment.align_text(
-              primary_paragraph.sentences.map { |e| e.contents }.join('|'),
-              foreign_paragraph.sentences.map { |e| e.contents }.join('|')
-            ).map { |aligned_sentence_pair|
-              # Alignment returns all sentences in a region as array. We only
-              # ever expect one sentence per array, however we join them with ' '
-              # anyways to get a single string.
-              BilingualTextPair.new(
-                Text.new(aligned_sentence_pair.first.join(' '), primary_paragraph.language),
-                Text.new(aligned_sentence_pair.last.join(' '), foreign_paragraph.language)
-              )
-            }
+          def compute_raw_aligned_text_pairs(primary_paragraph, foreign_paragraph, confidence)
+            if 0.0 == confidence
+              # TODO: alternatively we may check for empty contents in one of the paras
+              # This pair contains a gap!
+              [
+                BilingualTextPair.new(
+                  Text.new(primary_paragraph.contents.strip, primary_paragraph.language),
+                  Text.new(foreign_paragraph.contents.strip, foreign_paragraph.language)
+                )
+              ]
+            else
+              Alignment.align_text(
+                primary_paragraph.sentences.map { |e| e.contents }.join('|'),
+                foreign_paragraph.sentences.map { |e| e.contents }.join('|')
+              ).map { |aligned_sentence_pair|
+                # Alignment returns all sentences in a region as array. We only
+                # ever expect one sentence per array, however we join them with ' '
+                # anyways to get a single string.
+                BilingualTextPair.new(
+                  Text.new(aligned_sentence_pair.first.join(' '), primary_paragraph.language),
+                  Text.new(aligned_sentence_pair.last.join(' '), foreign_paragraph.language)
+                )
+              }
+            end
           end
 
           class ConfidenceLevelEntry < Struct.new(:conf, :idx); end;
