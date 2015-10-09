@@ -28,8 +28,15 @@ class Repositext
             foreign_sequence,
             { structural_similarity_override: content_at_structural_similarity }
           )
-          foreign_plain_text_with_subtitles = copy_subtitles_to_foreign_plain_text(
-            bilingual_sequence_pair.aligned_paragraph_pairs
+          sanitized_aligned_paragraph_pairs = encode_merged_paragraph_contents(
+            sanitize_aligned_paragraph_pairs(
+              bilingual_sequence_pair.aligned_paragraph_pairs
+            )
+          )
+          foreign_plain_text_with_subtitles = decode_merged_paragraph_contents(
+            copy_subtitles_to_foreign_plain_text(
+              sanitized_aligned_paragraph_pairs
+            )
           )
           foreign_content_at_with_subtitles = Suspension::TokenReplacer.new(
             foreign_plain_text_with_subtitles,
@@ -89,6 +96,73 @@ class Repositext
             foreign_contents_without_tokens
           )
           Sequence.new(foreign_contents_without_tokens, language)
+        end
+
+        # Encodes double newlines inbetween merged paragraphs.
+        # @param bpps [Array<BilingualParagraphPair>]
+        #     With primary and foreign plain text.
+        # @return [Array<BilingualParagraphPair>] with encoded double newlines
+        def encode_merged_paragraph_contents(bpps)
+          bpps.map { |bpp|
+            if [bpp.primary_contents, bpp.foreign_contents].any? { |e| e =~ /\n\n(?!\z)/ }
+              # Requires encoding
+              BilingualParagraphPair.new(
+                Paragraph.new(
+                  bpp.primary_contents.gsub(/\n\n(?!\z)/, ' rtxtNewlNewl'),
+                  bpp.primary_language
+                ),
+                Paragraph.new(
+                  bpp.foreign_contents.gsub(/\n\n(?!\z)/, ' rtxtNewlNewl'),
+                  bpp.foreign_language
+                ),
+                bpp.confidence
+              )
+            else
+              # No encoding required, use as is
+              bpp
+            end
+          }
+        end
+
+        # Decodes double newlines inbetween merged paragraphs.
+        # @param txt [String]
+        # @return [String] foreign plain text with decoded double newlines
+        def decode_merged_paragraph_contents(txt)
+          # Note: We have to convert double newlines to single ones in order to
+          # behave identical to what happens to trailing double newlines.
+          txt.gsub(/ (@?)rtxtNewlNewl/, "\n" + '\1')
+        end
+
+        # Prepares aligned_paragraph_pairs for subtitle splitting:
+        # Merges pairs with gaps into previous paragraph pair.
+        # Note: Does not merge paragraphs into headers! This could result in
+        # subtitle_marks being interpolated into headers which is something we
+        # don't want. Headers never contain subtitles.
+        # @param bpps [Array<BilingualParagraphPair>]
+        #     With primary and foreign plain text.
+        # @return [Array<BilingualParagraphPair>] with no more gaps
+        def sanitize_aligned_paragraph_pairs(bpps)
+          # return as is if there are no gapped bpps
+          return bpps  if bpps.none? { |e| 0.0 == e.confidence }
+          sanitized_bpps = []
+          bpps.each { |bpp|
+            prev_bpp = sanitized_bpps[-1]
+            if(
+              prev_bpp && # previous bpp exists
+              [:primary_contents, :foreign_contents].none? { |e| prev_bpp.send(e) =~ /\A#/ } && # previous bpp is not a header
+              (
+                0.0 == bpp.confidence || # current bpp has gap
+                [:primary_contents, :foreign_contents].any? { |e| '' == prev_bpp.send(e) } # previous bpp has gap
+              )
+            )
+              # merge
+              sanitized_bpps[-1] = BilingualParagraphPair.merge([prev_bpp, bpp])
+            else
+              # Use as is
+              sanitized_bpps << bpp
+            end
+          }
+          sanitized_bpps
         end
 
         # Returns foreign plain text with subtitles inserted.
@@ -155,6 +229,7 @@ class Repositext
             m
           }
           foreign_words = foreign_text.split(' ')
+          foreign_words = ['']  if foreign_words.empty?
           word_scale_factor = foreign_words.length / primary_words.length.to_f
           foreign_subtitle_indexes = primary_subtitle_indexes.map { |e|
             (e * word_scale_factor).floor

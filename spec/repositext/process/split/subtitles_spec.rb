@@ -155,6 +155,144 @@ class Repositext
 
         end
 
+        describe '#encode_merged_paragraph_contents' do
+
+          it 'handles default data' do
+            primary_sequence = subtitle_splitter.send(:compute_primary_sequence, primary_contents, primary_language)
+            foreign_sequence = subtitle_splitter.send(:compute_foreign_sequence, foreign_contents, foreign_language)
+            bilingual_sequence_pair = Subtitles::BilingualSequencePair.new(primary_sequence, foreign_sequence)
+            r = subtitle_splitter.send(
+              :encode_merged_paragraph_contents,
+              bilingual_sequence_pair.aligned_paragraph_pairs
+            )
+            r.map { |bpp| [bpp.primary_contents, bpp.foreign_contents] }.must_equal([
+              ["@1 word1 word2 word3 word4", "1 palabra1 palabra2 palabra3 palabra4"],
+              ["@2 word1 word2. @word3 word4", "2 palabra1 palabra2. palabra3 palabra4"],
+              ["@3 word1. @word2 word3. @word4", "3 palabra1. palabra2 palabra3. palabra4"],
+            ])
+          end
+
+          # [
+          #   [
+          #     '53-0609a para 88 etc.',
+          #     [
+          #       '*88*{: .pn} palabra palabra, Palabra palabra: “Palabra palabra palabra palabra palabra palabra palabra, palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra PaLABRA; ¡palabra palabra palabra Palabra palabra!”. ¡Palabra!',
+          #       '{: .normal_pn}',
+          #       '',
+          #     ].join("\n"),
+          #     [
+          #       '88 palabra palabra, Palabra palabra: “Palabra palabra palabra palabra palabra palabra palabra, palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra PaLABRA; ¡palabra palabra palabra Palabra palabra!”. ¡Palabra!',
+          #     ]
+          #   ],
+          # ].each do |desc, foreign_contents, xpect|
+          #   it "handles #{ desc.inspect }" do
+          #     r = subtitle_splitter.send(:compute_foreign_sequence, foreign_contents, specific_foreign_language)
+          #     r.paragraphs.map { |para| para.contents }.must_equal(xpect)
+          #   end
+          # end
+
+        end
+
+        describe '#sanitize_aligned_paragraph_pairs' do
+
+          it 'handles default data' do
+            primary_sequence = subtitle_splitter.send(:compute_primary_sequence, primary_contents, primary_language)
+            foreign_sequence = subtitle_splitter.send(:compute_foreign_sequence, foreign_contents, foreign_language)
+            bilingual_sequence_pair = Subtitles::BilingualSequencePair.new(primary_sequence, foreign_sequence)
+            r = subtitle_splitter.send(
+              :sanitize_aligned_paragraph_pairs,
+              bilingual_sequence_pair.aligned_paragraph_pairs
+            )
+            r.map { |bpp| [bpp.primary_contents, bpp.foreign_contents] }.must_equal([
+              ["@1 word1 word2 word3 word4", "1 palabra1 palabra2 palabra3 palabra4"],
+              ["@2 word1 word2. @word3 word4", "2 palabra1 palabra2. palabra3 palabra4"],
+              ["@3 word1. @word2 word3. @word4", "3 palabra1. palabra2 palabra3. palabra4"],
+            ])
+          end
+
+          [
+            [
+              'One gap in the middle of foreign paras',
+              [
+                [
+                  "@1 word1 word2. @word3 word4.\n\n",
+                  "1 palabra1 palabra2. palabra3 palabra4. palabra5 palabra6. palabra7 palabra8.\n\n",
+                  1.0
+                ],
+                [
+                  "@word5 word6. @word7 word8.\n\n",
+                  "",
+                  0.0
+                ],
+                [
+                  "@2 word9 word10. @word11 word12.\n\n",
+                  "2 palabra9 palabra10. palabra11 palabra12.\n\n",
+                  1.0
+                ],
+              ],
+              [
+                [
+                  "@1 word1 word2. @word3 word4.\n\n@word5 word6. @word7 word8.\n\n",
+                  "1 palabra1 palabra2. palabra3 palabra4. palabra5 palabra6. palabra7 palabra8.\n\n",
+                  0.5
+                ],
+                [
+                  "@2 word9 word10. @word11 word12.\n\n",
+                  "2 palabra9 palabra10. palabra11 palabra12.\n\n",
+                  1.0
+                ],
+              ]
+            ],
+            [
+              'Header followed by gap',
+              [
+                [
+                  "# header1\n\n",
+                  "# header1\n\n",
+                  1.0
+                ],
+                [
+                  "@1 word1 word2. @word3 word4.\n\n",
+                  "",
+                  0.0
+                ],
+                [
+                  "@2 word5 word6. @word7 word8.\n\n",
+                  "2 palabra5 palabra6. palabra7 palabra8.\n\n",
+                  1.0
+                ],
+              ],
+              [
+                [
+                  "# header1\n\n",
+                  "# header1\n\n",
+                  1.0
+                ],
+                [
+                  "@1 word1 word2. @word3 word4.\n\n@2 word5 word6. @word7 word8.\n\n",
+                  "2 palabra5 palabra6. palabra7 palabra8.\n\n",
+                  0.5
+                ],
+              ]
+            ],
+          ].each do |desc, bpps_attrs, xpect|
+            it "handles #{ desc.inspect }" do
+              bpps = bpps_attrs.map { |(primary_contents, foreign_contents, confidence)|
+                Subtitles::BilingualParagraphPair.new(
+                  Subtitles::Paragraph.new(primary_contents, primary_language),
+                  Subtitles::Paragraph.new(foreign_contents, foreign_language),
+                  confidence
+                )
+              }
+              r = subtitle_splitter.send(:sanitize_aligned_paragraph_pairs, bpps)
+              r.map { |bpp|
+                [bpp.primary_contents, bpp.foreign_contents, bpp.confidence]
+              }.must_equal(xpect)
+            end
+          end
+
+        end
+
         describe '#copy_subtitles_to_foreign_plain_text' do
 
           it 'handles default data' do
@@ -170,6 +308,53 @@ class Repositext
               "@2 palabra1 palabra2. @palabra3 palabra4",
               "@3 palabra1. @palabra2 palabra3. @palabra4",
             ].join("\n"))
+          end
+
+          [
+            [
+              'One paragraph with merged gap and lower confidence',
+              [
+                [
+                  "@1 word1 word2. @word3 word4.\n\n@word5 word6. @word7 word8.\n\n",
+                  "1 palabra1 palabra2. palabra3 palabra4. palabra5 palabra6. palabra7 palabra8.\n\n",
+                  0.5
+                ],
+                [
+                  "@2 word9 word10. @word11 word12.\n\n",
+                  "2 palabra9 palabra10. palabra11 palabra12.\n\n",
+                  1.0
+                ],
+              ],
+              "@1 palabra1 palabra2. @palabra3 palabra4. @palabra5 palabra6. @palabra7 palabra8.\n@2 palabra9 palabra10. @palabra11 palabra12."
+            ],
+            [
+              'Multiple paragraphs with merged gaps and lower confidence at the end',
+              [
+                [
+                  "@1 word1 word2. @word3 word4.\n\n@word5 word6. @word7 word8.\n\n",
+                  "1 palabra1 palabra2. palabra3 palabra4. palabra5 palabra6. palabra7 palabra8.\n\n",
+                  0.5
+                ],
+                [
+                  "@2 word9 word10. @word11 word12.\n\n",
+                  "2 palabra9 palabra10. palabra11 palabra12.\n\n",
+                  1.0
+                ],
+              ],
+              "@1 palabra1 palabra2. @palabra3 palabra4. @palabra5 palabra6. @palabra7 palabra8.\n@2 palabra9 palabra10. @palabra11 palabra12."
+            ],
+          ].each do |desc, bpps_attrs, xpect|
+            it "handles #{ desc.inspect }" do
+              bpps = bpps_attrs.map { |(primary_contents, foreign_contents, confidence)|
+                Subtitles::BilingualParagraphPair.new(
+                  Subtitles::Paragraph.new(primary_contents, primary_language),
+                  Subtitles::Paragraph.new(foreign_contents, foreign_language),
+                  confidence
+                )
+              }
+              r = subtitle_splitter.send(:copy_subtitles_to_foreign_plain_text, bpps)
+              r.must_equal(xpect)
+            end
           end
 
         end
