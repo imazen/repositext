@@ -10,12 +10,15 @@ class Repositext
           # paragraphs.
           # @param primary_sequence [Sequence] primary plain text
           # @param foreign_sequence [Sequence] foreign plain text
+          # @param options [Hash, optional]
+          #     structural_similarity_override
           # @return [BilingualSequencePair] with aligned plain text paragraphs
-          def initialize(primary_sequence, foreign_sequence)
+          def initialize(primary_sequence, foreign_sequence, options={})
             raise ArgumentError.new("Invalid primary_sequence: #{ primary_sequence.inspect }")  unless primary_sequence.is_a?(Sequence)
             raise ArgumentError.new("Invalid foreign_sequence: #{ foreign_sequence.inspect }")  unless foreign_sequence.is_a?(Sequence)
             @primary_sequence = primary_sequence
             @foreign_sequence = foreign_sequence
+            @options = options
           end
 
           # Returns aligned paragraph pairs
@@ -57,7 +60,8 @@ class Repositext
           def compute_aligned_paragraph_pairs(primary_sequence, foreign_sequence)
             ParagraphsAligner.new(
               primary_sequence,
-              foreign_sequence
+              foreign_sequence,
+              { structural_similarity_override: @options[:structural_similarity_override] }
             ).align.result
           end
 

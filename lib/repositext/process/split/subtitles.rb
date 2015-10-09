@@ -13,9 +13,21 @@ class Repositext
 
         # @return [Outcome] with foreign content AT as String in result.
         def split
+          # Compute structural similarity for original content AT files.
+          # All subsequent code operates on plain text versions where we can't
+          # compute structural similarity reliably.
+          content_at_structural_similarity = compute_content_at_structural_similarity(
+            @primary_file.contents,
+            @foreign_file.contents
+          )
+
           primary_sequence = compute_primary_sequence(@primary_file.contents, @primary_file.language)
           foreign_sequence = compute_foreign_sequence(@foreign_file.contents, @foreign_file.language)
-          bilingual_sequence_pair = BilingualSequencePair.new(primary_sequence, foreign_sequence)
+          bilingual_sequence_pair = BilingualSequencePair.new(
+            primary_sequence,
+            foreign_sequence,
+            { structural_similarity_override: content_at_structural_similarity }
+          )
           foreign_plain_text_with_subtitles = copy_subtitles_to_foreign_plain_text(
             bilingual_sequence_pair.aligned_paragraph_pairs
           )
@@ -30,6 +42,21 @@ class Repositext
         end
 
       private
+
+        # Computes structural similarity for the original content ATs
+        # @param primary_contents [String]
+        # @param foreign_contents [String]
+        # @return [Hash]
+        def compute_content_at_structural_similarity(primary_contents, foreign_contents)
+          kramdown_options = {
+            input: 'KramdownRepositext',
+            line_width: 100000, # set to very large value so that each para is on a single line
+          }
+          Kramdown::TreeStructuralSimilarity.new(
+            Kramdown::Document.new(primary_contents, kramdown_options),
+            Kramdown::Document.new(foreign_contents, kramdown_options),
+          ).compute
+        end
 
         # @param txt [String] the primary contents in KramdownRepositext format.
         # @param language [Language] the primary language

@@ -14,9 +14,12 @@ class Repositext
 
             # @param primary_sequence [Sequence] primary plain text
             # @param foreign_sequence [Sequence] foreign plain text
-            def initialize(primary_sequence, foreign_sequence)
+            # @param options [Hash, optional]
+            #     structural_similarity_override
+            def initialize(primary_sequence, foreign_sequence, options={})
               @primary_sequence = primary_sequence
               @foreign_sequence = foreign_sequence
+              @options = options
             end
 
             # Returns outcome with aligned primary and foreign sequences.
@@ -40,9 +43,12 @@ class Repositext
             end
 
             def structural_similarity
-              @structural_similarity ||= compute_structural_similarity(
-                primary_kramdown_doc,
-                foreign_kramdown_doc
+              @structural_similarity ||= (
+                @options[:structural_similarity_override] ||
+                compute_structural_similarity(
+                  primary_kramdown_doc,
+                  foreign_kramdown_doc
+                )
               )
             end
 
