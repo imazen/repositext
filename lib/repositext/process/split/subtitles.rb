@@ -45,6 +45,10 @@ class Repositext
           foreign_content_at_with_adjusted_subtitles = adjust_subtitles(
             Text.new(foreign_content_at_with_subtitles, @foreign_file.language)
           )
+          validate_no_content_changed(
+            @foreign_file.contents,
+            foreign_content_at_with_adjusted_subtitles
+          )
           Outcome.new(true, foreign_content_at_with_adjusted_subtitles)
         end
 
@@ -236,6 +240,14 @@ class Repositext
           }
           foreign_subtitle_indexes.each { |i| foreign_words[i].prepend('@') }
           foreign_words.join(' ')
+        end
+
+        # @param original_foreign_contents [String]
+        # @param split_foreign_contents [String]
+        def validate_no_content_changed(original_foreign_contents, split_foreign_contents)
+          if original_foreign_contents.gsub('@', '') != split_foreign_contents.gsub('@', '')
+            raise "They are different!"
+          end
         end
 
       end
