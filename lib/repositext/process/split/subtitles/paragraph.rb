@@ -64,34 +64,39 @@ class Repositext
           def encoding_rules
             [
               # ['…?…', '…rtxt_helen…'],
-              ['…”', 'rtxt_elip_tdqc'], # added for spn
-              ['!,', 'rtxt_excl_comm'], # added for spn
-              ['!:', 'rtxt_excl_colo'], # added for spn
-              ['!;', 'rtxt_excl_semi'], # added for spn
-              ['!—', 'rtxt_excl_emda'], # added for spn
-              ['!’', 'rtxt_excl_tsqc'], # added for afr
-              ['!”', 'rtxt_excl_tdqc'],
-              ['!…', 'rtxt_excl_elip'], # added for spn
-              ['.!', 'rtxt_peri_excl'], # added for spn
-              ['.,', 'rtxt_peri_comm'], # added for spn
-              ['.-', 'rtxt_peri_hyph'], # should the hyphen be replaced with emdash in source? uds.-uds.
-              ['.;', 'rtxt_peri_semi'], # added for spn
-              ['.?', 'rtxt_peri_ques'], # added for spn
-              ['.[', 'rtxt_peri_brop'], # added for spn
-              ['.—', 'rtxt_peri_emda'], # added for spn
-              ['.’', 'rtxt_peri_tsqc'], # added for afr
-              ['.”', 'rtxt_peri_tdqc'], # added for afr
-              ['.…', 'rtxt_peri_elip'], # added for spn
-              ['?)', 'rtxt_ques_pacl'], # added for spn
-              ['?,', 'rtxt_ques_comm'], # added for spn
-              ['?:', 'rtxt_ques_colo'], # added for spn
-              ['?;', 'rtxt_ques_semi'], # added for spn
-              ['?’', 'rtxt_ques_tsqc'], # added for afr
-              ['?”', 'rtxt_ques_tdqc'],
-              ['?…', 'rtxt_ques_elip'], # added for spn
-              ['—', 'rtxt_emdash'],
-              ['', 'rtxt_eagle'],
+              ['!)', 'rtxtExclPaCl'], # added for spn
+              ['!,', 'rtxtExclComm'], # added for spn
+              ['!:', 'rtxtExclColo'], # added for spn
+              ['!;', 'rtxtExclSemi'], # added for spn
+              ['!—', 'rtxtExclEmda'], # added for spn
+              ['!’', 'rtxtExclTsqc'], # added for afr
+              ['!”', 'rtxtExclTdqc'],
+              ['!…', 'rtxtExclElip'], # added for spn
+              ['.!', 'rtxtPeriExcl'], # added for spn
+              ['.(', 'rtxtPeriPaOp'], # added for spn
+              ['.)', 'rtxtPeriPaCl'], # added for spn
+              ['.,', 'rtxtPeriComm'], # added for spn
+              ['.-', 'rtxtPeriHyph'], # should the hyphen be replaced with emdash in source? uds.-uds.
+              ['.;', 'rtxtPeriSemi'], # added for spn
+              ['.?', 'rtxtPeriQues'], # added for spn
+              ['.[', 'rtxtPeriBrOp'], # added for spn
+              ['.—', 'rtxtPeriEmda'], # added for spn
+              ['.’', 'rtxtPeriTsqc'], # added for afr
+              ['.”', 'rtxtPeriTdqc'], # added for afr
+              ['.…', 'rtxtPeriElip'], # added for spn
+              ['?)', 'rtxtQuesPaCl'], # added for spn
+              ['?,', 'rtxtQuesComm'], # added for spn
+              ['?.', 'rtxtQuesPeri'], # added for spn
+              ['?:', 'rtxtQuesColo'], # added for spn
+              ['?;', 'rtxtQuesSemi'], # added for spn
+              ['?—', 'rtxtQuesEmda'], # added for spn
+              ['?’', 'rtxtQuesTsqc'], # added for afr
+              ['?”', 'rtxtQuesTdqc'],
+              ['?…', 'rtxtQuesElip'], # added for spn
+              ['…”', 'rtxtElipTdqc'], # added for spn
+              ['—', 'rtxtEmdash'],
               ['?&#x00A0;', 'rtxt_ques_nbsp'], # added for frn
+              ['', 'rtxtEagle'],
             ]
           end
 
