@@ -16,6 +16,64 @@ class Repositext
           let(:primary_paragraph) { Paragraph.new(primary_contents, primary_language) }
           let(:bilingual_paragraph_pair) { BilingualParagraphPair.new(primary_paragraph, foreign_paragraph, 1.0) }
 
+          describe '.merge' do
+
+            [
+              [
+                'Default data',
+                [
+                  [
+                    'word1 word2 word3',
+                    'palabra1 palabra2 palabra3',
+                    1.0
+                  ],
+                ],
+                [
+                  'word1 word2 word3',
+                  'palabra1 palabra2 palabra3',
+                  1.0
+                ],
+              ],
+              [
+                'Gap in foreign',
+                [
+                  [
+                    'word1 word2 word3 ',
+                    'palabra1 palabra2 palabra3',
+                    1.0
+                  ],
+                  [
+                    'word4 word5 word6',
+                    '',
+                    0.0
+                  ],
+                ],
+                [
+                  'word1 word2 word3 word4 word5 word6',
+                  'palabra1 palabra2 palabra3',
+                  0.5
+                ],
+              ],
+            ].each do |desc, content_pairs, xpect|
+
+              it "handles #{ desc.inspect }" do
+                bpps = content_pairs.map { |(p_cont, f_cont, conf)|
+                  BilingualParagraphPair.new(
+                    Subtitles::Paragraph.new(p_cont, primary_language),
+                    Subtitles::Paragraph.new(f_cont, foreign_language),
+                    conf
+                  )
+                }
+                bpp = BilingualParagraphPair.merge(bpps)
+                [
+                  bpp.primary_contents, bpp.foreign_contents, bpp.confidence
+                ].must_equal(xpect)
+              end
+
+            end
+
+          end
+
           describe '#aligned_text_pairs' do
 
             it "handles default data" do

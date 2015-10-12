@@ -6,6 +6,45 @@ class Repositext
         # Represents a pair of corresponding paragraphs in primary and foreign language.
         class BilingualParagraphPair
 
+          attr_reader :confidence
+
+          # Merges contents of bilingual_paragraph_pairs into a single bilingual_paragraph_pair.
+          # NOTE: The returned bpp may contain contents of multiple paragraphs if
+          # e.g., a bpp with a gap was merged. In that case the contents of the
+          # non-gapped paragraphs would get merged into a single paragraph.
+          # Technically this now represents two separate paragraphs, however
+          # for the purposes of subtitle splitting that's ok.
+          # We encode the double newlines between the two paras to avoid issues
+          # in other parts of the pipeline. They then have to be decoded later.
+          # @param bpps [Array<BilingualParagraphPair>]
+          # @return [BilingualParagraphPair]
+          def self.merge(bpps)
+            primary_language = bpps.first.primary_language
+            foreign_language = bpps.first.foreign_language
+            if !bpps.all? { |bpp| bpp.primary_language == primary_language }
+              raise ArgumentError.new("Invalid primary language: #{ bpps.inspect }")
+            end
+            if !bpps.all? { |bpp| bpp.foreign_language == foreign_language }
+              raise ArgumentError.new("Invalid foreign language: #{ bpps.inspect }")
+            end
+            merged_contents = bpps.inject([[], []]) { |m, bpp|
+              # Merge each language's sentences together
+              primary_txt = bpp.primary_contents
+              foreign_txt = bpp.foreign_contents
+              m.first << primary_txt  if '' != primary_txt.to_s # skip blank paragraphs
+              m.last << foreign_txt  if '' != foreign_txt.to_s # skip blank paragraphs
+              m
+            }
+            adjusted_confidence = (
+              bpps.inject(0.0) { |m,e| m += e.confidence } / bpps.length
+            )
+            BilingualParagraphPair.new(
+              Paragraph.new(merged_contents.first.join, primary_language),
+              Paragraph.new(merged_contents.last.join, foreign_language),
+              adjusted_confidence
+            )
+          end
+
           # Creates an instance of self from two aligned paragraphs with unaligned sentences.
           # @param primary_paragraph [Paragraph]
           # @param foreign_paragraph [Paragraph]
@@ -45,12 +84,20 @@ class Repositext
             }
           end
 
+          def foreign_contents
+            @foreign_paragraph.contents
+          end
+
           def primary_contents
             @primary_paragraph.contents
           end
 
-          def foreign_contents
-            @foreign_paragraph.contents
+          def foreign_language
+            @foreign_paragraph.language
+          end
+
+          def primary_language
+            @primary_paragraph.language
           end
 
         private
