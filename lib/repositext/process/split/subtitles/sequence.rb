@@ -21,11 +21,17 @@ class Repositext
           end
 
           def as_kramdown_doc(options={})
+            # NOTE: For the  use case of subtitle splitting, we assume that
+            # sequences are always in plain text (vs. content AT). In that case
+            # we need to convert all \n to \n\n. This is required since we feed
+            # this text into kramdown tools where all paragraphs would get
+            # merged into a single one as they are separated by single newlines
+            # only in plain text.
             options = {
               input: 'KramdownRepositext',
               line_width: 100000, # set to very large value so that each para is on a single line
             }.merge(options)
-            Kramdown::Document.new(contents, options)
+            Kramdown::Document.new(contents.gsub(/(?<!\n)\n(?!\n)/, "\n\n"), options)
           end
 
         private
