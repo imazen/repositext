@@ -15,7 +15,8 @@ class Repositext
                 def compute_score(left_el, right_el)
                   score = 0
                   if left_el.type == right_el.type && left_el.key == right_el.key
-                    score += 10
+                    # Extra boost if two headers are aligned
+                    score += :header == left_el.type ? 20 : 10
                   elsif [left_el, right_el].any? { |e| :p == e.type }
                     if left_el.type == right_el.type
                       # difference in keys
