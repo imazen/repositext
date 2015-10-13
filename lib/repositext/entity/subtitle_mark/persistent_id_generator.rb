@@ -31,7 +31,7 @@ class Repositext
         # scope of the repo. Also adds the new ID to the inventory file
         # @param count [Integer, optional] how many SPIDs to generate
         # @return [Array<String>] An array with the newly assigned SPIDs
-        def generate(count = 1)
+        def generate(count=1)
           spids = nil
           LOCK.synchronize do
             spids = compute_unique_spids(count)
