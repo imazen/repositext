@@ -2,6 +2,7 @@ class Repositext
   class Language
 
     LANG_CODE_MAPPINGS = [
+      { code2: :af, code3: :afr, name: 'Afrikaans' },
       { code2: :en, code3: :eng, name: 'English' },
       { code2: :es, code3: :spn, name: 'Spanish' },
     ]
