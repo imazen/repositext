@@ -47,7 +47,7 @@ class Repositext
               /\t[^\t]{4}\t63480009$/, "\tspid\t63480009"
             ).must_equal(
               [
-                "relativeMS\tsamples\tcharLength\tpersistendId\trecordId",
+                "relativeMS\tsamples\tcharLength\tpersistentId\trecordId",
                 "0\t0\t94\tspid\t63480009",
                 "1\t10\t95\tspid\t63480009",
                 "2\t20\t96\tspid\t63480009",

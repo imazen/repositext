@@ -41,7 +41,7 @@ class Repositext
 
           contents_with_spids_and_rids = stm_csv_lines.map.each_with_index { |e, idx|
             if 0 == idx
-              [e, 'persistendId', 'recordId'].join("\t") # add new column header to first line
+              [e, 'persistentId', 'recordId'].join("\t") # add new column header to first line
             elsif e =~ /\A\d/
               # append spid and rid to all lines that start with a digit
               spid = spids.shift
