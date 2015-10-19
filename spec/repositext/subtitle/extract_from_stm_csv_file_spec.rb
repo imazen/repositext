@@ -4,32 +4,42 @@ class Repositext
   class Subtitle
     describe ExtractFromStmCsvFile do
 
-      let(:inventory_file) {
-        FileLikeStringIO.new('_path', "abcd\nefgh\n", 'r+')
+      let(:subtitle_attrs) { [
+        ['relativeMS', 'samples', 'charLength', 'persistentId', 'recordId'],
+        [ 0,            0,         81,          '5AXK',         '63030019'],
+        [ 5235,         230843,    51,          'ZXrr',         '63030019'],
+        [ 6033,         496912,    64,          'pxS9',         '63030019'],
+        [ 4069,         676375,    77,          'PrHS',         '63030019'],
+        [ 6050,         943184,    58,          'pBfs',         '63030029'],
+        [ 5093,         1167788,   103,         'Euhn',         '63030029'],
+        [ 10303,        1622128,   72,          'Qt56',         '63030029'],
+      ] }
+      let(:subtitle_markers_csv_file_contents) {
+        subtitle_attrs.map { |line_attrs|
+          line_attrs.join("\t")
+        }.join("\n") + "\n"
+      }
+      let(:language) { Repositext::Language::English.new }
+      let(:subtitle_markers_csv_file) {
+        RFile.new(
+          subtitle_markers_csv_file_contents,
+          language,
+          'filename'
+        )
       }
 
-      describe '#load_subtitle_marks_from_csv_file' do
-        it "loads stms" do
-          stm_csv_file = FileLikeStringIO.new(
-            'subtitle_markers.csv',
+      describe '#extract' do
+        it "extracts subtitles" do
+          r = ExtractFromStmCsvFile.new(subtitle_markers_csv_file).extract
+          r.map { |subtitle|
             [
-              "relativeMS\tsamples\tcharLength\tpersistentId\trecordId",
-              "0\t0\t54\tpid1\trid1",
-              "6083\t268277\t78\tpid2\trid2",
-              "7659\t606043\t102\tpid3\trid3",
-            ].join("\n")
-          )
-          c = JsonLuceneVgr.send(:new, '_', {})
-          c.send(:load_subtitle_marks_from_csv_file, stm_csv_file).must_equal(
-            [
-              true,
-              [
-                { absolute_milliseconds: 0, persistent_id: 'pid1', record_id: 'rid1' },
-                { absolute_milliseconds: 6083, persistent_id: 'pid2', record_id: 'rid2' },
-                { absolute_milliseconds: 13742, persistent_id: 'pid3', record_id: 'rid3' },
-              ]
+              subtitle.relative_milliseconds,
+              subtitle.samples,
+              subtitle.char_length,
+              subtitle.persistent_id,
+              subtitle.record_id,
             ]
-          )
+          }.must_equal(subtitle_attrs[1..-1])
         end
       end
 
