@@ -11,6 +11,19 @@ class Repositext
         ).compute
       end
 
+      def corresponding_subtitle_markers_csv_file
+        self.class.new(
+          File.read(corresponding_subtitle_markers_csv_filename),
+          language,
+          corresponding_subtitle_markers_csv_filename,
+          repository
+        )
+      end
+
+      def corresponding_subtitle_markers_csv_filename
+        filename.sub(/\.at\z/, '.subtitle_markers.csv')
+      end
+
       def kramdown_doc
         Kramdown::Document.new(
           contents,
@@ -18,6 +31,14 @@ class Repositext
           input: 'KramdownVgr',
           line_width: 100000, # set to very large value so that each para is on a single line
         )
+      end
+
+      # Returns subtitles
+      # @return [Array<Subtitle>]
+      def subtitles
+        Repositext::Subtitle::ExtractFromStmCsvFile.new(
+          corresponding_subtitle_markers_csv_file
+        ).extract
       end
 
     end

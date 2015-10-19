@@ -3,6 +3,8 @@ class Repositext
 
     # Represents a content file in repositext.
 
+    include ContentSpecific
+    # specificity boundary
     include ContentAtSpecific
 
     attr_reader :contents, :filename, :language, :repository
@@ -12,8 +14,11 @@ class Repositext
              :corresponding_primary_repo_base_dir,
              to: :repository
 
-    # @param contents [String]
-    # @param filename [String]
+    # @param contents [String] the file's contents as string
+    # @param language [Language] the file's language
+    # @param filename [String] the file's absolute path
+    # @para repository [Repository, optional] the containing repository.
+    #     Required for certain operations. TODO: document here which ones.
     # @param repository [Repositext::Repository] the repository this file belongs to
     def initialize(contents, language, filename, repository=nil)
       raise ArgumentError.new("Invalid contents: #{ contents.inspect }")  unless contents.is_a?(String)
@@ -24,6 +29,11 @@ class Repositext
       @language = language
       @filename = filename
       @repository = repository
+    end
+
+    # Returns just the name without path
+    def basename
+      filename.split('/').last
     end
 
     def corresponding_primary_contents
