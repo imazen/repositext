@@ -17,9 +17,8 @@ class Repositext
     # @param contents [String] the file's contents as string
     # @param language [Language] the file's language
     # @param filename [String] the file's absolute path
-    # @para repository [Repository, optional] the containing repository.
+    # @param repository [Repositext::Repository, optional] the repository this file belongs to
     #     Required for certain operations. TODO: document here which ones.
-    # @param repository [Repositext::Repository] the repository this file belongs to
     def initialize(contents, language, filename, repository=nil)
       raise ArgumentError.new("Invalid contents: #{ contents.inspect }")  unless contents.is_a?(String)
       raise ArgumentError.new("Invalid language: #{ language.inspect }")  unless language.is_a?(Language)

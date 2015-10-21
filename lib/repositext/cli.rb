@@ -248,7 +248,7 @@ class Repositext
     end
 
     def repository
-      @repository ||= Repository.new(config)
+      @repository ||= Repository::Content.new(config)
     end
 
     # Invokes the command derived from main_command and command_spec

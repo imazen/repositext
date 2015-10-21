@@ -150,6 +150,7 @@ require 'repositext/process/fix/move_subtitle_marks_to_nearby_sentence_boundarie
 require 'repositext/process/split/subtitles'
 require 'repositext/r_file'
 require 'repositext/report/invalid_typographic_quotes'
+require 'repositext/repository/content'
 require 'repositext/sync/subtitle_mark_character_positions'
 require 'repositext/validation/content'
 require 'repositext/validation/docx_post_import'

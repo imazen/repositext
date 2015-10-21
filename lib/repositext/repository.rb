@@ -3,38 +3,9 @@ class Repositext
   # Represents a git content repository
   class Repository
 
-    attr_reader :config
-
-    delegate :add_base_dir,
-             :add_file_extension,
-             :add_file_selector,
-             :add_kramdown_converter_method,
-             :add_kramdown_parser,
-             :add_setting,
-             :base_dir,
-             :compute_base_dir,
-             :compute_file_extension,
-             :compute_file_selector,
-             :compute_glob_pattern,
-             :compute_validation_file_specs,
-             :file_extension,
-             :file_selector,
-             :get_config_val,
-             :initialize,
-             :kramdown_converter_method,
-             :kramdown_parser,
-             :primary_repo_base_dir,
-             :setting,
-             to: :config,
-             prefix: :config
-
-    # @param config [Repositext::Cli::Config] the repo's config object, based on Rtfile
-    def initialize(config)
-      raise ArgumentError.new("config is blank")  if config.blank?
-      @config = config
-      @repo = Rugged::Repository.discover(config_base_dir(:rtfile_dir))
-      @repo_path = @repo.path
-      @head_ref = @repo.head
+    # @param dir_in_repo [String] path to a dir in the repo (can be nested)
+    def initialize(dir_in_repo)
+      @repo = Rugged::Repository.discover(dir_in_repo)
     end
 
     # Returns the path to the directory that contains the `.git` dir
@@ -42,35 +13,17 @@ class Repositext
       @repo.workdir
     end
 
-    def corresponding_primary_repository
-      primary_rtfile_path = File.join(corresponding_primary_repo_base_dir, 'Rtfile')
-      primary_config = Repositext::Cli::Config.new(primary_rtfile_path)
-      primary_config.eval
-      self.class.new(primary_config)
-    end
-
-    def corresponding_primary_repo_base_dir
-      File.expand_path(
-        config_setting(:relative_path_to_primary_repo),
-        config_base_dir(:rtfile_dir)
-      ) + '/'
-    end
-
     # Returns name of currently checked out branch
     def current_branch_name
-      @head_ref.name.sub(/^refs\/heads\//, '')
+      head_ref.name.sub(/^refs\/heads\//, '')
+    end
+
+    def head_ref
+      @repo.head
     end
 
     def inspect
       %(#<#{ self.class.name }:#{ object_id } #name=#{ name.inspect })
-    end
-
-    def is_primary_repo
-      config_setting(:is_primary_repo)
-    end
-
-    def language
-      Repositext::Language.find_by_code(config_setting(:language_code_3_chars))
     end
 
     # Returns sha of latest commit that included filename
@@ -99,12 +52,12 @@ class Repositext
       s, _ = Open3.capture2(
         [
           "git",
-          "--git-dir=#{ @repo_path }",
+          "--git-dir=#{ repo_path }",
           "log",
           "-1",
           "--pretty=format:'%H'",
           "--",
-          filename.sub(/#{ @repo.workdir }\//, ''),
+          filename.sub(/#{ base_dir }\//, ''),
         ].join(' ')
       )
       s
@@ -118,7 +71,7 @@ class Repositext
     # @param[String, optional] branch_name defaults to 'master'
     def latest_commit_sha_remote(remote_name = 'origin', branch_name = 'master')
       most_recent_commit_oid = ''
-      cmd = %(cd #{ @repo_path } && git ls-remote #{ remote_name } | awk '/refs\\/heads\\/#{ branch_name }/ {print $1}')
+      cmd = %(cd #{ repo_path } && git ls-remote #{ remote_name } | awk '/refs\\/heads\\/#{ branch_name }/ {print $1}')
       Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
         exit_status = wait_thr.value
         if exit_status.success?
@@ -137,7 +90,7 @@ class Repositext
       s, _ = Open3.capture2(
         [
           "git",
-          "--git-dir=#{ @repo_path }",
+          "--git-dir=#{ repo_path }",
           "log",
           "-n#{ max_number_of_commits }",
           "--pretty=format:'%h|%an|%ad|%s'",
@@ -174,6 +127,10 @@ class Repositext
     # Returns the repo name, based on name of parent directory
     def name
       @repo.workdir.split('/').last
+    end
+
+    def repo_path
+      @repo.path
     end
 
   end
