@@ -335,6 +335,8 @@ class Repositext
       #     :output_is_binary
       #     :'changed-only'
       #     :ignore_missing_file2 set to true if you quietly want to ignore missing file2, defaults to false
+      #     :repository
+      #     :use_new_repositext_file_api
       # @param[Proc] block A Proc that performs the desired operation on each file.
       #     Arguments to the proc are each file's name and contents.
       def self.read_files_helper(file_pattern, file_filter, file_name_2_proc, description, options, &block)
@@ -372,13 +374,36 @@ class Repositext
                   else
                     File.read(filename_2).freeze
                   end
-                  block.call(contents_1, filename_1, contents_2, filename_2)
+                  if options[:use_new_repositext_file_api]
+                    # use new api
+                    # TODO: once all calls use new API, move assignment of repo and language out of loop
+                    repository = options[:repository]
+                    language = repository.language
+                    block.call(
+                      Repositext::RFile.new(contents_1, language, filename_1, repository),
+                      Repositext::RFile.new(contents_2, language, filename_2, repository),
+                    )
+                  else
+                    # use old api
+                    block.call(contents_1, filename_1, contents_2, filename_2)
+                  end
                 rescue SystemCallError => e
                   # Error: Errno::ENOENT - No such file or directory
                   raise  unless ignore_missing_file2
                 end
               else
-                block.call(contents_1, filename_1)
+                if options[:use_new_repositext_file_api]
+                  # use new api
+                  # TODO: once all calls use new API, move assignment of repo and language out of loop
+                  repository = options[:repository]
+                  language = repository.language
+                  block.call(
+                    Repositext::RFile.new(contents_1, language, filename_1, repository)
+                  )
+                else
+                  # use old api
+                  block.call(contents_1, filename_1)
+                end
               end
             rescue StandardError => e
               counts[:errors] += 1
