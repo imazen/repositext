@@ -26,34 +26,37 @@ class Repositext
         # @return [Outcome] with updated stm_csv_file contents as result
         def fix
           record_id_mappings = compute_record_id_mappings(@content_at_file.contents)
-          stm_csv_lines = @stm_csv_file.contents.split("\n")
-          num_subtitles = stm_csv_lines.compact.length - 1
+          subtitles = Subtitle::ExtractFromStmCsvFile.new(@stm_csv_file).extract
+          num_subtitles = subtitles.length
 
           if record_id_mappings.length != num_subtitles
-            raise(ArgumentError.new("Difference in subtitles: CSV: #{ num_subtitles }, content AT: #{ record_id_mappings.length }"))
+            raise(ArgumentError.new("Difference in subtitles count: CSV: #{ num_subtitles }, content AT: #{ record_id_mappings.length }"))
           end
 
-          spids = Repositext::Entity::SubtitleMark::PersistentIdGenerator.new(
+          spids = Repositext::Subtitle::PersistentIdGenerator.new(
             @spids_inventory_file
           ).generate(
             num_subtitles
           )
 
-          contents_with_spids_and_rids = stm_csv_lines.map.each_with_index { |e, idx|
-            if 0 == idx
-              [e, 'persistentId', 'recordId'].join("\t") # add new column header to first line
-            elsif e =~ /\A\d/
-              # append spid and rid to all lines that start with a digit
-              spid = spids.shift
-              raise "Not enough spids!"  if spid.nil?
-              rid = record_id_mappings.shift
-              raise "Not enough rids!"  if rid.nil?
-              [e, spid, rid].join("\t")
-            else
-              e # return empty lines as is
-            end
-          }.join("\n")
-          Outcome.new(true, contents_with_spids_and_rids)
+          contents_with_spids_and_rids = [
+            %w[relativeMS samples charLength persistentId recordId].join("\t")
+          ] # initialize with CSV header row
+          subtitles.each { |subtitle|
+            # append spid and rid to all lines that start with a digit
+            spid = spids.shift
+            raise "Not enough spids!"  if spid.nil?
+            rid = record_id_mappings.shift
+            raise "Not enough rids!"  if rid.nil?
+            contents_with_spids_and_rids << [
+              subtitle.relative_milliseconds,
+              subtitle.samples,
+              subtitle.char_length,
+              spid,
+              rid
+            ].join("\t")
+          }
+          Outcome.new(true, contents_with_spids_and_rids.join("\n"))
         end
 
       private

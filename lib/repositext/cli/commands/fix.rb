@@ -10,6 +10,11 @@ class Repositext
           File.join(config.base_dir(:data_dir), 'subtitle_persistent_ids.txt'),
           'r+'
         )
+        if spids_inventory_file.read.present?
+          # We expect inventory file to be empty when we run this command
+          raise ArgumentError.new("SPID inventory file is not empty!")
+        end
+
         Repositext::Cli::Utils.change_files_in_place(
           config.compute_glob_pattern(
             options['base-dir'] || :content_dir,

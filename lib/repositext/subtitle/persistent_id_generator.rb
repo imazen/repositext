@@ -41,7 +41,8 @@ class Repositext
 
     protected
 
-      # Returns count spids that is guaranteed to be unique
+      # Returns `count` spids that are guaranteed to be unique in the scope of
+      # `inventory_file`.
       # @param count [Integer]
       def compute_unique_spids(count)
         overflow_count = 0
