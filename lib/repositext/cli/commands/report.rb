@@ -848,6 +848,45 @@ class Repositext
         }
       end
 
+      # Finds .stanza paragraphs that are not followed by .song paragraphs
+      def report_stanza_without_song_paragraphs(options)
+        file_count = 0
+        stanza_without_song_paragraph_files = []
+        Repositext::Cli::Utils.read_files(
+          config.compute_glob_pattern(
+            options['base-dir'] || :content_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :at_extension
+          ),
+          options['file_filter'],
+          nil,
+          "Reading content AT files",
+          options.merge(
+            use_new_repositext_file_api: true,
+            repository: repository,
+          )
+        ) do |repositext_file|
+          outcome = Repositext::Process::Report::StanzaWithoutSongParagraphs.new(
+            repositext_file,
+            config.kramdown_parser(:kramdown)
+          ).report
+          stanza_without_song_paragraph_files << outcome.result
+          file_count += 1
+        end
+        $stderr.puts "Stanza without Song paragraphs"
+        $stderr.puts "-" * 40
+        stanza_without_song_paragraph_files.each do |swsf|
+          next  if swsf[:stanzas_without_song].empty?
+          $stderr.puts " - #{ swsf[:filename] }"
+          swsf[:stanzas_without_song].each do |sws|
+            $stderr.puts "   - line #{ sws[:line] }: "
+            sws[:para_class_sequence].each do |p|
+              $stderr.puts "     - #{ p }"
+            end
+          end
+        end
+      end
+
       def report_words_with_apostrophe(options)
         # TODO: add report that shows all words starting with apostrophe that have only one character
         apostrophe_at_beginning = {}
