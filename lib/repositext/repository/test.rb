@@ -1,4 +1,4 @@
-# Provides a test git repository
+# Class to manage creation and deletion of test git repositories.
 class Repositext
   class Repository
 
@@ -31,7 +31,7 @@ class Repositext
     # To initialize a single test git repo:
 
     #     Repositext::Repository::Test.initialize('rt-english')
-    class Test < Repositext::Repository
+    class Test
 
       # Creates a test git repository. Will override repo if it exists already.
       # @param image_name [String, optional] creates repo from image with image_name
