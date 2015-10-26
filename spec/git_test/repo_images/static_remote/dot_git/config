@@ -5,6 +5,3 @@
 	logallrefupdates = true
 	ignorecase = true
 	precomposeunicode = true
-[remote "origin"]
-	url = ../static_remote/.git/
-	fetch = +refs/heads/*:refs/remotes/origin/*
