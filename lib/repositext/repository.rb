@@ -57,7 +57,7 @@ class Repositext
           "-1",
           "--pretty=format:'%H'",
           "--",
-          filename.sub(/#{ base_dir }\//, ''),
+          filename.sub(base_dir, ''),
         ].join(' ')
       )
       s

@@ -10,6 +10,7 @@ class Repositext
           rt-english
           rt-spanish
           static
+          static_remote
         ]
       }
       let(:default_repo_name) { 'static' }

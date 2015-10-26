@@ -5,22 +5,26 @@ class Repositext
 
   describe Repository do
 
-    # Uses this code repo as test data
-    let(:dir_in_repo) { Dir.pwd + '/' }
-    let(:default_repository) { Repository.new(dir_in_repo) }
-    # make branch name configurable for development in other branches
-    let(:git_branch_name) { 'wip/refactor' }
+    let(:default_repo_name) { 'static' }
+    let(:dir_in_test_repo) {
+      File.expand_path("../../git_test/repos/#{ default_repo_name }", __FILE__)
+    }
+    let(:file_in_test_repo) { File.join(dir_in_test_repo, 'Readme.md') }
+    let(:default_repository) {
+      Repository::Test.create!(default_repo_name)
+      Repository.new(dir_in_test_repo)
+    }
+    let(:default_git_branch_name) { 'master' }
 
     describe '#base_dir' do
       it 'handles default data' do
-        # base_dir must be substring of dir_in_repo
-        dir_in_repo.index(default_repository.base_dir).must_equal(0)
+        default_repository.base_dir.must_equal(dir_in_test_repo + '/')
       end
     end
 
     describe '#current_branch_name' do
       it 'handles default data' do
-        default_repository.current_branch_name.must_equal(git_branch_name)
+        default_repository.current_branch_name.must_equal(default_git_branch_name)
       end
     end
 
@@ -32,21 +36,15 @@ class Repositext
 
     describe '#latest_commit' do
       it 'handles default data' do
-        default_repository.latest_commit(
-          File.expand_path(__FILE__)
-        ).must_be_instance_of(Rugged::Commit)
+        r = default_repository.latest_commit(file_in_test_repo)
+        r.must_be_instance_of(Rugged::Commit)
       end
     end
 
     describe '#latest_commit_sha_local' do
       it 'handles default data' do
-        r = default_repository.latest_commit_sha_local(
-          File.expand_path(__FILE__)
-        )
-        # We're looking for a reference string like this:
-        # '350029aa42708cd51dbfed52bf32f58886c2dd5b'
-        r.must_be_instance_of(String)
-        r.length.must_equal(40)
+        r = default_repository.latest_commit_sha_local(file_in_test_repo)
+        r.must_equal('25018531db326bcff325fcf8f7350526b7bc1f4f')
       end
     end
 
@@ -55,42 +53,45 @@ class Repositext
         r = default_repository.latest_commit_sha_remote(
           'origin', 'master'
         )
-        # We're looking for a reference string like this:
-        # '350029aa42708cd51dbfed52bf32f58886c2dd5b'
-        r.must_be_instance_of(String)
-        r.length.must_equal(40)
+        r.must_equal('')
       end
     end
 
     describe '#latest_commits_local' do
       it 'handles default data' do
-        # We're looking for presence of hash expected keys in latest commit.
-        default_repository.latest_commits_local(
-          File.expand_path(__FILE__),
-          1
-        ).first.keys.must_equal([:commit_hash, :author, :date, :message])
+        r = default_repository.latest_commits_local
+        r.must_equal(
+          [
+            {
+              commit_hash: "2501853",
+              author: "Jo Hund",
+              date: "2015-10-26",
+              message: "Initial commit",
+            }
+          ]
+        )
       end
     end
 
     describe '#lookup' do
       it 'handles default data' do
-        # We check for a commit we know exists.
         default_repository.lookup(
-          '87a9cbc15a5657bf35e965e7bada246aad940889'
+          "2501853"
         ).must_be_instance_of(Rugged::Commit)
       end
     end
 
     describe '#name' do
       it 'handles default data' do
-        default_repository.name.must_equal('repositext')
+        default_repository.name.must_equal(default_repo_name)
       end
     end
 
     describe '#repo_path' do
       it 'handles default data' do
-        # We're looking for a local path that ends with '/repositext/.git'
-        default_repository.repo_path.must_match(/\/repositext\/\.git\/\z/)
+        default_repository.repo_path.must_equal(
+          File.join(dir_in_test_repo, '.git', '')
+        )
       end
     end
 
