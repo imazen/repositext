@@ -2,14 +2,21 @@
 
 # 3rd party libraries
 
+# Have to require awesome_print before activesupport
+# otherwise I get
+# undefined method `on_load' for ActiveSupport:Module (NoMethodError)
+require 'awesome_print'
+
+# Dependency boundary
+
 # Selectively include ActiveSupport features we want
 require 'active_support/core_ext/module/delegation'
 require 'active_support/core_ext/object/blank'
 require 'active_support/core_ext/string/access'
 require 'active_support/core_ext/string/filters'
+# Dependency boundary
 
 require 'alignment'
-require 'awesome_print'
 require 'diff/lcs'
 require 'erb'
 require 'find'
