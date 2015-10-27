@@ -14,6 +14,8 @@ require 'active_support/core_ext/module/delegation'
 require 'active_support/core_ext/object/blank'
 require 'active_support/core_ext/string/access'
 require 'active_support/core_ext/string/filters'
+require 'active_support/concern'
+
 # Dependency boundary
 
 require 'alignment'
@@ -29,6 +31,7 @@ require 'open3'
 require 'ostruct'
 require 'outcome'
 require 'parallel'
+require 'pathname' # for #relative_path_from
 require 'pp'
 require 'pragmatic_segmenter'
 require 'rugged'
