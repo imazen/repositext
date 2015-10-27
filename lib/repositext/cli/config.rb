@@ -7,6 +7,7 @@ class Repositext
       FILE_EXTENSION_NAME_REGEX = /\A\w+_extensions?\z/
       FILE_SELECTOR_NAME_REGEX = /\A\w+_files?\z/
 
+      # @param rtfile_path [String] absolute path to the rtfile, including filename
       def initialize(rtfile_path)
         @rtfile_path = rtfile_path
         @base_dirs = {}

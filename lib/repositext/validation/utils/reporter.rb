@@ -173,7 +173,7 @@ class Repositext
             sub = r
             error.details.first(2).each{ |el| sub = sub[el] }
             sub[:errors] << {
-              :location => error.location.map { |e| e.gsub(@input_base_dir, '') },
+              :location => error.location.compact.map { |e| e.gsub(@input_base_dir, '') },
               :details => error.details,
               :level => error.level
             }

@@ -71,5 +71,10 @@ class Repositext
         # `git push`
     end
 
+    # Allows running of any command (e.g., export, fix, report, validate) on
+    # the entire RepositorySet.
+    def run_repositext_command(command, args)
+    end
+
   end
 end

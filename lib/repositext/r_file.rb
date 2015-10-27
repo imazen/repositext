@@ -12,7 +12,8 @@ class Repositext
     delegate :corresponding_primary_repository,
              :is_primary_repo,
              :corresponding_primary_repo_base_dir,
-             to: :repository
+             to: :repository,
+             prefix: false
 
     # @param contents [String] the file's contents as string
     # @param language [Language] the file's language

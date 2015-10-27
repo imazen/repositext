@@ -68,8 +68,6 @@ class Repositext
         }
       end
 
-    private
-
       # Returns names of all repo images available.
       # @return [Array<String>]
       def self.all_image_names

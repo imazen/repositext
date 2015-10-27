@@ -26,7 +26,7 @@ class Repositext
         end
       end
 
-      describe '.extract_year' do
+      describe '#extract_year' do
         [
           ['segment1/segment2/segment3', ''],
           ['segment1/segment2/eng71-0614_1234', '71'],
@@ -44,7 +44,7 @@ class Repositext
         end
       end
 
-      describe '.extract_product_identity_id' do
+      describe '#extract_product_identity_id' do
         [
           ['segment1/segment2/segment3', ''],
           ['segment1/segment2/eng71-0614_1234', ''],
