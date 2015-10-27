@@ -33,7 +33,7 @@ class Repositext
 
     # Returns just the name without path
     def basename
-      filename.split('/').last
+      File.basename(filename)
     end
 
     def corresponding_primary_contents
@@ -61,6 +61,12 @@ class Repositext
         /\/#{ repository.config_setting(:language_code_3_chars) }/,
         "/#{ repository.config_setting(:primary_repo_lang_code) }"
       )
+    end
+
+    # Returns the containing directory's complete path
+    # @return [String]
+    def dir
+      File.dirname(filename)
     end
 
     def inspect

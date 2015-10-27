@@ -7,8 +7,55 @@ class Repositext
 
       let(:contents) { 'contents' }
       let(:language) { Language::English.new }
+      let(:foreign_language) { Language::Spanish.new }
+      let(:primary_repository) {
+        path_to_repo = Repository::Test.create!('rt-english').first
+        Repository::Content.new(path_to_repo)
+      }
+      let(:foreign_repository) {
+        path_to_repo = Repository::Test.create!('rt-spanish').first
+        Repository::Content.new(path_to_repo)
+      }
 
-      describe '.extract_date_code' do
+      describe '.relative_path_to_corresponding_primary_file' do
+        [
+          [
+            '/content/15/spn15-1231_1234.at',
+            '../../../rt-english/content/15/eng15-1231_1234.at',
+          ],
+        ].each do |foreign_file_repo_relative_path, xpect|
+          it "handles #{ foreign_file_repo_relative_path.inspect }" do
+            RFile.relative_path_to_corresponding_primary_file(
+              File.join(foreign_repository.base_dir, foreign_file_repo_relative_path),
+              foreign_repository
+            ).must_equal(xpect)
+          end
+        end
+      end
+
+      describe '.relative_path_from_to' do
+        [
+          [
+            '/path/to/rt-spanish/content/15/',
+            '/path/to/rt-english/content/15/eng15-1231_1234.at',
+            '../../../rt-english/content/15/eng15-1231_1234.at',
+          ],
+          [
+            '/path/to/rt-spanish/content/15/',
+            '/path/to/rt-english/content/15/eng15-1231_1234.subtitle_markers.csv',
+            '../../../rt-english/content/15/eng15-1231_1234.subtitle_markers.csv',
+          ],
+        ].each do |source_path, target_path, xpect|
+          it "handles #{ source_path.inspect }" do
+            RFile.relative_path_from_to(
+              source_path,
+              target_path
+            ).must_equal(xpect)
+          end
+        end
+      end
+
+      describe '#extract_date_code' do
         [
           ['segment1/segment2/segment3', ''],
           ['segment1/segment2/eng71-0614_1234', '71-0614'],
