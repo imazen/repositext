@@ -235,12 +235,7 @@ class Repositext
   private
 
     def config
-      @config ||= (
-        # TODO: replace with tap
-        c = Cli::Config.new(options['rtfile'])
-        c.eval
-        c
-      )
+      @config ||= Cli::Config.new(options['rtfile']).tap { |e| e.eval }
     end
     # This writer is used for testing to inject a mock config
     def config=(a_config)

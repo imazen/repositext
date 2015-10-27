@@ -39,8 +39,7 @@ class Repositext
 
       def corresponding_primary_repository
         primary_rtfile_path = File.join(corresponding_primary_repo_base_dir, 'Rtfile')
-        primary_config = Repositext::Cli::Config.new(primary_rtfile_path)
-        primary_config.eval
+        primary_config = Repositext::Cli::Config.new(primary_rtfile_path).tap { |e| e.eval }
         self.class.new(primary_config)
       end
 
