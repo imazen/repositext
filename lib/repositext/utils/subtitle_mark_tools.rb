@@ -4,7 +4,7 @@ class Repositext
 
       # Returns array with headers for subtitle_markers CSV file
       def self.csv_headers
-        ['relativeMS', 'samples', 'charLength']
+        ['relativeMS', 'samples', 'charLength', 'persistentIds', 'recordIds']
       end
 
       # Returns just the body text of txt. Strips id_title and id_paragraph and

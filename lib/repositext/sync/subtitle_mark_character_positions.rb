@@ -38,6 +38,8 @@ class Repositext
             existing_row[0], # 'relativeMS' from existing CSV
             existing_row[1], # 'samples' from existing CSV
             new_row[:char_length], # 'charLength' from new_stm_lengths
+            existing_row[3], # 'persistentIds' from existing CSV
+            existing_row[4], # 'recordIds' from existing CSV
           ]
         }
         # Convert to CSV
