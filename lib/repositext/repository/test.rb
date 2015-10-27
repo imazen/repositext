@@ -36,12 +36,13 @@ class Repositext
       # Creates a test git repository. Will override repo if it exists already.
       # @param image_name [String, optional] creates repo from image with image_name
       #     or from all available images if not given.
-      # @return [Array<String>] names of all created repositories
+      # @return [Array<String>] paths to all created repositories
       def self.create!(image_name=nil)
         image_names = image_name ? [image_name] : all_image_names
         image_names.each { |name|
           delete!(name) # First delete existing repo
           # Copy image
+          FileUtils.mkdir_p(repos_folder)
           FileUtils.cp_r(
             File.join(images_folder, name),
             repos_folder
@@ -53,6 +54,7 @@ class Repositext
             path_to_dot_git.sub('dot_git', '.git')
           )
         }
+        image_names.map { |e| File.join(repos_folder, e) }
       end
 
       # Deletes a test git repository. No-op if repo with `repo_name` doesn't exist.

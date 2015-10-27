@@ -5,27 +5,35 @@ class Repositext
   class Repository
     describe Test do
 
-      let(:default_image_names) {
-        %w[
-          rt-english
-          rt-spanish
-          static
-          static_remote
-        ]
-      }
+      TESTED_REPO_NAMES = %w[
+        rt-english
+        rt-spanish
+        static
+        static_remote
+      ]
+      let(:default_image_names) { TESTED_REPO_NAMES }
       let(:default_repo_name) { 'static' }
 
       describe '.create!' do
 
-        it 'creates a single repo' do
-          Test.delete!
-          Test.create!(default_repo_name)
-          Test.all_repo_names.must_equal([default_repo_name])
+        TESTED_REPO_NAMES.each do |repo_name|
+
+          it "creates a single repo (#{ repo_name.inspect }) and returns its path" do
+            Test.delete! # delete all repos
+            r = Test.create!(repo_name)
+            r.must_equal(
+              [File.join(Test.repos_folder, repo_name)]
+            )
+            Test.all_repo_names.must_equal([repo_name])
+          end
+
         end
 
-        it 'creates repos from all available images' do
-          Test.delete!
-          Test.create!
+        it 'creates repos from all available images and returns their paths' do
+          r = Test.create!
+          r.must_equal(
+            default_image_names.map { |e| File.join(Test.repos_folder, e) }
+          )
           Test.all_repo_names.must_equal(default_image_names)
         end
 
@@ -62,13 +70,11 @@ class Repositext
         end
 
         it 'returns names of individual repo' do
-          Test.delete!
           Test.create!(default_repo_name)
           Test.all_repo_names.must_equal([default_repo_name])
         end
 
         it 'returns names of all repos' do
-          Test.delete!
           Test.create!
           Test.all_repo_names.must_equal(default_image_names)
         end

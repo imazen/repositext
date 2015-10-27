@@ -29,10 +29,20 @@ class Repositext
                to: :config,
                prefix: :config
 
-      # @param config [Repositext::Cli::Config] the repo's config object, based on Rtfile
-      def initialize(config)
-        raise ArgumentError.new("config is blank")  if config.blank?
-        @config = config
+      # @param repo_path_or_config [String, Repositext::Cli::Config] the
+      #   path to the repos' root, or repo's config object, based on Rtfile.
+      def initialize(repo_path_or_config)
+        case repo_path_or_config
+        when String
+          # Path given, load config
+          rtfile_path = File.join(repo_path_or_config, 'Rtfile')
+          @config = Repositext::Cli::Config.new(rtfile_path).tap { |e| e.eval }
+        when Repositext::Cli::Config
+          # Config given, use as is
+          @config = repo_path_or_config
+        else
+          raise ArgumentError.new("Invalid dir_in_repo_or_config: #{ dir_in_repo_or_config.inspect }")
+        end
         super(config_base_dir(:rtfile_dir))
       end
 
