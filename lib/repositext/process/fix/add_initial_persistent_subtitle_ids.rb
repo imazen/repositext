@@ -56,7 +56,7 @@ class Repositext
               rid
             ].join("\t")
           }
-          Outcome.new(true, contents_with_spids_and_rids.join("\n"))
+          Outcome.new(true, contents_with_spids_and_rids.join("\n") + "\n")
         end
 
       private
