@@ -19,7 +19,7 @@ class Repositext
         # Returns an array of regexes that will detect invalid characters.
         def self.invalid_character_detectors
           # '%' and '@' are allowed in AT files, so we don't add them to list
-          # of invalid characters
+          # of invalid characters.
           Repositext::Validation::Config::INVALID_CHARACTER_REGEXES
         end
 
@@ -193,15 +193,15 @@ class Repositext
             # We have to check this here where we have access to the inner text,
             # rather than in #validate_character_inventory, since e.g.,
             # class attrs may contain legitimate underscores.
-            if(el.value =~ /[\_\^]/)
+            if(el.value =~ /[\_\^\=]/)
               warnings << Reportable.error(
                 [
                   @file_to_validate.path,
                   (lo = el.options[:location]) && sprintf("line %5s", lo)
                 ].compact,
                 [
-                  'Invalid underscore or caret',
-                  "In text: #{ el.value.inspect }"
+                  'Invalid underscore, caret, or equal sign in text element.',
+                  "Text contents: #{ el.value.inspect }"
                 ]
               )
             end
