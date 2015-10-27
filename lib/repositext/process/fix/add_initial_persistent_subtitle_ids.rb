@@ -67,7 +67,7 @@ class Repositext
         def compute_record_id_mappings(content_at)
           content_at.split(/(?=^\^\^\^)/).map { |record|
             next nil  if !record =~ /\A\^\^\^/
-            rid = record.match(/\A[^\n]+#rid-(\d+)/)[1]
+            rid = record.match(/\A[^\n]+#rid-([[:alnum:]]+)/)[1]
             [rid] * record.count('@')
           }.compact.flatten
         end
