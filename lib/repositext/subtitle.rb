@@ -3,11 +3,23 @@ class Repositext
   # Represents a Repositext subtitle
   class Subtitle
 
+    # Characters that are allowed for persistent_ids:
+    STID_CHARS = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789'.freeze
+    # stid forbidden chars: iloIO01
+
+    STID_REGEX = /\A[#{ Regexp.escape(STID_CHARS) }]{4}\z/
+
     attr_reader :char_length,
                 :persistent_id,
                 :record_id,
                 :relative_milliseconds,
                 :samples
+
+    # @param stid [String]
+    # @return [Boolean] true if stid is valid format.
+    def self.valid_stid_format?(stid)
+      !!(stid =~ STID_REGEX)
+    end
 
     # @param attrs [Hash] with symbolized keys
     def initialize(attrs)

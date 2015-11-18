@@ -7,7 +7,7 @@ class Repositext
         # @param content_at_file [Repositext::RFile]
         # @param spids_inventory_file [IO] file that contains the inventory of
         #          existing SPIDs.
-        #          Typically located at /data/subtitle_persistent_ids.txt
+        #          Typically located at /data/subtitle_ids.txt
         #          Must exist and be opened with mode "r+"
         def initialize(stm_csv_file, content_at_file, spids_inventory_file)
           raise ArgumentError.new("Invalid stm_csv_file: #{ stm_csv_file.inspect }")  unless stm_csv_file.is_a?(RFile)
@@ -33,7 +33,7 @@ class Repositext
             raise(ArgumentError.new("Difference in subtitles count: CSV: #{ num_subtitles }, content AT: #{ record_id_mappings.length }"))
           end
 
-          spids = Repositext::Subtitle::PersistentIdGenerator.new(
+          spids = Repositext::Subtitle::IdGenerator.new(
             @spids_inventory_file
           ).generate(
             num_subtitles

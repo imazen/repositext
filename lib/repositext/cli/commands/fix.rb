@@ -7,7 +7,7 @@ class Repositext
       # Adds initial persistent subtitle ids and record ids to subtitle_marker.csv files
       def fix_add_initial_persistent_subtitle_ids(options)
         spids_inventory_file = File.open(
-          File.join(config.base_dir(:data_dir), 'subtitle_persistent_ids.txt'),
+          File.join(config.base_dir(:data_dir), 'subtitle_ids.txt'),
           'r+'
         )
         if spids_inventory_file.read.present?
