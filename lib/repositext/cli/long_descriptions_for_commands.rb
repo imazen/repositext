@@ -65,6 +65,12 @@ class Repositext
           )
         end
 
+        def long_description_for_git_repo
+          %(
+            Performs operations on git repositories.
+          )
+        end
+
         def long_description_for_init
           %(
             Generates a default Rtfile in the current working directory if it doesn't

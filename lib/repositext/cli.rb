@@ -11,6 +11,7 @@ class Repositext
     include Cli::Convert
     include Cli::Copy
     include Cli::Fix
+    include Cli::GitRepo
     include Cli::Init
     include Cli::Merge
     include Cli::Move
@@ -112,6 +113,14 @@ class Repositext
     # @param[String] command_spec Specification of the operation
     def fix(command_spec)
       invoke_repositext_command('fix', command_spec, options)
+    end
+
+
+    desc 'git_repo SPEC', 'Performs git repository commands'
+    long_desc long_description_for_git_repo
+    # @param[String] command_spec Specification of the operation
+    def git_repo(command_spec)
+      invoke_repositext_command('git_repo', command_spec, options)
     end
 
 
