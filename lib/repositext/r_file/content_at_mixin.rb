@@ -2,7 +2,7 @@ class Repositext
   class RFile
 
     # Contains code that is specific to Content AT files
-    module ContentAtSpecific
+    module ContentAtMixin
 
       def compute_similarity_with_corresponding_primary_file
         Kramdown::TreeStructuralSimilarity.new(

@@ -77,21 +77,6 @@ class Repositext
         puts 'convert_test'
       end
 
-    private
-
-      # Returns contents of word/document.xml file in zip_archive_contents
-      # @param zip_archive_contents [String] the binary contents of zip archive
-      # @return [String] XML source of word/document.xml
-      def extract_word_document_xml_from_zip_archive(zip_archive_contents)
-        word_document_xml = nil
-        Zip::File.open_buffer(zip_archive_contents) do |zipped_files|
-          word_document_xml = zipped_files.get_entry(
-            'word/document.xml'
-          ).get_input_stream.read
-        end
-        word_document_xml
-      end
-
     end
   end
 end

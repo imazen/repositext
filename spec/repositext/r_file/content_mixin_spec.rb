@@ -1,9 +1,8 @@
-# encoding UTF-8
 require_relative '../../helper'
 
 class Repositext
   class RFile
-    describe 'content_specific' do
+    describe 'content_mixin' do
 
       let(:contents) { 'contents' }
       let(:language) { Language::English.new }
@@ -25,7 +24,7 @@ class Repositext
           ],
         ].each do |foreign_file_repo_relative_path, xpect|
           it "handles #{ foreign_file_repo_relative_path.inspect }" do
-            RFile.relative_path_to_corresponding_primary_file(
+            Text.relative_path_to_corresponding_primary_file(
               File.join(foreign_repository.base_dir, foreign_file_repo_relative_path),
               foreign_repository
             ).must_equal(xpect)
@@ -47,7 +46,7 @@ class Repositext
           ],
         ].each do |source_path, target_path, xpect|
           it "handles #{ source_path.inspect }" do
-            RFile.relative_path_from_to(
+            Text.relative_path_from_to(
               source_path,
               target_path
             ).must_equal(xpect)
@@ -67,7 +66,7 @@ class Repositext
           ['71-014a.at', ''],
         ].each do |filename, xpect|
           it "handles #{ filename.inspect }" do
-            r = RFile.new(contents, language, filename)
+            r = Text.new(contents, language, filename)
             r.extract_date_code.must_equal(xpect)
           end
         end
@@ -85,7 +84,7 @@ class Repositext
           ['71-014a_1234.at', ''],
         ].each do |filename, xpect|
           it "handles #{ filename.inspect }" do
-            r = RFile.new(contents, language, filename)
+            r = Text.new(contents, language, filename)
             r.extract_year.must_equal(xpect)
           end
         end
@@ -103,7 +102,7 @@ class Repositext
           ['71-014a_123.at', ''],
         ].each do |filename, xpect|
           it "handles #{ filename.inspect }" do
-            r = RFile.new(contents, language, filename)
+            r = Text.new(contents, language, filename)
             r.extract_product_identity_id.must_equal(xpect)
           end
         end

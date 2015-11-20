@@ -2,7 +2,7 @@ class Repositext
   class RFile
 
     # Contains code that is specific to Content files (AT + subtitle markers)
-    module ContentSpecific
+    module ContentMixin
 
       extend ActiveSupport::Concern
 
@@ -16,7 +16,7 @@ class Repositext
         # @return [String]
         def relative_path_to_corresponding_primary_file(foreign_filename, foreign_repository)
           # Create a dummy foreign_file for easy access to its dir and corresponding primary filename
-          dummy_foreign_file = RFile.new(
+          dummy_foreign_file = RFile::Text.new(
             '_',
             foreign_repository.language,
             foreign_filename,

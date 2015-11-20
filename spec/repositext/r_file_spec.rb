@@ -5,6 +5,8 @@ class Repositext
 
   describe RFile do
 
+    # TODO: Test all the methods which depend on repository being a real repository
+
     let(:contents) { 'contents' }
     let(:language) { Language::English.new }
     let(:filename) { '/path/to/r_file.at' }
@@ -41,8 +43,6 @@ class Repositext
       end
 
     end
-
-    # TODO: Test all the methods which depend on repository being a real repository
 
   end
 

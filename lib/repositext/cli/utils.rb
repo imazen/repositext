@@ -185,7 +185,9 @@ class Repositext
                 repository = options[:repository]
                 language = repository.language
                 block.call(
-                  Repositext::RFile.new(contents, language, filename, repository)
+                  r_file_klass(options[:input_is_binary]).new(
+                    contents, language, filename, repository
+                  )
                 )
               else
                 # use old api
@@ -380,8 +382,12 @@ class Repositext
                     repository = options[:repository]
                     language = repository.language
                     block.call(
-                      Repositext::RFile.new(contents_1, language, filename_1, repository),
-                      Repositext::RFile.new(contents_2, language, filename_2, repository),
+                      r_file_klass(options[:input_is_binary]).new(
+                        contents_1, language, filename_1, repository
+                      ),
+                      r_file_klass(options[:input_is_binary]).new(
+                        contents_2, language, filename_2, repository
+                      ),
                     )
                   else
                     # use old api
@@ -398,7 +404,9 @@ class Repositext
                   repository = options[:repository]
                   language = repository.language
                   block.call(
-                    Repositext::RFile.new(contents_1, language, filename_1, repository)
+                    r_file_klass(options[:input_is_binary]).new(
+                      contents_1, language, filename_1, repository
+                    )
                   )
                 else
                   # use old api
@@ -542,6 +550,13 @@ class Repositext
         else
           nil
         end
+      end
+
+      # Returns the class to use for RFiles. Either text or binary
+      # @param is_binary [Boolean]
+      # @return [Class]
+      def self.r_file_klass(is_binary)
+        is_binary ? Repositext::RFile::Binary : Repositext::RFile::Text
       end
 
     end
