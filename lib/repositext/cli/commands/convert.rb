@@ -14,19 +14,22 @@ class Repositext
           ),
           options['file_filter'],
           "Converting DOCX files to AT kramdown",
-          options.merge(input_is_binary: true)
-        ) do |zip_archive_contents, filename|
-          document_xml_contents = extract_word_document_xml_from_zip_archive(
-            zip_archive_contents
+          options.merge(
+            input_is_binary: true,
+            repository: repository,
+            use_new_repositext_file_api: true,
           )
-          root, warnings = config.kramdown_parser(:docx).parse(document_xml_contents)
-          kramdown_doc = Kramdown::Document.new(
-            '',
-            { line_width: 100000 } # set to very large value so that each para is on a single line
+        ) do |zip_binary_r_file|
+          document_xml_contents = zip_binary_r_file.extract_zip_archive_file_contents(
+            'word/document.xml'
           )
-          kramdown_doc.root = root
-          at = kramdown_doc.send(config.kramdown_converter_method(:to_at))
-          [Outcome.new(true, { contents: at, extension: 'docx.at' })]
+          outcome = Repositext::Process::Convert::DocxToAt.new(
+            document_xml_contents,
+            zip_binary_r_file,
+            config.kramdown_parser(:docx),
+            config.kramdown_converter_method(:to_at)
+          ).convert
+          [Outcome.new(true, { contents: outcome.result, extension: 'docx.at' })]
         end
       end
 
