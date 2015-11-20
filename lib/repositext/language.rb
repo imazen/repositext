@@ -4,8 +4,9 @@ class Repositext
     LANG_CODE_MAPPINGS = [
       { code2: :af, code3: :afr, name: 'Afrikaans' },
       { code2: :en, code3: :eng, name: 'English' },
-      { code2: :x_, code3: :x__, name: 'Generic' },
       { code2: :es, code3: :spn, name: 'Spanish' },
+      { code2: :vi, code3: :vie, name: 'Vietnamese' },
+      { code2: :x_, code3: :x__, name: 'Generic' },
     ]
 
     # @param lang_code [Symbol, String] 2 or 3 character language code
