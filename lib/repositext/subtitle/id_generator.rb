@@ -40,7 +40,7 @@ class Repositext
           stids = compute_unique_stids(count)
           add_stids_to_inventory(stids)
         end
-        stids
+        stids.to_a
       end
 
     protected
