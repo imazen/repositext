@@ -90,11 +90,23 @@ module Kramdown
       # * element options (can contain a lambda for lazy execution, gets passed the para XML node)
       def self.paragraph_style_mappings
         {
-          "Header"                   => [:header, nil, { }                        , lambda { |para| {:level => 1, :raw_text => para.text} }],
+          "Header1"                  => [:header, nil, { }                        , lambda { |para| {:level => 1, :raw_text => para.text} }],
+          "Header2"                  => [:header, nil, { }                        , lambda { |para| {:level => 2, :raw_text => para.text} }],
+          "Header3"                  => [:header, nil, { }                        , lambda { |para| {:level => 3, :raw_text => para.text} }],
           "Normal"                   => [:p     , nil, {'class' => 'normal'}      , nil],
           "NormalTest"               => [:p     , nil, {'class' => 'normal_test'} , nil],
           "HorizontalRule"           => [:hr    , nil, { }                        , nil],
         }
+      end
+
+      # Parse the +source+ string into an element tree, possibly using the parsing +options+, and
+      # return the root element of the element tree and an array with warning messages.
+      # @param source [String] contents of word/document.xml as string
+      # @param options [Hash, optional] these will be passed to Kramdown::Parser instance
+      def self.parse(source, options = {})
+        parser = new(source, options)
+        parser.parse
+        [parser.root, parser.warnings]
       end
 
       # @param source [String] contents of word/document.xml as string
@@ -110,16 +122,6 @@ module Kramdown
       end
       # Comply with Kramdown::Parser behavior:
       private_class_method(:new, :allocate)
-
-      # Parse the +source+ string into an element tree, possibly using the parsing +options+, and
-      # return the root element of the element tree and an array with warning messages.
-      # @param source [String] contents of word/document.xml as string
-      # @param options [Hash, optional] these will be passed to Kramdown::Parser instance
-      def self.parse(source, options = {})
-        parser = new(source, options)
-        parser.parse
-        [parser.root, parser.warnings]
-      end
 
       # Parses @source into a Kramdown tree under @root.
       def parse
