@@ -19,6 +19,7 @@ require 'active_support/concern'
 # Dependency boundary
 
 require 'alignment'
+require 'caracal'
 require 'diff/lcs'
 require 'erb'
 require 'find'
@@ -53,6 +54,7 @@ end
 # repositext libraries
 
 require 'patches/array'
+require 'patches/caracal'
 require 'patches/nokogiri_xml_node'
 require 'patches/string'
 require 'recursive_data_hash'
@@ -63,6 +65,8 @@ require 'repositext/constants'
 
 # Dependency boundary
 
+require 'kramdown/converter/docx'
+require 'kramdown/converter/docx_object'
 require 'kramdown/converter/graphviz'
 require 'kramdown/converter/html_doc'
 require 'kramdown/converter/html_repositext'

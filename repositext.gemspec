@@ -20,6 +20,7 @@ Gem::Specification.new do |s|
   s.add_dependency('alignment')
   s.add_dependency('awesome_print')
   s.add_dependency('builder')
+  s.add_dependency('caracal', '~> 1.0')
   # I would have liked to use diff_match_patch which we already use for suspension, however
   # there was no simple way to do line diffing in DMP, so I use this gem for now.
   s.add_dependency('diff-lcs')
