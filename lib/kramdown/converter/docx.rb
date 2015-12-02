@@ -103,8 +103,8 @@ module Kramdown
       end
 
       # @return [String] the name of the converter method for element_type
-      DISPATCHER = Hash.new {
-        |h,element_type| h[element_type] = "convert_#{ element_type }"
+      DISPATCHER = Hash.new { |h,element_type|
+        h[element_type] = "convert_#{ element_type }"
       }
 
       # Converts el's child elements
@@ -253,136 +253,6 @@ module Kramdown
         else
           super
         end
-      end
-
-      # ----------------------------
-      # :section: Helper methods for easier IDML output
-      #
-      # These helper methods should be used when outputting any IDML tag.
-      #
-      # ----------------------------
-
-
-      # Creates a ParagraphStyleRange tag
-      #
-      # If a block is given, it is yielded. Otherwise the children of +el+ are
-      # converted if +el+ is not +nil+.
-      #
-      # @param[Kramdown::Element] el
-      # @param[String] style 'ParagraphStyle/' is automatically prepended
-      # @param[Hash, optional] attrs
-      def paragraph_style_range_tag(el, style, attrs = {})
-        # Close any open tags that are not CharacterStyleRange or ParagraphStyleRange
-        while(
-          @xml_stack.last && \
-          !['CharacterStyleRange', 'ParagraphStyleRange'].include?(@xml_stack.last.first)
-        ) do
-          emit_end_tag
-        end
-
-        attrs = attrs.merge("AppliedParagraphStyle" => "ParagraphStyle/#{ style }")
-
-        # Try to find index of preceding ParagraphStyleRange in @xml_stack.
-        prev_para_idx = @xml_stack.size - 1
-        while prev_para_idx >= 0 && @xml_stack[prev_para_idx].first != 'ParagraphStyleRange' do
-          prev_para_idx -= 1
-        end
-
-        if prev_para_idx == -1 || @xml_stack[prev_para_idx].last != attrs
-          # No preceding ParagraphStyleRange exists, or its attrs are different
-          # from current: Start new ParagraphStyleRange.
-          if prev_para_idx != -1
-            # Preceding ParagraphStyleRange exists, but attrs are different:
-            # insert a br tag and close all open tags.
-            br_tag
-            (@xml_stack.size - prev_para_idx).times { emit_end_tag }
-          end
-          emit_start_tag('ParagraphStyleRange', attrs)
-        else
-          # Preceding ParagraphStyleRange exists and has identical attributes:
-          # insert br tag so that we can add children to preceding ParagraphStyleRange.
-          br_tag
-        end
-
-        # yield if block is given, or convert el's children into current ParagraphStyleRange
-        block_given? ? yield : el && inner(el)
-      end
-
-      # Creates a CharacterStyleRange tag using #char_st_rng_tag and automatically chooses
-      # the correct style for the given element.
-      #
-      # If a block is given, it is yielded. Otherwise the children of +el+ are
-      # converted if +el+ is not +nil+.
-      #
-      # **Note**: Use this method rather than the #char_st_rng_tag method!
-      #
-      # @param[Kramdown::Element] el
-      # @param[Array, optional] ancestors an array holding the ancestors of +el+.
-      # @param[Proc, optional] block
-      def character_style_range_tag_for_el(el, ancestors = @stack, &block)
-        orig_el = el
-        if ![:em, :strong].include?(el.type)
-          # This is most likely a :text element: Use parent element for further processing.
-          # Parent could be e.g., :p, :em, :strong
-          el, ancestors = ancestors[-1], ancestors[0..-2]
-        end
-        if (el.type == :em && ancestors.last.type == :strong) ||
-            (el.type == :strong && ancestors.last.type == :em)
-          char_st_rng_tag(orig_el, 'Bold Italic', &block)
-        elsif el.type == :strong
-          char_st_rng_tag(orig_el, 'Bold', &block)
-        elsif el.type == :em
-          # We use :em to represent spans. Compute class for span:
-          style = case
-          when el.has_class?('bold') && el.has_class?('italic')
-            # Most restrictive condition, check first
-            'Bold Italic'
-          when el.has_class?('bold')
-            'Bold'
-          when el.has_class?('italic') || '' == el.attr['class'].to_s
-            'Italic'
-          when el.has_class?('pn')
-            'Paragraph number'
-          else
-            'Regular'
-          end
-          attr = {}
-          attr['Capitalization'] = 'SmallCaps'  if el.has_class?('smcaps')
-          attr['Position'] = 'Subscript'  if el.has_class?('subscript')
-          attr['Position'] = 'Superscript'  if el.has_class?('superscript')
-          attr['Underline'] = 'true'  if el.has_class?('underline')
-          char_st_rng_tag(orig_el, style, attr, &block)
-        elsif :gap_mark == el.type
-          char_st_rng_tag(orig_el, nil, { 'FillColor' => "Color/GAP RED" }, &block)
-        else
-          char_st_rng_tag(orig_el, 'Regular', &block)
-        end
-      end
-
-      # Creates a CharacterStyleRange tag
-      #
-      # If a block is given, it is yielded. Otherwise the children of +el+ are
-      # converted if +el+ is not +nil+.
-      #
-      # **Note**: You should not call this method directly, but rather #character_style_range_tag_for_el instead!
-      #
-      # @param[Kramdown::Element] el
-      # @param[String] style 'CharacterStyle/' is automatically prepended
-      # @param[Hash, optional] attrs
-      def char_st_rng_tag(el, style, attrs = {})
-        attrs = attrs.merge("AppliedCharacterStyle" => "CharacterStyle/#{ style }")
-
-        if @xml_stack.last.first != 'CharacterStyleRange' || @xml_stack.last.last != attrs
-          # There is no preceding CharacterStyleRange, or it has different attrs.
-          if @xml_stack.last.first == 'CharacterStyleRange'
-            # Preceding CharacterStyleRange has different attrs: close it.
-            emit_end_tag
-          end
-          emit_start_tag('CharacterStyleRange', attrs)
-        end
-
-        # yield if block is given, or convert el's children into current CharacterStyleRange
-        block_given? ? yield : el && inner(el)
       end
 
       # Adds text either to @current_run_text_contents or @current_block_el

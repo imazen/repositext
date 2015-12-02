@@ -6,8 +6,9 @@ module Kramdown
 
       # NOTE: This spec tests behavior of Kramdown::Converter::Docx.
       # DocxObject is a subclass that returns objects instead of writing files,
-      # so it's much better suited for testing.
+      # which makes it more suitable for testing.
 
+      # Extracts all block level elements in docx to remove boilerplate code.
       # @param docx [Caracal::Document]
       # @return [Array<Nokogiri::Xml::Node>] the block level elements in document.xml
       def extract_block_els_in_docx(docx)
@@ -17,7 +18,8 @@ module Kramdown
         xml_doc.at_css('body').children.find_all { |e| 'sectPr' != e.name } #.tap{ |e| p e }
       end
 
-      # Checks for each path in attrs whether it exists identically in xml_nodes
+      # Checks for each path in attrs whether it exists identically in xml_nodes.
+      # NOTE: The `:children` key has special meaning.
       # @param xml_nodes [Array<Xml::Node>]
       # @param attrs [Array<Hash>]
       # @param mismatches [Array, optional] optional collector for mismatches
@@ -43,36 +45,40 @@ module Kramdown
         mismatches
       end
 
-      it "extracts block els" do
-        doc = Document.new("the text", :input => 'KramdownRepositext')
-        extract_block_els_in_docx(doc.to_docx_object).map(&:name).must_equal(['p'])
-      end
+      describe 'test helpers' do
 
-      describe 'match xml_nodes with attrs' do
-
-        it 'recognizes differences' do
-          xml_fragment = Nokogiri::XML::DocumentFragment.parse(%(<p val="theVal">inner text</p>))
-          xml_nodes = xml_fragment.replace(xml_fragment.children) # reparent block els from parent `#document-fragment` node
-          attrs = [{ name: 'span', val: 'notTheVal', inner_text: 'different inner text' }]
-          xml_nodes_match_attrs(xml_nodes, attrs).must_equal([
-            { node: "p", attr: %(name: expected "span", got "p") },
-            { node: "p", attr: %(val: expected "notTheVal", got "theVal") },
-            { node: "p", attr: %(inner_text: expected "different inner text", got "inner text") }
-          ])
+        it "extracts block els" do
+          doc = Document.new("the text", :input => 'KramdownRepositext')
+          extract_block_els_in_docx(doc.to_docx_object).map(&:name).must_equal(['p'])
         end
 
-        it 'recognizes identical' do
-          xml_nodes = Nokogiri::XML::DocumentFragment.parse(%(<p val="theVal">inner text</p>))
-          xml_nodes = xml_nodes.replace(xml_nodes.children) # reparent block els from parent `#document-fragment` node
-          attrs = [{ name: 'p', val: 'theVal', inner_text: 'inner text' }]
-          xml_nodes_match_attrs(xml_nodes, attrs).must_be(:empty?)
+        describe 'match xml_nodes with attrs' do
+
+          it 'recognizes differences' do
+            xml_fragment = Nokogiri::XML::DocumentFragment.parse(%(<p val="theVal">inner text</p>))
+            xml_nodes = xml_fragment.replace(xml_fragment.children) # reparent block els from parent `#document-fragment` node
+            attrs = [{ name: 'span', val: 'notTheVal', inner_text: 'different inner text' }]
+            xml_nodes_match_attrs(xml_nodes, attrs).must_equal([
+              { node: "p", attr: %(name: expected "span", got "p") },
+              { node: "p", attr: %(val: expected "notTheVal", got "theVal") },
+              { node: "p", attr: %(inner_text: expected "different inner text", got "inner text") }
+            ])
+          end
+
+          it 'recognizes identical' do
+            xml_nodes = Nokogiri::XML::DocumentFragment.parse(%(<p val="theVal">inner text</p>))
+            xml_nodes = xml_nodes.replace(xml_nodes.children) # reparent block els from parent `#document-fragment` node
+            attrs = [{ name: 'p', val: 'theVal', inner_text: 'inner text' }]
+            xml_nodes_match_attrs(xml_nodes, attrs).must_be(:empty?)
+          end
+
         end
 
-      end
+        it "compares xml_nodes with attrs" do
+          doc = Document.new("the text", :input => 'KramdownRepositext')
+          extract_block_els_in_docx(doc.to_docx_object).map(&:name).must_equal(['p'])
+        end
 
-      it "compares xml_nodes with attrs" do
-        doc = Document.new("the text", :input => 'KramdownRepositext')
-        extract_block_els_in_docx(doc.to_docx_object).map(&:name).must_equal(['p'])
       end
 
       describe '#convert_header' do
