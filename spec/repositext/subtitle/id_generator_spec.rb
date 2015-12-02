@@ -5,7 +5,7 @@ class Repositext
     describe IdGenerator do
 
       let(:inventory_file) {
-        FileLikeStringIO.new('_path', "abcd\nefgh\n", 'r+')
+        FileLikeStringIO.new('_path', "1000000\n4567890\n9999999\n", 'r+')
       }
 
       let(:generator) { IdGenerator.new(inventory_file) }
@@ -39,11 +39,13 @@ class Repositext
 
       describe "#add_stids_to_inventory" do
 
-        it "adds stids to inventory file in alphabetical order" do
+        it "adds stids to inventory file in ascending order" do
           generator.generate(0) # to initialize @existing_stids inventory file
-          generator.send(:add_stids_to_inventory, ['qrst', 'kmnp'])
+          generator.send(:add_stids_to_inventory, ['9999998', '1000001'])
           generator.inventory_file.rewind
-          generator.inventory_file.read.must_equal("abcd\nefgh\nkmnp\nqrst\n")
+          generator.inventory_file.read.must_equal(
+            "1000000\n1000001\n4567890\n9999998\n9999999\n"
+          )
         end
 
       end
@@ -53,7 +55,7 @@ class Repositext
         it "returns a valid stid" do
           r = generator.send(:generate_stid)
           r.is_a?(String).must_equal(true)
-          r.length.must_equal(4)
+          r.length.must_equal(7)
         end
 
       end
@@ -62,12 +64,12 @@ class Repositext
 
         it "returns true if stid exists in inventory file" do
           generator.generate(0) # to initialize @existing_stids inventory file
-          generator.send(:stid_exists_in_inventory_file?, 'abcd').must_equal(true)
+          generator.send(:stid_exists_in_inventory_file?, '1000000').must_equal(true)
         end
 
         it "returns false if stid doesn't exist in inventory file" do
           generator.generate(0) # to initialize @existing_stids inventory file
-          generator.send(:stid_exists_in_inventory_file?, 'aaaa').must_equal(false)
+          generator.send(:stid_exists_in_inventory_file?, '1000002').must_equal(false)
         end
 
       end

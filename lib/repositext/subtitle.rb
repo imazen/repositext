@@ -3,11 +3,10 @@ class Repositext
   # Represents a Repositext subtitle
   class Subtitle
 
-    # Characters that are allowed for persistent_ids:
-    STID_CHARS = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789'.freeze
-    # stid forbidden chars: iloIO01
-
-    STID_REGEX = /\A[#{ Regexp.escape(STID_CHARS) }]{4}\z/
+    # Characters that are allowed for subtitle_ids:
+    STID_CHARS = '0123456789'.freeze
+    STID_LENGTH = 7
+    STID_REGEX = /\A[1-9][#{ Regexp.escape(STID_CHARS) }]{#{ STID_LENGTH - 1 }}\z/
 
     attr_reader :char_length,
                 :persistent_id,

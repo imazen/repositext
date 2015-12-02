@@ -15,7 +15,7 @@ class Repositext
       # multithreaded contexts.
       LOCK = Mutex.new
 
-      STID_CHARS_LEN = STID_CHARS.size
+      STID_AVAILABLE_CHARS_COUNT = STID_CHARS.size
 
       attr_reader :inventory_file # for testing
 
@@ -46,7 +46,7 @@ class Repositext
     protected
 
       # Returns `count` stids that are guaranteed to be unique in the scope of
-      # `inventory_file`. They are also guaranteed to not contain any profanity.
+      # `inventory_file`.
       # @param count [Integer]
       def compute_unique_stids(count)
         overflow_count = 0
@@ -54,7 +54,6 @@ class Repositext
         while new_stids.length < count do
           stid = generate_stid
           raise RuntimeError.new("Infinite loop")  if (overflow_count += 1) > (count * 5)
-          next  if Obscenity.profane?(stid)
           next  if stid_exists_in_inventory_file?(stid) || new_stids.include?(stid)
           new_stids << stid
         end
@@ -77,7 +76,11 @@ class Repositext
       #   * Z7w3
       #   * mJUK
       def generate_stid
-        4.times.map { STID_CHARS[rand(STID_CHARS_LEN)] }.join
+        # start with non-zero digit
+        stid = STID_CHARS[rand(STID_AVAILABLE_CHARS_COUNT)]
+        # add remaining chars
+        (STID_LENGTH - 1).times.each { stid << STID_CHARS[rand(STID_AVAILABLE_CHARS_COUNT)] }
+        stid
       end
 
       # Returns true if stid already exists in inventory file

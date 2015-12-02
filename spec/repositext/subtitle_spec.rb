@@ -8,7 +8,7 @@ class Repositext
     # All attrs are given as string, same as coming from CSV file
     let(:default_attrs) { {
       char_length: '72',
-      persistent_id: 'Qt56',
+      persistent_id: '3276590',
       record_id: '63030029',
       relative_milliseconds: '10303',
       samples: '1622128'
@@ -22,7 +22,7 @@ class Repositext
       end
 
       it 'initializes persistent_id' do
-        default_subtitle.persistent_id.must_equal('Qt56')
+        default_subtitle.persistent_id.must_equal('3276590')
       end
 
       it 'initializes record_id' do
@@ -41,6 +41,21 @@ class Repositext
 
     it 'computes absolute_milliseconds from samples' do
       default_subtitle.absolute_milliseconds.must_equal(36783)
+    end
+
+    describe '.valid_stid_format?' do
+      [
+        ['1000000', true],
+        ['4567890', true],
+        ['9999999', true],
+        ['0000001', false],
+        ['10000', false],
+        ['10000000', false],
+      ].each do |(stid, xpect)|
+        it "handles #{ stid.inspect }" do
+          Subtitle.valid_stid_format?(stid).must_equal(xpect)
+        end
+      end
     end
 
   end
