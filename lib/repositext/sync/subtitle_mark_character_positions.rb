@@ -24,8 +24,10 @@ class Repositext
           }
         else
           # No existing CSV, create an array with correct number of rows.
-          # Sets relativeMS and samples to 0
-          new_stm_lengths.map { |e| [0,0] }
+          # Sets relativeMS and samples to 0,
+          # Sets relativeMS, samples, and charLength to 0
+          # Sets subtitleId and recordId to nil
+          new_stm_lengths.map { |e| [0,0,0,nil,nil] }
         end
         # make sure that both counts are identical
         if new_stm_lengths.length != tmp_csv_array.length
@@ -38,8 +40,8 @@ class Repositext
             existing_row[0], # 'relativeMS' from existing CSV
             existing_row[1], # 'samples' from existing CSV
             new_row[:char_length], # 'charLength' from new_stm_lengths
-            existing_row[3], # 'persistentIds' from existing CSV
-            existing_row[4], # 'recordIds' from existing CSV
+            existing_row[3], # 'subtitleId' from existing CSV
+            existing_row[4], # 'recordId' from existing CSV
           ]
         }
         # Convert to CSV
