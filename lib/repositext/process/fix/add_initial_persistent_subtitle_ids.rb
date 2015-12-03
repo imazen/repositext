@@ -37,7 +37,7 @@ class Repositext
             @spids_inventory_file
           ).generate(
             num_subtitles
-          )
+          ).shuffle
 
           contents_with_spids_and_rids = [
             %w[relativeMS samples charLength persistentId recordId].join("\t")

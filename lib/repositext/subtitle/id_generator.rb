@@ -16,6 +16,7 @@ class Repositext
       LOCK = Mutex.new
 
       STID_AVAILABLE_CHARS_COUNT = STID_CHARS.size
+      STID_AVAILABLE_CHARS_WITHOUT_ZERO_COUNT = STID_CHARS_WITHOUT_ZERO.size
 
       attr_reader :inventory_file # for testing
 
@@ -77,7 +78,7 @@ class Repositext
       #   * mJUK
       def generate_stid
         # start with non-zero digit
-        stid = STID_CHARS[rand(STID_AVAILABLE_CHARS_COUNT)]
+        stid = STID_CHARS_WITHOUT_ZERO[rand(STID_AVAILABLE_CHARS_WITHOUT_ZERO_COUNT)]
         # add remaining chars
         (STID_LENGTH - 1).times.each { stid << STID_CHARS[rand(STID_AVAILABLE_CHARS_COUNT)] }
         stid
