@@ -18,6 +18,11 @@ class Repositext
     S_QUOTE_OPEN,
   ]
 
+  # We use this character to delimit sentences, e.g., in Lucene exported plain
+  # text proximity
+  # 0x256B - Box Drawings Vertical Double And Horizontal Single
+  SENTENCE_DELIMITER = "╫"
+
   US_STATES = {
     'AK' => 'Alaska',
     'AL' => 'Alabama',
