@@ -848,6 +848,54 @@ class Repositext
         }
       end
 
+      # Reports where record boundaries are located (inside paragraphs or spans)
+      def report_record_boundary_locations(options)
+        file_count = 0
+        record_boundary_locations = { root: 0, paragraph: 0, span: 0 }
+        comments = []
+        Repositext::Cli::Utils.read_files(
+          config.compute_glob_pattern(
+            options['base-dir'] || :content_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :at_extension
+          ),
+          options['file_filter'],
+          nil,
+          "Reading content AT files",
+          options.merge(
+            use_new_repositext_file_api: true,
+            repository: repository,
+          )
+        ) do |repositext_file|
+          outcome = Repositext::Process::Report::RecordBoundaryLocations.new(
+            repositext_file,
+            config.kramdown_parser(:kramdown)
+          ).report
+          if outcome.success?
+            $stderr.puts "   - analyzed #{ repositext_file.basename }"
+            srbls = outcome.result
+            record_boundary_locations.keys.each { |key|
+              record_boundary_locations[key] += srbls[key]
+            }
+            comments += outcome.messages.map { |e| [repositext_file.basename, e].join(': ') }
+          else
+            $stderr.puts "   - skipped #{ repositext_file.basename }"
+          end
+          file_count += 1
+        end
+        $stderr.puts "Record Boundary Locations"
+        $stderr.puts "-" * 40
+        record_boundary_locations.keys.each { |context|
+          $stderr.puts " - #{ context }: #{ record_boundary_locations[context] }"
+        }
+        if comments.any?
+          $stderr.puts "-" * 40
+          comments.each { |comment|
+            $stderr.puts " - #{ comment }"
+          }
+        end
+      end
+
       # Finds .stanza paragraphs that are not followed by .song paragraphs
       def report_stanza_without_song_paragraphs(options)
         file_count = 0
