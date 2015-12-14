@@ -37,5 +37,13 @@ class Repositext
       (samples / 44.1).round
     end
 
+    def to_s
+      %(#<Repositext::Subtitle @persistent_id=#{ persistent_id.inspect }, @record_id=#{ record_id.inspect }>)
+    end
+
+    def inspect
+      to_s
+    end
+
   end
 end
