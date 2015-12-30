@@ -79,7 +79,7 @@ module Kramdown
                                                  .last
                                                  .match(/[[:alpha:]]{3}\d{2}-\d{4}[[:alpha:]]?/)
                                                  .to_s
-          git_repo = Repositext::Repository.new
+          git_repo = Repositext::Repository.new(@options[:source_filename])
           latest_commit = git_repo.latest_commit(@options[:source_filename])
           # assign i_vars referenced in template file
           @additional_footer_text = escape_latex_text(@options[:additional_footer_text])
