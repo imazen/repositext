@@ -81,8 +81,8 @@ module Kramdown
       # The root element of element tree that is created from the source string.
       attr_reader :root
 
-      # Maps DOCX paragraph styles to kramdown elements
-      # @return[Hash] hash with paragraph styles as keys and arrays with the
+      # Maps DOCX paragraph style ids to kramdown elements
+      # @return[Hash] Hash with paragraph style ids as keys and arrays with the
       # following items as values:
       # * element type: a supported Kramdown::Element type
       # * element value: String or nil
@@ -90,12 +90,12 @@ module Kramdown
       # * element options (can contain a lambda for lazy execution, gets passed the para XML node)
       def self.paragraph_style_mappings
         {
-          "Header1"                  => [:header, nil, { }                        , lambda { |para| {:level => 1, :raw_text => para.text} }],
-          "Header2"                  => [:header, nil, { }                        , lambda { |para| {:level => 2, :raw_text => para.text} }],
-          "Header3"                  => [:header, nil, { }                        , lambda { |para| {:level => 3, :raw_text => para.text} }],
-          "Normal"                   => [:p     , nil, {'class' => 'normal'}      , nil],
-          "NormalTest"               => [:p     , nil, {'class' => 'normal_test'} , nil],
-          "HorizontalRule"           => [:hr    , nil, { }                        , nil],
+          "header1"        => [:header, nil, { }                      , lambda { |para| {:level => 1, :raw_text => para.text} }],
+          "header2"        => [:header, nil, { }                      , lambda { |para| {:level => 2, :raw_text => para.text} }],
+          "header3"        => [:header, nil, { }                      , lambda { |para| {:level => 3, :raw_text => para.text} }],
+          "normal"         => [:p     , nil, {'class' => 'normal'}    , nil],
+          "paraTest"       => [:p     , nil, {'class' => 'para_test'} , nil],
+          "horizontalRule" => [:hr    , nil, { }                      , nil],
         }
       end
 
@@ -155,7 +155,7 @@ module Kramdown
       # Processes an xml_node
       # @param xn [Nokogiri::XML::Node] the XML Node to process
       def process_xml_node(xn)
-        raise(ArgumentError, "xn cannot be nil")  if xn.nil?
+        raise(InvalidElementException, "xn cannot be nil")  if xn.nil?
         # TODO: Don't use OpenStruct here for performance reasons.
         @xn_context = OpenStruct.new(
           :match_found => false,
@@ -170,7 +170,9 @@ module Kramdown
           if respond_to?(method_name, true)
             self.send(method_name, xn)
           else
-            raise "Unexpected element type #{ xn.name } on line #{ xn.line }. Requires method #{ method_name.inspect }."
+            raise InvalidElementException.new(
+              "Unexpected element type #{ xn.name } on line #{ xn.line }. Requires method #{ method_name.inspect }."
+            )
           end
         end
         if !@xn_context.match_found
@@ -252,12 +254,11 @@ module Kramdown
         # Paragraph
         l = { :line => xn.line }
         p_style = xn.at_xpath('./w:pPr/w:pStyle')
-        p_style_name = p_style ? p_style['w:val'] : nil
-        case p_style_name
+        p_style_id = p_style ? p_style['w:val'] : nil
+        case p_style_id
         when *paragraph_style_mappings.keys
           # A known paragraph style that we have a mapping for
-          type, value, attr, options = paragraph_style_mappings[p_style_name]
-
+          type, value, attr, options = paragraph_style_mappings[p_style_id]
           root = @ke_context.get('root', xn)
           return false  if !root
           para_ke = ElementRt.new(
@@ -275,32 +276,9 @@ module Kramdown
           @ke_context.with_text_container_stack(para_ke) do
             xn.children.each { |xnc| process_xml_node(xnc) }
           end
-
-          # handle .normal_pn
-          if(
-            para_ke.has_class?('normal') &&
-            (fc = para_ke.children.first) &&
-            (txt = fc.to_plain_text) =~ /\A\d+\t/
-          )
-# TODO: also handle paragraph numbers followed by space (up to 5 instances, if more reject import and send back to translator with detailed issues report)
-# TODO: renumber paragraphs via script to eliminate typos in para numbers
-# TODO: in the future: fix easy bugs automatically, re-export for translator to fix difficult bugs
-# TODO: tree cleaner should remove formatting/ems if they contain only whitespace, including tabs. This explains normal_pn issues in 65-0822e.
-            # Convert .normal to .normal_pn, wrap para number in em.pn
-            para_num = txt.to_i
-            text_el = Kramdown::ElementRt.new(:text, para_num.to_s)
-            em_el = Kramdown::ElementRt.new(:em, nil, { 'class' => 'pn' })
-            em_el.add_child(text_el)
-            fc.insert_sibling_before(em_el)
-            fc.value.gsub!(/\A\d+\t/, ' ')
-            para_ke.remove_class('normal')
-            para_ke.add_class('normal_pn')
-          end
           @xn_context.process_children = false
         else
-# TODO: make unexpected paragraph styles more obvious
-          puts "Unhandled p_style_name #{ p_style_name.inspect }"
-          return false # return early without calling flag_match_found
+          raise(InvalidElementException, "Unhandled p_style_id #{ p_style_id.inspect }")
         end
         flag_match_found
       end
