@@ -53,6 +53,15 @@ module Kramdown
             top: 60,
             bottom: 0,
           },
+          'hr'       => {
+            name: 'Horizontal rule',
+            id: 'horizontalRule',
+            size: 12,
+            align: :left,
+            line: 160,
+            top: 12,
+            bottom: 0,
+          },
           'p.normal' => {
             name: 'Normal',
             id: 'normal',
@@ -64,16 +73,7 @@ module Kramdown
           },
           'p.test'   => {
             name: 'Paragraph Test',
-            id: 'paragraphTest',
-            size: 12,
-            align: :left,
-            line: 160,
-            top: 12,
-            bottom: 0,
-          },
-          'hr'       => {
-            name: 'Horizontal rule',
-            id: 'horizontalRule',
+            id: 'paraTest',
             size: 12,
             align: :left,
             line: 160,
@@ -139,13 +139,11 @@ module Kramdown
 
       # @param[Kramdown::Element] el
       def convert_em(el)
-        @current_block_el.text do |run|
-          @current_run_text_contents = ''
-          inner(el)
-          run.content = @current_run_text_contents
-          # TODO: assign attrs
-          @current_run_text_contents = nil
-        end
+        @current_run_text_contents = ''
+        inner(el)
+        em_attrs = { italic: true }
+        @current_block_el.text @current_run_text_contents, em_attrs
+        @current_run_text_contents = nil
       end
 
       def convert_entity(el)
@@ -176,11 +174,15 @@ module Kramdown
         end
       end
 
+      # NOTE: We don't use Caracal's `docx#hr` method. It just renders an
+      # empty paragraph with a top border. It doesn't allow assignment of
+      # any classes/styles. This makes it hard to parse. So we implement our own
+      # version of this with the added ability to assign a style/class.
       # @param[Kramdown::Element] el
       def convert_hr(el)
-        # TODO: set para class
-        @current_document.hr do |p|
+        @current_document.p do |p|
           @current_block_el = p
+          p.style(paragraph_style_mappings['hr'][:id])
           inner(el)
           @current_block_el = nil
         end
@@ -188,12 +190,20 @@ module Kramdown
 
       # @param el [Kramdown::Element]
       def convert_p(el)
-        para_style_id = case el.attr['class']
-        when 'normal' then paragraph_style_mappings['p.normal'][:id]
-        when 'test' then paragraph_style_mappings['p.test'][:id]
-        when NilClass then nil
+        para_style_id = if (el_class = el.attr['class'])
+          # para has class
+          para_style_mapping = paragraph_style_mappings["p.#{ el_class }"]
+          if para_style_mapping.nil? || (ps_id = para_style_mapping[:id]).nil?
+            raise(
+              InvalidElementException.new(
+                "DOCX converter can't output p with class #{ el.attr['class'].inspect }"
+              )
+            )
+          end
+          ps_id
         else
-          raise InvalidElementException, "DOCX converter can't output p with class #{ el.attr['class'].inspect }"
+          # para doesn't have class
+          nil
         end
         @current_document.p do |p|
           @current_block_el = p
@@ -205,23 +215,22 @@ module Kramdown
 
       # @param el [Kramdown::Element]
       def convert_record_mark(el)
-        # Nothing to do
+        # Pull element
+        inner(el)
       end
 
       # @param[Kramdown::Element] el
       def convert_strong(el)
-        @current_block_el.text do |run|
-          @current_run_text_contents = ''
-          inner(el)
-          run.content = @current_run_text_contents
-          run.bold = true
-          @current_run_text_contents = nil
-        end
+        @current_run_text_contents = ''
+        inner(el)
+        em_attrs = { bold: true }
+        @current_block_el.text @current_run_text_contents, em_attrs
+        @current_run_text_contents = nil
       end
 
       # @param el [Kramdown::Element]
       def convert_subtitle_mark(el)
-        # TODO: Anything to do here?
+        # Nothing to do
       end
 
       # @param[Kramdown::Element] el

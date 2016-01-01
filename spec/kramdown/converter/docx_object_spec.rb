@@ -81,6 +81,123 @@ module Kramdown
 
       end
 
+      describe '#convert_em' do
+
+        [
+          [
+            'Without IAL',
+            '*plain*',
+            [
+              {
+                name: 'p',
+                children: [
+                  { name: 'pPr' },
+                  { name: 'r' },
+                  {
+                    name: 'r',
+                    children: [
+                      {
+                        name: 'rPr',
+                        children: [{ name: 'i', val: '1' }]
+                      }
+                    ],
+                    inner_text: 'plain',
+                  },
+                ]
+              }
+            ]
+          ],
+        ].each do |test_attrs|
+          desc, test_string, expect = *test_attrs
+          it desc do
+            doc = Document.new(test_string, :input => 'KramdownRepositext')
+            xml_nodes_match_attrs(
+              extract_block_els_in_docx(doc.to_docx_object),
+              expect
+            ).must_be(:empty?)
+          end
+        end
+
+      end
+
+      describe '#convert_entity' do
+
+        [
+          [
+            'non breaking space',
+            'word&nbsp;word',
+            [
+              {
+                name: 'p',
+                children: [
+                  { name: 'pPr' },
+                  { name: 'r' },
+                  {
+                    name: 'r',
+                    inner_text: 'word',
+                  },
+                  {
+                    name: 'r',
+                    inner_text: '&nbsp;',
+                  },
+                  {
+                    name: 'r',
+                    inner_text: 'word',
+                  },
+                ]
+              }
+            ]
+          ],
+        ].each do |test_attrs|
+          desc, test_string, expect = *test_attrs
+          it desc do
+            doc = Document.new(test_string, :input => 'KramdownRepositext')
+            xml_nodes_match_attrs(
+              extract_block_els_in_docx(doc.to_docx_object),
+              expect
+            ).must_be(:empty?)
+          end
+        end
+
+      end
+
+      describe '#convert_gap_mark' do
+
+        [
+          [
+            'Should get dropped',
+            'word %word',
+            [
+              {
+                name: 'p',
+                children: [
+                  { name: 'pPr' },
+                  { name: 'r' },
+                  {
+                    name: 'r',
+                    inner_text: 'word ',
+                  },
+                  {
+                    name: 'r',
+                    inner_text: 'word',
+                  },
+                ]
+              }
+            ]
+          ],
+        ].each do |test_attrs|
+          desc, test_string, expect = *test_attrs
+          it desc do
+            doc = Document.new(test_string, :input => 'KramdownRepositext')
+            xml_nodes_match_attrs(
+              extract_block_els_in_docx(doc.to_docx_object),
+              expect
+            ).must_be(:empty?)
+          end
+        end
+
+      end
+
       describe '#convert_header' do
 
         [
@@ -170,6 +287,49 @@ module Kramdown
           end
         end
 
+        it "Raises on header level 4" do
+          doc = Document.new("#### header level 4", :input => 'KramdownRepositext')
+          proc{
+            doc.to_docx_object
+          }.must_raise Docx::InvalidElementException
+        end
+
+      end
+
+      describe '#convert_hr' do
+
+        [
+          [
+            'Regular hr',
+            "* * *",
+            [
+              {
+                name: 'p',
+                children: [
+                  {
+                    name: 'pPr',
+                    children: [
+                      {
+                        name: 'pStyle',
+                        val: DocxObject.paragraph_style_mappings['hr'][:id]
+                      },
+                    ]
+                  },
+                ]
+              }
+            ]
+          ],
+        ].each do |test_attrs|
+          desc, test_string, expect = *test_attrs
+          it desc do
+            doc = Document.new(test_string, :input => 'KramdownRepositext')
+            xml_nodes_match_attrs(
+              extract_block_els_in_docx(doc.to_docx_object),
+              expect
+            ).must_be(:empty?)
+          end
+        end
+
       end
 
       describe '#convert_p' do
@@ -217,6 +377,129 @@ module Kramdown
                   {
                     name: 'r',
                     inner_text: 'paragraph text',
+                  },
+                ]
+              }
+            ]
+          ],
+        ].each do |test_attrs|
+          desc, test_string, expect = *test_attrs
+          it desc do
+            doc = Document.new(test_string, :input => 'KramdownRepositext')
+            xml_nodes_match_attrs(
+              extract_block_els_in_docx(doc.to_docx_object),
+              expect
+            ).must_be(:empty?)
+          end
+        end
+
+        it "Raises on invalid para class" do
+          doc = Document.new("word\n{: .invalid_class}", :input => 'KramdownRepositext')
+          proc{
+            doc.to_docx_object
+          }.must_raise Docx::InvalidElementException
+        end
+
+      end
+
+      describe '#convert_record_mark' do
+
+        [
+          [
+            'Record marks are dropped',
+            "^^^{: .rid}\n\nword\n\n",
+            [
+              {
+                name: 'p',
+                children: [
+                  { name: 'pPr' },
+                  { name: 'r' },
+                  {
+                    name: 'r',
+                    inner_text: 'word',
+                  },
+                ]
+              }
+            ]
+          ],
+        ].each do |test_attrs|
+          desc, test_string, expect = *test_attrs
+          it desc do
+            doc = Document.new(test_string, :input => 'KramdownRepositext')
+            xml_nodes_match_attrs(
+              extract_block_els_in_docx(doc.to_docx_object),
+              expect
+            ).must_be(:empty?)
+          end
+        end
+
+        it "Raises on invalid para class" do
+          doc = Document.new("word\n{: .invalid_class}", :input => 'KramdownRepositext')
+          proc{
+            doc.to_docx_object
+          }.must_raise Docx::InvalidElementException
+        end
+
+      end
+
+      describe '#convert_strong' do
+
+        [
+          [
+            'Without IAL',
+            '**strong**',
+            [
+              {
+                name: 'p',
+                children: [
+                  { name: 'pPr' },
+                  { name: 'r' },
+                  {
+                    name: 'r',
+                    children: [
+                      {
+                        name: 'rPr',
+                        children: [{ name: 'b', val: '1' }]
+                      }
+                    ],
+                    inner_text: 'strong',
+                  },
+                ]
+              }
+            ]
+          ],
+        ].each do |test_attrs|
+          desc, test_string, expect = *test_attrs
+          it desc do
+            doc = Document.new(test_string, :input => 'KramdownRepositext')
+            xml_nodes_match_attrs(
+              extract_block_els_in_docx(doc.to_docx_object),
+              expect
+            ).must_be(:empty?)
+          end
+        end
+
+      end
+
+      describe '#convert_subtitle_mark' do
+
+        [
+          [
+            'Should get dropped',
+            'word @word',
+            [
+              {
+                name: 'p',
+                children: [
+                  { name: 'pPr' },
+                  { name: 'r' },
+                  {
+                    name: 'r',
+                    inner_text: 'word ',
+                  },
+                  {
+                    name: 'r',
+                    inner_text: 'word',
                   },
                 ]
               }
