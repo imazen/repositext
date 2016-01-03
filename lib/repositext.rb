@@ -54,6 +54,7 @@ end
 
 require 'patches/array'
 require 'patches/caracal'
+require 'patches/caracal/run_attrs'
 require 'patches/nokogiri_xml_node'
 require 'patches/string'
 require 'recursive_data_hash'
