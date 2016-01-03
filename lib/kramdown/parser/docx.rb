@@ -27,7 +27,6 @@ module Kramdown
       include Kramdown::DocxImportPostProcessor
       include Kramdown::ImportWhitespaceSanitizer
       include Kramdown::NestedEmsProcessor
-      include Kramdown::TmpEmClassProcessor
       include Kramdown::TreeCleaner
       include Kramdown::WhitespaceOutPusher
 
@@ -52,9 +51,9 @@ module Kramdown
           if tr_style
             @bold = tr_style.at_xpath('./w:b')
             @italic = tr_style.at_xpath('./w:i')
-            @smallcaps = tr_style.at_xpath('./w:smallCaps')
-            @subscript = tr_style.at_xpath("./w:vertAlign[@val='subscript']")
-            @superscript = tr_style.at_xpath("./w:vertAlign[@val='superscript']")
+            @smcaps = tr_style.at_xpath('./w:smallCaps')
+            @subscript = tr_style.at_xpath("./w:vertAlign[@w:val='subscript']")
+            @superscript = tr_style.at_xpath("./w:vertAlign[@w:val='superscript']")
             @underline = tr_style.at_xpath('./w:u')
           end
         end
@@ -62,7 +61,7 @@ module Kramdown
         # Returns an array with symbols of all applied attributes, sorted
         # alphabetically
         def applied_attrs
-          SUPPORTED_TEXT_RUN_FORMAT_ATTRS.find_all { |e|
+          @applied_attrs ||= SUPPORTED_TEXT_RUN_FORMAT_ATTRS.find_all { |e|
             self.send(e)
           }
         end
@@ -197,8 +196,6 @@ module Kramdown
         # You have two options:
         # 1. call super if you override this method
         # 2. copy the methods below into your own method if you need different sequence
-        recursively_process_temp_em_class!(kramdown_tree, 'tmpNoBold')
-        recursively_process_temp_em_class!(kramdown_tree, 'tmpNoItalics')
         recursively_merge_adjacent_elements!(kramdown_tree)
         recursively_clean_up_nested_ems!(kramdown_tree) # has to be called after process_temp_em_class
         recursively_push_out_whitespace!(kramdown_tree)
@@ -276,6 +273,8 @@ module Kramdown
           @ke_context.with_text_container_stack(para_ke) do
             xn.children.each { |xnc| process_xml_node(xnc) }
           end
+          # Hook to add specialized behavior in subclasses
+          process_node_p_additions(xn, para_ke)
           @xn_context.process_children = false
         else
           raise(InvalidElementException, "Unhandled p_style_id #{ p_style_id.inspect }")
@@ -458,6 +457,13 @@ module Kramdown
       # Delegate instance method to class method
       def paragraph_style_mappings
         self.class.paragraph_style_mappings
+      end
+
+      # Hook for specialized behavior in sub classes.
+      # @param xn [Nokogiri::XmlNode] the p XML node
+      # @param ke [Kramdown::Element] the p kramdown element
+      def process_node_p_additions(xn, ke)
+        # Nothing to do. Override this method in specialized subclasses.
       end
 
     end

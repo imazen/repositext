@@ -107,6 +107,223 @@ module Kramdown
               }
             ]
           ],
+          [
+            'With class .bold',
+            '*word1*{: .bold} word2',
+            [
+              {
+                name: 'p',
+                children: [
+                  { name: 'pPr' },
+                  { name: 'r' },
+                  {
+                    name: 'r',
+                    children: [
+                      {
+                        name: 'rPr',
+                        children: [{ name: 'b', val: '1' }]
+                      },
+                    ],
+                    inner_text: 'word1',
+                  },
+                  {
+                    name: 'r',
+                    inner_text: ' word2',
+                  },
+                ]
+              }
+            ]
+          ],
+          [
+            'With class .italic',
+            '*word1*{: .italic} word2',
+            [
+              {
+                name: 'p',
+                children: [
+                  { name: 'pPr' },
+                  { name: 'r' },
+                  {
+                    name: 'r',
+                    children: [
+                      {
+                        name: 'rPr',
+                        children: [{ name: 'i', val: '1' }]
+                      },
+                    ],
+                    inner_text: 'word1',
+                  },
+                  {
+                    name: 'r',
+                    inner_text: ' word2',
+                  },
+                ]
+              }
+            ]
+          ],
+          [
+            'With class .smcaps',
+            '*word1*{: .smcaps} word2',
+            [
+              {
+                name: 'p',
+                children: [
+                  { name: 'pPr' },
+                  { name: 'r' },
+                  {
+                    name: 'r',
+                    children: [
+                      {
+                        name: 'rPr',
+                        children: [{ name: 'smallCaps', val: 'true' }]
+                      },
+                    ],
+                    inner_text: 'word1',
+                  },
+                  {
+                    name: 'r',
+                    inner_text: ' word2',
+                  },
+                ]
+              }
+            ]
+          ],
+          [
+            'With class .subscript',
+            '*word1*{: .subscript} word2',
+            [
+              {
+                name: 'p',
+                children: [
+                  { name: 'pPr' },
+                  { name: 'r' },
+                  {
+                    name: 'r',
+                    children: [
+                      {
+                        name: 'rPr',
+                        children: [{ name: 'vertAlign', val: 'subscript' }]
+                      },
+                    ],
+                    inner_text: 'word1',
+                  },
+                  {
+                    name: 'r',
+                    inner_text: ' word2',
+                  },
+                ]
+              }
+            ]
+          ],
+          [
+            'With class .superscript',
+            '*word1*{: .superscript} word2',
+            [
+              {
+                name: 'p',
+                children: [
+                  { name: 'pPr' },
+                  { name: 'r' },
+                  {
+                    name: 'r',
+                    children: [
+                      {
+                        name: 'rPr',
+                        children: [{ name: 'vertAlign', val: 'superscript' }]
+                      },
+                    ],
+                    inner_text: 'word1',
+                  },
+                  {
+                    name: 'r',
+                    inner_text: ' word2',
+                  },
+                ]
+              }
+            ]
+          ],
+          [
+            'With class .underline',
+            '*word1*{: .underline} word2',
+            [
+              {
+                name: 'p',
+                children: [
+                  { name: 'pPr' },
+                  { name: 'r' },
+                  {
+                    name: 'r',
+                    children: [
+                      {
+                        name: 'rPr',
+                        children: [{ name: 'u', val: 'single' }]
+                      },
+                    ],
+                    inner_text: 'word1',
+                  },
+                  {
+                    name: 'r',
+                    inner_text: ' word2',
+                  },
+                ]
+              }
+            ]
+          ],
+          [
+            'With multiple classes',
+            '*word1*{: .bold .italic .underline} word2',
+            [
+              {
+                name: 'p',
+                children: [
+                  { name: 'pPr' },
+                  { name: 'r' },
+                  {
+                    name: 'r',
+                    children: [
+                      {
+                        name: 'rPr',
+                        children: [
+                          { name: 'b', val: '1' },
+                          { name: 'i', val: '1' },
+                          { name: 'u', val: 'single' },
+                        ],
+                      },
+                    ],
+                    inner_text: 'word1',
+                  },
+                  {
+                    name: 'r',
+                    inner_text: ' word2',
+                  },
+                ]
+              }
+            ]
+          ],
+          [
+            'With arbitrary class',
+            '*word1*{: .arbitrary} word2',
+            [
+              {
+                name: 'p',
+                children: [
+                  { name: 'pPr' },
+                  { name: 'r' },
+                  {
+                    name: 'r',
+                    children: [
+                      { name: 'rPr' },
+                    ],
+                    inner_text: 'word1',
+                  },
+                  {
+                    name: 'r',
+                    inner_text: ' word2',
+                  },
+                ]
+              }
+            ]
+          ],
         ].each do |test_attrs|
           desc, test_string, expect = *test_attrs
           it desc do

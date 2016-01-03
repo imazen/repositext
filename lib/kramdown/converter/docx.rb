@@ -53,7 +53,7 @@ module Kramdown
             top: 60,
             bottom: 0,
           },
-          'hr'       => {
+          'hr' => {
             name: 'Horizontal rule',
             id: 'horizontalRule',
             size: 12,
@@ -71,7 +71,7 @@ module Kramdown
             top: 12,
             bottom: 0,
           },
-          'p.test'   => {
+          'p.test' => {
             name: 'Paragraph Test',
             id: 'paraTest',
             size: 12,
@@ -141,7 +141,7 @@ module Kramdown
       def convert_em(el)
         @current_run_text_contents = ''
         inner(el)
-        em_attrs = { italic: true }
+        em_attrs = compute_text_run_attrs_from_em(el.get_classes)
         @current_block_el.text @current_run_text_contents, em_attrs
         @current_run_text_contents = nil
       end
@@ -274,6 +274,21 @@ module Kramdown
           # We're inside a span, append contents
           @current_run_text_contents << text
         end
+      end
+
+      # Computes a hash with text run attributes based on em_classes
+      # @param em_classes [Array<String>]
+      def compute_text_run_attrs_from_em(em_classes)
+        # Handle em with no classes: results in plain italics
+        return { italic: true } if em_classes.empty?
+        r = {}
+        r[:bold] = true  if em_classes.include?('bold')
+        r[:italic] = true  if em_classes.include?('italic')
+        r[:small_caps] = true  if em_classes.include?('smcaps')
+        r[:underline] = true  if em_classes.include?('underline')
+        r[:vert_align] = 'subscript'  if em_classes.include?('subscript')
+        r[:vert_align] = 'superscript'  if em_classes.include?('superscript')
+        r
       end
 
     end
