@@ -125,6 +125,8 @@ file_extension :xml_extension, '.xml'
 
 # Provide a name and a Parser's class name as string.
 
+kramdown_parser :docx, 'Kramdown::Parser::Docx'
+kramdown_parser :docx_validation, 'Kramdown::Parser::DocxValidation'
 kramdown_parser :folio_xml, 'Kramdown::Parser::Folio'
 kramdown_parser :idml, 'Kramdown::Parser::Idml'
 kramdown_parser :idml_validation, 'Kramdown::Parser::IdmlValidation'
@@ -137,6 +139,7 @@ kramdown_parser :kramdown_validation, 'Kramdown::Parser::KramdownValidation'
 # Provide a name and a method name to be used for conversion.
 
 kramdown_converter_method :to_at, :to_kramdown
+kramdown_converter_method :to_docx, :to_docx
 kramdown_converter_method :to_html_doc, :to_html_doc
 kramdown_converter_method :to_icml, :to_icml
 kramdown_converter_method :to_plain_text, :to_plain_text
