@@ -44,8 +44,10 @@ class Repositext
                 %( - :root - {:encoding=>#<Encoding:UTF-8>, :location=>1, :abbrev_defs=>{}}
                      - :header - {:level=>1, :raw_text=>\"the title\", :location=>1}
                        - :text - {:location=>1} - \"the title\"
-                     - :p - {:location=>2}
-                       - :text - {:location=>2} - \"And a paragraph\"
+                     - :blank - {:location=>3} - \"\\n\"
+                     - :p - {:location=>3}
+                       - :text - {:location=>3} - \"And a paragraph\"
+                     - :blank - {:location=>5} - \"\\n\"
                   ).gsub(/\n                  /, "\n")
               )
             end

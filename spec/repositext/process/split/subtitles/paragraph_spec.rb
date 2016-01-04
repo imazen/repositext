@@ -55,7 +55,7 @@ class Repositext
           describe '#encode_contents_for_sentence_splitting' do
             [
               [%(word), 'word'],
-              [%(word!, word), 'wordrtxt_excl_comm word'],
+              [%(word!, word), 'wordrtxtExclComm word'],
             ].each do |(txt, xpect)|
               it "handles #{ txt.inspect }" do
                 paragraph.send(
@@ -68,7 +68,7 @@ class Repositext
           describe '#decode_contents_after_sentence_splitting' do
             [
               ['word', %(word)],
-              ['wordrtxt_excl_comm word', %(word!, word)],
+              ['wordrtxtExclComm word', %(word!, word)],
             ].each do |(txt, xpect)|
               it "handles #{ txt.inspect }" do
                 paragraph.send(

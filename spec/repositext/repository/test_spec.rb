@@ -14,12 +14,15 @@ class Repositext
       let(:default_image_names) { TESTED_REPO_NAMES }
       let(:default_repo_name) { 'static' }
 
+      before do
+        Test.delete! # delete all repos
+      end
+
       describe '.create!' do
 
         TESTED_REPO_NAMES.each do |repo_name|
 
           it "creates a single repo (#{ repo_name.inspect }) and returns its path" do
-            Test.delete! # delete all repos
             r = Test.create!(repo_name)
             r.must_equal(
               [File.join(Test.repos_folder, repo_name)]
@@ -48,6 +51,7 @@ class Repositext
         end
 
         it 'deletes all existing repos' do
+          Test.create!(default_repo_name)
           Test.delete!
           Test.all_repo_names.must_equal([])
         end
