@@ -205,6 +205,8 @@ module Kramdown
           # para doesn't have class
           nil
         end
+        # Hook to add specialized behavior in sub classes
+        convert_p_additions(el)
         @current_document.p do |p|
           @current_block_el = p
           p.style(para_style_id)  if para_style_id
@@ -289,6 +291,11 @@ module Kramdown
         r[:vert_align] = 'subscript'  if em_classes.include?('subscript')
         r[:vert_align] = 'superscript'  if em_classes.include?('superscript')
         r
+      end
+
+      def convert_p_additions(ke)
+        # Hook to add specialized behavior to convert_p.
+        # Override in subclasses.
       end
 
     end
