@@ -2,4 +2,5 @@
 .bundle/*
 .yardoc
 doc/scratchpad.md
+doc/yard
 spec/git_test/repos/*
