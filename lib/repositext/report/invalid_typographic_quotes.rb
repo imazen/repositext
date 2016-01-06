@@ -54,8 +54,8 @@ class Repositext
               excerpt = excerpt.truncate_in_the_middle(120)
             end
             excerpt = excerpt.inspect
-                             .gsub(/^"/, '') # Remove leading double quotes (from inspect)
-                             .gsub(/"$/, '') # Remove trailing double quotes (from inspect)
+            excerpt.gsub!(/^"/, '') # Remove leading double quotes (from inspect)
+            excerpt.gsub!(/"$/, '') # Remove trailing double quotes (from inspect)
             @files_hash[filename] ||= []
             @files_hash[filename] << {
               line: str_sc.current_line_number,

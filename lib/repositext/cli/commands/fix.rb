@@ -4,7 +4,9 @@ class Repositext
 
     private
 
-      # Adds initial persistent subtitle ids and record ids to subtitle_marker.csv files
+      # Adds initial persistent subtitle ids and record ids to
+      # subtitle_marker.csv files.
+      # This should only be run once on the primary repo.
       def fix_add_initial_persistent_subtitle_ids(options)
         spids_inventory_file = File.open(
           File.join(config.base_dir(:data_dir), 'subtitle_ids.txt'),

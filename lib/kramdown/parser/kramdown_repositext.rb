@@ -23,8 +23,8 @@ module Kramdown
         parse_blocks(@root, adapt_source(source))
         update_tree(@root)
         # We comment out the following behavior from Kramdown::Parser::Kramdown
-        # replace_abbreviations(@root)
-        # @footnotes.each {|name,data| update_tree(data[:marker].last.value) if data[:marker]}
+        #     replace_abbreviations(@root)
+        #     @footnotes.each {|name,data| update_tree(data[:marker].last.value) if data[:marker]}
       end
 
       RECORD_MARK = /^\^\^\^\s*?(#{IAL_SPAN_START})?\s*?\n/

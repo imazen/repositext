@@ -20,8 +20,9 @@ class Repositext
         # preserve line number consistency. Suspension::TokenRemover would
         # remove the block's entire line, introducing errors in line numbers for
         # subsequent lines.
-        content_without_blocks = content.gsub(/^\{:[^\n]+(?=\n)/, '') # block_ials
-                                        .gsub(/^\^\^\^[^\n]+(?=\n)/, '') # record_marks
+        # Remove block_ials and record_marks
+        content_without_blocks = content.gsub(/^\{:[^\n]+(?=\n)/, '')
+                                        .gsub(/^\^\^\^[^\n]+(?=\n)/, '')
         # Remove all tokens but :subtitle_mark from content_at
         content_with_subtitle_marks_only = Suspension::TokenRemover.new(
           content_without_blocks,

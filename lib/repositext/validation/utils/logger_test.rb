@@ -11,7 +11,7 @@ class Repositext
       # @param _file_selector [String] part of file_spec
       # @param _file_extension [String] part of file_spec
       # @param _log_level [String] one of 'debug', 'info', 'warning', 'error'
-      # @param validation [Repositext::Validation]
+      # @param _validation [Repositext::Validation]
       def initialize(_input_base_dir, _file_selector, _file_extension, _log_level, _validation)
       end
 

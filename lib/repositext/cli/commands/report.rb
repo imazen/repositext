@@ -1037,8 +1037,8 @@ class Repositext
           options
         ) do |contents, filename|
           # iterate over all straight quotes
-          # Don't include straight quotes inside IALs
-          contents.gsub(/\{[^\{\}]*\}/, ' ') # remove all ials
+          # Don't include straight quotes inside IALs (remove all ials)
+          contents.gsub(/\{[^\{\}]*\}/, ' ')
                   .scan(/(.{0,20})((?<!\=)#{ quote_char }(?!\}))(.{0,20})/m) { |(pre, quote, post)|
             # add to array
             instances << { :pre => pre, :post => post, :filename => filename }
@@ -1049,14 +1049,15 @@ class Repositext
 
       def compute_sequence_key(pre, quote_char, post)
         key = [pre[-1], quote_char, post[0]].compact.join
-        key = key.gsub(/^[a-zA-Z]/, 'a') # Replace all leading chars with 'a'
-                 .gsub(/[a-zA-Z]$/, 'z') # Replace all trailing chars with 'z'
-                 .downcase
-                 .inspect # Make non-printable chars visible
-                 .gsub(/^\"/, '') # Remove leading double quotes (from inspect)
-                 .gsub(/\"$/, '') # Remove trailing double quotes (from inspect)
-                 .gsub(/\\"/, '"') # Unescape double quotes
-                 .ljust(8, ' ') # pad on the right with space for tabular display
+        key.gsub!(/^[a-zA-Z]/, 'a') # Replace all leading chars with 'a'
+        key.gsub!(/[a-zA-Z]$/, 'z') # Replace all trailing chars with 'z'
+        key.downcase!
+        # Make non-printable chars visible
+        key = key.inspect
+        key.gsub!(/^\"/, '') # Remove leading double quotes (from inspect)
+        key.gsub!(/\"$/, '') # Remove trailing double quotes (from inspect)
+        key.gsub!(/\\"/, '"') # Unescape double quotes
+        key.ljust(8, ' ') # pad on the right with space for tabular display
       end
 
       # Returns a hash with the titles from ERP with the date code as keys

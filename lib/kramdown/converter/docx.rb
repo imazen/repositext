@@ -117,7 +117,6 @@ module Kramdown
 
       # Writes a DOCX file to disk (using @options[:output_file_name]).
       # @param el [Kramdown::Element] the kramdown root element
-      # @param root [Kramdown::Element]
       # @return [? String with filename or outcome?]
       def convert_root(el)
         Caracal::Document.save(options[:output_file]) do |docx|

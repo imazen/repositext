@@ -174,7 +174,7 @@ module Kramdown
 
     # Returns plain_text version of self and all descendants
     # @param collector [String, optional] for recursive calls
-    # @param return [String]
+    # @return [String]
     def to_plain_text(collector = '')
       before, after = Kramdown::Converter::PlainText.convert_el(self)
       collector << before  if before

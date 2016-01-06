@@ -56,7 +56,7 @@ class Repositext
   private
 
     # @param attr_name [Symbol] one of :code2, :code3, :name
-    # @param attr_value [Symbol, String] value to find language by
+    # @param attr_val [Symbol, String] value to find language by
     def self.find_by(attr_name, attr_val)
       LANG_CODE_MAPPINGS.detect { |e| e[attr_name] == attr_val }
     end

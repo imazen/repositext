@@ -246,8 +246,8 @@ class Repositext
             if match
               position_of_previous_record_mark = match.rindex('^^^', -4) || 0
               relevant_match_fragment = match[position_of_previous_record_mark..-1].inspect
-                                            .gsub(/^\"/, '') # Remove leading double quotes (from inspect)
-                                            .gsub(/\"$/, '') # Remove trailing double quotes (from inspect)
+              relevant_match_fragment.gsub!(/^\"/, '') # Remove leading double quotes (from inspect)
+              relevant_match_fragment.gsub!(/\"$/, '') # Remove trailing double quotes (from inspect)
               errors << Reportable.error(
                 [
                   @file_to_validate.path,

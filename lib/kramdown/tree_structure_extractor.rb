@@ -85,7 +85,7 @@ module Kramdown
       paragraph_numbers
     end
 
-    # @param para_el [Kramdown::Element] the paragraph element with an em.pn child
+    # @param tree [Kramdown::Element] the paragraph element with an em.pn child
     def pn_extractor(tree)
       em = tree.children.detect { |e| :em == e.type && e.has_class?('pn') }
       return '- no pn'  if em.nil?

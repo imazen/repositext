@@ -263,7 +263,7 @@ class Repositext
 
           # Merges any adjacent btps that lack confidence into one.
           # @param btps [Array<BilingualTextPair>]
-          # @retun [Array<BilingualTextPair>]
+          # @return [Array<BilingualTextPair>]
           def merge_lacking_confidence_adjacent_pairs(btps)
             btps_to_merge = []
             ret_val = []

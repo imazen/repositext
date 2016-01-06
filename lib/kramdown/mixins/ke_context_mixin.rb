@@ -59,8 +59,7 @@ module Kramdown
     end
 
     # Manages the text_container_stack around processing of an XML node
-    # @param new_text_container [Kramdown::ElementRt]
-    # @param parent_xn_context [OpenStruct]
+    # @param new_text_container_ke [Kramdown::ElementRt]
     def with_text_container_stack(new_text_container_ke)
       @cx['text_container_stack'].push(new_text_container_ke)
       yield

@@ -45,7 +45,7 @@ module Kramdown
 
         attr_reader *SUPPORTED_TEXT_RUN_FORMAT_ATTRS
 
-        # @param xn [Nokogiri::XML::Node] the text_run's XML node
+        # @param text_run [Nokogiri::XML::Node] the text_run's XML node
         def initialize(text_run)
           tr_style = text_run.at_xpath('./w:rPr')
           if tr_style
@@ -109,7 +109,7 @@ module Kramdown
       end
 
       # @param source [String] contents of word/document.xml as string
-      # @param kramdown_options [Hash, optional] these will be passed to Kramdown::Parser
+      # @param options [Hash, optional] these will be passed to Kramdown::Parser
       def initialize(source, options)
         @source = source
         @options = {

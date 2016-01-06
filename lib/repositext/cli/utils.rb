@@ -97,14 +97,7 @@ class Repositext
       end
 
       # Reads files
-      # @param input_base_dir [String] the base_dir path
-      # @param input_file_selector [String] the input file selector
-      # @param input_file_extension [String] the input file extension
-      # @param[Proc, nil] file_name_2_proc A proc that computes the filename of
-      #     a second file. It receives the name of the first file as a single
-      #     argument and is expected to return the full path to the second file.
-      #     Pass nil if no second file is desired.
-      # @param: See #process_files_helper below for param description
+      # @param: See #read_files_helper below for param description
       def self.read_files(file_pattern, file_filter, file_name_2_proc, description, options, &block)
         read_files_helper(
           file_pattern, file_filter, file_name_2_proc, description, options, &block

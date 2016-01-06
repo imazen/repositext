@@ -8,8 +8,8 @@ class Repositext
 
           attr_accessor :contents, :language
 
-          # @param sequence [Sequence]
           # @param contents [String]
+          # @param language [Language]
           def initialize(contents, language)
             raise ArgumentError.new("Invalid contents: #{ contents.inspect }")  unless contents.is_a?(String)
             raise ArgumentError.new("Invalid language: #{ language.inspect }")  unless language.is_a?(Language)
@@ -25,7 +25,7 @@ class Repositext
 
           # Splits paragraph into sentences.
           # @param contents [String]
-          # @param lang [String]
+          # @param language [Language]
           # @return [Array<String>] Array with one string per sentence.
           def split_into_sentences(contents, language)
             encoded_contents = encode_contents_for_sentence_splitting(contents, language)

@@ -40,35 +40,35 @@ class Repositext
           doc.root = root
 
           input_html = input_html.gsub('&nbsp;', ' ') # remove all non-breaking spaces
-                                 .gsub('H<span class="smallcaps">EERE</span>', 'Heere')
-                                 .gsub('H<span class="smallcaps">EEREN</span>', 'Heeren')
-                                 .gsub('H<span class="smallcaps">ERE</span>', 'Here')
-                                 .gsub('H<span class="smallcaps">EREN</span>', 'Heren')
-                                 .gsub('&#160;', ' ') # replace non-breaking spaces with regular spaces
-                                 .gsub('&#173;', '') # remove discretionary hyphens
+          input_html.gsub!('H<span class="smallcaps">EERE</span>', 'Heere')
+          input_html.gsub!('H<span class="smallcaps">EEREN</span>', 'Heeren')
+          input_html.gsub!('H<span class="smallcaps">ERE</span>', 'Here')
+          input_html.gsub!('H<span class="smallcaps">EREN</span>', 'Heren')
+          input_html.gsub!('&#160;', ' ') # replace non-breaking spaces with regular spaces
+          input_html.gsub!('&#173;', '') # remove discretionary hyphens
 
 
           html_doc = Nokogiri::HTML(input_html) { |cfg| cfg.noent }
           input_html_based_plain_text = html_doc.at_css('body').text
-                                                .gsub(/\r/, "\n") # normalize linebreaks
-                                                .gsub(/((?:^|\s)\d+[a-z]?)\.(?!\.)/, '\1') # remove periods from question numbers (and any number followed by period)
-                                                .gsub('*******', '') # remove simulated hr
-                                                .gsub(/\s/, ' ') # replace all whitespace with space
-                                                .gsub(/\s+/, ' ') # collapse runs of spaces
-                                                .gsub(/\s+\]/, ']') # remove space before closing brackets
-                                                .gsub('%', ' procent') # spell out percent instead of using '%' to avoid conflict with gap_marks
-                                                .gsub('‑', '')
-                                                .gsub('…', '...') # unfix elipses
-                                                .strip
+          input_html_based_plain_text.gsub!(/\r/, "\n") # normalize linebreaks
+          input_html_based_plain_text.gsub!(/((?:^|\s)\d+[a-z]?)\.(?!\.)/, '\1') # remove periods from question numbers (and any number followed by period)
+          input_html_based_plain_text.gsub!('*******', '') # remove simulated hr
+          input_html_based_plain_text.gsub!(/\s/, ' ') # replace all whitespace with space
+          input_html_based_plain_text.gsub!(/\s+/, ' ') # collapse runs of spaces
+          input_html_based_plain_text.gsub!(/\s+\]/, ']') # remove space before closing brackets
+          input_html_based_plain_text.gsub!('%', ' procent') # spell out percent instead of using '%' to avoid conflict with gap_marks
+          input_html_based_plain_text.gsub!('‑', '')
+          input_html_based_plain_text.gsub!('…', '...') # unfix elipses
+          input_html_based_plain_text.strip!
 
           at_based_plain_text = doc.send(@options['plain_text_converter_method_name'])
-                                   .gsub(/((?:^|\s)\d+[a-z]?)\.(?!\.)/, '\1') # remove periods from question numbers (and any number followed by period)
-                                   .gsub(/\s/, ' ') # replace all whitespace with space
-                                   .gsub(/\s+/, ' ') # collapse runs of spaces
-                                   .gsub('…', '...') # unfix elipses
-                                   .gsub(/[“”]/, '"') # unfix typographic double quotes
-                                   .gsub(/[’‘]/, "'") # unfix single typographic quotes
-                                   .strip
+          at_based_plain_text.gsub!(/((?:^|\s)\d+[a-z]?)\.(?!\.)/, '\1') # remove periods from question numbers (and any number followed by period)
+          at_based_plain_text.gsub!(/\s/, ' ') # replace all whitespace with space
+          at_based_plain_text.gsub!(/\s+/, ' ') # collapse runs of spaces
+          at_based_plain_text.gsub!('…', '...') # unfix elipses
+          at_based_plain_text.gsub!(/[“”]/, '"') # unfix typographic double quotes
+          at_based_plain_text.gsub!(/[’‘]/, "'") # unfix single typographic quotes
+          at_based_plain_text.strip!
 
           error_message = "\n\nText mismatch between HTML source and AT from input_html in #{ @file_to_validate.first.path }."
           diffs = Suspension::StringComparer.compare(input_html_based_plain_text, at_based_plain_text)

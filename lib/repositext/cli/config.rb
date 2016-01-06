@@ -25,7 +25,7 @@ class Repositext
       # Use this method in DSL methods to add a base directory to config
       # @param name [String, Symbol] the name of the base dir under which it
       #     will be referenced.
-      # @param pattern_string [String] A string with an absolute directory path
+      # @param base_dir_string [String] A string with an absolute directory path
       def add_base_dir(name, base_dir_string)
         if name.to_s !~ BASE_DIR_NAME_REGEX
           raise ArgumentError.new("A base dir name must match this regex: #{ BASE_DIR_NAME_REGEX.inspect }")

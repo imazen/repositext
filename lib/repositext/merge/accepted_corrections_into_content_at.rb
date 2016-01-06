@@ -1,5 +1,64 @@
 class Repositext
   class Merge
+
+    # This class merges spot corrections from a spot sheet into content AT.
+    # It does so in two steps:
+    #
+    # 1. Repositext applies all corrections that can be done automatically
+    #    (based on exact text matches).
+    # 2. A human editor applies manual corrections where no or multiple extact
+    #    matches are found. The script opens each file in an editor to speed up
+    #    the manual task.
+    #
+    # We have to do it in two steps so that when we open the file in the editor
+    # for manual changes, all auto corrections are already applied to the file
+    # and they don't overwrite any manual corrections prior to when the script
+    # stores auto corrections to disk.
+    #
+    # ### Process
+    #
+    # The calling method loads the spots file and the existing content AT file and
+    # passes both to the `.merge_auto` method. This method merges all corrections that
+    # can be applied automatically into content AT and returns the modified content AT.
+    #
+    # The calling method then passes the original corrections and the modified
+    # content AT to `.merge_manually`. This method finds any manual corrections and
+    # opens each affected location in the user's configured text editor. The human
+    # editor can apply the correction and save it manually.
+    #
+    # Eeach of the two stages calls `.merge_corrections_into_content_at` with the
+    # desired strategy (:auto or :manual). This method keeps track of the corrected
+    # content AT. Then it iterates over all corrections and takes suitable action. It
+    # returns the corrected content AT. It calls `.compute_merge_action` to
+    # determine what needs to be done:
+    #
+    # `.compute_merge_action` is the rules engine that decides what to do with
+    # each correction. It computes three counts of matches to decide on a
+    # strategy:
+    #
+    # * `exact_before_matches_count`: How many times does `correction[:before]`
+    #   match exactly with current content_at's relevant paragraphs.
+    # * `.exact_after_matches_count`: How many times does `correction[:after]`
+    #   match exactly with current content_at's relevant paragraphs.
+    # * `.fuzzy_after_matches_count`: How many times does `correction[:after]`
+    #   match with content at's relevant paragraphs after all gap_marks and
+    #   subtitle_marks have been removed from both.
+    #
+    # For each correction it returns the most appropriate merge action:
+    #
+    # * `:apply_automatically` - The correction can be applied automatically to
+    #   content AT if all of the following conditions are met:
+    #     * exact_before_matches_count = 1
+    #     * exact_after_matches_count = 0
+    #     * fuzzy_after_matches_count = 0
+    # * `:report_already_applied` - The correction will be reported as already
+    #   having been applied if all of the following conditions are met:
+    #     * exact_before_matches_count = 0
+    #     * exact_after_matches_count = 1 (Exact) or fuzzy_after_matches_count = 1 (~Fuzzy)
+    # * `:apply_manually` - In the `:manual` strategy, this will open the text
+    #   editor in the correct location if conditions for `:report_already_applied`
+    #   are not being met.
+    #
     class AcceptedCorrectionsIntoContentAt
 
       class InvalidAcceptedCorrectionsFile < StandardError; end
@@ -8,10 +67,10 @@ class Repositext
 
       # Auto-merges accepted_corrections into content_at in unambiguous corrections
       # that can be applied automatically.
-      # @param[String] accepted_corrections
-      # @param[String] content_at to merge corrections into
-      # @param[String] content_at_filename
-      # @return[Outcome] the merged document is returned as #result if successful.
+      # @param accepted_corrections [String]
+      # @param content_at [String] to merge corrections into
+      # @param content_at_filename [String]
+      # @return [Outcome] the merged document is returned as #result if successful.
       def self.merge_auto(accepted_corrections, content_at, content_at_filename)
         sanitized_corrections = sanitize_line_breaks(accepted_corrections)
         validate_accepted_corrections_file(sanitized_corrections)
@@ -22,10 +81,10 @@ class Repositext
 
       # Manually merges accepted_corrections into content_at in corrections that
       # require human review and decision. Opens files in a text editor.
-      # @param[String] accepted_corrections
-      # @param[String] content_at to merge corrections into
-      # @param[String] content_at_filename
-      # @return[Outcome] the merged document is returned as #result if successful.
+      # @param accepted_corrections [String]
+      # @param content_at [String]  to merge corrections into
+      # @param content_at_filename [String]
+      # @return [Outcome] the merged document is returned as #result if successful.
       def self.merge_manually(accepted_corrections, content_at, content_at_filename)
         sanitized_corrections = sanitize_line_breaks(accepted_corrections)
         corrections = extract_corrections(sanitized_corrections)
@@ -42,7 +101,7 @@ class Repositext
 
       # Validates the contents of the accepted_corrections file before it attempts
       # any parsing.
-      # @param[String] accepted_corrections
+      # @param accepted_corrections [String]
       def self.validate_accepted_corrections_file(accepted_corrections)
         # Validate that no invalid characters are in correction file
         # NOTE: straight double quotes are allowed inside kramdown IALs, so we
@@ -78,8 +137,8 @@ class Repositext
         end
       end
 
-      # @param[String] accepted_corrections
-      # @return[Array<Hash>] a hash describing the corrections
+      # @param [String] accepted_corrections
+      # @return [Array<Hash>] a hash describing the corrections
       def self.extract_corrections(accepted_corrections)
         corrections = []
         s = StringScanner.new(accepted_corrections)
@@ -117,7 +176,7 @@ class Repositext
       end
 
       # Validates the extracted corrections
-      # @param[Array<Hash>]
+      # @param [Array<Hash>]
       def self.validate_corrections(corrections)
         # Validate that each correction has the required attrs
         with_missing_attrs = []
@@ -147,11 +206,11 @@ class Repositext
       end
 
       # Merges corrections into content_at
-      # @param[Symbol] strategy one of :auto, :manual
-      # @param[Array<Hash>] corrections
-      # @param[String] content_at
-      # @param[String] content_at_filename
-      # @return[Outcome] where result is corrected_at and messages contains the report_lines
+      # @param [Symbol] strategy one of :auto, :manual
+      # @param [Array<Hash>] corrections
+      # @param [String] content_at
+      # @param [String] content_at_filename
+      # @return [Outcome] where result is corrected_at and messages contains the report_lines
       def self.merge_corrections_into_content_at(strategy, corrections, content_at, content_at_filename)
         report_lines = []
         corrected_at = content_at.dup
@@ -182,10 +241,10 @@ class Repositext
       end
 
       # Looks at various matches and returns an action to take
-      # @param[Symbol] strategy one of :auto, :manual
-      # @param[Hash] correction
-      # @param[String] relevant_paragraphs
-      # @return[Array] with the merge action and an optional specifier
+      # @param [Symbol] strategy one of :auto, :manual
+      # @param [Hash] correction
+      # @param [String] relevant_paragraphs
+      # @return [Array] with the merge action and an optional specifier
       def self.compute_merge_action(strategy, correction, relevant_paragraphs)
         # count the various matches
         exact_before_matches_count = relevant_paragraphs.scan(correction[:before]).length
@@ -230,9 +289,9 @@ class Repositext
       end
 
       # Reports that a correction has already been applied
-      # @param[Hash] correction
-      # @param[String] precision, e.g., 'Exact' or 'Fuzzy'
-      # @param[Array] report_lines collector for report output
+      # @param [Hash] correction
+      # @param [String] precision, e.g., 'Exact' or 'Fuzzy'
+      # @param [Array] report_lines collector for report output
       def self.report_correction_has_already_been_applied(correction, precision, report_lines)
         l = "    ##{ correction[:correction_number] }: It appears that this correction has already been applied. (#{ precision })"
         report_lines << l
@@ -240,9 +299,9 @@ class Repositext
       end
 
       # Returns the number of fuzzy :after matches in txt
-      # @param[Hash] correction
-      # @param[String] txt the text in relevant_paragraphs
-      # @return[Integer]
+      # @param [Hash] correction
+      # @param [String] txt the text in relevant_paragraphs
+      # @return [Integer]
       def self.compute_fuzzy_after_matches_count(correction, txt)
         # Try fuzzy match: Remove gap_marks and subtitle_marks and see if that was applied already
         fuzzy_correction_after = correction[:after].gsub(/[%@]/, '')
@@ -251,11 +310,11 @@ class Repositext
       end
 
       # This method is called when correction cannot be applied automatically.
-      # @param[Hash] correction
-      # @param[String] corrected_at will be updated in place
-      # @param[Array] report_lines collector for report output
-      # @param[String] content_at_filename filename of the content_at file
-      # @param[Symbol] reason one of :no_match_found, or :multiple_matches_found
+      # @param [Hash] correction
+      # @param [String] corrected_at will be updated in place
+      # @param [Array] report_lines collector for report output
+      # @param [String] content_at_filename filename of the content_at file
+      # @param [Symbol] reason one of :no_match_found, or :multiple_matches_found
       def self.manually_edit_correction!(correction, corrected_at, report_lines, content_at_filename, reason)
         log_line, instructions = case reason
         when :no_match_found
@@ -286,10 +345,10 @@ class Repositext
       end
 
       # Automatically applies correction because we have confidence
-      # @param[Hash] correction
-      # @param[String] corrected_at will be updated in place
-      # @param[String] relevant_paragraphs
-      # @param[Array] report_lines collector for report output
+      # @param [Hash] correction
+      # @param [String] corrected_at will be updated in place
+      # @param [String] relevant_paragraphs
+      # @param [Array] report_lines collector for report output
       def self.replace_perfect_match!(correction, corrected_at, relevant_paragraphs, report_lines)
         # First apply correction to relevant paragraphs
         corrected_relevant_paragraphs = relevant_paragraphs.gsub(correction[:before], correction[:after])
@@ -308,9 +367,9 @@ class Repositext
       end
 
       # Given txt and paragraph_number, returns the line at which paragraph_number starts
-      # @param[Integer, String] paragraph_number
-      # @param[String] txt
-      # @return[Integer] the line number (1-based)
+      # @param [Integer, String] paragraph_number
+      # @param [String] txt
+      # @return [Integer] the line number (1-based)
       def self.compute_line_number_from_paragraph_number(paragraph_number, txt)
         regex = /
           .*? # match anything non greedily
@@ -328,8 +387,8 @@ class Repositext
       end
 
       # Dynamically generates a regex that matches pararaph_number
-      # @param[Integer, String] paragraph_number
-      # @param[String] txt the containing text, used to determine the first paragraph number (may not be 1)
+      # @param [Integer, String] paragraph_number
+      # @param [String] txt the containing text, used to determine the first paragraph number (may not be 1)
       def self.dynamic_paragraph_number_regex(paragraph_number, txt)
         if compute_first_para_num(txt) == paragraph_number.to_s
           # First paragraph doesn't have a number, match beginning of document
@@ -343,8 +402,8 @@ class Repositext
 
       # Returns the number of the first paragraph. Normally '1', however there
       # are exceptions.
-      # @param[String] txt
-      # @return[String] the first paragraph number as string
+      # @param [String] txt
+      # @return [String] the first paragraph number as string
       def self.compute_first_para_num(txt)
         fpn = (txt.match(PARA_NUM_REGEX)[1].to_s.to_i - 1).to_s
         fpn = '1'  if '0' == fpn # in case first para has a number
@@ -352,17 +411,17 @@ class Repositext
       end
 
       # Returns the number of the last paragraph.
-      # @param[String] txt
-      # @return[String] the last paragraph number as string
+      # @param [String] txt
+      # @return [String] the last paragraph number as string
       def self.compute_last_para_num(txt)
         # scan returns an array of arrays. We want the first entry of the last array
         txt.scan(PARA_NUM_REGEX).last.first
       end
 
       # Extracts relevant paragraphs from txt, based on paragraph_number
-      # @param[String] txt the complete text to extract relevant paragraphs from
-      # @param[Hash] correction attrs for a single correction
-      # @return[String] the text of the relevant paragraphs
+      # @param [String] txt the complete text to extract relevant paragraphs from
+      # @param [Hash] correction attrs for a single correction
+      # @return [String] the text of the relevant paragraphs
       def self.extract_relevant_paragraphs(txt, correction)
         # Check if correction was already applied to the relevant paragraph
         # Extract relevant paragraph

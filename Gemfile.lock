@@ -10,6 +10,12 @@ GIT
   specs:
     pragmatic_segmenter (0.3.3)
 
+GIT
+  remote: https://github.com/lsegal/yard.git
+  revision: 884a529f8a31b324ea8edf2ffc3ed83e69d0306b
+  specs:
+    yard (0.8.7.6)
+
 PATH
   remote: .
   specs:
@@ -108,6 +114,7 @@ DEPENDENCIES
   repositext!
   ruby-prof
   suspension!
+  yard!
 
 BUNDLED WITH
    1.10.6

@@ -1,4 +1,5 @@
 .DS_Store
 .bundle/*
+.yardoc
 doc/scratchpad.md
 spec/git_test/repos/*

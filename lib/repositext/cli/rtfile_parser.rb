@@ -5,7 +5,7 @@ class Repositext
 
       attr_reader :config
 
-      # @param config_object [Repositext::Cli::Config]
+      # @param config [Repositext::Cli::Config]
       def initialize(config)
         @config = config
       end
