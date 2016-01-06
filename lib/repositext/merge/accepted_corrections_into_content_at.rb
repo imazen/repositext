@@ -193,8 +193,19 @@ class Repositext
           end
         }
         if with_missing_attrs.any?
-          raise InvalidCorrectionAttributes.new("Not all attrs are present: #{ with_missing_attrs.inspect }")
+          raise InvalidCorrectionAttributes.new(
+            "Not all attrs are present: #{ with_missing_attrs.inspect }"
+          )
         end
+
+        # Check that before and after are not identical
+        corrections.each { |e|
+          if e[:before] == e[:after]
+            raise InvalidCorrectionAttributes.new(
+              "Identical reads and becomes: #{ e.inspect }"
+            )
+          end
+        }
 
         # Validate that we get consecutive correction_numbers
         correction_numbers = corrections.map { |e| e[:correction_number].to_i }.sort
@@ -274,7 +285,7 @@ class Repositext
             if 1 == exact_after_matches_count
               [:report_already_applied, 'Exact']
             elsif 1 == fuzzy_after_matches_count
-              [:report_already_applied, '~Fuzzy']
+              [:report_already_applied, '~Fuzzy (ignoring gap_marks and subtitle_marks)']
             else
               # Either none or multiple :after matches
               [:apply_manually, :no_match_found]
