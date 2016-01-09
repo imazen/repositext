@@ -102,9 +102,63 @@ class Repositext
       true
     end
 
+    # Initializes any empty content repositories.
+    # @param primary_language_repo_path [String]
+    def initialize_empty_content_repos(primary_language_repo_path)
+      compute_repo_paths(:all_content_repos).each { |repo_path|
+        repo_name = repo_path.split('/').last
+        if File.exists?(File.join(repo_path, 'Rtfile'))
+          puts " -   Skipping #{ repo_name } (Rtfile already exists)"
+          next
+        end
+        puts " - Initializing #{ repo_name }"
+        # Create directories
+        puts "   - Creating directories"
+        create_default_content_directory_structure(repo_path)
+        # Copy standard files
+        puts "   - Copying standard files"
+        copy_default_content_repo_files(repo_path, primary_language_repo_path)
+        # TODO: Figure out how to run bundle install from Ruby so it works.
+        # Bundle install
+        # puts "   - Installing RubyGems"
+        # cmd = %(cd #{ repo_path } && bundle install)
+        # Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
+        #   exit_status = wait_thr.value
+        #   if exit_status.success?
+        #     puts "     - Gems installed"
+        #   else
+        #     msg = %(Could not install Gems:\n\n)
+        #     puts(msg + stderr.read)
+        #   end
+        # end
+      }
+    end
+
     def primary_repo_name
       'english'
     end
+
+    # Replaces text in all repositories
+    def replace_text(filename, &block)
+    end
+
+    # Allows running of any command (e.g., export, fix, report, validate) on
+    # all content repositories.
+    def run_repositext_command(command, args)
+    end
+
+    # Synchronizes gems in all foreign repos with those of primary repo
+    def synchronize_gems_with_primary_repo
+      # iterate over all foreign repos
+        # Copy Gemfile and Gemfile.lock from primary repo
+        # call `bundle install`
+        # make sure git index is empty
+        # add Gemfile and Gemfile.lock to git index
+        # `git commit`
+        # `git push`
+    end
+
+  protected
 
     # Returns collection of paths to all repos in repo_set
     # @param repo_set [Symbol, Array<String>] A symbol describing a predefined
@@ -131,24 +185,47 @@ class Repositext
       }
     end
 
-    # Replaces text in all repositories
-    def replace_text(filename, &block)
+    # @param repo_root_path [String] absolute path to root of repo
+    def create_default_content_directory_structure(repo_root_path)
+      %w[
+        content
+        data
+        lucene_table_export
+        lucene_table_export/json_export
+        lucene_table_export/L232
+        lucene_table_export/L232/full
+        lucene_table_export/L232/full/lucene_index
+        lucene_table_export/L232/short
+        lucene_table_export/L232/short/lucene_index
+        lucene_table_export/L472
+        lucene_table_export/L472/full
+        lucene_table_export/L472/full/lucene_index
+        lucene_table_export/L472/short
+        lucene_table_export/L472/short/lucene_index
+        pdf_export
+        reports
+        staging
+      ].each do |rel_path|
+        FileUtils.mkdir(File.join(repo_root_path, rel_path))
+      end
     end
 
-    # Synchronizes gems in all foreign repos with those of primary repo
-    def synchronize_gems_with_primary_repo
-      # iterate over all foreign repos
-        # Copy Gemfile and Gemfile.lock from primary repo
-        # call `bundle install`
-        # make sure git index is empty
-        # add Gemfile and Gemfile.lock to git index
-        # `git commit`
-        # `git push`
-    end
-
-    # Allows running of any command (e.g., export, fix, report, validate) on
-    # all content repositories.
-    def run_repositext_command(command, args)
+    # @param repo_root_path [String] absolute path to root of new repo
+    # @param primary_language_repo_path [String] absolute path
+    def copy_default_content_repo_files(repo_root_path, primary_language_repo_path)
+      [
+        '.gitignore',
+        '.ruby-gemset',
+        '.ruby-version',
+        'Gemfile',
+        'readme.md',
+        'Rtfile',
+      ].each do |filename|
+        FileUtils.cp(
+          File.join(primary_language_repo_path, filename),
+          repo_root_path
+        )
+      end
     end
 
   end

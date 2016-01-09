@@ -15,6 +15,17 @@ class Repositext
         RepositorySet.new(repos_parent_path).git_clone_missing_repos(:all_content_repos)
       end
 
+      # Initializes any empty language repos. Copies standard files from primary repo.
+      # Run this from inside primary repo.
+      # @param [Hash] options
+      def git_repo_initialize_empty_content_repos(options)
+        if !config.setting(:is_primary_repo)
+          raise "Please run this command from inside the primary repository"
+        end
+        repos_parent_path = File.expand_path('..', Dir.pwd)
+        RepositorySet.new(repos_parent_path).initialize_empty_content_repos(Dir.pwd)
+      end
+
       # Pulls latest commits from all upstream code repositories.
       # @param [Hash] options
       def git_repo_pull_all_code(options)
