@@ -10,9 +10,11 @@ class Repositext
   # repository_set.git_pull(:all_content_repos)
   class RepositorySet
 
-    # @param repos_parent_path [String] path to the folder that contains all repos.
-    def initialize(repos_parent_path)
-      @repos_parent_path = repos_parent_path
+    attr_reader :repo_set_parent_path
+
+    # @param repo_set_parent_path [String] path to the folder that contains all repos.
+    def initialize(repo_set_parent_path)
+      @repo_set_parent_path = repo_set_parent_path
     end
 
     def all_content_repo_names
@@ -23,8 +25,11 @@ class Repositext
       all_content_repo_names + code_repo_names
     end
 
-    def primary_repo_name
-      'english'
+    def code_repo_names
+      %w[
+        repositext
+        suspension
+      ]
     end
 
     def foreign_content_repo_names
@@ -36,11 +41,34 @@ class Repositext
       ]
     end
 
-    def code_repo_names
-      %w[
-        repositext
-        suspension
-      ]
+    # Clones all git repos that don't exist on local filesystem yet.
+    # @param repo_set [Symbol, Array<String>] A symbol describing a predefined
+    #     group of repos, or an Array with specific repo names as strings.
+    # @example Clone all language repos
+    #   # cd into primary repo root folder
+    #   # run `bundle console`
+    #   repository_set = Repositext::RepositorySet.new('/path/to/repos/parent/folder')
+    #   repository_set.git_clone_missing_repos(:all_content_repos)
+    def git_clone_missing_repos(repo_set)
+      compute_repo_paths(repo_set).each { |repo_path|
+        repo_name = repo_path.split('/').last
+        if File.exists?(repo_path)
+          puts " -   Skipping #{ repo_name }"
+          next
+        end
+        puts " - Cloning #{ repo_name }"
+        clone_command = "git clone git@vgrtr.vgr.local:vgr-text-repository/#{ repo_name }.git"
+        cmd = %(cd #{ repo_set_parent_path } && #{ clone_command })
+        Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
+          exit_status = wait_thr.value
+          if exit_status.success?
+            puts "   - Cloned #{ repo_name }"
+          else
+            msg = %(Could not clone #{ repo_name }:\n\n)
+            puts(msg + stderr.read)
+          end
+        end
+      }
     end
 
     # Pulls all foreign repos
@@ -74,6 +102,10 @@ class Repositext
       true
     end
 
+    def primary_repo_name
+      'english'
+    end
+
     # Returns collection of paths to all repos in repo_set
     # @param repo_set [Symbol, Array<String>] A symbol describing a predefined
     #     group of repos, or an Array with specific repo names as strings.
@@ -95,7 +127,7 @@ class Repositext
         raise ArgumentError.new("Invalid repo_set: #{ repo_set.inspect }")
       end
       repo_names.map { |repo_name|
-        File.join(@repos_parent_path, repo_name)
+        File.join(repo_set_parent_path, repo_name)
       }
     end
 
