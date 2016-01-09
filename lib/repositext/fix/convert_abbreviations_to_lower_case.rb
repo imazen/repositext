@@ -9,9 +9,9 @@ class Repositext
       #      *outer em *a.d.*{: .smcaps} outer again*
       #   => <p><em class="smcaps">outer em *a.d.</em> outer again*</p>
       # We will catch this with our validation that looks for leftover kramdown characters.
-      # @param[String] text
-      # @param[String] filename
-      # @return[Outcome]
+      # @param [String] text
+      # @param [String] filename
+      # @return [Outcome]
       def self.fix(text, filename)
         t = text.dup
         # NOTE: We need negative lookahead 'D' for B.C. to avoid replacement in A.B.C.D.E...

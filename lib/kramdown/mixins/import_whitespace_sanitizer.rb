@@ -7,7 +7,7 @@ module Kramdown
   module ImportWhitespaceSanitizer
 
     # Recursively remove leading whitespace
-    # @param[Kramdown::Element] ke
+    # @param [Kramdown::Element] ke
     def recursively_sanitize_whitespace_during_import!(ke)
       # Work from the bottom up so that tree mutations don't interfere with
       # iteration over children.
@@ -28,7 +28,7 @@ module Kramdown
     #   children since we need the parent around, and this should work on regular
     #   Kramdown::Element, too)
     # NOTE: this doesn't do any recursion. It operates on a single ke only.
-    # @param[Kramdown::Element] ke
+    # @param [Kramdown::Element] ke
     def sanitize_whitespace_during_import!(ke)
       case ke.type
       when :text

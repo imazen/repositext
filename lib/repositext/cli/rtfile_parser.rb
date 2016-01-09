@@ -78,21 +78,21 @@ class Repositext
       end
 
       # Used in Rtfile to define a kramdown parser
-      # @param[String, Symbol] name the name of the kramdown parser by which it will be referenced
-      # @param[String] class_name the full class name of the parser to be used
+      # @param [String, Symbol] name the name of the kramdown parser by which it will be referenced
+      # @param [String] class_name the full class name of the parser to be used
       def kramdown_parser(name, class_name)
         config.add_kramdown_parser(name, class_name)
       end
 
       # Used in Rtfile to define a kramdown converter method
-      # @param[String, Symbol] name the name of the kramdown converter method by which it will be referenced
-      # @param[Symbol] method_name the name of the converter method, e.g., :to_kramdown
+      # @param [String, Symbol] name the name of the kramdown converter method by which it will be referenced
+      # @param [Symbol] method_name the name of the converter method, e.g., :to_kramdown
       def kramdown_converter_method(name, method_name)
         config.add_kramdown_converter_method(name, method_name)
       end
 
       # Used in Rtfile to define a repository wide setting.
-      # @param[String, Symbol] setting_key
+      # @param [String, Symbol] setting_key
       # @apram[Object] setting_val
       def setting(setting_key, setting_val)
         config.add_setting(setting_key, setting_val)

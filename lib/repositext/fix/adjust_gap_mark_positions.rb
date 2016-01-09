@@ -11,9 +11,9 @@ class Repositext
       # are directly adjacent.
       # If % directly follows an elipsis, move to the front of the ellipsis
       # (unless where elipsis and % are between two words like so: word…%word)
-      # @param[String] text
-      # @param[String] filename
-      # @return[Outcome]
+      # @param [String] text
+      # @param [String] filename
+      # @return [Outcome]
       def self.fix(text, filename)
         new_at = text.dup
         move_gap_marks_to_beginning_of_words!(new_at)

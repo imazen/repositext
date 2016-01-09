@@ -316,9 +316,9 @@ class Repositext
       # Resets the validation report located at options['report_file'].
       # Validations by default append to the report file so that results of
       # earlier validations are not overwritten by those of later ones.
-      # @param[Hash] salient keys: 'report_file' and 'append_to_validation_report'
-      # @param[String] marker. An id line that will be added to the top of the
-      #    report, along with a time stamp.
+      # @param options [Hash] salient keys: 'report_file' and 'append_to_validation_report'
+      # @param marker [String] An id line that will be added to the top of the
+      #   report, along with a time stamp.
       def reset_validation_report(options, marker)
         return true if options['append_to_validation_report']
         if options['report_file']

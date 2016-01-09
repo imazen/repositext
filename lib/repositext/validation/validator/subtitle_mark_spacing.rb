@@ -18,8 +18,8 @@ class Repositext
 
         # Checks that subtitle marks in content_at are spaced correctly.
         # Only applied if content_at contains subtitle_marks.
-        # @param[String] content_at
-        # @return[Outcome]
+        # @param [String] content_at
+        # @return [Outcome]
         def subtitle_marks_spaced_correctly?(content_at)
           # Early return if content doesn't contain any subtitle_marks
           return Outcome.new(true, nil)  if !content_at.index('@')

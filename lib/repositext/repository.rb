@@ -27,8 +27,8 @@ class Repositext
     end
 
     # Returns sha of latest commit that included filename
-    # @param[String] filename
-    # @return[Rugged::Commit] a commit git object. Responds to the following
+    # @param [String] filename
+    # @return [Rugged::Commit] a commit git object. Responds to the following
     # methods:
     # * #time (the time of the commit)
     # * #oid (the sha of the commit)
@@ -45,9 +45,9 @@ class Repositext
     # We shell out to git log to get the latest commit's sha. This is orders of
     # magnitudes faster than using Rugged walker. See this ticket for more info:
     # https://github.com/libgit2/rugged/issues/343#issue-30232795
-    # @param[String, optional] filename if given will return latest commit that
+    # @param [String, optional] filename if given will return latest commit that
     #   included filename
-    # @return[String] the sha1 of the commit
+    # @return [String] the sha1 of the commit
     def latest_commit_sha_local(filename = '')
       s, _ = Open3.capture2(
         [
@@ -67,8 +67,8 @@ class Repositext
     # NOTE: I tried to use rugged and remote.ls to get the latest commit's
     # oid, however I had trouble authenticating at github. So I fell back to
     # executing git commands directly and parsing the output.
-    # @param[String, optional] remote_name defaults to 'origin'
-    # @param[String, optional] branch_name defaults to 'master'
+    # @param [String, optional] remote_name defaults to 'origin'
+    # @param [String, optional] branch_name defaults to 'master'
     def latest_commit_sha_remote(remote_name = 'origin', branch_name = 'master')
       most_recent_commit_oid = ''
       cmd = %(cd #{ repo_path } && git ls-remote #{ remote_name } | awk '/refs\\/heads\\/#{ branch_name }/ {print $1}')
@@ -85,7 +85,7 @@ class Repositext
     end
 
     # Returns an array of hashes, one for each of the 10 most recent commits in @repo
-    # @param[String, optional] filepath
+    # @param [String, optional] filepath
     def latest_commits_local(filepath = '', max_number_of_commits = 20)
       s, _ = Open3.capture2(
         [

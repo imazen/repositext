@@ -6,10 +6,10 @@ class Repositext
       # contain any record_marks yet. This is so that we can safely assume
       # the presence of record_marks in all content AT files.
       # Uses the first record mark from the corresponding file in the primary_repo
-      # @param[String] text
-      # @param[String] filename of the file to fix
-      # @param[String] corresponding_filename of the source file in primary repo
-      # @return[Outcome]
+      # @param [String] text
+      # @param [String] filename of the file to fix
+      # @param [String] corresponding_filename of the source file in primary repo
+      # @return [Outcome]
       def self.fix(text, filename, corresponding_filename)
         text = text.dup
         outcome = if contains_no_record_marks?(text)
@@ -26,10 +26,10 @@ class Repositext
         !text.match(/^\^\^\^/)
       end
 
-      # @param[String] text
-      # @param[String] filename of the file to fix
-      # @param[String] corresponding_filename of the source file in primary repo
-      # @return[Outcome]
+      # @param [String] text
+      # @param [String] filename of the file to fix
+      # @param [String] corresponding_filename of the source file in primary repo
+      # @return [Outcome]
       def self.insert_record_mark(text, filename, corresponding_filename)
         if !File.exists?(corresponding_filename)
           return Outcome.new(false, nil, ["Corresponding primary file not found: #{ corresponding_filename.inspect }"])

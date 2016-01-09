@@ -7,7 +7,7 @@ module Kramdown
   module DocxImportPostProcessor
 
     # Recursively post processes tree under ke
-    # @param[Kramdown::Element] ke
+    # @param [Kramdown::Element] ke
     def recursively_post_process_tree!(ke)
       # Work from the bottom up so that tree mutations don't interfere with
       # iteration of children.
@@ -22,7 +22,7 @@ module Kramdown
     end
 
     # Cleans up ke
-    # @param[Kramdown::Element] ke
+    # @param [Kramdown::Element] ke
     def post_process_tree_element!(ke)
       if :text == ke.type
         # Fix elipses (from vietnamese)

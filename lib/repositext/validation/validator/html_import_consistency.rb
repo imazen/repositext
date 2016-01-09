@@ -27,7 +27,7 @@ class Repositext
         # Checks if contents match
         # @param input_html [String]
         # @param html_imported_at [String]
-        # @return[Outcome]
+        # @return [Outcome]
         def contents_match?(input_html, html_imported_at)
 
           # Since the kramdown parser is specified as module in Rtfile,

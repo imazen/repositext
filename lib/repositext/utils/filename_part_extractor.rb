@@ -9,8 +9,8 @@ class Repositext
       # or
       # /eng47-0412_0002b.at => '47-0412b'
       #
-      # @param[String] filename the filename. With or without path
-      # @return[String] the corresponding date code
+      # @param [String] filename the filename. With or without path
+      # @return [String] the corresponding date code
       def self.extract_date_code(filename)
         basename = filename.split('/').last
         basename.match(/\d{2}-\d{4}[[:alpha:]]?/).to_s

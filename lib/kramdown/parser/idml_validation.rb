@@ -7,9 +7,9 @@ module Kramdown
   module Parser
     class IdmlValidation < Kramdown::Parser::Idml
 
-      # @param[Array<Story>, optional] stories the stories to import.
-      # @param[Hash, optional] options. For validation, pass in an error and
-      #                                 warnings collector:
+      # @param stories [Array<Story>, optional] the stories to import.
+      # @param options [Hash, optional] For validation, pass in an error and
+      #   warnings collector:
       #     * 'validation_errors' => []
       #     * 'validation_warnings' => []
       #     * 'validation_file_descriptor' => "Descriptor for @file_to_validate or @file_set"

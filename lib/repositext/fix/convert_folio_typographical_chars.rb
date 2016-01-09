@@ -5,9 +5,9 @@ class Repositext
       # Converts certain characters in text to proper typographical marks.
       # We make changes in place for better performance
       # (using `#gsub!` instead of `#gsub`).
-      # @param[String] text
-      # @param[String] filename
-      # @return[Outcome]
+      # @param [String] text
+      # @param [String] filename
+      # @return [Outcome]
       def self.fix(text, filename)
         text = text.dup
         convert_elipses!(text)
@@ -20,8 +20,8 @@ class Repositext
 
       # Reverses the changes from `.fix`. This is used for round-trip testing
       # of imported documents.
-      # @param[String] text
-      # @return[Outcome]
+      # @param [String] text
+      # @return [Outcome]
       def self.unfix(text)
         text = text.dup
         text.gsub!(ELIPSIS, '...')
@@ -35,14 +35,14 @@ class Repositext
       end
 
       # Converts elipses in text in place
-      # @param[String] text
+      # @param [String] text
       def self.convert_elipses!(text)
         text.gsub!(/(Mrs?\.)\.\.\./i, '\1' + ELIPSIS) # Abbreviations are valid instances we need to handle
         text.gsub!(/\.{3}(?!\.)/, ELIPSIS) # Replace 3, but not 4 dots with ellipsis
       end
 
       # Converts em dashes in text in place
-      # @param[String] text
+      # @param [String] text
       def self.convert_em_dashes!(text)
         text.gsub!(/\-\-/, EM_DASH)
       end
@@ -51,7 +51,7 @@ class Repositext
       # NOTE: This is a rule of thumb and doesn't work 100%.
       # It was used during initial import to convert as many as possible.
       # Manual cleanup was required after.
-      # @param[String] text
+      # @param [String] text
       def self.convert_apostrophes!(text)
         # words with omitted leading characters (e.g., `'cause` for `because`)
         text.gsub!(/(?<=\W)'(cause|course|fore|kinis|less|till)\b/i, APOSTROPHE + '\1')
@@ -64,7 +64,7 @@ class Repositext
       end
 
       # Converts quotes in text in place
-      # @param[String] text
+      # @param [String] text
       def self.convert_quotes!(text)
         alnum_ = '[:alnum:]'
         close_ = '\)\]' # I leave out curly braces since we don't want to convert double quotes in IALs to typographic ones
@@ -168,7 +168,7 @@ class Repositext
 
       # During the above steps we convert some straight double quotes inside IALs
       # to typographic ones. We need to undo that here.
-      # @param[String] text
+      # @param [String] text
       def self.unconvert_quotes_in_ials!(text)
         text.gsub!(/(?<=\{)([^\{\}]*)[#{ D_QUOTE_CLOSE + D_QUOTE_OPEN }]([^\{\}]*)(?=\})/, '\1"\2')
       end

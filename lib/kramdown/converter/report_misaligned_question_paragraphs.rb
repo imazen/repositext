@@ -5,15 +5,15 @@ module Kramdown
     class ReportMisalignedQuestionParagraphs < Base
 
       # Instantiate converter
-      # @param[Kramdown::Element] root
-      # @param[Hash] options
+      # @param [Kramdown::Element] root
+      # @param [Hash] options
       def initialize(root, options)
         super
         @misaligned_question_paragraphs = []
       end
 
-      # @param[Kramdown::Element] el
-      # @return[Array] all misaligned question paras:
+      # @param [Kramdown::Element] el
+      # @return [Array] all misaligned question paras:
       #   [
       #     { location: , source: '' },
       #   ]

@@ -1,14 +1,14 @@
-# Generates persistent IDs for subtitle marks.
-# Guarantees uniqueness in language scope (i.e. no duplicates in a language)
-#
-# Stores an inventory of used IDs in inventory file to prevent duplicates when
-# assigning new stidS. We store this inventory file only in the primary repo.
-#
-
 require 'set' # uses SortedSet for better performance
 
 class Repositext
   class Subtitle
+
+    # Generates persistent IDs for subtitle marks.
+    # Guarantees uniqueness in language scope (i.e. no duplicates in a language)
+    #
+    # Stores an inventory of used IDs in inventory file to prevent duplicates when
+    # assigning new stidS. We store this inventory file only in the primary repo.
+    #
     class IdGenerator
 
       # Synchronize stid generation so that we can guarantee uniqueness in

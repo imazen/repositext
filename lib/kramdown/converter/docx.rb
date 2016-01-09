@@ -136,7 +136,7 @@ module Kramdown
         @current_block_el.br
       end
 
-      # @param[Kramdown::Element] el
+      # @param [Kramdown::Element] el
       def convert_em(el)
         @current_run_text_contents = ''
         inner(el)
@@ -177,7 +177,7 @@ module Kramdown
       # empty paragraph with a top border. It doesn't allow assignment of
       # any classes/styles. This makes it hard to parse. So we implement our own
       # version of this with the added ability to assign a style/class.
-      # @param[Kramdown::Element] el
+      # @param [Kramdown::Element] el
       def convert_hr(el)
         @current_document.p do |p|
           @current_block_el = p
@@ -220,7 +220,7 @@ module Kramdown
         inner(el)
       end
 
-      # @param[Kramdown::Element] el
+      # @param [Kramdown::Element] el
       def convert_strong(el)
         @current_run_text_contents = ''
         inner(el)
@@ -234,7 +234,7 @@ module Kramdown
         # Nothing to do
       end
 
-      # @param[Kramdown::Element] el
+      # @param [Kramdown::Element] el
       def convert_text(el)
         txt = el.value.gsub(/\n/, ' ') # Remove newlines from text nodes.
         add_text(txt)
@@ -245,7 +245,7 @@ module Kramdown
         self.class.paragraph_style_mappings
       end
 
-      # @param[Kramdown::Element] el
+      # @param [Kramdown::Element] el
       def convert_xml_comment(el)
         # noop
       end

@@ -96,7 +96,7 @@ class Repositext
       # This script moves any :record_marks that are in an invalid position
       # to before the next paragraph so that they are guaranteed to be between
       # paragraphs, and that they are preceded by a blank line.
-      # @param[Hash] options
+      # @param [Hash] options
       def fix_adjust_merged_record_mark_positions(options)
         Repositext::Cli::Utils.change_files_in_place(
           config.compute_glob_pattern(

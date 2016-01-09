@@ -4,9 +4,9 @@ class Kramdown::Parser::Folio::KeContext
   include ::Kramdown::KeContextMixin
 
   # Initializes new kramdown::element processing context
-  # @param[Hash] attrs
+  # @param [Hash] attrs
   #     * 'root': the root kramdown element, required
-  # @param[Kramdown::Parser::Folio] parser instance of folio parser so that
+  # @param [Kramdown::Parser::Folio] parser instance of folio parser so that
   #     we can trigger warnings
   def initialize(attrs, parser)
     @cx = {
@@ -60,8 +60,8 @@ class Kramdown::Parser::Folio::KeContext
 
   # Records distinct contents and adds a warning if they are inconsistent with
   # existing ones.
-  # @param[String] content
-  # @param[Nokogiri::XML::Node] xn for warning location
+  # @param [String] content
+  # @param [Nokogiri::XML::Node] xn for warning location
   def record_distinct_reference_line_contents(content, xn)
     # Sanitize content
     sanitized_content = content.strip.split(/[\s]+/).map { |e| # split on spaces, newlines and tabs
@@ -95,9 +95,9 @@ class Kramdown::Parser::Folio::KeContext
   # Adds an attribute to current record_mark's IAL.
   # Raises warning if record_mark is nil.
   # Also raises warning if expect_nil and attr is present.
-  # @param[Nokogiri::XML::Node] xn the xn that wanted to access current record_mark
-  # @param[String] attr_name
-  # @param[Object] attr_value
+  # @param [Nokogiri::XML::Node] xn the xn that wanted to access current record_mark
+  # @param [String] attr_name
+  # @param [Object] attr_value
   def set_attr_on_record_mark(xn, attr_name, attr_value, expect_nil = false)
     if @cx['record_mark'].nil?
       @parser.add_warning(xn, "#{ xn.name_and_class } outside of record_mark")

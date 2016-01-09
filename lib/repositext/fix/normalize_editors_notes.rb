@@ -5,11 +5,11 @@ class Repositext
       # Normalizes instances of `—Ed.]`. Run this before convert_folio_typographical_chars
       # We make changes in place for better performance
       # (using `#gsub!` instead of `#gsub`).
-      # @param[String] text
-      # @param[String] filename
-      # @param[String, optional] separator_char what character to use as dash.
+      # @param [String] text
+      # @param [String] filename
+      # @param [String, optional] separator_char what character to use as dash.
       #                          Defaults to emdash.
-      # @return[Outcome]
+      # @return [Outcome]
       def self.fix(text, filename, separator_char='—')
         text = text.dup
         text.gsub!(/[—\-]* ?Ed\.?\]/, %(#{ separator_char }Ed.]))

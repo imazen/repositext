@@ -9,9 +9,9 @@ module Kramdown
       # languages into a single interleaved kramdown AT document.
       # Wraps english splits in temporary markers that will be replaced with
       # Latex environment.
-      # @param[String] target_contents kramdown AT source for target language
-      # @param[String] primary_contents kramdown AT source for primary language
-      # @return[String] interleaved kramdown AT string
+      # @param [String] target_contents kramdown AT source for target language
+      # @param [String] primary_contents kramdown AT source for primary language
+      # @return [String] interleaved kramdown AT string
       def self.custom_pre_process_content(target_contents, primary_contents)
         validate_same_number_of_gap_marks(target_contents, primary_contents)
         # process each content
@@ -42,8 +42,7 @@ module Kramdown
 
       # Called from the export command, makes some modifications to generated
       # latex source
-      # @param[String] latex
-      # @param[String] modified latex source
+      # @param latex [String]
       def self.custom_post_process_latex(latex)
         # remove all empty RtGapMarkText commands
         l = latex.dup
@@ -144,9 +143,9 @@ module Kramdown
       end
 
       # Splits kramdown_txt into gaps. Also removes unwanted elements.
-      # @param[String] kramdown_txt
-      # @param[Boolean] is_primary
-      # @return[Array<String>] Array of gaps
+      # @param [String] kramdown_txt
+      # @param [Boolean] is_primary
+      # @return [Array<String>] Array of gaps
       def self.split_kramdown(kramdown_txt, is_primary = false)
         contents = kramdown_txt.dup
         # extract contents of id_paragraph for later use
@@ -242,8 +241,8 @@ module Kramdown
       end
 
       # Splits kramdown_txt into paragraphs
-      # @param[String] kramdown_txt
-      # @return[Array<Hash>] An array of hashes with :txt, :parents, and
+      # @param [String] kramdown_txt
+      # @return [Array<Hash>] An array of hashes with :txt, :parents, and
       #   :starts_with_gap_mark keys for each split
       def self.split_kramdown_paras(kramdown_txt)
         kramdown_txt.split(/(?<=\n\n)/).map { |e|
@@ -258,8 +257,8 @@ module Kramdown
       end
 
       # Further splits para_splits into spans.
-      # @param[Array<Hash>] para_splits as returned from split_kramdown_paras
-      # @return[Array<Hash>] Array of Hashes, one for each span split
+      # @param [Array<Hash>] para_splits as returned from split_kramdown_paras
+      # @return [Array<Hash>] Array of Hashes, one for each span split
       def self.split_kramdown_spans(para_splits)
         span_splits = []
         para_splits.each do |para_split|
@@ -327,8 +326,8 @@ module Kramdown
       end
 
       # Further splits span_splits at gap_marks
-      # @param[Array<Hash>] span_splits as returned from split_kramdown_spans
-      # @return[Array<Hash>] Array of Hashes, one for each gap_mark split
+      # @param [Array<Hash>] span_splits as returned from split_kramdown_spans
+      # @return [Array<Hash>] Array of Hashes, one for each gap_mark split
       def self.split_kramdown_gap_marks(span_splits)
         # Split on gap_marks
         gap_mark_splits = []

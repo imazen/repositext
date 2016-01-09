@@ -10,7 +10,7 @@ class Repositext
       # @param auto_insert_missing_subtitle_marks [Boolean] set to true to
       #     automatically insert missing subtitle marks into subtitle_marker
       #     files based on subtitles in /content AT.
-      # @return[Outcome] the sync'd csv string is returned as #result if successful.
+      # @return [Outcome] the sync'd csv string is returned as #result if successful.
       def self.sync(content_at, existing_stm_csv, auto_insert_missing_subtitle_marks)
         # Compute new stm_positions
         new_stm_lengths = Repositext::Utils::SubtitleMarkTools.extract_captions(content_at)

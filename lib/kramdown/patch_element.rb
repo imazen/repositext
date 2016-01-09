@@ -4,7 +4,7 @@ module Kramdown
   class Element
 
     # Adds class to self. Classes are case insensitive, so we downcase them.
-    # @param[String] a_class
+    # @param [String] a_class
     def add_class(a_class)
       a_class = a_class.to_s.strip
       return true  if('' == a_class || has_class?(a_class))
@@ -27,9 +27,9 @@ module Kramdown
     end
 
     # Prints a summary of self on a single line
-    # @param[Integer, optional] _indent_level
-    # @param[Hash, optional] _options
-    # @return[String]
+    # @param [Integer, optional] _indent_level
+    # @param [Hash, optional] _options
+    # @return [String]
     def element_summary(_indent_level = 0, _options = {})
       el_options = {
         :max_value_length => 80,
@@ -76,12 +76,12 @@ module Kramdown
     #   * Indents nested elements
     #   * truncates long text values in the middle so that string boundaries can be inspected.
     #   * includes attr and options if present
-    # @param[String, optional] output all output is collected recursively into this string
-    # @param[Integer, optional] _indent_level used for recursion
-    # @param[Hash, optional] _options
+    # @param [String, optional] output all output is collected recursively into this string
+    # @param [Integer, optional] _indent_level used for recursion
+    # @param [Hash, optional] _options
     #   * max_value_length - Any text longer than this will be truncated in the middle.
     #   * indent - Characters used for indentation.
-    # @return[String] the tree representation
+    # @return [String] the tree representation
     def inspect_tree(output = '', _indent_level = 0, _options = {})
       if value.is_a?(Kramdown::Element)
         # Some elements (:footnote I think) store an element in their value attr.
@@ -109,7 +109,7 @@ module Kramdown
 
     # Returns true if self is of same element type as other_ke.
     # This is used e.g., to merge adjacent siblings
-    # @param[Kramdown::Element] other_ke
+    # @param [Kramdown::Element] other_ke
     def is_of_same_type_as?(other_ke)
       type == other_ke.type &&
       attr.reject { |k,v| 'id' == k } == other_ke.attr.reject { |k,v| 'id' == k } &&
@@ -117,10 +117,10 @@ module Kramdown
     end
 
     # Compares self recursively with other_ke
-    # @param[Kramdown::Element] other_ke
-    # @param[Array, optional] diffs a collector that is used during recursion to collect diffs
-    # @param[Hash, optional] options
-    # @return[Array<String>] an array with differences between the two
+    # @param [Kramdown::Element] other_ke
+    # @param [Array, optional] diffs a collector that is used during recursion to collect diffs
+    # @param [Hash, optional] options
+    # @return [Array<String>] an array with differences between the two
     def compare_with(other_ke, diffs = [], options = {})
       options = {
         :recursive => true
@@ -158,7 +158,7 @@ module Kramdown
     end
 
     # Removes class from self
-    # @param[String] a_class
+    # @param [String] a_class
     def remove_class(a_class)
       self.attr['class'] = (attr['class'] || '').split(' ')
                                                 .map { |e| e.gsub(/\A#{ a_class.strip }\z/, '') }
@@ -166,7 +166,7 @@ module Kramdown
     end
 
     # Sets classes, overwriting any existing classes
-    # @param[Array<String>] class_names
+    # @param [Array<String>] class_names
     def set_classes(class_names)
       self.attr['class'] = ''
       class_names.each { |e| add_class(e) }

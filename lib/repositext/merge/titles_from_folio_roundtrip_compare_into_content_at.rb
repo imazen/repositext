@@ -3,9 +3,9 @@ class Repositext
     class TitlesFromFolioRoundtripCompareIntoContentAt
 
       # Merges titles from folio roundtrip compare files into content_at.
-      # @param[String] folio_roundtrip_compare the folio roundtrip compare file
-      # @param[String] content_at to merge title into
-      # @return[Outcome] the merged document is returned as #result if successful.
+      # @param [String] folio_roundtrip_compare the folio roundtrip compare file
+      # @param [String] content_at to merge title into
+      # @return [Outcome] the merged document is returned as #result if successful.
       def self.merge(folio_roundtrip_compare, content_at)
         title_from_folio_roundtrip_compare = extract_title(folio_roundtrip_compare)
         outcome = merge_title_into_content_at(title_from_folio_roundtrip_compare, content_at)

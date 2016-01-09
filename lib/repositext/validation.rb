@@ -7,9 +7,9 @@ class Repositext
 
     # Resets the validation report at report_file_path, initializes it with
     # marker and current time
-    # @param[String] report_file_path
-    # @param[String] marker
-    # @param[DateTime, optional] time_stamp
+    # @param [String] report_file_path
+    # @param [String] marker
+    # @param [DateTime, optional] time_stamp
     def self.reset_report(report_file_path, marker, time_stamp = Time.now)
       File.open(report_file_path, 'w') { |f|
         f.write "Validation report reset by '#{ marker }' at #{ time_stamp.to_s }\n\n"
@@ -17,9 +17,9 @@ class Repositext
     end
 
     # Instantiates a new instance of self.
-    # @param[Hash] file_specs a hash with names as keys and an array with base_dir,
+    # @param [Hash] file_specs a hash with names as keys and an array with base_dir,
     #     file_selector, and file_extension which can be combined to a Dir.glob pattern.
-    # @param[Hash] options with stringified keys
+    # @param [Hash] options with stringified keys
     #     * 'import_parser_class' class of parser to use for parsing import
     #               source document, e.g., Kramdown::Parser::Folio
     #     * 'kramdown_converter_method_name' method to call on kramdown tree for
@@ -50,8 +50,8 @@ class Repositext
       self
     end
 
-    # @param[String, optional] logger_name one of 'Logger' (default) or 'LoggerTest'
-    # @return[logger]
+    # @param [String, optional] logger_name one of 'Logger' (default) or 'LoggerTest'
+    # @return [logger]
     def initialize_logger(logger_name = nil)
       logger_name ||= 'Logger'
       self.class.const_get(logger_name).new(
@@ -59,7 +59,7 @@ class Repositext
       )
     end
 
-    # @return[Repositext::Validation::Reporter]
+    # @return [Repositext::Validation::Reporter]
     def initialize_reporter
       Reporter.new(*primary_file_spec, @logger)
     end
@@ -73,7 +73,7 @@ class Repositext
 
   private
 
-    # @param[Symbol] file_spec_name
+    # @param [Symbol] file_spec_name
     def validate_files(file_spec_name, &block)
       base_dir, file_selector, file_extension = @file_specs[file_spec_name]
       Dir.glob([base_dir, file_selector, file_extension].join).each do |file_name|
@@ -81,8 +81,8 @@ class Repositext
       end
     end
 
-    # @param[Symbol] file_spec_name
-    # @param[Proc] paired_file_proc a proc that given the primary file path returns
+    # @param [Symbol] file_spec_name
+    # @param [Proc] paired_file_proc a proc that given the primary file path returns
     #     the path to the paired file
     def validate_file_pairs(file_spec_name, paired_file_proc, &block)
       base_dir, file_selector, file_extension = @file_specs[file_spec_name]

@@ -19,8 +19,8 @@ class Repositext
         end
 
         # This is where you check the validatable for any issues
-        # @param[Object] validatable whichever you validate: a file, a string, ...
-        # @return[Repositext::Validation::Outcome]
+        # @param [Object] validatable whichever you validate: a file, a string, ...
+        # @return [Repositext::Validation::Outcome]
         # TODO: give this method a more meaningful name, e.g., "utf8_encoded?"
         # and change it accordingly in the `run` method.
         def is_this_valid?(validatable)

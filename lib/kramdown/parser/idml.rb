@@ -28,13 +28,13 @@ module Kramdown
 
       # Returns the stories we want to import by default. Typically
       # the longest story in the IDML file.
-      # @return[Array<OpenStruct>] array of story objects to be imported
+      # @return [Array<OpenStruct>] array of story objects to be imported
       def stories_to_import
         [@stories.max_by { |e| length_of_story_text_without_markup(e.body) }]
       end
 
-      # @param[Array<Story>] stories the stories to import. Defaults to story_to_import.
-      # @return[Kramdown::Document]
+      # @param [Array<Story>] stories the stories to import. Defaults to story_to_import.
+      # @return [Kramdown::Document]
       def parse(stories = self.stories_to_import)
         data = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
         data << '<idPkg:Story xmlns:idPkg="http://ns.adobe.com/AdobeInDesign/idml/1.0/packaging" DOMVersion="8.0">'
@@ -50,7 +50,7 @@ module Kramdown
     private
 
       # Extracts story names from @zip_file_contents
-      # @return[Array<OpenStruct>] an array with story objects. See `get_story` for details.
+      # @return [Array<OpenStruct>] an array with story objects. See `get_story` for details.
       def extract_stories
         s = []
         Zip::File.open_buffer(@zip_file_contents) do |zipped_files|

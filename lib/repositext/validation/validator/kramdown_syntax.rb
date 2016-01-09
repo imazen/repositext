@@ -4,8 +4,8 @@ class Repositext
       class KramdownSyntax < Validator
 
         # Returns true if source is valid kramdown
-        # @param[String] source the kramdown source string
-        # @param[Hash, optional] options
+        # @param [String] source the kramdown source string
+        # @param [Hash, optional] options
         #
         # * parse document using repositext-kramdown
         # * walk the element tree
@@ -30,9 +30,9 @@ class Repositext
           Outcome.new(errors.empty?, nil, [], errors, warnings)
         end
 
-        # @param[String] source the kramdown source string
-        # @param[Array] errors collector for errors
-        # @param[Array] warnings collector for warnings
+        # @param [String] source the kramdown source string
+        # @param [Array] errors collector for errors
+        # @param [Array] warnings collector for warnings
         def validate_source(source, errors, warnings)
           # Detect disconnected IAL
           str_sc = Kramdown::Utils::StringScanner.new(source)
@@ -114,11 +114,11 @@ class Repositext
           end
         end
 
-        # @param[String] source the kramdown source string
-        # @param[Array<Hash>] inner_texts collector for inner texts
-        # @param[Hash] classes_histogram collector for histogram of used classes
-        # @param[Array] errors collector for errors
-        # @param[Array] warnings collector for warnings
+        # @param [String] source the kramdown source string
+        # @param [Array<Hash>] inner_texts collector for inner texts
+        # @param [Hash] classes_histogram collector for histogram of used classes
+        # @param [Array] errors collector for errors
+        # @param [Array] warnings collector for warnings
         def validate_parse_tree(source, inner_texts, classes_histogram, errors, warnings)
           kd_root = @options['kramdown_validation_parser_class'].parse(source).first
           validate_element(kd_root, inner_texts, classes_histogram, errors, warnings)
@@ -135,11 +135,11 @@ class Repositext
           end
         end
 
-        # @param[Kramdown::Element] el
-        # @param[Array<Hash>] inner_texts collector for inner texts
-        # @param[Hash] classes_histogram collector for histogram of used classes
-        # @param[Array] errors collector for errors
-        # @param[Array] warnings collector for warnings
+        # @param [Kramdown::Element] el
+        # @param [Array<Hash>] inner_texts collector for inner texts
+        # @param [Hash] classes_histogram collector for histogram of used classes
+        # @param [Array] errors collector for errors
+        # @param [Array] warnings collector for warnings
         def validate_element(el, inner_texts, classes_histogram, errors, warnings)
           validation_hook_on_element(el, errors, warnings)
           # check if element's type is whitelisted
@@ -194,9 +194,9 @@ class Repositext
 
         # Use this callback to implement custom validations for subclasses.
         # Called once for each element when walking the tree.
-        # @param[Kramdown::Element] el
-        # @param[Array] errors collector for errors
-        # @param[Array] warnings collector for warnings
+        # @param [Kramdown::Element] el
+        # @param [Array] errors collector for errors
+        # @param [Array] warnings collector for warnings
         def validation_hook_on_element(el, errors, warnings)
           # NOTE: Implement in sub-classes
         end
@@ -204,9 +204,9 @@ class Repositext
         # Validates the inner_texts we collected during validate_parse_tree
         # to check if any unprocessed kramdown remains, indicating kramdown
         # syntax errors. Currently we check for '*' and '_'.
-        # @param[Array<Hash>] inner_texts where we check for kramdown leftovers
-        # @param[Array] errors collector for errors
-        # @param[Array] warnings collector for warnings
+        # @param [Array<Hash>] inner_texts where we check for kramdown leftovers
+        # @param [Array] errors collector for errors
+        # @param [Array] warnings collector for warnings
         def validate_inner_texts(inner_texts, errors, warnings)
           inner_texts.each do |it|
             match_data = it[:text].to_enum(
@@ -229,9 +229,9 @@ class Repositext
           end
         end
 
-        # @param[String] source the kramdown source string
-        # @param[Array] errors collector for errors
-        # @param[Array] warnings collector for warnings
+        # @param [String] source the kramdown source string
+        # @param [Array] errors collector for errors
+        # @param [Array] warnings collector for warnings
         def validate_character_inventory(source, errors, warnings)
           # Detect invalid characters
           str_sc = Kramdown::Utils::StringScanner.new(source)
@@ -286,9 +286,9 @@ class Repositext
         # TODO: add validation that doesn't allow more than one class on any paragraph
         # e.g., "{: .normal_pn .q}" is not valid. This applies ot both PT and AT.
 
-        # @param[String] source the kramdown source string
-        # @param[Array] errors collector for errors
-        # @param[Array] warnings collector for warnings
+        # @param [String] source the kramdown source string
+        # @param [Array] errors collector for errors
+        # @param [Array] warnings collector for warnings
         def validate_escaped_character_syntax(source, errors, warnings)
           # Unlike kramdown, in repositext the following characters are not
           # escaped: `:`, `[`, `]`, `'`

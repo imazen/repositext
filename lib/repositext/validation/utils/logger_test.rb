@@ -15,19 +15,19 @@ class Repositext
       def initialize(_input_base_dir, _file_selector, _file_extension, _log_level, _validation)
       end
 
-      # @param[Object] loggable
+      # @param [Object] loggable
       def debug(loggable)
       end
 
-      # @param[Object] loggable
+      # @param [Object] loggable
       def info(loggable)
       end
 
-      # @param[Object] loggable
+      # @param [Object] loggable
       def warning(loggable)
       end
 
-      # @param[Object] loggable
+      # @param [Object] loggable
       def error(loggable)
       end
 
@@ -37,14 +37,14 @@ class Repositext
       def validation_header(_file_spec, _validation_class)
       end
 
-      # @param[Reporter] _reporter
-      # @param[Float] _run_time in seconds
+      # @param [Reporter] _reporter
+      # @param [Float] _run_time in seconds
       def validation_footer(_reporter, _run_time)
       end
 
-      # @param[Validator] _validator
-      # @param[String, Array<String>] _file_descriptor
-      # @param[Boolean] _success
+      # @param [Validator] _validator
+      # @param [String, Array<String>] _file_descriptor
+      # @param [Boolean] _success
       def log_validation_step(_validator, _file_descriptor, _success)
       end
 

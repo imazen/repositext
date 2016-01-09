@@ -6,13 +6,13 @@ class Repositext
       # and contents_2.
       # Expects contents to contain one row per record with the record_id at
       # the beginning of the line and all text on the same line.
-      # @param[String] contents_1
-      # @param[String] filename_1
-      # @param[String] contents_2
-      # @param[String] filename_2
-      # @param[String] out_dir the base directory for html reports
-      # @param[String] report_name the name of the report, used for filenames and dirs
-      # @return[Outcome]
+      # @param contents_1 [String]
+      # @param filename_1 [String]
+      # @param contents_2 [String]
+      # @param filename_2 [String]
+      # @param base_dir [String] the base directory for html reports
+      # @param report_name [String] the name of the report, used for filenames and dirs
+      # @return [Outcome]
       def self.compare(contents_1, filename_1, contents_2, filename_2, base_dir, report_name)
         tokenized_contents_1 = tokenize(contents_1)
         tokenized_contents_2 = tokenize(contents_2)
@@ -126,7 +126,7 @@ class Repositext
       # @param rec1_s2 [String] record_1 text from source 2
       # @param rec2_s1 [String] record_2 text from source 1
       # @param rec2_s2 [String] record_2 text from source 2
-      # @return[Float] 1.0 = identical, 0.0 = no similarity at all
+      # @return [Float] 1.0 = identical, 0.0 = no similarity at all
       def self.compute_confidence_level(rec1_s1, rec1_s2, rec2_s1, rec2_s2)
         text_window_size = 200 # in chars
 
@@ -301,10 +301,10 @@ class Repositext
         end
       end
 
-      # @param[Array<Hash>] confidence_levels
-      # @param[String] path_to_index a relative URL to the index page
-      # @param[String] filename_1
-      # @param[String] filename_2
+      # @param [Array<Hash>] confidence_levels
+      # @param [String] path_to_index a relative URL to the index page
+      # @param [String] filename_1
+      # @param [String] filename_2
       def self.generate_html_report(confidence_levels, path_to_index, filename_1, filename_2)
         return nil  if confidence_levels.empty? # Don't generate a report if they are all the same
         template_path = File.expand_path(
@@ -345,7 +345,7 @@ class Repositext
       end
 
       # Computes the css class for the given confidence
-      # @param[Float] confidence from 0.0 to 1.0
+      # @param [Float] confidence from 0.0 to 1.0
       def self.compute_css_class(confidence)
         case confidence
         when 0.0...0.5

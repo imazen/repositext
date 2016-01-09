@@ -42,7 +42,7 @@ class Repositext
         # Transitions state to :move_to_closest_sentence_boundary
         # @param ss [StringScanner]
         # @param new_contents [String]
-        # @return[Symbol] new_state
+        # @return [Symbol] new_state
         def idle_state_handler!(ss, new_contents)
           # Match up until the the next subtitle_mark_and_surroundings, excluding the match itself
           if(contents = ss.scan_until(/(?=#{ subtitle_mark_and_surroundings_regex })/))
@@ -61,7 +61,7 @@ class Repositext
         # boundary. Transitions state back to :idle.
         # @param ss [StringScanner]
         # @param new_contents [String]
-        # @return[Symbol] new_state
+        # @return [Symbol] new_state
         def move_after_closest_sentence_boundary_state_handler!(ss, new_contents)
           smas = extract_subtitle_mark_and_surroundings!(ss)
           iocsb = compute_index_of_closest_sentence_boundary(smas)

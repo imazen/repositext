@@ -43,7 +43,7 @@ class Repositext
         # :xml_comment,
         # :xml_pi,
         #
-        # @return[Array<Symbol>]
+        # @return [Array<Symbol>]
         def self.whitelisted_kramdown_features
           [
             :a,

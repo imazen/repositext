@@ -5,8 +5,8 @@ class Repositext
     # result to a file, but directly to the console.
     class Rtfile
 
-      # @param[String] rtfile_base_dir the directory in which the rtfile is located
-      # @param[Repositext::Cli::Config] config
+      # @param [String] rtfile_base_dir the directory in which the rtfile is located
+      # @param [Repositext::Cli::Config] config
       def initialize(rtfile_base_dir, config)
         @validated_rtfile_base_dir = rtfile_base_dir
         @validated_config = config
@@ -46,8 +46,8 @@ class Repositext
 
     private
 
-      # @param[String] rtfile_path to the reference config (Rtfile template)
-      # @return[Repositext::Cli::Config] a reference config
+      # @param [String] rtfile_path to the reference config (Rtfile template)
+      # @return [Repositext::Cli::Config] a reference config
       def load_reference_config(rtfile_path)
         Repositext::Cli::Config.new(rtfile_path).tap(&:eval)
       end

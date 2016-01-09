@@ -176,7 +176,7 @@ class Repositext
       end
 
       # Validates the extracted corrections
-      # @param [Array<Hash>]
+      # @param corrections [Array<Hash>]
       def self.validate_corrections(corrections)
         # Validate that each correction has the required attrs
         with_missing_attrs = []
@@ -300,9 +300,9 @@ class Repositext
       end
 
       # Reports that a correction has already been applied
-      # @param [Hash] correction
-      # @param [String] precision, e.g., 'Exact' or 'Fuzzy'
-      # @param [Array] report_lines collector for report output
+      # @param correction [Hash]
+      # @param precision [String] e.g., 'Exact' or 'Fuzzy'
+      # @param report_lines [Array] collector for report output
       def self.report_correction_has_already_been_applied(correction, precision, report_lines)
         l = "    ##{ correction[:correction_number] }: It appears that this correction has already been applied. (#{ precision })"
         report_lines << l

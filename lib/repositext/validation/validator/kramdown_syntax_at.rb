@@ -39,8 +39,8 @@ class Repositext
         end
 
         # AT specific syntax validation
-        # @param[String] source the at document to validate
-        # @return[Outcome]
+        # @param [String] source the at document to validate
+        # @return [Outcome]
         def valid_syntax_at?(source)
           errors = []
           warnings = []
@@ -52,9 +52,9 @@ class Repositext
         end
 
         # Implement AT specific validation callback when walking the tree.
-        # @param[Kramdown::Element] el
-        # @param[Array] errors collector for errors
-        # @param[Array] warnings collector for warnings
+        # @param [Kramdown::Element] el
+        # @param [Array] errors collector for errors
+        # @param [Array] warnings collector for warnings
         def validation_hook_on_element(el, errors, warnings)
           if(:root == el.type)
             if @options['run_options'].include?('kramdown_syntax_at-all_elements_are_inside_record_mark')
@@ -210,9 +210,9 @@ class Repositext
 
       protected
 
-        # @param[String] source the kramdown source string
-        # @param[Array] errors collector for errors
-        # @param[Array] warnings collector for warnings
+        # @param [String] source the kramdown source string
+        # @param [Array] errors collector for errors
+        # @param [Array] warnings collector for warnings
         def validate_record_mark_syntax(source, errors, warnings)
           # Record_marks_have to be preceded by a blank line.
           # The only exception is the first record_mark in each file.

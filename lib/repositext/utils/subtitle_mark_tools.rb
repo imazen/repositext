@@ -11,7 +11,7 @@ class Repositext
       # all tokens except :subtitle_mark. Preserves line number consistency. In other
       # words, if a text fragment was on line 17 before being processed here,
       # it would still be on line 17 after processing.
-      # @param[String] txt
+      # @param [String] txt
       def self.extract_body_text_with_subtitle_marks_only(txt)
         # Remove id title and paragraph
         content = Repositext::Utils::IdPageRemover.remove(txt)
@@ -34,7 +34,7 @@ class Repositext
       # @param txt [String] typically content_at
       # @param txt_is_already_cleaned_up [Boolean] set to true if txt has already
       #   been processed through extract_body_text_with_subtitle_marks_only
-      # @return[Array<Hash>] with the following keys for each caption:
+      # @return [Array<Hash>] with the following keys for each caption:
       #   :char_length
       #   :line
       #   :excerpt

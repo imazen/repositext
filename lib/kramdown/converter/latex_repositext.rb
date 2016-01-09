@@ -205,9 +205,9 @@ module Kramdown
       end
 
       # Returns a complete latex document as string.
-      # @param[Kramdown::Element] el the kramdown root element
-      # @param[Hash] opts
-      # @return[String]
+      # @param [Kramdown::Element] el the kramdown root element
+      # @param [Hash] opts
+      # @return [String]
       def convert_root(el, opts)
         latex_body = inner(el, opts)
         latex_body = post_process_latex_body(latex_body)
@@ -259,7 +259,7 @@ module Kramdown
         latex_body
       end
 
-      # @param[String] latex_body
+      # @param [String] latex_body
       def post_process_latex_body(latex_body)
         lb = latex_body.dup
         # gap_marks: Skip certain characters and find characters to highlight in red
@@ -363,8 +363,8 @@ module Kramdown
       # Inspired by http://tex.stackexchange.com/a/34586
       # NOTE that Kramdown::Parser::Latex already escapes contents of :text
       # elements, so we don't need to do that again.
-      # @param[String] txt
-      # @return[String]
+      # @param [String] txt
+      # @return [String]
       def escape_latex_text(txt)
         return txt  unless txt.is_a?(String)
         r = txt.dup

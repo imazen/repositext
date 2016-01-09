@@ -35,22 +35,22 @@ class Repositext
         @logging.level = @level
       end
 
-      # @param[Object] loggable
+      # @param [Object] loggable
       def debug(loggable)
         @logging.debug(loggable)
       end
 
-      # @param[Object] loggable
+      # @param [Object] loggable
       def info(loggable)
         @logging.info(loggable)
       end
 
-      # @param[Object] loggable
+      # @param [Object] loggable
       def warning(loggable)
         @logging.warn(loggable)
       end
 
-      # @param[Object] loggable
+      # @param [Object] loggable
       def error(loggable)
         @logging.error(loggable)
       end
@@ -69,8 +69,8 @@ class Repositext
       end
 
       # Logs a footer for validation
-      # @param[Reporter] _reporter
-      # @param[Float] _run_time in seconds
+      # @param [Reporter] _reporter
+      # @param [Float] _run_time in seconds
       def validation_footer(_reporter, _run_time)
         case (c = _reporter.errors.count)
         when 0
@@ -88,9 +88,9 @@ class Repositext
         end
       end
 
-      # @param[Validator] _validator
-      # @param[IO, String, Array<IO, String>] _io the source file (or path as String) in which the validation step was defined
-      # @param[Boolean] _success
+      # @param [Validator] _validator
+      # @param [IO, String, Array<IO, String>] _io the source file (or path as String) in which the validation step was defined
+      # @param [Boolean] _success
       def log_validation_step(_validator, _io, _success)
         # find longest common prefix between @input_base_dir and _io's filename
         # to remove it from logging output
@@ -118,8 +118,8 @@ class Repositext
         _success ? info(parts.join) : error(parts.join)
       end
 
-      # @param[IO, String, Array<IO, String>] _io
-      # @param[Array<String>] _info
+      # @param [IO, String, Array<IO, String>] _io
+      # @param [Array<String>] _info
       def log_debug_info(_io, _info)
         io_or_string_array = _io.is_a?(Array) ? _io : [_io] # cast _io to array
         string_array = io_or_string_array.map { |e|

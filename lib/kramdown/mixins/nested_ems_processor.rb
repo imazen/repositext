@@ -5,7 +5,7 @@ module Kramdown
   module NestedEmsProcessor
 
     # Walks the ke tree, finds any ems nested inside other ems and processes them.
-    # @param[Kramdown::Element] ke the root node of a kramdown tree
+    # @param [Kramdown::Element] ke the root node of a kramdown tree
     def recursively_clean_up_nested_ems!(ke)
       # First iterate over children, use queue to decouple it from a parent's children
       # collection. This is important to make recursion work.
@@ -21,7 +21,7 @@ module Kramdown
     end
 
     # Processes any children of ke (an em) that are also ems.
-    # @param[Kramdown::Element] ke the root node of a kramdown tree
+    # @param [Kramdown::Element] ke the root node of a kramdown tree
     def clean_up_nested_ems!(ke)
       ke_child_processing_queue = ke.children.dup # duplicate list with references to same objects
       ke_sibling_processing_queue = [] # for any new ke siblings we create

@@ -17,7 +17,7 @@ module Kramdown
                           :span_extensions, :html_entity, :line_break, :escaped_chars]
       end
 
-      # @return[Array] array with [root, [warnings]]
+      # @return [Array] array with [root, [warnings]]
       def parse #:nodoc:
         configure_parser
         parse_blocks(@root, adapt_source(source))

@@ -16,7 +16,7 @@ class Repositext
 
     private
 
-      # @param[String] folio_xml_document
+      # @param [String] folio_xml_document
       def valid_folio_round_trip?(folio_xml_document)
         # parse Folio XML
         folio_based_kramdown_doc = @options['folio_xml_parser_class'].new(

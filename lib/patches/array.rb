@@ -2,7 +2,7 @@ class Array
 
   # Converts self to an array of items and ranges (for any adjacent items).
   # This is used to make regexes with large character classes more efficient.
-  # @return[Array] a copy of self with adjacent items merged into ranges.
+  # @return [Array] a copy of self with adjacent items merged into ranges.
   #     Example: [1,2,3,5,6,9,7] => [1..3, 5..7, 9]
   def merge_adjacent_items_into_ranges(replace_single_item_ranges = false)
     array = compact.uniq.sort

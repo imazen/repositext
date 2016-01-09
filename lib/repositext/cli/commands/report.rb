@@ -551,7 +551,7 @@ class Repositext
       end
 
       # Finds invalid quote sequences. See class for details.
-      # @param[Hash] options
+      # @param [Hash] options
       def report_invalid_typographic_quotes(options)
         # For primary repo we want limited context, and for foreign we want
         # all text from paragraph number
@@ -1021,8 +1021,8 @@ class Repositext
       #   '.".' => { :pre => 'text before quote', :post => 'text after quote', :count => 42 },
       #   ...
       # }
-      # @param[String] quote_char the type of quote to detect
-      # @param[Hash] options
+      # @param [String] quote_char the type of quote to detect
+      # @param [Hash] options
       def find_all_quote_instances(quote_char, options)
         instances = []
         Repositext::Cli::Utils.read_files(

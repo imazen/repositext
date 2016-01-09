@@ -17,9 +17,9 @@ class Repositext
 
         # Checks if doc_1 and doc_2 contain the same number of gap_marks in each
         # line.
-        # @param[String] doc_1
-        # @param[String] doc_2
-        # @return[Outcome]
+        # @param [String] doc_1
+        # @param [String] doc_2
+        # @return [Outcome]
         def gap_mark_counts_match?(doc_1, doc_2)
           doc_1_lines = doc_1.split("\n")
           doc_2_lines = doc_2.split("\n")

@@ -9,8 +9,8 @@ module Kramdown
     class ParagraphAlignmentObjects < KramdownRepositext
 
       # Instantiate a converter
-      # @param[Kramdown::Element] root
-      # @param[Hash] options
+      # @param [Kramdown::Element] root
+      # @param [Hash] options
       def initialize(root, options)
         super
         @block_elements = [] # collector for block level objects

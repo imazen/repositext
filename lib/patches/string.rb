@@ -2,7 +2,7 @@ class String
 
   # Truncates self, removing the middle portion so that the beginning and
   # end are preserved.
-  # @param[Integer] max_len
+  # @param [Integer] max_len
   def truncate_in_the_middle(max_len)
     r = if length > max_len
       half_len = max_len/2
@@ -15,8 +15,8 @@ class String
 
   # Truncates self, removing the beginning of the string. It truncates on whitespace
   # only and requires a min word length for the last word.
-  # @param[Integer] max_len
-  # @param[Hash, optional] options
+  # @param [Integer] max_len
+  # @param [Hash, optional] options
   #     * omission: the string to use for indication truncation, default: '…'
   #     * separator: where to truncate, e.g., ' ' for space
   def truncate_from_beginning(max_len, options = {})

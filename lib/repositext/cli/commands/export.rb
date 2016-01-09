@@ -186,7 +186,7 @@ class Repositext
         end
       end
 
-      # @param[String] variant one of 'pdf_plain', 'pdf_recording', 'pdf_translator'
+      # @param [String] variant one of 'pdf_plain', 'pdf_recording', 'pdf_translator'
       def export_pdf_base(variant, options)
         if !export_pdf_variants.include?(variant)
           raise(ArgumentError.new("Invalid variant: #{ variant.inspect }"))

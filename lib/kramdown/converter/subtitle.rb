@@ -7,16 +7,16 @@ module Kramdown
     class Subtitle < Base
 
       # Instantiate a Subtitle converter
-      # @param[Kramdown::Element] root
-      # @param[Hash] options
+      # @param [Kramdown::Element] root
+      # @param [Hash] options
       def initialize(root, options)
         super
         @output = '' # collector for output string
       end
 
       # Extracts subtitle from tree
-      # @param[Kramdown::Element] el
-      # @return[String] the subtitle text
+      # @param [Kramdown::Element] el
+      # @return [String] the subtitle text
       def convert(el)
         case el.type
         when :blank
@@ -114,8 +114,8 @@ module Kramdown
       # Adds a '@' to the beginning of the first paragraph if txt doesn't contain
       # any subtitle_marks yet. This is so that the software that uses this file
       # detects it as a subtitle file
-      # @param[String] txt
-      # @return[String]
+      # @param [String] txt
+      # @return [String]
       def add_subtitle_mark_to_beginning_of_first_paragraph(txt)
         return(txt)  if txt.index('@')
         # Insert '@' in the first line that contains text and is not a header

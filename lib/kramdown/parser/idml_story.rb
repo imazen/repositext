@@ -15,7 +15,7 @@ module Kramdown
       class InvalidElementException < RuntimeError; end
 
       # Maps IDML paragraph styles to kramdown elements
-      # @return[Hash] hash with paragraph styles as keys and arrays with the
+      # @return [Hash] hash with paragraph styles as keys and arrays with the
       # following items as values:
       # * element type: a supported Kramdown::Element type
       # * element value: String or nil
@@ -31,8 +31,8 @@ module Kramdown
         }
       end
 
-      # @param[String] source the story's XML as string
-      # @param[Hash] options
+      # @param [String] source the story's XML as string
+      # @param [Hash] options
       def initialize(source, options)
         super
         @stack = [] # the parse stack, see #with_stack for details
@@ -55,10 +55,10 @@ module Kramdown
       #   [<:em element>, <CharacterStyleRange xml>]
       # ]
       #
-      # @param[Kramdown::Element] kd_el the current Kramdown::Element.
-      # @param[Nokogiri::Xml::Node] xml_node the current XML node.
-      # @param[Block]
-      def with_stack(kd_el, xml_node)
+      # @param kd_el [Kramdown::Element] the current Kramdown::Element.
+      # @param xml_node [Nokogiri::Xml::Node]  the current XML node.
+      # @param block [Block]
+      def with_stack(kd_el, xml_node, &block)
         @stack.push([kd_el, xml_node])
         @tree = kd_el
         yield
@@ -68,7 +68,7 @@ module Kramdown
       end
 
       # Parses all stories in @source and returns parse tree.
-      # @return[Kramdown::Element] the root element of the parse tree with all children.
+      # @return [Kramdown::Element] the root element of the parse tree with all children.
       def parse
         xml = Nokogiri::XML(@source) {|cfg| cfg.noblanks }
         xml.xpath('/idPkg:Story/Story').each do |story|
@@ -77,7 +77,7 @@ module Kramdown
         update_tree
       end
 
-      # @param[Nokogiri::Xml::Node] story the root node of the story xml
+      # @param [Nokogiri::Xml::Node] story the root node of the story xml
       def parse_story(story)
         @story_name = story['Self']
         story.xpath('ParagraphStyleRange').each do |para|
@@ -93,7 +93,7 @@ module Kramdown
         end
       end
 
-      # @param[Nokogiri::Xml::Node] para the xml node for the ParagraphStyleRange
+      # @param [Nokogiri::Xml::Node] para the xml node for the ParagraphStyleRange
       def parse_para(para)
         el = add_element_for_ParagraphStyleRange(para)
         with_stack(el, para) { parse_para_children(para.children) }
@@ -103,8 +103,8 @@ module Kramdown
       # Adds a new :p element as child to @tree, depending on the style of para.
       # You can override the style mappings via the `paragraph_style_mappings`
       # method.
-      # @param[Nokogiri::Xml::Node] para the xml node for the ParagraphStyleRange
-      # @return[Kramdown::Element] the new kramdown element
+      # @param [Nokogiri::Xml::Node] para the xml node for the ParagraphStyleRange
+      # @return [Kramdown::Element] the new kramdown element
       def add_element_for_ParagraphStyleRange(para)
         l = { :line => para.line, :story => @story_name }
         el = case para['AppliedParagraphStyle']
@@ -137,7 +137,7 @@ module Kramdown
         el
       end
 
-      # @param[Array<Nokogiri::Xml::Node>] children an array of xml nodes, one for each child
+      # @param [Array<Nokogiri::Xml::Node>] children an array of xml nodes, one for each child
       def parse_para_children(children)
         children.each do |child|
           case child.name
@@ -151,7 +151,7 @@ module Kramdown
         end
       end
 
-      # @param[Nokogiri::Xml::Node] char the xml node for the CharacterStyleRange
+      # @param [Nokogiri::Xml::Node] char the xml node for the CharacterStyleRange
       def parse_char(char)
         el = add_element_for_CharacterStyleRange(char)
         with_stack(el || @tree, char) { parse_char_children(char.children) }
@@ -168,8 +168,8 @@ module Kramdown
       # Creates a Kramdown::Element for the currently parsed CharacterStyleRange
       # and adds the new element to the tree. We do this to preserve any formatting
       # of the CharacterStyleRange node.
-      # @param[Nokogiri::Xml::Node] char the xml node for the CharacterStyleRange
-      # @return[Kramdown::Element] the new kramdown element
+      # @param [Nokogiri::Xml::Node] char the xml node for the CharacterStyleRange
+      # @return [Kramdown::Element] the new kramdown element
       def add_element_for_CharacterStyleRange(char)
         el = parent_el = nil
         char_style = :regular
@@ -280,7 +280,7 @@ module Kramdown
         el
       end
 
-      # @param[Array<Nokogiri::Xml::Node>] children an array of xml nodes, one for each child
+      # @param [Array<Nokogiri::Xml::Node>] children an array of xml nodes, one for each child
       def parse_char_children(children)
         children.each do |child|
           case child.name
@@ -332,8 +332,8 @@ module Kramdown
         end
       end
 
-      # @param[String] name the IDML style name
-      # @return[String] the normalized style name
+      # @param [String] name the IDML style name
+      # @return [String] the normalized style name
       def normalize_style_name(name)
         name.gsub!(/^ParagraphStyle\/|^CharacterStyle\//, '')
         name.gsub!(/[^A-Za-z0-9_-]/, '-')
@@ -456,15 +456,15 @@ module Kramdown
 
       # A validation hook during parsing. Override this method for your custom
       # validations.
-      # @param[Kramdown::Element] kd_el the kramdown element for xml_node
-      # @param[Nokogiri::Xml::Node] xml_node the currently parsed idml node
+      # @param [Kramdown::Element] kd_el the kramdown element for xml_node
+      # @param [Nokogiri::Xml::Node] xml_node the currently parsed idml node
       def validation_hook_during_parsing(kd_el, xml_node)
         # override this method in validating subclass of self
       end
 
       # A validation hook during update_tree. Override this method for your custom
       # validations.
-      # @param[Kramdown::Element] kd_el the kramdown element for xml_node
+      # @param [Kramdown::Element] kd_el the kramdown element for xml_node
       def validation_hook_during_update_tree(kd_el)
         # override this method in validating subclass of self
       end
