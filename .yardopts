@@ -2,4 +2,4 @@
 --protected
 --readme README.md
 --markup markdown
---output-dir ./doc/yard
+--output-dir ./../repositext-guide/documents/reference/classes/repositext
