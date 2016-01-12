@@ -3,6 +3,8 @@ class Repositext
   # Represents a git content repository
   class Repository
 
+    delegate :diff, to: :@repo
+
     # @param dir_in_repo [String] path to a dir in the repo (can be nested)
     def initialize(dir_in_repo)
       @repo = Rugged::Repository.discover(dir_in_repo)

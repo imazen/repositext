@@ -8,6 +8,7 @@ class Repositext
     # All attrs are given as string, same as coming from CSV file
     let(:default_attrs) { {
       char_length: '72',
+      contents: 'subtitle contents',
       persistent_id: '3276590',
       record_id: '63030029',
       relative_milliseconds: '10303',
@@ -19,6 +20,10 @@ class Repositext
 
       it 'initializes char_length to int' do
         default_subtitle.char_length.must_equal(72)
+      end
+
+      it 'initializes contents' do
+        default_subtitle.contents.must_equal('subtitle contents')
       end
 
       it 'initializes persistent_id' do

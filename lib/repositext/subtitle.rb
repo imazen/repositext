@@ -10,10 +10,12 @@ class Repositext
     STID_REGEX = /\A[#{ Regexp.escape(STID_CHARS_WITHOUT_ZERO) }][#{ Regexp.escape(STID_CHARS) }]{#{ STID_LENGTH - 1 }}\z/
 
     attr_reader :char_length,
+                :content,
                 :persistent_id,
                 :record_id,
                 :relative_milliseconds,
-                :samples
+                :samples,
+                :tmp_attrs
 
     # @param stid [String]
     # @return [Boolean] true if stid is valid format.
@@ -24,10 +26,12 @@ class Repositext
     # @param attrs [Hash] with symbolized keys
     def initialize(attrs)
       @char_length = attrs[:char_length].to_i  if attrs[:char_length]
+      @content = attrs[:content]
       @persistent_id = attrs[:persistent_id]
       @record_id = attrs[:record_id]
       @relative_milliseconds = attrs[:relative_milliseconds].to_i  if attrs[:relative_milliseconds]
       @samples = attrs[:samples].to_i  if attrs[:samples]
+      @tmp_attrs = attrs[:tmp_attrs] || {}
     end
 
     # Returns timestamp in absolute milliseconds, computed from samples.
