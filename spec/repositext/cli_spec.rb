@@ -65,3 +65,25 @@ class Repositext
 
   end
 end
+
+      # TODO: Put these specs in the right place.
+      # describe '.find_rtfile' do
+      #   it "finds Rtfile in current directory" do
+      #     FileUtils.cd '/'
+      #     FileUtils.touch 'Rtfile'
+      #     klass.find_rtfile.must_equal '/Rtfile'
+      #   end
+
+      #   it "finds Rtfile in ancestor directory" do
+      #     p = '/path1/path2'
+      #     FileUtils.mkdir_p p
+      #     FileUtils.cd '/path1'
+      #     FileUtils.touch 'Rtfile'
+      #     FileUtils.cd 'path2'
+      #     klass.find_rtfile.must_equal '/path1/Rtfile'
+      #   end
+
+      #   it "returns nil if no Rtfile can be found" do
+      #     klass.find_rtfile.must_equal nil
+      #   end
+      # end

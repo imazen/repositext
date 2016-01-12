@@ -29,6 +29,19 @@ class Repositext
           ).run
         end
 
+        # # TODO: compare number of gap_marks to that of corresponding file in primary repo
+        # if @options[:compare_gap_mark_count_with]
+        #   Validator::GapMarkTaggingImportConsistency.new(
+        #     [
+        #       StringIO.new(@options[:compare_gap_mark_count_with]),
+        #       File.open(gi)
+        #     ],
+        #     @logger,
+        #     @reporter,
+        #     @options.merge(:gap_mark_tagging_import_consistency_compare_mode => 'pre_import')
+        #   ).run
+        # end
+
       end
 
     end
