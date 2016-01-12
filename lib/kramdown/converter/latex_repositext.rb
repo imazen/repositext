@@ -162,7 +162,13 @@ module Kramdown
             before << "\\begin{RtIdTitle1}\n"
             after << "\n\\end{RtIdTitle1}"
             # emulate small caps
-            inner_text = self.class.emulate_small_caps(inner(el, opts))
+            inner_text = inner(el, opts)
+            # During transition where some titles contain {: .smcaps} class already,
+            # and others don't yet, we have to test whether we need to add
+            # smcaps manually:
+            if !inner_text.index('RtSmCapsEmulation')
+              inner_text = self.class.emulate_small_caps(inner_text)
+            end
             # differentiate between primary and non-primary repos
             if !@options[:is_primary_repo]
               # add space between title and date code
