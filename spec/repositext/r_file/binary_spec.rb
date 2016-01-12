@@ -11,7 +11,7 @@ class Repositext
       let(:filename) { '/path/to/r_file.at' }
       let(:default_rfile) { RFile::Binary.new(contents, language, filename) }
 
-      describe 'is_binary' do
+      describe '#is_binary' do
 
         it 'returns true' do
           default_rfile.is_binary.must_equal(true)

@@ -22,6 +22,7 @@ class Repositext
       end
 
       # Extracts a 4-digit product identity id from filename
+      # TODO: Replace calls to this method with RFile::ContentSpecific.product_identity_id
       def self.extract_product_identity_id(filename)
         basename = filename.split('/').last
         basename.match(/(?<=_)\d{4}(?=\.)/).to_s

@@ -267,6 +267,7 @@ module Kramdown
 
 
       def process_node_nobreakhyphen(xn)
+        # TODO: How to handle noBreakHyphen
         # noBreakHyphen -> ?
         ignore_node(xn)
         flag_match_found
@@ -375,7 +376,7 @@ module Kramdown
 
       def process_node_softhyphen(xn)
         # softHyphen
-# todo: what to do?
+        # Todo: how to handle softHyphen
       end
 
       def process_node_t(xn)

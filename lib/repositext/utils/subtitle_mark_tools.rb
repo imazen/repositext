@@ -3,6 +3,8 @@ class Repositext
     class SubtitleMarkTools
 
       # Returns array with headers for subtitle_markers CSV file
+      # TODO SPID: check for callers of this method and make sure additional headers are ok
+      # TODO: Change persitentId => subtitleId
       def self.csv_headers
         ['relativeMS', 'samples', 'charLength', 'persistentId', 'recordId']
       end
