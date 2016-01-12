@@ -13,7 +13,7 @@ module Kramdown
   module WhitespaceOutPusher
 
     # Recursively pushes out whitespace from :em and :strong elements
-    # @param[Kramdown::Element] ke
+    # @param [Kramdown::Element] ke
     def recursively_push_out_whitespace!(ke)
       # Work from the bottom up so that tree mutations don't interfere with
       # iteration of children.
@@ -28,7 +28,7 @@ module Kramdown
     end
 
     # Pushes out whitespace from :em and :strong elements
-    # @param[Kramdown::Element] ke
+    # @param [Kramdown::Element] ke
     def push_out_whitespace!(ke)
       if [:em, :strong].include?(ke.type) && ke.children.any?
         fc = ke.children.first

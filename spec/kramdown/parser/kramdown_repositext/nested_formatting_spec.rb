@@ -2,7 +2,8 @@ require_relative '../../../helper'
 
 module Kramdown
   module Parser
-    class KramdownRepositext
+    describe KramdownRepositext do
+
       describe 'Nested formatting' do
 
         it "handles nested formatting" do
@@ -23,6 +24,7 @@ module Kramdown
         end
 
       end
+
     end
   end
 end

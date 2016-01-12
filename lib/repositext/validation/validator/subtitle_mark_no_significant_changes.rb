@@ -20,9 +20,9 @@ class Repositext
         # Checks if any subtitle_marks have been changed significantly compared
         # to their lengths saved in subtitle_markers.csv
         # Only applied if content_at contains subtitle_marks.
-        # @param[String] content_at
-        # @param[CSV String] subtitle_marker_csv
-        # @return[Outcome]
+        # @param [String] content_at
+        # @param [CSV String] subtitle_marker_csv
+        # @return [Outcome]
         def significant_changes?(content_at, subtitle_marker_csv)
           raise(ArgumentError.new("content_at is empty."))  if content_at.to_s.strip.empty?
           raise(ArgumentError.new("subtitle_marker_csv is empty."))  if subtitle_marker_csv.to_s.strip.empty?
@@ -92,8 +92,8 @@ class Repositext
         end
 
         # Returns :insignificant or :significant if a subtitle_mark's caption length has changed
-        # @param[Integer] old_len
-        # @param[Integer] new_len
+        # @param [Integer] old_len
+        # @param [Integer] new_len
         def compute_subtitle_mark_change(old_len, new_len)
           relative_change = (new_len - old_len).abs / old_len.to_f
           threshold = case old_len

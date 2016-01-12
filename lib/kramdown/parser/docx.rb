@@ -27,7 +27,6 @@ module Kramdown
       include Kramdown::DocxImportPostProcessor
       include Kramdown::ImportWhitespaceSanitizer
       include Kramdown::NestedEmsProcessor
-      include Kramdown::TmpEmClassProcessor
       include Kramdown::TreeCleaner
       include Kramdown::WhitespaceOutPusher
 
@@ -46,15 +45,15 @@ module Kramdown
 
         attr_reader *SUPPORTED_TEXT_RUN_FORMAT_ATTRS
 
-        # @param xn [Nokogiri::XML::Node] the text_run's XML node
+        # @param text_run [Nokogiri::XML::Node] the text_run's XML node
         def initialize(text_run)
           tr_style = text_run.at_xpath('./w:rPr')
           if tr_style
             @bold = tr_style.at_xpath('./w:b')
             @italic = tr_style.at_xpath('./w:i')
-            @smallcaps = tr_style.at_xpath('./w:smallCaps')
-            @subscript = tr_style.at_xpath("./w:vertAlign[@val='subscript']")
-            @superscript = tr_style.at_xpath("./w:vertAlign[@val='superscript']")
+            @smcaps = tr_style.at_xpath('./w:smallCaps')
+            @subscript = tr_style.at_xpath("./w:vertAlign[@w:val='subscript']")
+            @superscript = tr_style.at_xpath("./w:vertAlign[@w:val='superscript']")
             @underline = tr_style.at_xpath('./w:u')
           end
         end
@@ -62,7 +61,7 @@ module Kramdown
         # Returns an array with symbols of all applied attributes, sorted
         # alphabetically
         def applied_attrs
-          SUPPORTED_TEXT_RUN_FORMAT_ATTRS.find_all { |e|
+          @applied_attrs ||= SUPPORTED_TEXT_RUN_FORMAT_ATTRS.find_all { |e|
             self.send(e)
           }
         end
@@ -81,8 +80,8 @@ module Kramdown
       # The root element of element tree that is created from the source string.
       attr_reader :root
 
-      # Maps DOCX paragraph styles to kramdown elements
-      # @return[Hash] hash with paragraph styles as keys and arrays with the
+      # Maps DOCX paragraph style ids to kramdown elements
+      # @return [Hash] Hash with paragraph style ids as keys and arrays with the
       # following items as values:
       # * element type: a supported Kramdown::Element type
       # * element value: String or nil
@@ -90,15 +89,27 @@ module Kramdown
       # * element options (can contain a lambda for lazy execution, gets passed the para XML node)
       def self.paragraph_style_mappings
         {
-          "Header"                   => [:header, nil, { }                        , lambda { |para| {:level => 1, :raw_text => para.text} }],
-          "Normal"                   => [:p     , nil, {'class' => 'normal'}      , nil],
-          "NormalTest"               => [:p     , nil, {'class' => 'normal_test'} , nil],
-          "HorizontalRule"           => [:hr    , nil, { }                        , nil],
+          "header1"        => [:header, nil, { }                      , lambda { |para| {:level => 1, :raw_text => para.text} }],
+          "header2"        => [:header, nil, { }                      , lambda { |para| {:level => 2, :raw_text => para.text} }],
+          "header3"        => [:header, nil, { }                      , lambda { |para| {:level => 3, :raw_text => para.text} }],
+          "normal"         => [:p     , nil, {'class' => 'normal'}    , nil],
+          "paraTest"       => [:p     , nil, {'class' => 'para_test'} , nil],
+          "horizontalRule" => [:hr    , nil, { }                      , nil],
         }
       end
 
+      # Parse the +source+ string into an element tree, possibly using the parsing +options+, and
+      # return the root element of the element tree and an array with warning messages.
       # @param source [String] contents of word/document.xml as string
-      # @param kramdown_options [Hash, optional] these will be passed to Kramdown::Parser
+      # @param options [Hash, optional] these will be passed to Kramdown::Parser instance
+      def self.parse(source, options = {})
+        parser = new(source, options)
+        parser.parse
+        [parser.root, parser.warnings]
+      end
+
+      # @param source [String] contents of word/document.xml as string
+      # @param options [Hash, optional] these will be passed to Kramdown::Parser
       def initialize(source, options)
         @source = source
         @options = {
@@ -110,16 +121,6 @@ module Kramdown
       end
       # Comply with Kramdown::Parser behavior:
       private_class_method(:new, :allocate)
-
-      # Parse the +source+ string into an element tree, possibly using the parsing +options+, and
-      # return the root element of the element tree and an array with warning messages.
-      # @param source [String] contents of word/document.xml as string
-      # @param options [Hash, optional] these will be passed to Kramdown::Parser instance
-      def self.parse(source, options = {})
-        parser = new(source, options)
-        parser.parse
-        [parser.root, parser.warnings]
-      end
 
       # Parses @source into a Kramdown tree under @root.
       def parse
@@ -136,8 +137,8 @@ module Kramdown
         post_process_kramdown_tree!(@ke_context.get('root', nil))
       end
 
-      # @param[Nokogiri::XML::Node] xn the XML Node to process
-      # @param[String] message
+      # @param [Nokogiri::XML::Node] xn the XML Node to process
+      # @param [String] message
       def add_warning(xn, message)
         if '' != message.to_s
           @warnings << {
@@ -153,7 +154,7 @@ module Kramdown
       # Processes an xml_node
       # @param xn [Nokogiri::XML::Node] the XML Node to process
       def process_xml_node(xn)
-        raise(ArgumentError, "xn cannot be nil")  if xn.nil?
+        raise(InvalidElementException, "xn cannot be nil")  if xn.nil?
         # TODO: Don't use OpenStruct here for performance reasons.
         @xn_context = OpenStruct.new(
           :match_found => false,
@@ -168,7 +169,9 @@ module Kramdown
           if respond_to?(method_name, true)
             self.send(method_name, xn)
           else
-            raise "Unexpected element type #{ xn.name } on line #{ xn.line }. Requires method #{ method_name.inspect }."
+            raise InvalidElementException.new(
+              "Unexpected element type #{ xn.name } on line #{ xn.line }. Requires method #{ method_name.inspect }."
+            )
           end
         end
         if !@xn_context.match_found
@@ -193,8 +196,6 @@ module Kramdown
         # You have two options:
         # 1. call super if you override this method
         # 2. copy the methods below into your own method if you need different sequence
-        recursively_process_temp_em_class!(kramdown_tree, 'tmpNoBold')
-        recursively_process_temp_em_class!(kramdown_tree, 'tmpNoItalics')
         recursively_merge_adjacent_elements!(kramdown_tree)
         recursively_clean_up_nested_ems!(kramdown_tree) # has to be called after process_temp_em_class
         recursively_push_out_whitespace!(kramdown_tree)
@@ -233,6 +234,24 @@ module Kramdown
         flag_match_found
       end
 
+      def process_node_commentrangestart(xn)
+        # commentRangeStart
+        ignore_node(xn)
+        flag_match_found
+      end
+
+      def process_node_commentrangeend(xn)
+        # commentRangeEnd
+        ignore_node(xn)
+        flag_match_found
+      end
+
+      def process_node_commentreference(xn)
+        # commentReference
+        ignore_node(xn)
+        flag_match_found
+      end
+
       def process_node_hyperlink(xn)
         # hyperlink -> Pull
         pull_node(xn)
@@ -246,16 +265,23 @@ module Kramdown
         flag_match_found
       end
 
+
+      def process_node_nobreakhyphen(xn)
+        # TODO: How to handle noBreakHyphen
+        # noBreakHyphen -> ?
+        ignore_node(xn)
+        flag_match_found
+      end
+
       def process_node_p(xn)
         # Paragraph
         l = { :line => xn.line }
         p_style = xn.at_xpath('./w:pPr/w:pStyle')
-        p_style_name = p_style ? p_style['w:val'] : nil
-        case p_style_name
+        p_style_id = p_style ? p_style['w:val'] : nil
+        case p_style_id
         when *paragraph_style_mappings.keys
           # A known paragraph style that we have a mapping for
-          type, value, attr, options = paragraph_style_mappings[p_style_name]
-
+          type, value, attr, options = paragraph_style_mappings[p_style_id]
           root = @ke_context.get('root', xn)
           return false  if !root
           para_ke = ElementRt.new(
@@ -273,33 +299,18 @@ module Kramdown
           @ke_context.with_text_container_stack(para_ke) do
             xn.children.each { |xnc| process_xml_node(xnc) }
           end
-
-          # handle .normal_pn
-          if(
-            para_ke.has_class?('normal') &&
-            (fc = para_ke.children.first) &&
-            (txt = fc.to_plain_text) =~ /\A\d+\t/
-          )
-# TODO: also handle paragraph numbers followed by space (up to 5 instances, if more reject import and send back to translator with detailed issues report)
-# TODO: renumber paragraphs via script to eliminate typos in para numbers
-# TODO: in the future: fix easy bugs automatically, re-export for translator to fix difficult bugs
-# TODO: tree cleaner should remove formatting/ems if they contain only whitespace, including tabs. This explains normal_pn issues in 65-0822e.
-            # Convert .normal to .normal_pn, wrap para number in em.pn
-            para_num = txt.to_i
-            text_el = Kramdown::ElementRt.new(:text, para_num.to_s)
-            em_el = Kramdown::ElementRt.new(:em, nil, { 'class' => 'pn' })
-            em_el.add_child(text_el)
-            fc.insert_sibling_before(em_el)
-            fc.value.gsub!(/\A\d+\t/, ' ')
-            para_ke.remove_class('normal')
-            para_ke.add_class('normal_pn')
-          end
+          # Hook to add specialized behavior in subclasses
+          process_node_p_additions(xn, para_ke)
           @xn_context.process_children = false
         else
-# TODO: make unexpected paragraph styles more obvious
-          puts "Unhandled p_style_name #{ p_style_name.inspect }"
-          return false # return early without calling flag_match_found
+          raise(InvalidElementException, "Unhandled p_style_id #{ p_style_id.inspect }")
         end
+        flag_match_found
+      end
+
+      def process_node_prooferr(xn)
+        # proofErr (Word proofing error)
+        ignore_node(xn)
         flag_match_found
       end
 
@@ -365,7 +376,7 @@ module Kramdown
 
       def process_node_softhyphen(xn)
         # softHyphen
-# todo: what to do?
+        # Todo: how to handle softHyphen
       end
 
       def process_node_t(xn)
@@ -392,15 +403,15 @@ module Kramdown
 
       # Capitalizes each word in string:
       # 'this IS a string to CAPITALIZE' => 'This Is A String To Capitalize'
-      # @param[String] a_string
+      # @param [String] a_string
       def capitalize_each_word_in_string(a_string)
         a_string.split.map { |e| e.capitalize }.join(' ')
       end
 
       # Delete xn, send to deleted_text, children won't be processed
-      # @param[Nokogiri::XML::Node] xn
-      # @param[Boolean] send_to_deleted_text whether to send node's text to deleted_text
-      # @param[Boolean] send_to_notes whether to send node's text to notes
+      # @param [Nokogiri::XML::Node] xn
+      # @param [Boolean] send_to_deleted_text whether to send node's text to deleted_text
+      # @param [Boolean] send_to_notes whether to send node's text to notes
       def delete_node(xn, send_to_deleted_text, send_to_notes)
         @xn_context.process_children = false
         add_deleted_text(xn, xn.text)  if send_to_deleted_text
@@ -415,13 +426,13 @@ module Kramdown
       end
 
       # Ignore xn, don't send to deleted_text, children won't be processed
-      # @param[Nokogiri::XML::Node] xn
+      # @param [Nokogiri::XML::Node] xn
       def ignore_node(xn)
         @xn_context.process_children = false
       end
 
       # Lowercases text contents of xn: 'TestString ALLCAPS' => 'teststrings allcaps'
-      # @param[Nokogiri::XML::Node] xn
+      # @param [Nokogiri::XML::Node] xn
       def lowercase_node_text_contents!(xn)
         xn.children.each { |xnc|
           if xnc.text?
@@ -436,15 +447,15 @@ module Kramdown
       end
 
       # Pull xn, Replacing self with children. Xml tree recursion will process children.
-      # @param[Nokogiri::XML::Node] xn
+      # @param [Nokogiri::XML::Node] xn
       def pull_node(xn)
         # nothing to do with node
       end
 
       # Deletes a_string from xn and all its descendant nodes.
-      # @param[String, Regexp] search_string_or_regex a string or regex for finding
-      # @param[String] replace_string the replacement string
-      # @param[Nokogiri::XML::Node] xn
+      # @param [String, Regexp] search_string_or_regex a string or regex for finding
+      # @param [String] replace_string the replacement string
+      # @param [Nokogiri::XML::Node] xn
       def replace_string_inside_node!(search_string_or_regex, replace_string, xn)
         if xn.text? && '' != xn.text && !xn.text.nil?
           xn.content = xn.text.gsub(search_string_or_regex, replace_string)
@@ -457,7 +468,7 @@ module Kramdown
 
       # Raises a warning and returns false if xn contains any text content other
       # than whitespace.
-      # @param[Nokogiri::XML::Node] xn
+      # @param [Nokogiri::XML::Node] xn
       def verify_only_whitespace_is_present(xn)
         verify_text_matches_regex(xn, /\A[ \n]*\z/, 'contained non-whitespace')
       end
@@ -478,6 +489,13 @@ module Kramdown
       # Delegate instance method to class method
       def paragraph_style_mappings
         self.class.paragraph_style_mappings
+      end
+
+      # Hook for specialized behavior in sub classes.
+      # @param xn [Nokogiri::XmlNode] the p XML node
+      # @param ke [Kramdown::Element] the p kramdown element
+      def process_node_p_additions(xn, ke)
+        # Nothing to do. Override this method in specialized subclasses.
       end
 
     end

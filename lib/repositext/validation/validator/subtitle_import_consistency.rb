@@ -29,9 +29,9 @@ class Repositext
       private
 
         # Checks if contents match (depending on @options[:subtitle_import_consistency_compare_mode])
-        # @param[String] content_at
-        # @param[String] subtitle_import
-        # @return[Outcome]
+        # @param [String] content_at
+        # @param [String] subtitle_import
+        # @return [Outcome]
         def contents_match?(content_at, subtitle_import)
           # We have to export content_at in both cases to a temporary subtitle_export
           # so that we can compare it with the subtitle_import

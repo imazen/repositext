@@ -7,8 +7,8 @@ module Kramdown
     class Graphviz < Base
 
       # Create a Graphviz converter with the given options.
-      # @param[Kramdown::Element] root
-      # @param[Hash, optional] options
+      # @param [Kramdown::Element] root
+      # @param [Hash, optional] options
       def initialize(root, options = {})
         super
         @options = {
@@ -30,8 +30,8 @@ module Kramdown
     protected
 
       # Converts el to a graph node, connects parents and children via edges
-      # @param[Kramdown::Element] el
-      # @param[Graphviz::Node, optional] parent_node
+      # @param [Kramdown::Element] el
+      # @param [Graphviz::Node, optional] parent_node
       def convert_element(el, parent_node = nil)
         @obj_counter += 1
         el_value = el.value || ''

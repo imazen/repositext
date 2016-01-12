@@ -5,8 +5,8 @@ module Kramdown
     class Icml < Base
 
       # Create an ICML converter with the given options.
-      # @param[Kramdown::Element] root
-      # @param[Hash, optional] options
+      # @param [Kramdown::Element] root
+      # @param [Hash, optional] options
       def initialize(root, options = {})
         super
         # NOTE: kramdown initializes all options with default values. So
@@ -35,7 +35,7 @@ module Kramdown
 
       # Writes an ICML file to IO (using @options[:output_file]).
       # Contains a single story that is based on root.
-      # @param[Kramdown::Element] root the kramdown root element
+      # @param [Kramdown::Element] root the kramdown root element
       # @return ???
       def convert(root)
         story_xml = compute_story_xml(root)
@@ -46,16 +46,16 @@ module Kramdown
     protected
 
       # Returns IDMLStory XML for root
-      # @param[Kramdown::Element] root the root element
-      # @return[String] the story XML as string
+      # @param [Kramdown::Element] root the root element
+      # @return [String] the story XML as string
       def compute_story_xml(root)
         xml_string, _warnings = idml_story_converter.convert(root, @options)
         xml_string
       end
 
       # Return ICML as string
-      # @param[String] story_xml the story xml. Will be inserted into template.
-      # @param[String] erb_template the erb template
+      # @param [String] story_xml the story xml. Will be inserted into template.
+      # @param [String] erb_template the erb template
       def render_output(story_xml, erb_template)
         # assign i_vars referenced in template file
         @story = story_xml

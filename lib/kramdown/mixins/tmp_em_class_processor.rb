@@ -6,8 +6,8 @@ module Kramdown
 
     # Walks the ke tree, finds any tmp classes that were added to
     # remove bold or italic from a span.
-    # @param[Kramdown::Element] ke the root node of a kramdown tree
-    # @param[String] tmp_class_name the name of the tmp class
+    # @param [Kramdown::Element] ke the root node of a kramdown tree
+    # @param [String] tmp_class_name the name of the tmp class
     def recursively_process_temp_em_class!(ke, tmp_class_name)
       # First iterate over children, use queue to decouple it from a parent's children
       # collection. This is important to make recursion work.
@@ -28,8 +28,8 @@ module Kramdown
     # Processes any children of ke that have tmp_class_name. This handles
     # the simple case where element with tmp_class_name is not nested inside
     # another :em.
-    # @param[Kramdown::Element] ke the root node of a kramdown tree
-    # @param[String] tmp_class_name the name of the tmp class
+    # @param [Kramdown::Element] ke the root node of a kramdown tree
+    # @param [String] tmp_class_name the name of the tmp class
     def process_non_nested_temp_em_class!(ke, tmp_class_name)
       ke_processing_queue = ke.children.dup # duplicate list with references to same objects
       while(ke_child = ke_processing_queue.shift) do
@@ -44,8 +44,8 @@ module Kramdown
     # Processes any children of ke that have tmp_class_name. This handles
     # the more complex case where element with tmp_class_name is nested inside
     # another :em.
-    # @param[Kramdown::Element] ke the root node of a kramdown tree
-    # @param[String] tmp_class_name the name of the tmp class
+    # @param [Kramdown::Element] ke the root node of a kramdown tree
+    # @param [String] tmp_class_name the name of the tmp class
     def process_nested_temp_em_class!(ke, tmp_class_name)
       ke_child_processing_queue = ke.children.dup # duplicate list with references to same objects
       ke_sibling_processing_queue = [] # for any new ke siblings we create

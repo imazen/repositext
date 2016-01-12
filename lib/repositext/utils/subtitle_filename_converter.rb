@@ -37,9 +37,9 @@ class Repositext
       # and
       # /eng47-0412_0002.at => /47-0412_0002.markers.txt
       #
-      # @param[String] rt_filename the repositext filename
-      # @param[Hash] output_file_attrs key: :extension
-      # @return[String] the corresponding subtitle_export filename
+      # @param [String] rt_filename the repositext filename
+      # @param [Hash] output_file_attrs key: :extension
+      # @return [String] the corresponding subtitle_export filename
       def self.convert_from_repositext_to_subtitle_export(rt_filename, output_file_attrs)
         extension = output_file_attrs[:extension]
         input_lang_code = rt_filename.split('/').last[0,3] # should be 'eng'
@@ -59,8 +59,8 @@ class Repositext
       # /eng47-0412_0002.at => /47-0412_0002.en.txt
       #
       # NOTE: import filenames are like export ones, except without the `.rt` extension.
-      # @param[String] rt_filename the repositext filename
-      # @return[String] the corresponding subtitle filename
+      # @param [String] rt_filename the repositext filename
+      # @return [String] the corresponding subtitle filename
       def self.convert_from_repositext_to_subtitle_import(rt_filename)
         lang_code = rt_filename.split('/').last[0,3] # should be 'eng'
         rt_filename.gsub(/\/#{ lang_code }/, '/')
@@ -72,8 +72,8 @@ class Repositext
       #
       # /47-0412_0002.en.txt => /eng47-0412_0002.at
       #
-      # @param[String] st_filename the subtitle filename
-      # @return[String] the corresponding repositext filename
+      # @param [String] st_filename the subtitle filename
+      # @return [String] the corresponding repositext filename
       def self.convert_from_subtitle_import_to_repositext(st_filename)
         lang_code = st_filename.match(/(?<=\.)[[:alpha:]]{2}(?=\.txt\z)/).to_s # should be 'en'
         st_filename.gsub(/(\d\d\/)(\d\d)/, ['\1', convert_language_code(lang_code), '\2'].join)
@@ -83,7 +83,7 @@ class Repositext
     private
 
       # Converts language codes from 3 to 2 character ones.
-      # @param[String] lang_code a 2 or 3 character language code
+      # @param [String] lang_code a 2 or 3 character language code
       def self.convert_language_code(lang_code)
         r = case lang_code.length
         when 2

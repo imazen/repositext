@@ -1,0 +1,143 @@
+=begin
+
+This is an example Rtfile with default settings that run out of the box.
+Modify the DSL methods below to suit your repository preferences.
+
+Base_dirs, file_selectors, and file_extensions are used in combination to specify file sets.
+Most commands accept 'base-dir', 'file-selector' and 'file-extension' options
+to which you can pass the identifiers used in this Rtfile. Example:
+
+    some_command(
+      'base-dir' => :import_folio_dir,
+      'file-selector' => :all_files,
+      'file-extension' => :at_extension
+    )
+
+=end
+
+# Repo settings
+# -------------
+
+# Provide a key and value for each setting. You can retrieve them in the app
+# via config.setting(:language_code_3_chars)
+
+# Folio import strategy
+# Options:
+# * :merge_record_ids_into_idml: imports all folio files and merges record ids where idml exists
+# * :only_use_if_idml_not_present: imports all folio files, only uses folio where idml does not exist
+setting :folio_import_strategy, :only_use_if_idml_not_present
+setting :font_leading_override, nil # This is an optional setting if a repo requires a different leading, e.g., 11.8 (float number)
+setting :font_name_override, nil # This is an optional setting if a repo requires a different font, e.g., 'Times New Roman'
+setting :font_size_override, nil # This is an optional setting if a repo requires a different font size. Valid settings: 10,11,12 (integer)
+setting :is_primary_repo, false
+setting :language_code_2_chars, 'es' # See iso 639-1 for a list of all two character language codes
+setting :language_code_3_chars, 'spn'
+setting :pdf_export_header_text, 'PDF header text'
+setting :pdf_export_version_control_page, false
+setting :primary_repo_lang_code, 'eng'
+setting :relative_path_to_primary_repo, '../rt-english'
+
+# Base directories
+# ----------------
+
+# Provide a name and a base directory string for each file set.
+# It is recommended to expand paths relative to the location of this Rtfile
+# so that they work independently of the user's current working directory.
+#
+# Conventions:
+#  * Append '_dir' to the name so that it can be resolved unambiguously.
+#  * Base dirs will include the trailing '/'.
+
+base_dir :accepted_corrections_dir, File.expand_path("accepted_corrections/", File.dirname(__FILE__))
+base_dir :compare_dir, File.expand_path("compare/", File.dirname(__FILE__))
+base_dir :content_dir, File.expand_path("content/", File.dirname(__FILE__))
+base_dir :data_dir, File.expand_path("data/", File.dirname(__FILE__))
+base_dir :folio_import_dir, File.expand_path("folio_import/", File.dirname(__FILE__))
+base_dir :gap_mark_tagging_export_dir, File.expand_path("gap_mark_tagging_export/", File.dirname(__FILE__))
+base_dir :gap_mark_tagging_import_dir, File.expand_path("gap_mark_tagging_import/", File.dirname(__FILE__))
+base_dir :icml_export_dir, File.expand_path("icml_export/", File.dirname(__FILE__))
+base_dir :idml_import_dir, File.expand_path("idml_import/", File.dirname(__FILE__))
+base_dir :json_lucene_export_dir, File.expand_path("lucene_table_export/json_export", File.dirname(__FILE__))
+base_dir :pdf_export_dir, File.expand_path("pdf_export/", File.dirname(__FILE__))
+base_dir :plain_kramdown_export_dir, File.expand_path("plain_kramdown_export/", File.dirname(__FILE__))
+base_dir :plain_text_export_dir, File.expand_path("plain_text_export/", File.dirname(__FILE__))
+base_dir :reports_dir, File.expand_path("reports/", File.dirname(__FILE__))
+base_dir :rtfile_dir, File.dirname(__FILE__)
+base_dir :staging_dir, File.expand_path("staging/", File.dirname(__FILE__))
+base_dir :subtitle_export_dir, File.expand_path("subtitle_export/", File.dirname(__FILE__))
+base_dir :subtitle_import_dir, File.expand_path("subtitle_import/", File.dirname(__FILE__))
+base_dir :subtitle_tagging_export_dir, File.expand_path("subtitle_tagging_export/", File.dirname(__FILE__))
+base_dir :subtitle_tagging_import_dir, File.expand_path("subtitle_tagging_import/", File.dirname(__FILE__))
+
+# File selectors
+# --------------
+
+# Provide a name and a file selector string for each file set.
+# These file selectors will be joined with base_dirs and file_extensions to get
+# a Dir.glob pattern for matching the desired file set.
+#
+# Conventions:
+#  * Append '_file' or '_files' to the name so that it can be resolved unambiguously.
+#  * File selectors must NOT include a leading or trailing slash '/'.
+#
+# NOTE: You can override the file_selector for each command using the
+# --file-selector command line argument. Some examples for overrides:
+# * --file-selector='**/*{65-0829}_*'
+# * --file-selector='**/*{65-0829,62-0811}_*'
+# * --file-selector=validation_report.txt
+# * --file-selector=all_files
+
+file_selector :all_files, '**/*'
+file_selector :validation_report_file, 'validation_report.txt' # use with blank file_extension!
+
+# File extensions
+# ---------------
+
+# Provide a name and a file extension string for each file extension.
+# These file extensions will be joined with base_dirs and file_selectors to get
+# a Dir.glob pattern for matching the desired file set.
+#
+# Conventions:
+#  * Append '_extension' or '_extensions' to the name so that it can be resolved unambiguously.
+#  * File extensions must include a leading '.'.
+#
+# NOTE: You can override the file_extension for each command using the
+# --file-extension command line argument. Some examples for overrides:
+# * --file-extension=.at
+# * --file-extension=.{at,csv,json,md,txt}
+# * --file-extension=repositext_extensions
+
+file_extension :at_extension, '.at'
+file_extension :csv_extension, '.csv'
+file_extension :docx_extension, '.docx'
+file_extension :html_extension, '.html'
+file_extension :icml_extension, '.icml'
+file_extension :idml_extension, '.idml'
+file_extension :json_extension, '.json'
+file_extension :pt_extension, '.md'
+file_extension :repositext_extensions, '.{at,csv,html,json,md,txt}'
+file_extension :txt_extension, '.txt'
+file_extension :xml_extension, '.xml'
+
+# Kramdown Parsers
+# ----------------
+
+# Provide a name and a Parser's class name as string.
+
+kramdown_parser :folio_xml, 'Kramdown::Parser::Folio'
+kramdown_parser :idml, 'Kramdown::Parser::Idml'
+kramdown_parser :idml_validation, 'Kramdown::Parser::IdmlValidation'
+kramdown_parser :kramdown, 'Kramdown::Parser::KramdownRepositext'
+kramdown_parser :kramdown_validation, 'Kramdown::Parser::KramdownValidation'
+
+# Kramdown Converter Methods
+# --------------------------
+
+# Provide a name and a method name to be used for conversion.
+
+kramdown_converter_method :to_at, :to_kramdown
+kramdown_converter_method :to_html_doc, :to_html_doc
+kramdown_converter_method :to_icml, :to_icml
+kramdown_converter_method :to_plain_text, :to_plain_text
+kramdown_converter_method :to_subtitle, :to_subtitle
+kramdown_converter_method :to_subtitle_tagging, :to_subtitle_tagging

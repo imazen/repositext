@@ -11,7 +11,13 @@ class Repositext
         import_shared_steps(options)
       end
 
-      # Import DOCX and merge/overwrite??? into /content
+      # Import from DOCX.
+      #
+      # A file will only be imported if any of the following conditions are met:
+      #
+      # * no corresponding content AT file exists OR
+      # * If it exists, it doesn't contain any subtitles.
+      #
       def import_docx(options)
         options['report_file'] ||= config.compute_glob_pattern(
           :docx_import_dir, :validation_report_file, ''
@@ -159,11 +165,6 @@ class Repositext
       # -----------------------------------------------------
       # Helper methods for DRY process specs
       # -----------------------------------------------------
-
-      def import_docx_specific_steps(options)
-        # convert_docx_to_???(options)
-        # validate_utf8_encoding(options.merge(base_dir: 'import_docx_dir', file_pattern: 'repositext_files'))
-      end
 
       def import_folio_xml_specific_steps(options)
         options['report_file'] ||= config.compute_glob_pattern(

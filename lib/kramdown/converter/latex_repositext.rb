@@ -103,6 +103,17 @@ module Kramdown
         case output_header_level(el.options[:level])
         when 1
           # render in RtTitle environment
+          # Since Jan 2016 we start wrapping titles with {: .italic.smcaps} IAL.
+          # This results in double application of \\RtSmCapsEmulation and breaks.
+          # So we remove the IAL class here where they exist since not all
+          # files have them.
+          if(
+            1 == el.children.length and
+            em_child = el.children.first and
+            em_child.has_class?('smcaps')
+          )
+            em_child.remove_class('smcaps')
+          end
           l_title = inner(el, opts)
           # capture first level 1 header as document title
           @document_title_plain_text ||= el.to_plain_text
@@ -151,7 +162,13 @@ module Kramdown
             before << "\\begin{RtIdTitle1}\n"
             after << "\n\\end{RtIdTitle1}"
             # emulate small caps
-            inner_text = self.class.emulate_small_caps(inner(el, opts))
+            inner_text = inner(el, opts)
+            # During transition where some titles contain {: .smcaps} class already,
+            # and others don't yet, we have to test whether we need to add
+            # smcaps manually:
+            if !inner_text.index('RtSmCapsEmulation')
+              inner_text = self.class.emulate_small_caps(inner_text)
+            end
             # differentiate between primary and non-primary repos
             if !@options[:is_primary_repo]
               # add space between title and date code
@@ -205,9 +222,9 @@ module Kramdown
       end
 
       # Returns a complete latex document as string.
-      # @param[Kramdown::Element] el the kramdown root element
-      # @param[Hash] opts
-      # @return[String]
+      # @param [Kramdown::Element] el the kramdown root element
+      # @param [Hash] opts
+      # @return [String]
       def convert_root(el, opts)
         latex_body = inner(el, opts)
         latex_body = post_process_latex_body(latex_body)
@@ -259,7 +276,7 @@ module Kramdown
         latex_body
       end
 
-      # @param[String] latex_body
+      # @param [String] latex_body
       def post_process_latex_body(latex_body)
         lb = latex_body.dup
         # gap_marks: Skip certain characters and find characters to highlight in red
@@ -363,8 +380,8 @@ module Kramdown
       # Inspired by http://tex.stackexchange.com/a/34586
       # NOTE that Kramdown::Parser::Latex already escapes contents of :text
       # elements, so we don't need to do that again.
-      # @param[String] txt
-      # @return[String]
+      # @param [String] txt
+      # @return [String]
       def escape_latex_text(txt)
         return txt  unless txt.is_a?(String)
         r = txt.dup

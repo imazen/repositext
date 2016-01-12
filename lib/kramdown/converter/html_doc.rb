@@ -11,8 +11,8 @@ module Kramdown
     class HtmlDoc < Base
 
       # Create an HtmlDoc converter with the given options.
-      # @param[Kramdown::Element] root
-      # @param[Hash, optional] options
+      # @param [Kramdown::Element] root
+      # @param [Hash, optional] options
       def initialize(root, options = {})
         super
         # NOTE: kramdown initializes all options with default values. So
@@ -33,7 +33,7 @@ module Kramdown
       end
 
       # Returns an HTML string.
-      # @param[Kramdown::Element] root the kramdown root element
+      # @param [Kramdown::Element] root the kramdown root element
       def convert(root)
         html_title = compute_title(root)
         html_body = compute_body(root)
@@ -46,9 +46,9 @@ module Kramdown
       # Computes a title.
       # Walks the tree, uses the inner text of the first header it finds.
       # Uses fall_back if no header with inner text is found.
-      # @param[Kramdown::Element] el
-      # @param[String, optional] fall_back
-      # @return[String] the title
+      # @param [Kramdown::Element] el
+      # @param [String, optional] fall_back
+      # @return [String] the title
       def compute_title(el, fall_back = 'No Title')
         # first test if el is of type :header and return text
         if :header == el.type
@@ -70,17 +70,17 @@ module Kramdown
       end
 
       # Computes the HTML body from root.
-      # @param[Kramdown::Element] root
-      # @return[String] the title
+      # @param [Kramdown::Element] root
+      # @return [String] the title
       def compute_body(root)
         html_body, _warnings = html_converter_class.convert(root, @options)
         html_body
       end
 
       # Returns an HTML string
-      # @param[String] html_title Will be inserted into <title> tag.
-      # @param[String] html_body Will be inserted into template's <body> tag.
-      # @param[String] erb_template the erb template
+      # @param [String] html_title Will be inserted into <title> tag.
+      # @param [String] html_body Will be inserted into template's <body> tag.
+      # @param [String] erb_template the erb template
       def render_output(html_title, html_body, erb_template)
         # assign i_vars referenced in template file
         @title = html_title

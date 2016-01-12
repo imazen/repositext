@@ -7,9 +7,9 @@ class Repositext
       # We make changes in place for better performance
       # (using `#gsub!` instead of `#gsub`).
       # Also moves both in front of leading eagle
-      # @param[String] text
-      # @param[String] filename
-      # @return[Outcome]
+      # @param [String] text
+      # @param [String] filename
+      # @return [Outcome]
       def self.fix(text, filename)
         text = text.dup
         # If line starts with eagle, followed by (space|gap_mark), and then a subtitle_mark,

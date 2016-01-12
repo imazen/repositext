@@ -29,9 +29,9 @@ class Repositext
       private
 
         # Checks if contents match (depending on @options[:gap_mark_tagging_import_consistency_compare_mode])
-        # @param[String] content_at
-        # @param[String] gap_mark_tagging_import
-        # @return[Outcome]
+        # @param [String] content_at
+        # @param [String] gap_mark_tagging_import
+        # @return [Outcome]
         def contents_match?(content_at, gap_mark_tagging_import)
           # We have to export content_at in both cases to a temporary gap_mark_tagging_export
           # so that we can compare it with the gap_mark_tagging_import

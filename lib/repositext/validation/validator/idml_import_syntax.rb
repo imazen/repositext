@@ -11,8 +11,8 @@ class Repositext
 
       protected
 
-        # @param[String] idml_file_contents the contents of the IDML file as binary string
-        # @return[Outcome]
+        # @param [String] idml_file_contents the contents of the IDML file as binary string
+        # @return [Outcome]
         def valid_idml_syntax?(idml_file_contents)
           errors = []
           warnings = []
@@ -25,10 +25,10 @@ class Repositext
           Outcome.new(errors.empty?, nil, [], errors, warnings)
         end
 
-        # @param[Kramdown::Parser::VgrIdmlValidation] idml_parser should be a
+        # @param [Kramdown::Parser::VgrIdmlValidation] idml_parser should be a
         #      validating parser like Kramdown::Parser::VgrIdmlStoryValidation
-        # @param[Array] errors collector for errors
-        # @param[Array] warnings collector for warnings
+        # @param [Array] errors collector for errors
+        # @param [Array] warnings collector for warnings
         def validate_idml_story_source(idml_parser, errors, warnings)
           # idml_story = idml_parser.stories_to_import.first
           # idml_story_name = idml_story.name
@@ -40,9 +40,9 @@ class Repositext
 
         # Delegates validation to idml_parser. That parser collects reportables
         # into errors and warnings.
-        # @param[Kramdown::Parser::VgrIdmlValidation] idml_parser
-        # @param[Array] errors collector for errors
-        # @param[Array] warnings collector for warnings
+        # @param [Kramdown::Parser::VgrIdmlValidation] idml_parser
+        # @param [Array] errors collector for errors
+        # @param [Array] warnings collector for warnings
         def validate_parse_tree(idml_parser, errors, warnings)
           idml_parser.parse(
             idml_parser.stories_to_import,
@@ -55,9 +55,9 @@ class Repositext
           )
         end
 
-        # @param[Kramdown::Parser::VgrIdmlValidation] idml_parser
-        # @param[Array] errors collector for errors
-        # @param[Array] warnings collector for warnings
+        # @param [Kramdown::Parser::VgrIdmlValidation] idml_parser
+        # @param [Array] errors collector for errors
+        # @param [Array] warnings collector for warnings
         def validate_character_inventory(idml_parser, errors, warnings)
           idml_story = idml_parser.stories_to_import.first
           idml_story_name = idml_story.name

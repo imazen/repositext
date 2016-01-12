@@ -18,8 +18,8 @@ module Kramdown
         }
       end
 
-      # @param[String] zip_file_contents
-      # @param[Hash, optional] options these will be passed to Kramdown::Parser
+      # @param zip_file_contents [String]
+      # @param options [Hash, optional] these will be passed to Kramdown::Parser
       def initialize(zip_file_contents, options = {})
         @zip_file_contents = zip_file_contents
         @options = default_options.merge(options)
@@ -28,13 +28,13 @@ module Kramdown
 
       # Returns the stories we want to import by default. Typically
       # the longest story in the IDML file.
-      # @return[Array<OpenStruct>] array of story objects to be imported
+      # @return [Array<OpenStruct>] array of story objects to be imported
       def stories_to_import
         [@stories.max_by { |e| length_of_story_text_without_markup(e.body) }]
       end
 
-      # @param[Array<Story>] stories the stories to import. Defaults to story_to_import.
-      # @return[Kramdown::Document]
+      # @param [Array<Story>] stories the stories to import. Defaults to story_to_import.
+      # @return [Kramdown::Document]
       def parse(stories = self.stories_to_import)
         data = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
         data << '<idPkg:Story xmlns:idPkg="http://ns.adobe.com/AdobeInDesign/idml/1.0/packaging" DOMVersion="8.0">'
@@ -50,9 +50,9 @@ module Kramdown
     private
 
       # Extracts story names from @zip_file_contents
-      # @return[Array<OpenStruct>] an array with story objects. See `get_story` for details.
+      # @return [Array<OpenStruct>] an array with story objects. See `get_story` for details.
       def extract_stories
-        stories = []
+        s = []
         Zip::File.open_buffer(@zip_file_contents) do |zipped_files|
           design_map_data = zipped_files.get_entry('designmap.xml').get_input_stream.read
           design_map_xml = Nokogiri::XML(design_map_data) { |cfg| cfg.noblanks }
@@ -63,11 +63,11 @@ module Kramdown
             pkg_story_xml.xpath('/idPkg:Story/Story').each do |story_xml|
               name = story_xml['Self']
               body = story_xml.to_s
-              stories << OpenStruct.new(:name => name, :body => body)
+              s << OpenStruct.new(:name => name, :body => body)
             end
           end
         end
-        stories
+        s
       rescue
         raise Exception.new($!)
       end

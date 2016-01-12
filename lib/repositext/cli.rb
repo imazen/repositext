@@ -5,17 +5,18 @@ class Repositext
     class GitRepoNotUpToDateError < RuntimeError; end
 
     include Thor::Actions
-    include Cli::RtfileDsl
     include Cli::LongDescriptionsForCommands
 
     include Cli::Compare
     include Cli::Convert
     include Cli::Copy
     include Cli::Fix
+    include Cli::GitRepo
     include Cli::Init
     include Cli::Merge
     include Cli::Move
     include Cli::Report
+    include Cli::Split
     include Cli::Sync
     include Cli::Validate
 
@@ -25,6 +26,23 @@ class Repositext
     # For rtfile template loading
     def self.source_root
       File.dirname(__FILE__)
+    end
+
+    # Tries to find Rtfile, starting in current working directory and
+    # traversing up the directory hierarchy until it finds an Rtfile or
+    # reaches the file system root.
+    # NOTE: This code is inspired by Bundler's find_gemfile
+    # @return [String, nil] path to closest Rtfile or nil if none found.
+    def self.find_rtfile
+      previous = nil
+      current  = Dir.getwd
+
+      until !File.directory?(current) || current == previous
+        filename = File.join(current, 'Rtfile')
+        return filename  if File.file?(filename)
+        current, previous = File.expand_path("..", current), current
+      end
+      nil
     end
 
     class_option :'base-dir',
@@ -68,7 +86,7 @@ class Repositext
 
     desc "compare SPEC", "Compares files for consistency"
     long_desc long_description_for_compare
-    # @param[String] command_spec Specification of the operation
+    # @param [String] command_spec Specification of the operation
     def compare(command_spec)
       invoke_repositext_command('compare', command_spec, options)
     end
@@ -76,7 +94,7 @@ class Repositext
 
     desc 'convert SPEC', 'Converts files from one format to another'
     long_desc long_description_for_convert
-    # @param[String] command_spec Specification of the operation
+    # @param [String] command_spec Specification of the operation
     def convert(command_spec)
       invoke_repositext_command('convert', command_spec, options)
     end
@@ -84,7 +102,7 @@ class Repositext
 
     desc 'copy SPEC', 'Copies files from one location to another'
     long_desc long_description_for_copy
-    # @param[String] command_spec Specification of the operation
+    # @param [String] command_spec Specification of the operation
     def copy(command_spec)
       invoke_repositext_command('copy', command_spec, options)
     end
@@ -92,9 +110,17 @@ class Repositext
 
     desc 'fix SPEC', 'Modifies files in place'
     long_desc long_description_for_fix
-    # @param[String] command_spec Specification of the operation
+    # @param [String] command_spec Specification of the operation
     def fix(command_spec)
       invoke_repositext_command('fix', command_spec, options)
+    end
+
+
+    desc 'git_repo SPEC', 'Performs git repository commands'
+    long_desc long_description_for_git_repo
+    # @param [String] command_spec Specification of the operation
+    def git_repo(command_spec)
+      invoke_repositext_command('git_repo', command_spec, options)
     end
 
 
@@ -104,7 +130,7 @@ class Repositext
                   :aliases => "-f",
                   :desc => "Flag to force overwriting an existing Rtfile"
     # TODO: allow specification of Rtfile path
-    # @param[String, optional] command_spec Specification of the operation. This
+    # @param [String, optional] command_spec Specification of the operation. This
     #     is used for testing (pass 'test' as command_spec)
     def init(command_spec = nil)
       if command_spec
@@ -123,7 +149,7 @@ class Repositext
     method_option :'base-dir-2',
                   :type => :string,
                   :desc => 'Specifies the base directory for the second file. Expects a named base_dir from Rtfile or an absolute directory path.'
-    # @param[String] command_spec Specification of the operation
+    # @param [String] command_spec Specification of the operation
     def merge(command_spec)
       invoke_repositext_command('merge', command_spec, options)
     end
@@ -131,7 +157,7 @@ class Repositext
 
     desc 'move SPEC', 'Moves files to another location'
     long_desc long_description_for_move
-    # @param[String] command_spec Specification of the operation
+    # @param [String] command_spec Specification of the operation
     def move(command_spec)
       invoke_repositext_command('move', command_spec, options)
     end
@@ -139,19 +165,26 @@ class Repositext
 
     desc 'report SPEC', 'Generates a report'
     long_desc long_description_for_report
-    # @param[String] command_spec Specification of the operation
+    # @param [String] command_spec Specification of the operation
     def report(command_spec)
       check_that_current_branch_is_up_to_date_with_origin_master
       invoke_repositext_command('report', command_spec, options)
     end
 
 
+    desc 'split SPEC', 'Splits files in /content'
+    long_desc long_description_for_split
+    # @param [String] command_spec Specification of the operation
+    def split(command_spec)
+      invoke_repositext_command('split', command_spec, options)
+    end
+
     desc 'sync SPEC', 'Syncs data between different file types in /content'
     long_desc long_description_for_sync
     method_option :'auto-insert-missing-subtitle-marks',
                   :type => :boolean,
                   :desc => 'Automatically inserts missing subtitle marks into subtitle_marker files based on subtitles in /content AT'
-    # @param[String] command_spec Specification of the operation
+    # @param [String] command_spec Specification of the operation
     def sync(command_spec)
       invoke_repositext_command('sync', command_spec, options)
     end
@@ -166,7 +199,7 @@ class Repositext
                   :type => :array,
                   :default => %w[pre_import post_import],
                   :desc => 'Specifies which validations to run. Possible values: %w[pre_import post_import]'
-    # @param[String] command_spec Specification of the operation
+    # @param [String] command_spec Specification of the operation
     # NOTE: --input option can only use named file_specs, not dir.glob patterns.
     #
     # TODO: implement these command line options:
@@ -191,7 +224,7 @@ class Repositext
     method_option :'include-version-control-info',
                   type: :boolean,
                   desc: 'Adds a version control info page to an exported PDF'
-    # @param[String] command_spec Specification of the operation
+    # @param [String] command_spec Specification of the operation
     def export(command_spec)
       check_that_current_branch_is_up_to_date_with_origin_master
       invoke_repositext_command('export', command_spec, options)
@@ -202,7 +235,7 @@ class Repositext
     method_option :'auto-insert-missing-subtitle-marks',
                   :type => :boolean,
                   :desc => 'Automatically inserts missing subtitle marks into subtitle_marker files based on subtitles in /content AT'
-    # @param[String] command_spec Specification of the operation
+    # @param [String] command_spec Specification of the operation
     def import(command_spec)
       check_that_current_branch_is_up_to_date_with_origin_master
       invoke_repositext_command('import', command_spec, options)
@@ -211,16 +244,20 @@ class Repositext
   private
 
     def config
-      @config ||= Cli::Config.new
+      @config ||= Cli::Config.new(options['rtfile']).tap { |e| e.eval }
     end
     # This writer is used for testing to inject a mock config
     def config=(a_config)
       @config = a_config
     end
 
+    def repository
+      @repository ||= Repository::Content.new(config)
+    end
+
     # Invokes the command derived from main_command and command_spec
-    # @param[String] main_command
-    # @param[String] command_spec
+    # @param [String] main_command
+    # @param [String] command_spec
     def invoke_repositext_command(main_command, command_spec, options)
       method_name = "#{ main_command }_#{ command_spec }"
       if respond_to?(method_name, true)
@@ -245,15 +282,14 @@ class Repositext
     # Raises an exception if it is not.
     def check_that_current_branch_is_up_to_date_with_origin_master
       return true  if options['skip-git-up-to-date-check']
-      git_repo = Repositext::Repository.new
-      latest_commit_sha_remote = git_repo.latest_commit_sha_remote
+      latest_commit_sha_remote = repository.latest_commit_sha_remote
       begin
-        latest_local_commit = git_repo.lookup(latest_commit_sha_remote)
+        latest_local_commit = repository.lookup(latest_commit_sha_remote)
       rescue Rugged::OdbError => e
         # Couldn't find remote's latest commit in local repo, raise error
         raise GitRepoNotUpToDateError.new([
           '',
-          "Your local '#{ git_repo.current_branch_name }' branch is not up-to-date with origin/master.",
+          "Your local '#{ repository.current_branch_name }' branch is not up-to-date with origin/master.",
           'Please get the updates from origin/master first before running a repositext command.',
           "The remote reported #{ latest_commit_sha_remote } as its latest commit sha1.",
           'You can bypass this check by appending "--skip-git-up-to-date-check=true" to the repositext command'

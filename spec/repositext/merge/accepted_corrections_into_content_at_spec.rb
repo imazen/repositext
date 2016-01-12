@@ -91,7 +91,7 @@ class Repositext
             :manual,
             { :before => 'no match', :after => '%word1 @word2' },
             "before word1 word2 after",
-            [:report_already_applied, '~Fuzzy'],
+            [:report_already_applied, '~Fuzzy (ignoring gap_marks and subtitle_marks)'],
           ],
           [
             :manual,
@@ -308,22 +308,28 @@ Becomes: word1 word2 word4added word3
             AcceptedCorrectionsIntoContentAt::InvalidCorrectionAttributes,
           ],
           [
-            [{ :correction_number => 'value', :paragraph_number => 'value', :line_number => 'value', :before => 'value', :after => 'value' }],
+            [{ :correction_number => 'value', :paragraph_number => 'value', :line_number => 'value', :before => 'value_b', :after => 'value_a' }],
             nil,
           ],
           [
             [
-              { :correction_number => '1', :paragraph_number => 'v', :line_number => 'v', :before => 'v', :after => 'v' },
-              { :correction_number => '2', :paragraph_number => 'v', :line_number => 'v', :before => 'v', :after => 'v' },
+              { :correction_number => '1', :paragraph_number => 'v', :line_number => 'v', :before => 'vb', :after => 'va' },
+              { :correction_number => '2', :paragraph_number => 'v', :line_number => 'v', :before => 'vb', :after => 'va' },
             ],
             nil,
           ],
           [
             [
-              { :correction_number => '1', :paragraph_number => 'v', :line_number => 'v', :before => 'v', :after => 'v' },
-              { :correction_number => '3', :paragraph_number => 'v', :line_number => 'v', :before => 'v', :after => 'v' },
+              { :correction_number => '1', :paragraph_number => 'v', :line_number => 'v', :before => 'vb', :after => 'va' },
+              { :correction_number => '3', :paragraph_number => 'v', :line_number => 'v', :before => 'vb', :after => 'va' },
             ],
             AcceptedCorrectionsIntoContentAt::InvalidCorrectionNumber,
+          ],
+          [
+            [
+              { :correction_number => '1', :paragraph_number => 'v', :line_number => 'v', :before => 'identical', :after => 'identical' },
+            ],
+            AcceptedCorrectionsIntoContentAt::InvalidCorrectionAttributes,
           ],
         ].each do |corrections, xpected_exception|
           it "handles #{ corrections.inspect }" do

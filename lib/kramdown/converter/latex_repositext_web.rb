@@ -6,7 +6,7 @@ module Kramdown
 
       # Configure page settings. All values are in inches
       # For web we use the regular finishing.
-      # @param[Symbol, optional] key
+      # @param [Symbol, optional] key
       def page_settings(key = nil)
         ps = {
           english_regular: {

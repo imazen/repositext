@@ -3,6 +3,8 @@ class Repositext
     class SubtitleMarkTools
 
       # Returns array with headers for subtitle_markers CSV file
+      # TODO SPID: check for callers of this method and make sure additional headers are ok
+      # TODO: Change persitentId => subtitleId
       def self.csv_headers
         ['relativeMS', 'samples', 'charLength', 'persistentId', 'recordId']
       end
@@ -11,7 +13,7 @@ class Repositext
       # all tokens except :subtitle_mark. Preserves line number consistency. In other
       # words, if a text fragment was on line 17 before being processed here,
       # it would still be on line 17 after processing.
-      # @param[String] txt
+      # @param [String] txt
       def self.extract_body_text_with_subtitle_marks_only(txt)
         # Remove id title and paragraph
         content = Repositext::Utils::IdPageRemover.remove(txt)
@@ -20,8 +22,9 @@ class Repositext
         # preserve line number consistency. Suspension::TokenRemover would
         # remove the block's entire line, introducing errors in line numbers for
         # subsequent lines.
-        content_without_blocks = content.gsub(/^\{:[^\n]+(?=\n)/, '') # block_ials
-                                        .gsub(/^\^\^\^[^\n]+(?=\n)/, '') # record_marks
+        # Remove block_ials and record_marks
+        content_without_blocks = content.gsub(/^\{:[^\n]+(?=\n)/, '')
+                                        .gsub(/^\^\^\^[^\n]+(?=\n)/, '')
         # Remove all tokens but :subtitle_mark from content_at
         content_with_subtitle_marks_only = Suspension::TokenRemover.new(
           content_without_blocks,
@@ -33,7 +36,7 @@ class Repositext
       # @param txt [String] typically content_at
       # @param txt_is_already_cleaned_up [Boolean] set to true if txt has already
       #   been processed through extract_body_text_with_subtitle_marks_only
-      # @return[Array<Hash>] with the following keys for each caption:
+      # @return [Array<Hash>] with the following keys for each caption:
       #   :char_length
       #   :line
       #   :excerpt

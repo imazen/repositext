@@ -65,6 +65,12 @@ class Repositext
           )
         end
 
+        def long_description_for_git_repo
+          %(
+            Performs operations on git repositories.
+          )
+        end
+
         def long_description_for_init
           %(
             Generates a default Rtfile in the current working directory if it doesn't
@@ -107,6 +113,16 @@ class Repositext
             Available SPECs:
 
             folio_import_warnings - summarizes Folio import warnings
+          )
+        end
+
+        def long_description_for_split
+          %(
+            Splits files in /content.
+
+            Available SPECs:
+
+            subtitles - splits subtitles
           )
         end
 

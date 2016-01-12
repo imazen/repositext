@@ -15,10 +15,10 @@ class Repositext
               "3\t1",
             ].join("\n"),
             [
-              "relativeMS\tsamples\tcharLength",
-              "1\t1\t5",
-              "2\t1\t5",
-              "3\t1\t3",
+              "relativeMS\tsamples\tcharLength\tpersistentId\trecordId",
+              "1\t1\t5\t\t",
+              "2\t1\t5\t\t",
+              "3\t1\t3\t\t",
               ''
             ].join("\n"),
           ],
@@ -26,10 +26,10 @@ class Repositext
             "@23456@89012@456",
             nil,
             [
-              "relativeMS\tsamples\tcharLength",
-              "0\t0\t5",
-              "0\t0\t5",
-              "0\t0\t3",
+              "relativeMS\tsamples\tcharLength\tpersistentId\trecordId",
+              "0\t0\t5\t\t",
+              "0\t0\t5\t\t",
+              "0\t0\t3\t\t",
               ''
             ].join("\n"),
           ],

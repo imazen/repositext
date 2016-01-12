@@ -5,7 +5,7 @@ module Kramdown
     describe IdmlStory do
 
       # Generates a ParagraphStyleRange node.
-      # @param[Hash] attrs
+      # @param [Hash] attrs
       #     * :ps Paragraph style name
       #     * :cs Character style name
       #     * :content Content element inner text

@@ -7,8 +7,8 @@ module Kramdown
     class PlainText < Base
 
       # Instantiate a PlainText converter
-      # @param[Kramdown::Element] root
-      # @param[Hash] options
+      # @param [Kramdown::Element] root
+      # @param [Hash] options
       def initialize(root, options)
         super
         @plain_text = '' # collector for plain text string
@@ -57,8 +57,8 @@ module Kramdown
       end
 
       # Extracts plain text from tree
-      # @param[Kramdown::Element] el
-      # @return[String] the plain text
+      # @param [Kramdown::Element] el
+      # @return [String] the plain text
       def convert(el)
         before, after = self.class.convert_el(el)
         @plain_text << before  if before

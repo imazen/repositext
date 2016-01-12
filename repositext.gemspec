@@ -16,16 +16,22 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 
+  s.add_dependency('activesupport', '~> 4.2')
+  s.add_dependency('alignment')
   s.add_dependency('awesome_print')
   s.add_dependency('builder')
+  s.add_dependency('caracal', '~> 1.0')
   # I would have liked to use diff_match_patch which we already use for suspension, however
   # there was no simple way to do line diffing in DMP, so I use this gem for now.
   s.add_dependency('diff-lcs')
   s.add_dependency('kramdown')
   s.add_dependency('logging')
+  s.add_dependency('micromachine')
+  s.add_dependency('needleman_wunsch_aligner')
   s.add_dependency('nokogiri')
   s.add_dependency('outcome')
   s.add_dependency('parallel')
+  s.add_dependency('pragmatic_segmenter')
   s.add_dependency('ruby-graphviz')
   s.add_dependency('rubyzip')
   s.add_dependency('rugged')

@@ -11,8 +11,8 @@ class Repositext
       #  * gap_marks
       #  * paragraph IALs
       #  * headers
-      # @param[String] content_at
-      # @return[Outcome] where result is gap_mark_tagging text
+      # @param [String] content_at
+      # @return [Outcome] where result is gap_mark_tagging text
       def self.export(content_at)
         # NOTE: In order to preserve sub-title text (which may contain gap_marks,
         # we need to retain them and remove the hash marks in post-processing)

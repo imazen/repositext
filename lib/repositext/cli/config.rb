@@ -7,7 +7,9 @@ class Repositext
       FILE_EXTENSION_NAME_REGEX = /\A\w+_extensions?\z/
       FILE_SELECTOR_NAME_REGEX = /\A\w+_files?\z/
 
-      def initialize
+      # @param rtfile_path [String] absolute path to the rtfile, including filename
+      def initialize(rtfile_path)
+        @rtfile_path = rtfile_path
         @base_dirs = {}
         @file_selectors = {}
         @file_extensions = {}
@@ -16,10 +18,14 @@ class Repositext
         @settings = {}
       end
 
+      def eval
+        RtfileParser.new(self).eval_rtfile(@rtfile_path)
+      end
+
       # Use this method in DSL methods to add a base directory to config
       # @param name [String, Symbol] the name of the base dir under which it
       #     will be referenced.
-      # @param pattern_string [String] A string with an absolute directory path
+      # @param base_dir_string [String] A string with an absolute directory path
       def add_base_dir(name, base_dir_string)
         if name.to_s !~ BASE_DIR_NAME_REGEX
           raise ArgumentError.new("A base dir name must match this regex: #{ BASE_DIR_NAME_REGEX.inspect }")

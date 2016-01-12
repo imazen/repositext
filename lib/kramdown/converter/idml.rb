@@ -10,8 +10,8 @@ module Kramdown
     class Idml < Base
 
       # Create an IDML converter with the given options.
-      # @param[Kramdown::Element] root
-      # @param[Hash, optional] options
+      # @param [Kramdown::Element] root
+      # @param [Hash, optional] options
       def initialize(root, options = {})
         super
         @options = {
@@ -22,7 +22,7 @@ module Kramdown
 
       # Writes an IDML file to disk (using @options[:output_file_name]).
       # Contains a single story that is based on root.
-      # @param[Kramdown::Element] root the kramdown root element
+      # @param [Kramdown::Element] root the kramdown root element
       # @return ???
       def convert(root)
         story_xml = compute_story_xml(root)
@@ -40,16 +40,16 @@ module Kramdown
       end
 
       # Returns IDMLStory XML for root
-      # @param[Kramdown::Element] root the root element
-      # @return[String] the story XML as string
+      # @param [Kramdown::Element] root the root element
+      # @return [String] the story XML as string
       def compute_story_xml(root)
         xml_string, _warnings = ::Kramdown::Converter::IdmlStory.convert(root, @options)
         xml_string
       end
 
       # Builds array of all files to go into ZIP archive
-      # @param[String] story_xml
-      # @return[Array<Array>] Array of tuples (file_name and file_contents)
+      # @param [String] story_xml
+      # @return [Array<Array>] Array of tuples (file_name and file_contents)
       def collect_files_for_archive(story_xml)
         [
           ['mimetype', 'application/vnd.adobe.indesign-idml-package'],
@@ -74,8 +74,8 @@ module Kramdown
       end
 
       # Writes a ZIP archive to disk
-      # @param[IO] zip_archive_file an IO object
-      # @param[Array<Array>] files the files to include in archive. Tuple of name and contents.
+      # @param [IO] zip_archive_file an IO object
+      # @param [Array<Array>] files the files to include in archive. Tuple of name and contents.
       def create_zip_archive(zip_archive_file, files)
         Zip::OutputStream.open(zip_archive_file) { |io|
           files.each do |(file_name, contents)|

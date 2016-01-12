@@ -80,7 +80,7 @@ class Repositext
           get_paragraphs_that_dont_start_with_subtitle_mark(content)
         end
 
-        # @param[String] content
+        # @param [String] content
         # @return (see #get_paragraphs_that_dont_start_with_subtitle_mark)
         def check_content_file(content)
           content_with_subtitle_marks_only = Repositext::Utils::SubtitleMarkTools.extract_body_text_with_subtitle_marks_only(content)
@@ -105,8 +105,8 @@ class Repositext
         end
 
         # Empties all lines up to the second record_id
-        # @param[String]
-        # @return[String]
+        # @param txt [String]
+        # @return [String]
         def remove_all_text_content_before_second_record_id(txt)
           # split text into lines
           lines = txt.split("\n")

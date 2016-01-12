@@ -4,9 +4,9 @@ class Repositext
 
       # Merges record_marks from at_folio into at_idml. Uses at_idml as text
       # authority.
-      # @param[String] at_folio
-      # @param[String] at_idml
-      # @return[String] at with merged tokens
+      # @param [String] at_folio
+      # @param [String] at_idml
+      # @return [String] at with merged tokens
       def self.merge(at_folio, at_idml)
         # Get txt from at_idml
         at_idml_txt_only = Suspension::TokenRemover.new(

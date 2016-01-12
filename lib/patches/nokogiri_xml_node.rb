@@ -3,7 +3,7 @@ module Nokogiri
     class Node
 
       # Recursive method to print the name and class path for self
-      # @param[String, optional] downstream_path (used for recursion)
+      # @param [String, optional] downstream_path (used for recursion)
       def name_and_class_path(downstream_path = '')
         downstream_path = name_and_class + downstream_path
         if respond_to?(:parent) && parent && !parent.xml?
@@ -22,7 +22,7 @@ module Nokogiri
       end
 
       # Returns true if other_xn has same name, class, and type as self
-      # @param[Nokogiri::Xml::Node] other_xn
+      # @param [Nokogiri::Xml::Node] other_xn
       def duplicate_of?(other_xn)
         name == other_xn.name &&
         %w[class type].all? { |attr|

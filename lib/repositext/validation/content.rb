@@ -1,3 +1,5 @@
+# TODO: validate that there are no trailing spaces
+
 class Repositext
   class Validation
     class Content < Validation

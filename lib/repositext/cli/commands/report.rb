@@ -64,75 +64,6 @@ class Repositext
         }
       end
 
-      # Compares the titles in Content AT with those from ERP (provided as
-      # CSV file in the language repo's `data` directory)
-      def report_compare_titles_with_those_of_erp(options)
-        titles_from_erp = load_titles_from_erp
-        file_count = 0
-        titles_with_differences = []
-        Repositext::Cli::Utils.read_files(
-          config.compute_glob_pattern(
-            options['base-dir'] || :content_dir,
-            options['file-selector'] || :all_files,
-            options['file-extension'] || :at_extension
-          ),
-          options['file_filter'],
-          nil,
-          "Reading AT files",
-          options
-        ) do |contents, filename|
-          title_from_content_at = contents.match(/(?<=^#)[^\n]+/)
-                                          .to_s
-                                          .gsub('*', '')
-                                          .strip
-          date_code = Repositext::Utils::FilenamePartExtractor.extract_date_code(filename)
-          title_attrs_from_erp = titles_from_erp[date_code]
-          if title_attrs_from_erp.nil?
-            titles_with_differences << {
-              erp: "[Could not find title from ERP with date code #{ date_code.inspect }",
-              content_at: title_from_content_at,
-              filename: filename,
-              date_code: date_code
-            }
-          else
-            title_from_erp = title_attrs_from_erp[:title].to_s
-                                 .gsub("'", '’') # convert straight quote to typographic one
-                                 .gsub('Questions And Answers', 'Questions and Answers') # ignore difference in capitalization for 'And'
-                                 .gsub('#', '') # ignore presence of hash
-            if title_from_erp != title_from_content_at
-              titles_with_differences << {
-                erp: title_from_erp,
-                content_at: title_from_content_at,
-                filename: filename,
-                date_code: date_code
-              }
-            end
-          end
-          file_count += 1
-        end
-        lines = []
-        titles_with_differences.sort { |a,b| a[:date_code] <=> b[:date_code] }.each do |attrs|
-          l = " - #{ attrs[:date_code].ljust(8) } ERP: #{ attrs[:erp].inspect.ljust(40) } Content AT: #{ attrs[:content_at].inspect }"
-          $stderr.puts l
-          lines << l
-        end
-        summary_line = "Found #{ lines.length } titles with differences in #{ file_count } files at #{ Time.now.to_s }."
-        $stderr.puts summary_line
-        report_file_path = File.join(config.base_dir(:reports_dir), 'compare_titles_with_those_of_erp.txt')
-        File.open(report_file_path, 'w') { |f|
-          f.write "Compare content AT titles with those of ERP\n"
-          f.write '-' * 40
-          f.write "\n"
-          f.write lines.join("\n")
-          f.write "\n"
-          f.write '-' * 40
-          f.write "\n"
-          f.write summary_line
-          f.write "\n\n"
-          f.write "Command to generate this file: `repositext report compare_titles_with_those_of_erp`\n"
-        }
-      end
-
       # Generates a list of how each file in content AT was sourced (Folio or Idml)
       def report_content_sources(options)
         content_base_dir = config.base_dir(:content_dir)
@@ -254,6 +185,28 @@ class Repositext
           f.write "\n\n"
           f.write "Command to generate this file: `repositext report count_files_with_gap_marks_and_subtitle_marks`\n"
         }
+      end
+
+      # Generates a report with subtitle_mark counts for all content AT files.
+      def report_count_subtitle_marks(options)
+        file_count = 0
+        subtitle_marks_count = 0
+        Repositext::Cli::Utils.read_files(
+          config.compute_glob_pattern(
+            options['base-dir'] || :content_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :at_extension
+          ),
+          options['file_filter'],
+          nil,
+          "Reading AT files",
+          options
+        ) do |contents, filename|
+          subtitle_marks_count += contents.count('@')
+          file_count += 1
+        end
+        lines = []
+        $stderr.puts "Found #{ subtitle_marks_count } subtitle_marks in #{ file_count } files at #{ Time.now.to_s }."
       end
 
       # Reports files that contain editors notes with multiple paragraphs
@@ -598,7 +551,7 @@ class Repositext
       end
 
       # Finds invalid quote sequences. See class for details.
-      # @param[Hash] options
+      # @param [Hash] options
       def report_invalid_typographic_quotes(options)
         # For primary repo we want limited context, and for foreign we want
         # all text from paragraph number
@@ -895,6 +848,93 @@ class Repositext
         }
       end
 
+      # Reports where record boundaries are located (inside paragraphs or spans)
+      def report_record_boundary_locations(options)
+        file_count = 0
+        record_boundary_locations = { root: 0, paragraph: 0, span: 0 }
+        comments = []
+        Repositext::Cli::Utils.read_files(
+          config.compute_glob_pattern(
+            options['base-dir'] || :content_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :at_extension
+          ),
+          options['file_filter'],
+          nil,
+          "Reading content AT files",
+          options.merge(
+            use_new_repositext_file_api: true,
+            repository: repository,
+          )
+        ) do |repositext_file|
+          outcome = Repositext::Process::Report::RecordBoundaryLocations.new(
+            repositext_file,
+            config.kramdown_parser(:kramdown)
+          ).report
+          if outcome.success?
+            $stderr.puts "   - analyzed #{ repositext_file.basename }"
+            srbls = outcome.result
+            record_boundary_locations.keys.each { |key|
+              record_boundary_locations[key] += srbls[key]
+            }
+            comments += outcome.messages.map { |e| [repositext_file.basename, e].join(': ') }
+          else
+            $stderr.puts "   - skipped #{ repositext_file.basename }"
+          end
+          file_count += 1
+        end
+        $stderr.puts "Record Boundary Locations"
+        $stderr.puts "-" * 40
+        record_boundary_locations.keys.each { |context|
+          $stderr.puts " - #{ context }: #{ record_boundary_locations[context] }"
+        }
+        if comments.any?
+          $stderr.puts "-" * 40
+          comments.each { |comment|
+            $stderr.puts " - #{ comment }"
+          }
+        end
+      end
+
+      # Finds .stanza paragraphs that are not followed by .song paragraphs
+      def report_stanza_without_song_paragraphs(options)
+        file_count = 0
+        stanza_without_song_paragraph_files = []
+        Repositext::Cli::Utils.read_files(
+          config.compute_glob_pattern(
+            options['base-dir'] || :content_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :at_extension
+          ),
+          options['file_filter'],
+          nil,
+          "Reading content AT files",
+          options.merge(
+            use_new_repositext_file_api: true,
+            repository: repository,
+          )
+        ) do |repositext_file|
+          outcome = Repositext::Process::Report::StanzaWithoutSongParagraphs.new(
+            repositext_file,
+            config.kramdown_parser(:kramdown)
+          ).report
+          stanza_without_song_paragraph_files << outcome.result
+          file_count += 1
+        end
+        $stderr.puts "Stanza without Song paragraphs"
+        $stderr.puts "-" * 40
+        stanza_without_song_paragraph_files.each do |swsf|
+          next  if swsf[:stanzas_without_song].empty?
+          $stderr.puts " - #{ swsf[:filename] }"
+          swsf[:stanzas_without_song].each do |sws|
+            $stderr.puts "   - line #{ sws[:line] }: "
+            sws[:para_class_sequence].each do |p|
+              $stderr.puts "     - #{ p }"
+            end
+          end
+        end
+      end
+
       def report_words_with_apostrophe(options)
         # TODO: add report that shows all words starting with apostrophe that have only one character
         apostrophe_at_beginning = {}
@@ -981,8 +1021,8 @@ class Repositext
       #   '.".' => { :pre => 'text before quote', :post => 'text after quote', :count => 42 },
       #   ...
       # }
-      # @param[String] quote_char the type of quote to detect
-      # @param[Hash] options
+      # @param [String] quote_char the type of quote to detect
+      # @param [Hash] options
       def find_all_quote_instances(quote_char, options)
         instances = []
         Repositext::Cli::Utils.read_files(
@@ -997,8 +1037,8 @@ class Repositext
           options
         ) do |contents, filename|
           # iterate over all straight quotes
-          # Don't include straight quotes inside IALs
-          contents.gsub(/\{[^\{\}]*\}/, ' ') # remove all ials
+          # Don't include straight quotes inside IALs (remove all ials)
+          contents.gsub(/\{[^\{\}]*\}/, ' ')
                   .scan(/(.{0,20})((?<!\=)#{ quote_char }(?!\}))(.{0,20})/m) { |(pre, quote, post)|
             # add to array
             instances << { :pre => pre, :post => post, :filename => filename }
@@ -1009,14 +1049,15 @@ class Repositext
 
       def compute_sequence_key(pre, quote_char, post)
         key = [pre[-1], quote_char, post[0]].compact.join
-        key = key.gsub(/^[a-zA-Z]/, 'a') # Replace all leading chars with 'a'
-                 .gsub(/[a-zA-Z]$/, 'z') # Replace all trailing chars with 'z'
-                 .downcase
-                 .inspect # Make non-printable chars visible
-                 .gsub(/^\"/, '') # Remove leading double quotes (from inspect)
-                 .gsub(/\"$/, '') # Remove trailing double quotes (from inspect)
-                 .gsub(/\\"/, '"') # Unescape double quotes
-                 .ljust(8, ' ') # pad on the right with space for tabular display
+        key.gsub!(/^[a-zA-Z]/, 'a') # Replace all leading chars with 'a'
+        key.gsub!(/[a-zA-Z]$/, 'z') # Replace all trailing chars with 'z'
+        key.downcase!
+        # Make non-printable chars visible
+        key = key.inspect
+        key.gsub!(/^\"/, '') # Remove leading double quotes (from inspect)
+        key.gsub!(/\"$/, '') # Remove trailing double quotes (from inspect)
+        key.gsub!(/\\"/, '"') # Unescape double quotes
+        key.ljust(8, ' ') # pad on the right with space for tabular display
       end
 
       # Returns a hash with the titles from ERP with the date code as keys

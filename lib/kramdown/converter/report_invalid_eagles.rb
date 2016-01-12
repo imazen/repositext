@@ -11,8 +11,8 @@ module Kramdown
     class ReportInvalidEagles < Base
 
       # Instantiate converter
-      # @param[Kramdown::Element] root
-      # @param[Hash] options
+      # @param [Kramdown::Element] root
+      # @param [Hash] options
       def initialize(root, options)
         super
         @current_record_number = 0
@@ -21,8 +21,8 @@ module Kramdown
         @last_record_id = nil
       end
 
-      # @param[Kramdown::Element] el
-      # @return[Array] all invalid eagles:
+      # @param [Kramdown::Element] el
+      # @return [Array] all invalid eagles:
       # [
       #   { record_id: 123, issue: :starting_eagle_missing },
       #   { record_id: 123, issue: :starting_eagle_in_unexpected_location },

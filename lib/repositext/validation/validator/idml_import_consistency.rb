@@ -15,7 +15,7 @@ class Repositext
         # Checks if all text from IDML import is consistent with text in content.
         # @param idml_import_at [String]
         # @param content_at [String]
-        # @return[Outcome]
+        # @return [Outcome]
         def idml_import_consistent?(idml_import_at, content_at)
           idml_import_at_doc = Kramdown::Document.new(idml_import_at, :input => 'KramdownRepositext')
           content_at_doc = Kramdown::Document.new(content_at, :input => 'KramdownRepositext')

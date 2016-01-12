@@ -5,7 +5,7 @@ module Kramdown
   module AdjacentElementMerger
 
     # Recursively merges adjacent elements of same type.
-    # @param[Kramdown::Element] ke
+    # @param [Kramdown::Element] ke
     def recursively_merge_adjacent_elements!(ke)
       # Work from the bottom up so that tree mutations don't interfere with
       # iteration over children.
@@ -22,8 +22,8 @@ module Kramdown
     # Merges any children of ke that are adjacent and of the same type and have
     # same salient attributes.
     # NOTE: this doesn't do any recursion. It operates on a single ke only.
-    # @param[Kramdown::Element] ke
-    # @return[Integer] index of the last processed element
+    # @param [Kramdown::Element] ke
+    # @return [Integer] index of the last processed element
     def merge_adjacent_child_elements!(ke)
       if(
         ke.children.empty? || # nothing to merge

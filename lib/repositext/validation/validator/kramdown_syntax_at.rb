@@ -19,7 +19,7 @@ class Repositext
         # Returns an array of regexes that will detect invalid characters.
         def self.invalid_character_detectors
           # '%' and '@' are allowed in AT files, so we don't add them to list
-          # of invalid characters
+          # of invalid characters.
           Repositext::Validation::Config::INVALID_CHARACTER_REGEXES
         end
 
@@ -39,8 +39,8 @@ class Repositext
         end
 
         # AT specific syntax validation
-        # @param[String] source the at document to validate
-        # @return[Outcome]
+        # @param [String] source the at document to validate
+        # @return [Outcome]
         def valid_syntax_at?(source)
           errors = []
           warnings = []
@@ -52,9 +52,9 @@ class Repositext
         end
 
         # Implement AT specific validation callback when walking the tree.
-        # @param[Kramdown::Element] el
-        # @param[Array] errors collector for errors
-        # @param[Array] warnings collector for warnings
+        # @param [Kramdown::Element] el
+        # @param [Array] errors collector for errors
+        # @param [Array] warnings collector for warnings
         def validation_hook_on_element(el, errors, warnings)
           if(:root == el.type)
             if @options['run_options'].include?('kramdown_syntax_at-all_elements_are_inside_record_mark')
@@ -193,15 +193,15 @@ class Repositext
             # We have to check this here where we have access to the inner text,
             # rather than in #validate_character_inventory, since e.g.,
             # class attrs may contain legitimate underscores.
-            if(el.value =~ /[\_\^]/)
+            if(el.value =~ /[\_\^\=]/)
               warnings << Reportable.error(
                 [
                   @file_to_validate.path,
                   (lo = el.options[:location]) && sprintf("line %5s", lo)
                 ].compact,
                 [
-                  'Invalid underscore or caret',
-                  "In text: #{ el.value.inspect }"
+                  'Invalid underscore, caret, or equal sign in text element.',
+                  "Text contents: #{ el.value.inspect }"
                 ]
               )
             end
@@ -210,9 +210,9 @@ class Repositext
 
       protected
 
-        # @param[String] source the kramdown source string
-        # @param[Array] errors collector for errors
-        # @param[Array] warnings collector for warnings
+        # @param [String] source the kramdown source string
+        # @param [Array] errors collector for errors
+        # @param [Array] warnings collector for warnings
         def validate_record_mark_syntax(source, errors, warnings)
           # Record_marks_have to be preceded by a blank line.
           # The only exception is the first record_mark in each file.
@@ -246,8 +246,8 @@ class Repositext
             if match
               position_of_previous_record_mark = match.rindex('^^^', -4) || 0
               relevant_match_fragment = match[position_of_previous_record_mark..-1].inspect
-                                            .gsub(/^\"/, '') # Remove leading double quotes (from inspect)
-                                            .gsub(/\"$/, '') # Remove trailing double quotes (from inspect)
+              relevant_match_fragment.gsub!(/^\"/, '') # Remove leading double quotes (from inspect)
+              relevant_match_fragment.gsub!(/\"$/, '') # Remove trailing double quotes (from inspect)
               errors << Reportable.error(
                 [
                   @file_to_validate.path,

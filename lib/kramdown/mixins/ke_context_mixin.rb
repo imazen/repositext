@@ -25,14 +25,14 @@ module Kramdown
     end
 
     # Returns the current text container from stack
-    # @param[Nokogiri::XML::Node] xn for warning location
+    # @param [Nokogiri::XML::Node] xn for warning location
     def get_current_text_container(xn)
       get('text_container_stack', xn).last
     end
 
     # Replaces current text container with new_text_container
     # @param new_text_container_ke [Kramdown::ElementRt]
-    # @return[Kramdown::ElementRt] the previous text container
+    # @return [Kramdown::ElementRt] the previous text container
     def replace_current_text_container_with(new_text_container_ke)
       prev_text_container = @cx['text_container_stack'].pop
       @cx['text_container_stack'].push(new_text_container_ke)
@@ -40,8 +40,8 @@ module Kramdown
     end
 
     # Set a ke_context attribute
-    # @param[String] attr_name
-    # @param[Object] attr_value
+    # @param [String] attr_name
+    # @param [Object] attr_value
     def set(attr_name, attr_value)
       @cx[attr_name.to_s] = attr_value
     end
@@ -59,8 +59,7 @@ module Kramdown
     end
 
     # Manages the text_container_stack around processing of an XML node
-    # @param new_text_container [Kramdown::ElementRt]
-    # @param parent_xn_context [OpenStruct]
+    # @param new_text_container_ke [Kramdown::ElementRt]
     def with_text_container_stack(new_text_container_ke)
       @cx['text_container_stack'].push(new_text_container_ke)
       yield

@@ -97,14 +97,7 @@ class Repositext
       end
 
       # Reads files
-      # @param input_base_dir [String] the base_dir path
-      # @param input_file_selector [String] the input file selector
-      # @param input_file_extension [String] the input file extension
-      # @param[Proc, nil] file_name_2_proc A proc that computes the filename of
-      #     a second file. It receives the name of the first file as a single
-      #     argument and is expected to return the full path to the second file.
-      #     Pass nil if no second file is desired.
-      # @param: See #process_files_helper below for param description
+      # @param: See #read_files_helper below for param description
       def self.read_files(file_pattern, file_filter, file_name_2_proc, description, options, &block)
         read_files_helper(
           file_pattern, file_filter, file_name_2_proc, description, options, &block
@@ -114,7 +107,7 @@ class Repositext
       # Does a dry-run of the process. Printing out all debug and logging info
       # but not saving any changes to disk.
       # @param: See #process_files_helper below for param description
-      # @param[String] out_dir the output base directory
+      # @param [String] out_dir the output base directory
       def self.dry_run_process(file_pattern, file_filter, out_dir, description, options, &block)
         # Always return empty string to skip writing to disk
         output_path_lambda = lambda do |input_filename, output_file_attrs|
@@ -127,25 +120,27 @@ class Repositext
       end
 
       # Processes files
-      # @param[String] file_pattern A Dir.glob file pattern that describes
+      # @param [String] file_pattern A Dir.glob file pattern that describes
       #     the file set to be operated on. This is typically provided by either
       #     Rtfile or as command line argument by the user.
-      # @param[Trequal] file_filter Each file's name (and path) is compared with
+      # @param [Trequal] file_filter Each file's name (and path) is compared with
       #     file_filter using ===. The file will be processed if the comparison
       #     evaluates to true. file_filter can be anything that responds to
       #     #===, e.g., a Regexp, a Proc, or a String.
       #     This is provided by the callling command, limiting the files to be
       #     operated on to valid file types.
       #     See here for more info on ===: http://ruby.about.com/od/control/a/The-Case-Equality-Operator.htm
-      # @param[Proc] output_path_lambda A proc that computes the output file
+      # @param [Proc] output_path_lambda A proc that computes the output file
       #     path as string. It is given the input file path and output file attrs.
       #     If output_path_lambda returns '' (empty string), no files will be written.
-      # @param[String] description A description of the operation, used for logging.
-      # @param[Hash] options
+      # @param [String] description A description of the operation, used for logging.
+      # @param [Hash] options
       #     :input_is_binary to force File.binread where required
       #     :output_is_binary
       #     :'changed-only'
-      # @param[Proc] block A Proc that performs the desired operation on each file.
+      #     :repository
+      #     :use_new_repositext_file_api
+      # @param [Proc] block A Proc that performs the desired operation on each file.
       #     Arguments to the proc are each file's name and contents.
       #     Calling block is expected to return an Array of Outcome objects, one
       #     for each file, with the following attrs:
@@ -177,7 +172,20 @@ class Repositext
               else
                 File.read(filename).freeze
               end
-              outcomes = block.call(contents, filename)
+              outcomes = if options[:use_new_repositext_file_api]
+                # use new api
+                # TODO: once all calls use new API, move assignment of repo and language out of loop
+                repository = options[:repository]
+                language = repository.language
+                block.call(
+                  r_file_klass(options[:input_is_binary]).new(
+                    contents, language, filename, repository
+                  )
+                )
+              else
+                # use old api
+                block.call(contents, filename)
+              end
 
               outcomes.each do |outcome|
                 if outcome.success
@@ -226,20 +234,20 @@ class Repositext
       end
 
       # Moves files
-      # @param[String] file_pattern A Dir.glob file pattern that describes
+      # @param [String] file_pattern A Dir.glob file pattern that describes
       #     the file set to be operated on. This is typically provided by either
       #     Rtfile or as command line argument by the user.
-      # @param[Trequal] file_filter Each file's name (and path) is compared with
+      # @param [Trequal] file_filter Each file's name (and path) is compared with
       #     file_filter using ===. The file will be processed if the comparison
       #     evaluates to true. file_filter can be anything that responds to
       #     #===, e.g., a Regexp, a Proc, or a String.
       #     This is provided by the callling command, limiting the files to be
       #     operated on to valid file types.
       #     See here for more info on ===: http://ruby.about.com/od/control/a/The-Case-Equality-Operator.htm
-      # @param[Proc] output_path_lambda A proc that computes the output file
+      # @param [Proc] output_path_lambda A proc that computes the output file
       #     path as string. It is given the input file path and output file attrs.
       #     If output_path_lambda returns '' (empty string), no files will be written.
-      # @param[Hash] options
+      # @param [Hash] options
       #     :input_is_binary to force File.binread where required
       #     :output_is_binary
       #     :move_or_copy whether to move or copy the files, defaults to :move
@@ -303,26 +311,28 @@ class Repositext
       end
 
       # Reads files
-      # @param[String] file_pattern A Dir.glob file pattern that describes
+      # @param [String] file_pattern A Dir.glob file pattern that describes
       #     the file set to be operated on. This is typically provided by either
       #     Rtfile or as command line argument by the user.
-      # @param[Trequal] file_filter Each file's name (and path) is compared with
+      # @param [Trequal] file_filter Each file's name (and path) is compared with
       #     file_filter using ===. The file will be processed if the comparison
       #     evaluates to true. file_filter can be anything that responds to
       #     #===, e.g., a Regexp, a Proc, or a String.
       #     This is provided by the callling command, limiting the files to be
       #     operated on to valid file types.
       #     See here for more info on ===: http://ruby.about.com/od/control/a/The-Case-Equality-Operator.htm
-      # @param[Proc, nil] file_name_2_proc A proc that computes the filename of
+      # @param [Proc, nil] file_name_2_proc A proc that computes the filename of
       #     a paired file. It receives the name of the first filename as a single
       #     argument and is expected to return the full path to the second file.
-      # @param[String] description A description of the operation, used for logging.
-      # @param[Hash] options
+      # @param [String] description A description of the operation, used for logging.
+      # @param [Hash] options
       #     :input_is_binary to force File.binread where required
       #     :output_is_binary
       #     :'changed-only'
       #     :ignore_missing_file2 set to true if you quietly want to ignore missing file2, defaults to false
-      # @param[Proc] block A Proc that performs the desired operation on each file.
+      #     :repository
+      #     :use_new_repositext_file_api
+      # @param [Proc] block A Proc that performs the desired operation on each file.
       #     Arguments to the proc are each file's name and contents.
       def self.read_files_helper(file_pattern, file_filter, file_name_2_proc, description, options, &block)
 
@@ -359,13 +369,42 @@ class Repositext
                   else
                     File.read(filename_2).freeze
                   end
-                  block.call(contents_1, filename_1, contents_2, filename_2)
+                  if options[:use_new_repositext_file_api]
+                    # use new api
+                    # TODO: once all calls use new API, move assignment of repo and language out of loop
+                    repository = options[:repository]
+                    language = repository.language
+                    block.call(
+                      r_file_klass(options[:input_is_binary]).new(
+                        contents_1, language, filename_1, repository
+                      ),
+                      r_file_klass(options[:input_is_binary]).new(
+                        contents_2, language, filename_2, repository
+                      ),
+                    )
+                  else
+                    # use old api
+                    block.call(contents_1, filename_1, contents_2, filename_2)
+                  end
                 rescue SystemCallError => e
                   # Error: Errno::ENOENT - No such file or directory
                   raise  unless ignore_missing_file2
                 end
               else
-                block.call(contents_1, filename_1)
+                if options[:use_new_repositext_file_api]
+                  # use new api
+                  # TODO: once all calls use new API, move assignment of repo and language out of loop
+                  repository = options[:repository]
+                  language = repository.language
+                  block.call(
+                    r_file_klass(options[:input_is_binary]).new(
+                      contents_1, language, filename_1, repository
+                    )
+                  )
+                else
+                  # use old api
+                  block.call(contents_1, filename_1)
+                end
               end
             rescue StandardError => e
               counts[:errors] += 1
@@ -380,9 +419,9 @@ class Repositext
 
 
       # Wraps operations with log output
-      # @param[String] description the text to print on the first line of console
-      # @param[String] file_pattern the file pattern to print on first line of console
-      # @param[Block] the operation for which to print console output
+      # @param description [String] the text to print on the first line of console
+      # @param file_pattern [String] the file pattern to print on first line of console
+      # @param block [Block] the operation for which to print console output
       def self.with_console_output(description, file_pattern, &block)
         $stderr.puts ''
         $stderr.puts '-' * 80
@@ -404,9 +443,9 @@ class Repositext
 
       # Replaces filename's extension with new_extension. If filename doesn't have
       # an extension, adds new_extension.
-      # @param[String] filename the source filename with old extension
-      # @param[String] new_extension the new extension to use, e.g., '.idml'
-      # @return[String] filename with new_extension
+      # @param [String] filename the source filename with old extension
+      # @param [String] new_extension the new extension to use, e.g., '.idml'
+      # @return [String] filename with new_extension
       def self.replace_file_extension(filename, new_extension)
         filename = filename.gsub(/\.\z/, '') # remove dot at end if filename ends with dot
         existing_ext = File.extname(filename)
@@ -422,9 +461,9 @@ class Repositext
       # Copies file_path to new_path. Overwrites existing files.
       # Doesn't copy file if file_path is blank (nil, empty string, or string
       # with only whitespace)
-      # @param[String] file_path
-      # @param[String] new_path
-      # @return[Bool] true if it copied file, false if not.
+      # @param [String] file_path
+      # @param [String] new_path
+      # @return [Bool] true if it copied file, false if not.
       def self.copy_file_unless_path_is_blank(file_path, new_path)
         if '' == file_path.to_s.strip
           $stderr.puts %(  - Skip copying blank file_path)
@@ -438,9 +477,9 @@ class Repositext
       # Moves file_path to new_path. Overwrites existing files.
       # Doesn't move file if file_path is blank (nil, empty string, or string
       # with only whitespace)
-      # @param[String] file_path
-      # @param[String] new_path
-      # @return[Bool] true if it moved file, false if not.
+      # @param [String] file_path
+      # @param [String] new_path
+      # @return [Bool] true if it moved file, false if not.
       def self.move_file_unless_path_is_blank(file_path, new_path)
         if '' == file_path.to_s.strip
           $stderr.puts %(  - Skip moving blank file_path)
@@ -454,9 +493,9 @@ class Repositext
       # Writes file_contents to file at file_path. Overwrites existing file.
       # Doesn't write to file if file_path is blank (nil, empty string, or string
       # with only whitespace)
-      # @param[String] file_path
-      # @param[String] file_contents
-      # @return[Integer, Nil] the number of bytes written or false if nothing was written
+      # @param [String] file_path
+      # @param [String] file_contents
+      # @return [Integer, Nil] the number of bytes written or false if nothing was written
       def self.write_file_unless_path_is_blank(file_path, file_contents, output_is_binary = false)
         if '' == file_path.to_s.strip
           $stderr.puts %(  - Skip writing "#{ file_contents.truncate_in_the_middle(60) }" to blank file_path)
@@ -477,9 +516,9 @@ class Repositext
       # Returns a list of files that git considers changed:
       #     * modified or added
       #     * staged or unstaged
-      # @param[Boolean] changed_only_flag
-      # @param[String, optional] limit scope to path. This is for testing.
-      # @return[Array<String>, nil]
+      # @param changed_only_flag [Boolean]
+      # @param path [String, optional] limit scope to path. This is for testing.
+      # @return [Array<String>, nil]
       def self.compute_list_of_changed_files(changed_only_flag, path = '')
         if changed_only_flag
           base_dir = `git rev-parse --show-toplevel`.strip
@@ -504,6 +543,13 @@ class Repositext
         else
           nil
         end
+      end
+
+      # Returns the class to use for RFiles. Either text or binary
+      # @param is_binary [Boolean]
+      # @return [Class]
+      def self.r_file_klass(is_binary)
+        is_binary ? Repositext::RFile::Binary : Repositext::RFile::Text
       end
 
     end

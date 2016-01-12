@@ -36,8 +36,8 @@ module Kramdown
       include Kramdown::TreeCleaner
       include Kramdown::WhitespaceOutPusher
 
-      # @param[String] folio_xml
-      # @param[Hash, optional] kramdown_options these will be passed to Kramdown::Parser
+      # @param [String] folio_xml
+      # @param [Hash, optional] kramdown_options these will be passed to Kramdown::Parser
       def initialize(folio_xml, kramdown_options = {})
         @folio_xml = folio_xml
         @kramdown_options = {
@@ -53,7 +53,7 @@ module Kramdown
       end
 
       # Returns AT kramdown and other related documents as Hash of Strings
-      # @return[Hash<String>] A hash with the following elements: Keys are the
+      # @return [Hash<String>] A hash with the following elements: Keys are the
       #     corresponding file names, values are each document as string.
       #     * 'folio.at': kramdown file imported from folio.xml
       #     * 'folio.deleted_text.json': text that was deleted while importing folio.xml
@@ -78,7 +78,7 @@ module Kramdown
       # Returns just the kramdown document and not the other files. This is used
       # for round_trip validations where we need access to the parsed kramdown
       # tree.
-      # @return[Kramdown::Document]
+      # @return [Kramdown::Document]
       def parse_to_kramdown_document
         # Initialize processing i_vars
         @data_output = {}
@@ -102,9 +102,9 @@ module Kramdown
         kramdown_doc
       end
 
-      # @param[Nokogiri::XML::Node] xn the XML Node to process
-      # @param[String] key
-      # @param[Object] value
+      # @param [Nokogiri::XML::Node] xn the XML Node to process
+      # @param [String] key
+      # @param [Object] value
       def add_data(xn, key, value)
         key = key.to_s
         case @data_output[key]
@@ -125,8 +125,8 @@ module Kramdown
         end
       end
 
-      # @param[Nokogiri::XML::Node] xn the XML Node to process
-      # @param[String] message
+      # @param [Nokogiri::XML::Node] xn the XML Node to process
+      # @param [String] message
       def add_deleted_text(xn, message)
         if !message.nil? && '' != message
           @deleted_text_output << {
@@ -136,8 +136,8 @@ module Kramdown
           }
         end
       end
-      # @param[Nokogiri::XML::Node] xn the XML Node to process
-      # @param[String] message
+      # @param [Nokogiri::XML::Node] xn the XML Node to process
+      # @param [String] message
       def add_notes(xn, message)
         if !message.nil? && '' != message
           @notes_output << {
@@ -147,8 +147,8 @@ module Kramdown
           }
         end
       end
-      # @param[Nokogiri::XML::Node] xn the XML Node to process
-      # @param[String] message
+      # @param [Nokogiri::XML::Node] xn the XML Node to process
+      # @param [String] message
       def add_warning(xn, message)
         if !message.nil? && '' != message
           @warnings_output << {
@@ -162,7 +162,7 @@ module Kramdown
     private
 
       # Processes an xml_node
-      # @param[Nokogiri::XML::Node] xn the XML Node to process
+      # @param [Nokogiri::XML::Node] xn the XML Node to process
       def process_xml_node(xn)
         raise(ArgumentError, "xn cannot be nil")  if xn.nil?
         @xn_context = OpenStruct.new(
@@ -196,7 +196,7 @@ module Kramdown
       # necessary if the previous methods actually modified the tree.
       # I'm thinking only if nodes were removed, however that needs to be
       # confirmed.
-      # @param[Kramdown::Element] kramdown_tree the root of the tree
+      # @param [Kramdown::Element] kramdown_tree the root of the tree
       def post_process_kramdown_tree!(kramdown_tree)
         # override this to post process elements in the kramdown tree
         # NOTE: It's important to call the methods below for correct results.
@@ -376,15 +376,15 @@ module Kramdown
 
       # Capitalizes each word in string:
       # 'this IS a string to CAPITALIZE' => 'This Is A String To Capitalize'
-      # @param[String] a_string
+      # @param [String] a_string
       def capitalize_each_word_in_string(a_string)
         a_string.split.map { |e| e.capitalize }.join(' ')
       end
 
       # Delete xn, send to deleted_text, children won't be processed
-      # @param[Nokogiri::XML::Node] xn
-      # @param[Boolean] send_to_deleted_text whether to send node's text to deleted_text
-      # @param[Boolean] send_to_notes whether to send node's text to notes
+      # @param [Nokogiri::XML::Node] xn
+      # @param [Boolean] send_to_deleted_text whether to send node's text to deleted_text
+      # @param [Boolean] send_to_notes whether to send node's text to notes
       def delete_node(xn, send_to_deleted_text, send_to_notes)
         @xn_context.process_children = false
         add_deleted_text(xn, xn.text)  if send_to_deleted_text
@@ -399,13 +399,13 @@ module Kramdown
       end
 
       # Ignore xn, don't send to deleted_text, children won't be processed
-      # @param[Nokogiri::XML::Node] xn
+      # @param [Nokogiri::XML::Node] xn
       def ignore_node(xn)
         @xn_context.process_children = false
       end
 
       # Lowercases text contents of xn: 'TestString ALLCAPS' => 'teststrings allcaps'
-      # @param[Nokogiri::XML::Node] xn
+      # @param [Nokogiri::XML::Node] xn
       def lowercase_node_text_contents!(xn)
         xn.children.each { |xnc|
           if xnc.text?
@@ -420,15 +420,15 @@ module Kramdown
       end
 
       # Pull xn, Replacing self with children. Xml tree recursion will process children.
-      # @param[Nokogiri::XML::Node] xn
+      # @param [Nokogiri::XML::Node] xn
       def pull_node(xn)
         # nothing to do with node
       end
 
       # Deletes a_string from xn and all its descendant nodes.
-      # @param[String, Regexp] search_string_or_regex a string or regex for finding
-      # @param[String] replace_string the replacement string
-      # @param[Nokogiri::XML::Node] xn
+      # @param [String, Regexp] search_string_or_regex a string or regex for finding
+      # @param [String] replace_string the replacement string
+      # @param [Nokogiri::XML::Node] xn
       def replace_string_inside_node!(search_string_or_regex, replace_string, xn)
         if xn.text? && '' != xn.text && !xn.text.nil?
           xn.content = xn.text.gsub(search_string_or_regex, replace_string)
@@ -441,7 +441,7 @@ module Kramdown
 
       # Raises a warning and returns false if xn contains any text content other
       # than whitespace.
-      # @param[Nokogiri::XML::Node] xn
+      # @param [Nokogiri::XML::Node] xn
       def verify_only_whitespace_is_present(xn)
         verify_text_matches_regex(xn, /\A[ \n]*\z/, 'contained non-whitespace')
       end

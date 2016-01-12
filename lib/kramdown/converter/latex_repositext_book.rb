@@ -5,7 +5,7 @@ module Kramdown
       include DocumentMixin
 
       # Configure page settings. All values are in inches
-      # @param[Symbol, optional] key
+      # @param [Symbol, optional] key
       def page_settings(key = nil)
         ps = {
           english_bound: {

@@ -12,9 +12,9 @@ class Repositext
       # * merge .omit classes from gmt_import into content_at
       #     * use string tools, iterate over paragraphs and update .omit classes
       #
-      # @param[String] gap_mark_tagging_import the authority for gap_mark tokens.
-      # @param[String] content_at the authority for text and all tokens except gap_marks
-      # @return[Outcome] the merged document is returned as #result if successful.
+      # @param [String] gap_mark_tagging_import the authority for gap_mark tokens.
+      # @param [String] content_at the authority for text and all tokens except gap_marks
+      # @return [Outcome] the merged document is returned as #result if successful.
       def self.merge(gap_mark_tagging_import, content_at)
         # Make sure nothing but gap_marks and .omit pargraph classes has changed
         ensure_no_invalid_changes(gap_mark_tagging_import, content_at)
@@ -30,9 +30,9 @@ class Repositext
       # Makes sure that only gap_marks and paragraph.omit classes have changed
       # between gap_mark_tagging_import and content_at. Raises an exception
       # if there are invalid changes.
-      # @param[String] gap_mark_tagging_import
-      # @param[String] conten_at
-      # @return[Outcome] true if no invalid changes are found
+      # @param gap_mark_tagging_import [String]
+      # @param content_at [String]
+      # @return [Outcome] true if no invalid changes are found
       def self.ensure_no_invalid_changes(gap_mark_tagging_import, content_at)
         # Export content_at to gap_mark_tagging
         tmp_gap_mark_tagging_export = Repositext::Export::GapMarkTagging.export(content_at).result
@@ -54,8 +54,8 @@ class Repositext
       end
 
       # Removes gap_marks and paragraph.omit classes from txt
-      # @param[String] txt
-      # @return[String]
+      # @param [String] txt
+      # @return [String]
       def self.remove_gap_marks_and_omit_classes(txt)
         txt.gsub('%', '')
            .gsub(
@@ -71,10 +71,10 @@ class Repositext
       # Merges gap_marks from gap_mark_tagging_import into content_at. Expects that both
       # filtered_texts are identical. Otherwise Suspension::TokenReplacer will
       # raise an error.
-      # @param[String] gap_mark_tagging_import document that has all modifications
+      # @param [String] gap_mark_tagging_import document that has all modifications
       #   undone. Contains gap_mark tokens.
-      # @param[String] content_at the AT document to merge gap_marks into
-      # @return[Outcome] if successful, #result contains the resulting text
+      # @param [String] content_at the AT document to merge gap_marks into
+      # @return [Outcome] if successful, #result contains the resulting text
       def self.merge_gap_marks(gap_mark_tagging_import, content_at)
         # Remove all tokens but :gap_mark from gap_mark_tagging_import
         gap_mark_tagging_import_with_gap_marks_only = Suspension::TokenRemover.new(
@@ -98,9 +98,9 @@ class Repositext
 
       # Merges paragraph.omit classes from gap_mark_tagging_import into content_at.
       # Doesn't touch any other classes.
-      # @param[String] gap_mark_tagging_import
-      # @param[String] content_at
-      # @return[Outcome] if successful, #result contains the resulting text
+      # @param [String] gap_mark_tagging_import
+      # @param [String] content_at
+      # @return [Outcome] if successful, #result contains the resulting text
       def self.merge_omit_classes(gap_mark_tagging_import, content_at)
         # Extract paragraph classes from gap_mark_tagging_import
         gap_mark_tagging_import_paragraph_classes = extract_paragraph_ials(gap_mark_tagging_import)
@@ -134,16 +134,16 @@ class Repositext
 
       # Extracts all paragraph IALs in txt and returns them as array in the order
       # they appear in txt
-      # @param[String] txt
-      # @param[Array<String>] an array with one item for each IAL, as it is found in txt
+      # @param [String] txt
+      # @return [Array<String>] an array with one item for each IAL, as it is found in txt
       def self.extract_paragraph_ials(txt)
         txt.scan(/(?<=\n)\{:[^\{\}]+\}/)
       end
 
       # Merges source_ial's .omit class into target_ial
-      # @param[String] source_ial
-      # @param[String] target_ial
-      # @return[String] merged IAL
+      # @param [String] source_ial
+      # @param [String] target_ial
+      # @return [String] merged IAL
       def self.merge_omit_paragraph_class(source_ial, target_ial)
         tmp_kramdown_doc = Kramdown::Document.new("para\n#{ target_ial }", :input => 'KramdownRepositext')
         tmp_para_el = tmp_kramdown_doc.root.children.first

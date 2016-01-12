@@ -8,9 +8,9 @@ module Kramdown
     attr_accessor :parent # points to parent Kramdown::Element or nil for root
 
     # Add child_or_children at_index as child to self
-    # @param[Array<Kramdown::Element>, Kramdown::Element] child_or_children as scalar or array
-    # @param[Integer, optional] at_index
-    # @return[Array] self's children
+    # @param [Array<Kramdown::Element>, Kramdown::Element] child_or_children as scalar or array
+    # @param [Integer, optional] at_index
+    # @return [Array] self's children
     def add_child(child_or_children, at_index = -1)
       the_children = [*child_or_children]
       the_children.each do |the_child|
@@ -26,8 +26,8 @@ module Kramdown
     # If child_ke is reused: Adopts child_ke's children and detaches child_ke from parent.
     # This method can be used any time a tree is modified and elements are
     # moved around to avoid nested ems.
-    # @param[Kramdown::Element] child_ke
-    # @return[Kramdown::Element] child_ke or self
+    # @param [Kramdown::Element] child_ke
+    # @return [Kramdown::Element] child_ke or self
     def add_child_or_reuse_if_same(child_ke)
       if is_of_same_type_as?(child_ke)
         # use self
@@ -43,7 +43,7 @@ module Kramdown
     end
 
     # Detaches self as child from parent, returns own child index or nil
-    # @return[Integer, nil] own child position or nil if root
+    # @return [Integer, nil] own child position or nil if root
     def detach_from_parent
       return nil  if parent.nil? # root
       oci = own_child_index
@@ -64,7 +64,7 @@ module Kramdown
     end
 
     # Inserts el as sibling after self
-    # @param[Kramdown::Element] el
+    # @param [Kramdown::Element] el
     def insert_sibling_after(el)
       raise ArgumentError.new('You tried to insert self after self')  if self == el
       return nil  if parent.nil? # self is root
@@ -72,7 +72,7 @@ module Kramdown
     end
 
     # Inserts el as sibling before self
-    # @param[Kramdown::Element] el
+    # @param [Kramdown::Element] el
     def insert_sibling_before(el)
       raise ArgumentError.new('You tried to insert self before self')  if self == el
       return nil  if parent.nil? # self is root
@@ -86,7 +86,7 @@ module Kramdown
     end
 
     # Returns self's child position, zero based, or nil if no parent exists
-    # @return[Integer, nil]
+    # @return [Integer, nil]
     def own_child_index
       return nil  if parent.nil? # self is root
       own_index = nil
@@ -112,7 +112,7 @@ module Kramdown
     end
 
     # Replaces self with replacement_kes (in same child position)
-    # @param[Array<Kramdown::Element] replacement_kes
+    # @param replacement_kes [Array<Kramdown::Element>]
     def replace_with(replacement_kes)
       replacement_kes = [*replacement_kes] # cast to array
       if replacement_kes.any? { |e| self == e }
@@ -134,7 +134,7 @@ module Kramdown
     end
 
     # Clones self and all children (if recursive is true)
-    # @param[Bool, optional] recursive will deep clone children if true
+    # @param [Bool, optional] recursive will deep clone children if true
     def clone(recursive = true)
       # have to dup value, attr, options, otherwise two elements will share same instance
       new_self = Kramdown::ElementRt.new(
@@ -156,9 +156,9 @@ module Kramdown
 
     # # Traverses ancestry until it finds an element that matches criteria.
     # # Returns that ancestor or nil if none found.
-    # # @param[Hash] criteria, keys are methods to send to element,
+    # # @param [Hash] criteria, keys are methods to send to element,
     # #                        vals are expected output. Example: { :type => :record }
-    # # @return[Kramdown::Element, nil]
+    # # @return [Kramdown::Element, nil]
     # def find_ancestor_element(criteria)
     #   if(criteria.all? { |k,v| self.send(k) == v })
     #     self # self matches criteria, return it
@@ -171,7 +171,7 @@ module Kramdown
 
     # # Removes self as link between parent and children and promotes self's children
     # # to parent's children
-    # # @return[Array<Kramdown::Element] self's children if any.
+    # # @return [Array<Kramdown::Element] self's children if any.
     # def pull
     #   # Can't pull root
     #   raise(ArgumentError, "Cannot pull root node: #{ self.inspect }")  if parent.nil?
@@ -181,7 +181,7 @@ module Kramdown
     # end
 
     # # Removes self and all descendants from document
-    # # @return[Kramdown::Element] self
+    # # @return [Kramdown::Element] self
     # def drop
     #   # Can't drop root
     #   raise(ArgumentError, "Cannot pull root node: #{ self.inspect }")  if parent.nil?

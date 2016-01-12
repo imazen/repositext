@@ -1,3 +1,4 @@
+# TODO: Delete this once all code is migrated to Repositext::RFile
 class Repositext
   class Utils
     class CorrespondingPrimaryFileFinder
@@ -10,7 +11,7 @@ class Repositext
       #     rtfile_dir: the foreign file's Rtfile path from config.base_dir(:rtfile_dir)
       #     relative_path_to_primary_repo: relative path from foreign to primary repo, from config.setting('relative_path_to_primary_repo')
       #     primary_repo_lang_code: primary repo's language_code_3_chars, from config.setting(:primary_repo_lang_code)
-      # @return[String] the absolute path to the corresponding primary file
+      # @return [String] the absolute path to the corresponding primary file
       def self.find(params)
         primary_repo_base_dir = File.expand_path(
           params[:relative_path_to_primary_repo],

@@ -5,8 +5,8 @@ module Kramdown
     describe IdmlStory do
 
       # Wraps plain_text so that it is a valid IdmlStory that can be parsed.
-      # @param[String] plain_text
-      # @param[Hash, optional] options: :aps, :acs
+      # @param [String] plain_text
+      # @param [Hash, optional] options: :aps, :acs
       def plain_text_as_idml_story(plain_text, options = {})
         options = {:acs => 'CharacterStyle/Regular'}.merge(options)
         data =  '<Content>'
@@ -16,8 +16,8 @@ module Kramdown
       end
 
       # Wraps a_content so that it is a valid IdmlStory that can be parsed.
-      # @param[String] a_content
-      # @param[Hash, optional] options: :aps, :acs
+      # @param [String] a_content
+      # @param [Hash, optional] options: :aps, :acs
       def content_as_idml_story(a_content, options = {})
         options = {:acs => 'CharacterStyle/Regular'}.merge(options)
         data =  %(<CharacterStyleRange AppliedCharacterStyle="#{options[:acs]}" CharacterDirection="LeftToRightDirection">)
@@ -27,8 +27,8 @@ module Kramdown
       end
 
       # Wraps a_character_style_range so that it is a valid IdmlStory that can be parsed.
-      # @param[String] a_character_style_range
-      # @param[Hash, optional] options: :aps
+      # @param [String] a_character_style_range
+      # @param [Hash, optional] options: :aps
       def char_as_idml_story(a_character_style_range, options = {})
         options = {:aps => 'ParagraphStyle/Normal'}.merge(options)
         data =  %(<ParagraphStyleRange AppliedParagraphStyle="#{options[:aps]}" HyphenateCapitalizedWords="false">)
@@ -38,7 +38,7 @@ module Kramdown
       end
 
       # Wraps a_paragraph_style_range so that it is a valid IdmlStory that can be parsed.
-      # @param[String] a_paragraph_style_range
+      # @param [String] a_paragraph_style_range
       def para_as_idml_story(a_paragraph_style_range)
         data = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
         data << '<idPkg:Story xmlns:idPkg="http://ns.adobe.com/AdobeInDesign/idml/1.0/packaging" DOMVersion="8.0">'

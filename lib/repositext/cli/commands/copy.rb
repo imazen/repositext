@@ -59,6 +59,7 @@ class Repositext
       # @param options [Hash]
       # @option options [String] 'base-dir': (required) one of 'subtitle_tagging_import_dir' or 'subtitle_import_dir'
       # @option options [String] 'file-pattern': defaults to 'txt_files', can be custom pattern
+      # TODO SPID: This can't be just a copy any more since SPIDS are getting lost.
       def copy_subtitle_marker_csv_files_to_content(options)
         input_base_dir = config.compute_base_dir(options['base-dir'])
         input_file_selector = config.compute_file_selector(options['file-selector'] || :all_files)

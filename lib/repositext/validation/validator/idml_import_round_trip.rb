@@ -16,7 +16,7 @@ class Repositext
 
     private
 
-      # @param[String] idml_file_contents
+      # @param [String] idml_file_contents
       def valid_idml_round_trip?(idml_file_contents)
         # parse Idml
         idml_based_kramdown_doc = @options['idml_parser_class'].new(

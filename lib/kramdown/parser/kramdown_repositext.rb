@@ -17,14 +17,14 @@ module Kramdown
                           :span_extensions, :html_entity, :line_break, :escaped_chars]
       end
 
-      # @return[Array] array with [root, [warnings]]
+      # @return [Array] array with [root, [warnings]]
       def parse #:nodoc:
         configure_parser
         parse_blocks(@root, adapt_source(source))
         update_tree(@root)
         # We comment out the following behavior from Kramdown::Parser::Kramdown
-        # replace_abbreviations(@root)
-        # @footnotes.each {|name,data| update_tree(data[:marker].last.value) if data[:marker]}
+        #     replace_abbreviations(@root)
+        #     @footnotes.each {|name,data| update_tree(data[:marker].last.value) if data[:marker]}
       end
 
       RECORD_MARK = /^\^\^\^\s*?(#{IAL_SPAN_START})?\s*?\n/
@@ -55,6 +55,11 @@ module Kramdown
       define_parser(:subtitle_mark, SUBTITLE_MARK, SUBTITLE_MARK)
 
 
+      # TODO: We want to be able to escape percent signs with a leading
+      # backslash '\'. This is not trivial as we need to modify Kramdown's
+      # :escaped_chars parser. It uses a previously defined constant
+      # ESCAPED_CHARS, and kramdown may not allow redefinition of parsers...
+      # (double check latest claim).
       GAP_MARK = /%/
 
       # Parse gap mark at current location.

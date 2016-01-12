@@ -12,8 +12,8 @@ module Kramdown
       class UnsupportedElementException < Exception; end
 
       # Instantiate an IDMLStory converter
-      # @param[Kramdown::Element] root
-      # @param[Hash] options
+      # @param [Kramdown::Element] root
+      # @param [Hash] options
       def initialize(root, options)
         super
         @xml = '' # string collector for IDML Story XML
@@ -21,19 +21,19 @@ module Kramdown
         @stack = [] # for Kramdown elements
       end
 
-      # @return[String] the name of the converter method for element_type
+      # @return [String] the name of the converter method for element_type
       DISPATCHER = Hash.new {
         |h,element_type| h[element_type] = "convert_#{ element_type }"
       }
 
       # Converts +el+ and adds result to @xml string
-      # @param[Kramdown::Element] el
+      # @param [Kramdown::Element] el
       def convert(el) #:nodoc:
         send(DISPATCHER[el.type], el)
       end
 
       # Converts +el+'s child elements
-      # @param[Kramdown::Element] el
+      # @param [Kramdown::Element] el
       def inner(el) #:nodoc:
         @stack.push(el)
         el.children.each {|child| convert(child)}
@@ -50,19 +50,19 @@ module Kramdown
       #
       # ----------------------------
 
-      # @param[Kramdown::Element] root
+      # @param [Kramdown::Element] root
       def convert_root(root)
         inner(root)
         emit_end_tag while @xml_stack.size > 0
         @xml
       end
 
-      # @param[Kramdown::Element] el
+      # @param [Kramdown::Element] el
       def convert_header(el)
         paragraph_style_range_tag(el, 'Header')
       end
 
-      # @param[Kramdown::Element] el
+      # @param [Kramdown::Element] el
       def convert_p(el)
         if el.has_class?('test_class')
           # This is an example for how to handle an element with a specific class.
@@ -73,7 +73,7 @@ module Kramdown
         end
       end
 
-      # @param[Kramdown::Element] el
+      # @param [Kramdown::Element] el
       def convert_hr(el)
         paragraph_style_range_tag(nil, 'Horizontal rule') do
           char_st_rng_tag(nil, 'Regular') do
@@ -82,7 +82,7 @@ module Kramdown
         end
       end
 
-      # @param[Kramdown::Element] el
+      # @param [Kramdown::Element] el
       def convert_text(el)
         character_style_range_tag_for_el(el)
         # Transform text contents:
@@ -90,7 +90,7 @@ module Kramdown
         content_tag(el.value.gsub(/\n/, ' '))
       end
 
-      # @param[Kramdown::Element] el
+      # @param [Kramdown::Element] el
       def convert_em(el)
         character_style_range_tag_for_el(el)
       end
@@ -100,19 +100,19 @@ module Kramdown
         content_tag(Repositext::Utils::EntityEncoder.decode(el.options[:original]))
       end
 
-      # @param[Kramdown::Element] el
+      # @param [Kramdown::Element] el
       def convert_strong(el)
         character_style_range_tag_for_el(el)
       end
 
       # We use +U2028 (LINE SEPARATOR) for kramdown :br elements
-      # @param[Kramdown::Element] el
+      # @param [Kramdown::Element] el
       def convert_br(el)
         character_style_range_tag_for_el(el)
         content_tag("\u2028")
       end
 
-      # @param[Kramdown::Element] el
+      # @param [Kramdown::Element] el
       def convert_xml_comment(el)
         # noop
       end
@@ -145,9 +145,9 @@ module Kramdown
       # If a block is given, it is yielded. Otherwise the children of +el+ are
       # converted if +el+ is not +nil+.
       #
-      # @param[Kramdown::Element] el
-      # @param[String] style 'ParagraphStyle/' is automatically prepended
-      # @param[Hash, optional] attrs
+      # @param [Kramdown::Element] el
+      # @param [String] style 'ParagraphStyle/' is automatically prepended
+      # @param [Hash, optional] attrs
       def paragraph_style_range_tag(el, style, attrs = {})
         # Close any open tags that are not CharacterStyleRange or ParagraphStyleRange
         while(
@@ -193,9 +193,9 @@ module Kramdown
       #
       # **Note**: Use this method rather than the #char_st_rng_tag method!
       #
-      # @param[Kramdown::Element] el
-      # @param[Array, optional] ancestors an array holding the ancestors of +el+.
-      # @param[Proc, optional] block
+      # @param [Kramdown::Element] el
+      # @param [Array, optional] ancestors an array holding the ancestors of +el+.
+      # @param [Proc, optional] block
       def character_style_range_tag_for_el(el, ancestors = @stack, &block)
         orig_el = el
         if ![:em, :strong].include?(el.type)
@@ -243,9 +243,9 @@ module Kramdown
       #
       # **Note**: You should not call this method directly, but rather #character_style_range_tag_for_el instead!
       #
-      # @param[Kramdown::Element] el
-      # @param[String] style 'CharacterStyle/' is automatically prepended
-      # @param[Hash, optional] attrs
+      # @param [Kramdown::Element] el
+      # @param [String] style 'CharacterStyle/' is automatically prepended
+      # @param [Hash, optional] attrs
       def char_st_rng_tag(el, style, attrs = {})
         attrs = attrs.merge("AppliedCharacterStyle" => "CharacterStyle/#{ style }")
 
@@ -262,7 +262,7 @@ module Kramdown
         block_given? ? yield : el && inner(el)
       end
 
-      # @param[String] text
+      # @param [String] text
       def content_tag(text)
         emit_start_tag('Content', {}, false, true, false)
         emit_text(text)
@@ -287,8 +287,8 @@ module Kramdown
 
 
       # Escapes the string so that it works for XML text.
-      # @param[String] data
-      # @return[String]
+      # @param [String] data
+      # @return [String]
       def escape_xml(data)
         Builder::XChar.encode(data)
       end
@@ -299,25 +299,25 @@ module Kramdown
       XML_ATTR_ESCAPES_RE = /[\n\r"]/
 
       # Escapes the given XML attribute value.
-      # @param[String] value
-      # @return[String]
+      # @param [String] value
+      # @return [String]
       def escape_xml_attr(value)
         escape_xml(value).gsub(XML_ATTR_ESCAPES_RE) { |c| XML_ATTR_ESCAPES[c] }
       end
 
       # Returns a correctly formatted string for the given attribute key-value pairs.
-      # @param[Hash] attrs
-      # @return[String]
+      # @param [Hash] attrs
+      # @return [String]
       def format_attrs(attrs)
         " " << attrs.map { |k,v| "#{ k }=\"#{ escape_xml_attr(v) }\""}.join(' ')
       end
 
       # Emits the start tag +name+ to @xml.
-      # @param[String] name the tag name
-      # @param[Hash, optional] attrs the tag's attributes
-      # @param[Boolean, optional] is_closed true for self closing tags
-      # @param[Boolean, optional] indent true if tag should be indented
-      # @param[Boolean, optional] line_break true if \n is to be inserted after
+      # @param [String] name the tag name
+      # @param [Hash, optional] attrs the tag's attributes
+      # @param [Boolean, optional] is_closed true for self closing tags
+      # @param [Boolean, optional] indent true if tag should be indented
+      # @param [Boolean, optional] line_break true if \n is to be inserted after
       def emit_start_tag(name, attrs = {}, is_closed = false, indent = true, line_break = true)
         @xml << [
           indent ? '  ' * @xml_stack.size : '',
@@ -330,8 +330,8 @@ module Kramdown
       end
 
       # Emits the end tag for the last emitted start tag to @xml.
-      # @param[Boolean, optional] indent true if tag should be indented
-      # @param[Boolean, optional] line_break true if \n is to be inserted after
+      # @param [Boolean, optional] indent true if tag should be indented
+      # @param [Boolean, optional] line_break true if \n is to be inserted after
       def emit_end_tag(indent = true, line_break = true)
         name, _ = @xml_stack.pop
         @xml << [
@@ -342,7 +342,7 @@ module Kramdown
       end
 
       # Emits text to @xml.
-      # @param[String] text
+      # @param [String] text
       def emit_text(text)
         @xml << escape_xml(text)
       end

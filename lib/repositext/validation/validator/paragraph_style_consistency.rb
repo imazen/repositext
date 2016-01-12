@@ -14,9 +14,9 @@ class Repositext
         end
 
         # Checks if foreign_doc and primary_doc's paragraphs have identical styles applied.
-        # @param[String] foreign_doc
-        # @param[String] primary_doc
-        # @return[Outcome]
+        # @param [String] foreign_doc
+        # @param [String] primary_doc
+        # @return [Outcome]
         def paragraph_styles_consistent?(foreign_doc, primary_doc)
           # If the foreign file has no paragraph numbers, then we make no distinction
           # between .normal and .normal_pn. This is true for some legacy files.

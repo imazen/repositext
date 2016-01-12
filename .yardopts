@@ -1,0 +1,5 @@
+--no-private
+--protected
+--readme README.md
+--markup markdown
+--output-dir ./../repositext-guide/documents/reference/classes/repositext

@@ -6,7 +6,8 @@ class Repositext
 
       # Merges accepted corrections for specially formatted files into content AT.
       # This is done in two steps:
-      #  1. Apply all corrections that can be done automatically (based on exact text matches)
+      #  1. Apply all corrections that can be done automatically
+      #     (based on exact text matches)
       #  2. Apply manual corrections where no or multiple extact matches are found.
       # We have to do it in two steps so that when we open the file in the editor
       # for manual changes, all auto corrections are already applied to the file

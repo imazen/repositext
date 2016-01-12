@@ -28,7 +28,7 @@ class Repositext
       end
 
       # Use this method to add an error to self.
-      # @param[Reportable] _reportable
+      # @param [Reportable] _reportable
       def add_error(_reportable)
         @errors << _reportable
         @logger.error(
@@ -37,7 +37,7 @@ class Repositext
       end
 
       # Use this method to add an array of errors to self.
-      # @param[Array<Reportable>] _errors
+      # @param [Array<Reportable>] _errors
       def add_errors(_errors, _sort_by = :location)
         if _sort_by
           _errors = _errors.sort { |a,b| a.send(_sort_by) <=> b.send(_sort_by) }
@@ -48,21 +48,21 @@ class Repositext
       end
 
       # Use this method to add a stat to self
-      # @param[Reportable] _stat
+      # @param [Reportable] _stat
       def add_stat(_stat)
         @stats << _stat
       end
 
       # Use this method to add an array of stats to self
-      # @param[Array<Reportable>] _stats
-      def add_stats(_stat)
+      # @param _stats [Array<Reportable>]
+      def add_stats(_stats)
         _stats.each do |e|
           self.add_stat(e)
         end
       end
 
       # Use this method to add a warning to self.
-      # @param[Reportable] _reportable
+      # @param [Reportable] _reportable
       def add_warning(_reportable)
         @warnings << _reportable
         @logger.warning(
@@ -71,7 +71,7 @@ class Repositext
       end
 
       # Use this method to add an array of warnings to self.
-      # @param[Array<Reportable>] _warnings
+      # @param [Array<Reportable>] _warnings
       def add_warnings(_warnings, _sort_by = :location)
         if _sort_by
           _warnings = _warnings.sort { |a,b| a.send(_sort_by) <=> b.send(_sort_by) }
@@ -82,9 +82,9 @@ class Repositext
       end
 
       # Returns report data
-      # @param[Hash, optional] options
+      # @param [Hash, optional] options
       #   * :grouped_by => :location (default), :class
-      # @return[Hash<Array>] recursive Hash with Arrays for collections and
+      # @return [Hash<Array>] recursive Hash with Arrays for collections and
       #   Hashes for objects. Structure depends on :grouped_by option.
       def reportables(options = {})
         options = { :grouped_by => :location }.merge(options)
@@ -173,7 +173,7 @@ class Repositext
             sub = r
             error.details.first(2).each{ |el| sub = sub[el] }
             sub[:errors] << {
-              :location => error.location.map { |e| e.gsub(@input_base_dir, '') },
+              :location => error.location.compact.map { |e| e.gsub(@input_base_dir, '') },
               :details => error.details,
               :level => error.level
             }
@@ -212,8 +212,8 @@ class Repositext
       end
 
       # Prints report to $stderr and file (optional)
-      # @param[String] marker to identify this validation. Typically the validation class name
-      # @param[String, nil] report_file_path if given, report will be appended to this file
+      # @param [String] marker to identify this validation. Typically the validation class name
+      # @param [String, nil] report_file_path if given, report will be appended to this file
       def write(marker, report_file_path)
         ap_options = { indent: -2, sort_keys: true, index: false, plain: true }
         r = []

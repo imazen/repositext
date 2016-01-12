@@ -7,10 +7,10 @@ module Kramdown
       # Processes and adds elements for raw_text as children to tree.
       # This method is inspired by Kramdown::Parser::Base#add_text and
       # Kramdown::Parser::Html#process_text
-      # @param[String] raw_text
-      # @param[Kramdown::Element, optional] tree the current kramdown element
-      # @param[Symbol, optional] type, @text_type defaults to :text
-      # @return[Kramdown::Element] tree with new children for raw_text added
+      # @param raw_text [String]
+      # @param tree [Kramdown::Element, optional] the current kramdown element
+      # @param type [Symbol, optional] @text_type defaults to :text
+      # @return [Kramdown::Element] tree with new children for raw_text added
       def process_and_add_text(raw_text, tree = @tree, type = @text_type)
         return tree  if [nil, ''].include?(raw_text)
         # initialize variables in method scope

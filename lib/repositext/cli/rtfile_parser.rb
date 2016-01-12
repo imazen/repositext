@@ -1,31 +1,13 @@
 # Defines the DSL that can be used in Rtfiles
 class Repositext
   class Cli
-    module RtfileDsl
+    class RtfileParser
 
-      def self.included(base)
-        base.extend ClassMethods
-      end
+      attr_reader :config
 
-      module ClassMethods
-
-        # Tries to find Rtfile, starting in current working directory and
-        # traversing up the directory hierarchy until it finds an Rtfile or
-        # reaches the file system root.
-        # NOTE: This code is inspired by Bundler's find_gemfile
-        # @return [String, nil] path to closest Rtfile or nil if none found.
-        def find_rtfile
-          previous = nil
-          current  = Dir.getwd
-
-          until !File.directory?(current) || current == previous
-            filename = File.join(current, 'Rtfile')
-            return filename  if File.file?(filename)
-            current, previous = File.expand_path("..", current), current
-          end
-          nil
-        end
-
+      # @param config [Repositext::Cli::Config]
+      def initialize(config)
+        @config = config
       end
 
       # Evaluates contents of Rtfile. Rtfile can call the DSL methods defined
@@ -96,21 +78,21 @@ class Repositext
       end
 
       # Used in Rtfile to define a kramdown parser
-      # @param[String, Symbol] name the name of the kramdown parser by which it will be referenced
-      # @param[String] class_name the full class name of the parser to be used
+      # @param [String, Symbol] name the name of the kramdown parser by which it will be referenced
+      # @param [String] class_name the full class name of the parser to be used
       def kramdown_parser(name, class_name)
         config.add_kramdown_parser(name, class_name)
       end
 
       # Used in Rtfile to define a kramdown converter method
-      # @param[String, Symbol] name the name of the kramdown converter method by which it will be referenced
-      # @param[Symbol] method_name the name of the converter method, e.g., :to_kramdown
+      # @param [String, Symbol] name the name of the kramdown converter method by which it will be referenced
+      # @param [Symbol] method_name the name of the converter method, e.g., :to_kramdown
       def kramdown_converter_method(name, method_name)
         config.add_kramdown_converter_method(name, method_name)
       end
 
       # Used in Rtfile to define a repository wide setting.
-      # @param[String, Symbol] setting_key
+      # @param [String, Symbol] setting_key
       # @apram[Object] setting_val
       def setting(setting_key, setting_val)
         config.add_setting(setting_key, setting_val)

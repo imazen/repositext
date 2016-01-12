@@ -1,13 +1,13 @@
 # Provides helper methods for testing Folio parser
 
 # Wraps xml_fragment in infobase tags
-# @param[String] xml_fragment
+# @param [String] xml_fragment
 def wrap_in_xml_infobase(xml_fragment)
   %(<infobase>#{ xml_fragment }</infobase)
 end
 
 # Wraps xml_fragment in record tags
-# @param[String] xml_fragment
+# @param [String] xml_fragment
 def wrap_in_xml_record(xml_fragment)
   wrap_in_xml_infobase(%(
     <record class="NormalLevel" fullPath="/50000009/50130009/50130229" recordId="50130229">
@@ -19,7 +19,7 @@ end
 # Constructs a kramdown tree from data.
 # CAUTION: Two trees will be connected if you use the same Kramdown::ElementRt
 # objects to construct them.
-# @param[Array<Array>] tuple: An array with first as the parent and
+# @param [Array<Array>] tuple: An array with first as the parent and
 #     last as a single child or an array of children:
 #     [root, [
 #       [para, [

@@ -23,8 +23,8 @@ module Kramdown
       end
 
       # Validation hook that is called during parsing for each [...]StyleRange.
-      # @param[Kramdown::Element] kd_el the kramdown element for xml_node
-      # @param[Nokogiri::Xml::Node] xml_node the currently parsed idml node
+      # @param [Kramdown::Element] kd_el the kramdown element for xml_node
+      # @param [Nokogiri::Xml::Node] xml_node the currently parsed idml node
       def validation_hook_during_parsing(kd_el, xml_node)
         case xml_node.name
         when 'ParagraphStyleRange'
@@ -39,7 +39,7 @@ module Kramdown
 
       # Validation hook that is called during update_tree for each element.
       # At this point we don't have access to the source XML Nodes any more.
-      # @param[Kramdown::Element] kd_el the kramdown element for xml_node
+      # @param [Kramdown::Element] kd_el the kramdown element for xml_node
       def validation_hook_during_update_tree(kd_el)
         return true  unless kd_el
         validate_whitelisted_kramdown_features(kd_el)
@@ -50,8 +50,8 @@ module Kramdown
 
       # Validates that CharacterStyleRange does not have character style
       # '[No character style]'.
-      # @param[Kramdown::Element] kd_el the kramdown element for xml_node
-      # @param[Nokogiri::Xml::Node] xml_node the currently parsed idml node
+      # @param [Kramdown::Element] kd_el the kramdown element for xml_node
+      # @param [Nokogiri::Xml::Node] xml_node the currently parsed idml node
       def validate_presence_of_character_style(kd_el, xml_node)
         if 'CharacterStyle/$ID/[No character style]' == xml_node['AppliedCharacterStyle']
           @validation_errors << ::Repositext::Validation::Reportable.error(
@@ -70,8 +70,8 @@ module Kramdown
 
       # Validates that ParagraphStyleRange does not have character style
       # '[No paragraph style]'.
-      # @param[Kramdown::Element] kd_el the kramdown element for xml_node
-      # @param[Nokogiri::Xml::Node] xml_node the currently parsed idml node
+      # @param [Kramdown::Element] kd_el the kramdown element for xml_node
+      # @param [Nokogiri::Xml::Node] xml_node the currently parsed idml node
       def validate_presence_of_paragraph_style(kd_el, xml_node)
         if 'ParagraphStyle/$ID/[No paragraph style]' == xml_node['AppliedParagraphStyle']
           @validation_errors << ::Repositext::Validation::Reportable.error(
@@ -89,7 +89,7 @@ module Kramdown
       end
 
       # Validates that only whitelisted kramdown features are used.
-      # @param[Kramdown::Element] kd_el the kramdown element for xml_node
+      # @param [Kramdown::Element] kd_el the kramdown element for xml_node
       def validate_whitelisted_kramdown_features(kd_el)
         if !::Repositext::Validation::Validator::KramdownSyntaxAt.whitelisted_kramdown_features.include?(kd_el.type)
           st, li = (lo = kd_el.options[:location]) && lo.values_at(:story, :line)
@@ -105,7 +105,7 @@ module Kramdown
       end
 
       # Validates that only whitelisted class names are used.
-      # @param[Kramdown::Element] kd_el the kramdown element for xml_node
+      # @param [Kramdown::Element] kd_el the kramdown element for xml_node
       def validate_whitelisted_class_names(kd_el)
         # TODO: flesh out :block vs. :span context detection. This is very crude.
         context = case kd_el.type

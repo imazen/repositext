@@ -16,20 +16,6 @@ describe String do
     end
   end
 
-  describe '#truncate' do
-    [
-      [[5], "word…"],
-      [[1_000], "word1 word2 word3 word4 word5 word6 word7"],
-      [[5, omission: '%%%'], "wo%%%"],
-      [[20, separator: ' '], "word1 word2 word3…"],
-      [[20, separator: 'x'], "word1 word2 word3 w…"],
-    ].each do |(args, xpect)|
-      it "handles args #{ args.inspect }" do
-        s.truncate(*args).must_equal(xpect)
-      end
-    end
-  end
-
   describe '#truncate_from_beginning' do
     [
       [[5], "…ord7"],

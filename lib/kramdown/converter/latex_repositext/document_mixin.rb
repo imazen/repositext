@@ -22,8 +22,8 @@ module Kramdown
       module DocumentMixin
 
         # Create an LatexRepositext Document converter with the given options.
-        # @param[Kramdown::Element] root
-        # @param[Hash, optional] options
+        # @param [Kramdown::Element] root
+        # @param [Hash, optional] options
         def initialize(root, options = {})
           super
           # NOTE: kramdown initializes all options with default values. So
@@ -72,14 +72,14 @@ module Kramdown
         # @param latex_body [String]
         # @param document_title_plain_text [String]
         # @param document_title_latex [String]
-        # @return[String]
+        # @return [String]
         def wrap_body_in_template(latex_body, document_title_plain_text, document_title_latex)
           # Assign l_vars not used in template
           date_code = @options[:source_filename].split('/')
                                                  .last
                                                  .match(/[[:alpha:]]{3}\d{2}-\d{4}[[:alpha:]]?/)
                                                  .to_s
-          git_repo = Repositext::Repository.new
+          git_repo = Repositext::Repository.new(@options[:source_filename])
           latest_commit = git_repo.latest_commit(@options[:source_filename])
           # assign i_vars referenced in template file
           @additional_footer_text = escape_latex_text(@options[:additional_footer_text])
@@ -128,8 +128,8 @@ module Kramdown
           r
         end
 
-        # @param[String] header_text
-        # @param[Boolean] is_primary_repo
+        # @param [String] header_text
+        # @param [Boolean] is_primary_repo
         def compute_header_text_latex(header_text, is_primary_repo, language_code_3_chars)
           if is_primary_repo
             # italic, small caps and large font
@@ -177,8 +177,8 @@ module Kramdown
         end
 
         # Computes a latex string for this document's meta info table
-        # @param[Rugged::Repo] git_repo
-        # @param[Rugged::Commit] latest_commit
+        # @param [Rugged::Repo] git_repo
+        # @param [Rugged::Commit] latest_commit
         def compute_meta_info(git_repo, latest_commit)
           r = "\\begin{RtMetaInfo}\n"
           r << "\\begin{center}\n"
@@ -316,9 +316,9 @@ module Kramdown
 
         # Returns a list of commits and commit messages for the exported file.
         # To be used as version_control_page in the exported pdf
-        # @param[Rugged::Repo] git_repo
-        # @param[String] source_file_path the source file's path
-        # @return[String] the version control page as latex string
+        # @param [Rugged::Repo] git_repo
+        # @param [String] source_file_path the source file's path
+        # @return [String] the version control page as latex string
         def compute_version_control_page(git_repo, source_file_path)
           max_number_of_commits = 20
           recent_commits_for_source_file_path = git_repo.latest_commits_local(
