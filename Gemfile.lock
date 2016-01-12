@@ -6,9 +6,10 @@ GIT
 
 GIT
   remote: https://github.com/diasks2/pragmatic_segmenter
-  revision: b89583d7c24308a62aa80ae2bea9d9427b5614a5
+  revision: cc21fed00dca15bb4a307feca503c6f438721087
   specs:
-    pragmatic_segmenter (0.3.3)
+    pragmatic_segmenter (0.3.7)
+      unicode
 
 GIT
   remote: https://github.com/lsegal/yard.git
@@ -70,7 +71,7 @@ GEM
     diff-lcs (1.2.5)
     diff_match_patch_native (1.0.2)
       rice (>= 1.4.2)
-    fakefs (0.5.0)
+    fakefs (0.6.7)
     i18n (0.7.0)
     json (1.8.3)
     little-plugger (1.1.4)
@@ -79,8 +80,8 @@ GEM
       multi_json (~> 1.10)
     micromachine (2.0.0)
     mini_portile2 (2.0.0)
-    minitest (5.2.2)
-    minitest-spec-expect (1.0.0)
+    minitest (5.8.3)
+    minitest-spec-expect (2.0.0)
       minitest (~> 5.0)
     multi_json (1.11.2)
     needleman_wunsch_aligner (1.0.4)
@@ -88,10 +89,10 @@ GEM
       mini_portile2 (~> 2.0.0.rc2)
     outcome (1.0.1)
     parallel (1.6.1)
-    rake (10.1.1)
-    rice (1.7.0)
+    rake (10.4.2)
+    rice (2.0.0)
     ruby-graphviz (1.2.2)
-    ruby-prof (0.15.6)
+    ruby-prof (0.15.9)
     rubyzip (1.1.7)
     rugged (0.23.3)
     thor (0.19.1)
@@ -99,6 +100,7 @@ GEM
     tilt (1.4.1)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
+    unicode (0.4.4.2)
     unicode_utils (1.4.0)
 
 PLATFORMS
