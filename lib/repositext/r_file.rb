@@ -5,9 +5,9 @@ class Repositext
 
     attr_reader :contents, :filename, :language, :repository
 
-    delegate :corresponding_primary_repository,
+    delegate :corresponding_primary_repo_base_dir,
+             :corresponding_primary_repository,
              :is_primary_repo,
-             :corresponding_primary_repo_base_dir,
              to: :repository,
              prefix: false
 
@@ -75,6 +75,10 @@ class Repositext
 
     def is_binary
       raise "Implement #is_binary in subclass!"
+    end
+
+    def lang_code_3
+      language.code_3_chars
     end
 
   end

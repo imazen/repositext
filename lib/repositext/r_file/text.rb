@@ -8,6 +8,17 @@ class Repositext
       # specificity boundary
       include ContentAtMixin
 
+      # Returns the corresponding primary content AT file for foreign text files
+      # that are not content AT. E.g., DOCX imported at files.
+      def corresponding_primary_content_at_file
+        self.class.new(
+          File.read(corresponding_primary_filename),
+          corresponding_primary_repository.language,
+          corresponding_primary_filename,
+          corresponding_primary_repository
+        )
+      end
+
       def corresponding_primary_contents
         corresponding_primary_file.contents
       end
