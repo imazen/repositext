@@ -1,13 +1,15 @@
 class Repositext
   class Language
 
-    LANG_CODE_MAPPINGS = [
-      { code2: :af, code3: :afr, name: 'Afrikaans' },
-      { code2: :en, code3: :eng, name: 'English' },
-      { code2: :es, code3: :spn, name: 'Spanish' },
-      { code2: :vi, code3: :vie, name: 'Vietnamese' },
-      { code2: :x_, code3: :x__, name: 'Generic' },
-    ]
+    def self.language_code_mappings
+      [
+        { code2: :af, code3: :afr, name: 'Afrikaans' },
+        { code2: :en, code3: :eng, name: 'English' },
+        { code2: :es, code3: :spn, name: 'Spanish' },
+        { code2: :vi, code3: :vie, name: 'Vietnamese' },
+        { code2: :x_, code3: :x__, name: 'Generic' },
+      ]
+    end
 
     # @param lang_code [Symbol, String] 2 or 3 character language code
     def self.find_by_code(lang_code)
@@ -58,7 +60,7 @@ class Repositext
     # @param attr_name [Symbol] one of :code2, :code3, :name
     # @param attr_val [Symbol, String] value to find language by
     def self.find_by(attr_name, attr_val)
-      LANG_CODE_MAPPINGS.detect { |e| e[attr_name] == attr_val }
+      language_code_mappings.detect { |e| e[attr_name] == attr_val }
     end
 
   end

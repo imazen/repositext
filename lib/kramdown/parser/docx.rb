@@ -234,6 +234,24 @@ module Kramdown
         flag_match_found
       end
 
+      def process_node_commentrangestart(xn)
+        # commentRangeStart
+        ignore_node(xn)
+        flag_match_found
+      end
+
+      def process_node_commentrangeend(xn)
+        # commentRangeEnd
+        ignore_node(xn)
+        flag_match_found
+      end
+
+      def process_node_commentreference(xn)
+        # commentReference
+        ignore_node(xn)
+        flag_match_found
+      end
+
       def process_node_hyperlink(xn)
         # hyperlink -> Pull
         pull_node(xn)
@@ -243,6 +261,13 @@ module Kramdown
 
       def process_node_lastrenderedpagebreak(xn)
         # lastRenderedPageBreak
+        ignore_node(xn)
+        flag_match_found
+      end
+
+
+      def process_node_nobreakhyphen(xn)
+        # noBreakHyphen -> ?
         ignore_node(xn)
         flag_match_found
       end
@@ -279,6 +304,12 @@ module Kramdown
         else
           raise(InvalidElementException, "Unhandled p_style_id #{ p_style_id.inspect }")
         end
+        flag_match_found
+      end
+
+      def process_node_prooferr(xn)
+        # proofErr (Word proofing error)
+        ignore_node(xn)
         flag_match_found
       end
 
