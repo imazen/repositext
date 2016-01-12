@@ -31,7 +31,11 @@ class Repositext
       def self.convert(latex)
         xelatex_location = `which xelatex`.strip
         if '' == xelatex_location || !FileTest.executable?(xelatex_location)
-          raise(XelatexNotInstalledError.new('Could not find xelatex. Please install xelatex to generate PDFs.'))
+          raise(
+            XelatexNotInstalledError.new(
+              'Could not find xelatex. Please install xelatex to generate PDFs: http://www.tug.org/mactex/'
+            )
+          )
         end
         pdf = ''
         log = ''
