@@ -8,7 +8,7 @@ class Repositext
     # All attrs are given as string, same as coming from CSV file
     let(:default_attrs) { {
       char_length: '72',
-      contents: 'subtitle contents',
+      content: 'subtitle contents',
       persistent_id: '3276590',
       record_id: '63030029',
       relative_milliseconds: '10303',
