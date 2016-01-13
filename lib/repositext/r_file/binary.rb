@@ -11,10 +11,12 @@ class Repositext
       end
 
       def corresponding_content_at_file
+        ccat_filename = corresponding_content_at_filename
+        return nil  if !File.exists?(ccat_filename)
         RFile::Text.new(
           File.read(corresponding_content_at_filename),
           repository.language,
-          corresponding_content_at_filename,
+          ccat_filename,
           repository
         )
       end

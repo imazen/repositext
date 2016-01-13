@@ -4,6 +4,14 @@ class Repositext
     # Provides behavior related to ZIP archives
     module ZipArchiveMixin
 
+      # Extracts 'word/document.xml' from docx file
+      # @return [String] the contents of the file
+      def extract_docx_document_xml
+        extract_zip_archive_file_contents(
+          'word/document.xml'
+        )
+      end
+
       # Extracts contents of a file in ZIP archive
       # @param file_path [String] relative path to the file in archive
       #     Example: 'word/document.xml'

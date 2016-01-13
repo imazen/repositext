@@ -178,7 +178,9 @@ class Repositext
                 repository = options[:repository]
                 language = repository.language
                 block.call(
-                  r_file_klass(options[:input_is_binary]).new(
+                  Repositext::RFile.get_class_for_binary_or_not(
+                    options[:input_is_binary]
+                  ).new(
                     contents, language, filename, repository
                   )
                 )
@@ -375,10 +377,14 @@ class Repositext
                     repository = options[:repository]
                     language = repository.language
                     block.call(
-                      r_file_klass(options[:input_is_binary]).new(
+                      Repositext::RFile.get_class_for_binary_or_not(
+                        options[:input_is_binary]
+                      ).new(
                         contents_1, language, filename_1, repository
                       ),
-                      r_file_klass(options[:input_is_binary]).new(
+                      Repositext::RFile.get_class_for_binary_or_not(
+                        options[:input_is_binary]
+                      ).new(
                         contents_2, language, filename_2, repository
                       ),
                     )
@@ -397,7 +403,9 @@ class Repositext
                   repository = options[:repository]
                   language = repository.language
                   block.call(
-                    r_file_klass(options[:input_is_binary]).new(
+                    Repositext::RFile.get_class_for_binary_or_not(
+                      options[:input_is_binary]
+                    ).new(
                       contents_1, language, filename_1, repository
                     )
                   )
@@ -543,13 +551,6 @@ class Repositext
         else
           nil
         end
-      end
-
-      # Returns the class to use for RFiles. Either text or binary
-      # @param is_binary [Boolean]
-      # @return [Class]
-      def self.r_file_klass(is_binary)
-        is_binary ? Repositext::RFile::Binary : Repositext::RFile::Text
       end
 
     end

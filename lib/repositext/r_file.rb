@@ -21,6 +21,12 @@ class Repositext
       target_pathname.relative_path_from(source_pathname).to_s
     end
 
+    # Returns the class to use for RFiles. Either text or binary.
+    # @param is_binary [Boolean]
+    # @return [Class]
+    def self.get_class_for_binary_or_not(is_binary)
+      is_binary ? RFile::Binary : RFile::Text
+    end
 
     # @param contents [String] the file's contents as string
     # @param language [Language] the file's language

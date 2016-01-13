@@ -20,9 +20,7 @@ class Repositext
             use_new_repositext_file_api: true,
           )
         ) do |zip_binary_r_file|
-          document_xml_contents = zip_binary_r_file.extract_zip_archive_file_contents(
-            'word/document.xml'
-          )
+          document_xml_contents = zip_binary_r_file.extract_docx_document_xml
           outcome = Repositext::Process::Convert::DocxToAt.new(
             document_xml_contents,
             zip_binary_r_file,
