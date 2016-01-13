@@ -34,7 +34,7 @@ class Repositext
           end
 
           spids = Repositext::Subtitle::IdGenerator.new(
-            @spids_inventory_file
+            spids_inventory_file
           ).generate(
             num_subtitles
           ).shuffle
