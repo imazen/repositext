@@ -108,6 +108,10 @@ module Kramdown
         [parser.root, parser.warnings]
       end
 
+      # @note We change the default kramdown parser behavior where you can't
+      # just create a parser instance. This makes it easier to use this parser
+      # for validation purpose, and to tie it into our workflows.
+      #
       # @param source [String] contents of word/document.xml as string
       # @param options [Hash, optional] these will be passed to Kramdown::Parser
       def initialize(source, options)
@@ -119,8 +123,6 @@ module Kramdown
         @root = nil
         @warnings = []
       end
-      # Comply with Kramdown::Parser behavior:
-      private_class_method(:new, :allocate)
 
       # Parses @source into a Kramdown tree under @root.
       def parse
