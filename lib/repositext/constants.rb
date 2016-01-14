@@ -22,6 +22,7 @@ class Repositext
   # text proximity
   # 0x256B - Box Drawings Vertical Double And Horizontal Single
   SENTENCE_DELIMITER = "╫"
+  SENTENCE_TERMINATOR_CHARS = ['.', '!', '?']
 
   US_STATES = {
     'AK' => 'Alaska',
