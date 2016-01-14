@@ -1,6 +1,9 @@
 class Repositext
   class Process
     class Fix
+
+      # Adds or updates persistent subtitle ids and record_ids in subtitle
+      # marker files.
       class AddInitialPersistentSubtitleIds
 
         # @param stm_csv_file [Repositext::RFile]
@@ -17,12 +20,16 @@ class Repositext
           @spids_inventory_file = spids_inventory_file
         end
 
-        # Inserts two more columns into subtitle markers CSV file: persistentId and recordId
+        # Inserts/updates two  columns into subtitle markers CSV file:
+        # * persistentId and
+        # * recordId
+        #
         # relativeMS  samples charLength
         # 0 0 47
         # ->
         # relativeMS  samples charLength persistentId recordId
         # 0 0 47  Ag57   63280005
+        #
         # @return [Outcome] with updated stm_csv_file contents as result
         def fix
           record_id_mappings = compute_record_id_mappings(@content_at_file.contents)
@@ -34,7 +41,7 @@ class Repositext
           end
 
           spids = Repositext::Subtitle::IdGenerator.new(
-            spids_inventory_file
+            @spids_inventory_file
           ).generate(
             num_subtitles
           ).shuffle
