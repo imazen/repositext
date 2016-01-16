@@ -19,10 +19,23 @@ class Repositext
           # param right_el [Hash]
           # return [Integer]
           def compute_score(left_el, right_el)
-            100 * JaccardSimilarityComputer.compute(
+            jaccard_sim, jaccard_conf = JaccardSimilarityComputer.compute(
               left_el[:content],
-              right_el[:content]
+              right_el[:content],
+              false
             )
+            abs_sim = 100 * jaccard_sim * jaccard_conf
+            return abs_sim  if 100 == abs_sim
+            # We boost left aligned similarity as it indicates that subtitles are aligned
+            jaccard_sim, jaccard_conf = JaccardSimilarityComputer.compute(
+              left_el[:content],
+              right_el[:content],
+              true,
+              :left
+            )
+            left_aligned_sim = 100 * jaccard_sim * jaccard_conf
+            # Return larger of the two similarities
+            [abs_sim, left_aligned_sim].max
           end
 
           def default_gap_penalty

@@ -114,7 +114,34 @@ puts
             m
           }
 
-          # Assign
+          # Assign subtitle indexes and count missing STIDs
+          missing_stid_count = 0
+          mappings_for_all_hunks.each_with_index { |mapping, idx|
+            # indexes are 1 based
+            mapping[:stIndex] = idx + 1
+            missing_stid_count += 1  if 'new' == mapping[:stid]
+          }
+
+# TODO: This is a shortcut. Handle spid_inventory file properly!
+          spids_inventory_file = File.open(
+            '/Users/johund/development/vgr-english/data/subtitle_ids.txt',
+            'r+'
+          )
+
+          new_stids = Repositext::Subtitle::IdGenerator.new(
+            spids_inventory_file
+          ).generate(
+            missing_stid_count
+          ).shuffle
+
+          # Assign newly generated STIDs
+          mappings_for_all_hunks.each { |mapping|
+            if 'new' == mapping[:stid]
+              mapping[:stid] = new_stids.shift
+            end
+          }
+
+
           Repositext::Subtitle::IndexToIdMappingsForFile.new(
             @content_at_file,
             {

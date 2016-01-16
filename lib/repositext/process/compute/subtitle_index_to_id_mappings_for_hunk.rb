@@ -62,8 +62,6 @@ class Repositext
         # @param per_origin_line_groups [Array<Hash>]
         # @return [Array<Subtitle::Operation>]
         def compute_hunk_mappings(content_at_lines_with_subtitles, per_origin_line_groups)
-puts "New Hunk --------------------------------------------------------"
-pp per_origin_line_groups
           reconstructed_subtitles = []
           deleted_lines_group = per_origin_line_groups.detect { |e| :deletion == e[:line_origin] }
           added_lines_group = per_origin_line_groups.detect { |e| :addition == e[:line_origin] }
@@ -87,8 +85,6 @@ pp per_origin_line_groups
             added_subtitles,
           )
 
-puts aligner.inspect_alignment(120)
-
           # Compute operations
           deleted_aligned_subtitles, added_aligned_subtitles = aligner.get_optimal_alignment
 
@@ -102,16 +98,12 @@ puts aligner.inspect_alignment(120)
               st_mapping[:before] = deleted_st[:content] ? deleted_st[:content].gsub('@', '') : nil
               st_mapping[:after] = added_st[:content] ? added_st[:content].gsub('@', '') : nil
               reconstructed_subtitles << st_mapping
-puts
-puts "Empty deleted. Added: #{ st_mapping.inspect }"
             when 1
               st_obj = hunk_subtitles.shift
               st_mapping = { stid: st_obj.persistent_id, stIndex: nil }
               st_mapping[:before] = deleted_st[:content] ? deleted_st[:content].gsub('@', '') : nil
               st_mapping[:after] = added_st[:content] ? added_st[:content].gsub('@', '') : nil
               reconstructed_subtitles << st_mapping
-puts
-puts "Full deleted. Added: #{ st_mapping.inspect }"
             else
               raise "Handle this: #{ deleted_st.inspect }"
             end

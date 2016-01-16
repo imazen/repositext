@@ -112,6 +112,8 @@ puts
             ).compute
             m
           }
+# TODO: process cross-hunk/line/para subtitle moves. They are indicated by
+# ins/dels at the end of the first and the beginning of the second hunk.
           Repositext::Subtitle::OperationsForFile.new(
             @content_at_file,
             {

@@ -14,6 +14,7 @@ class Repositext
           @repository = repository
           @fromGitCommit = fromGitCommit
           @toGitCommit = toGitCommit
+$operations_group_signatures = {}
         end
 
         # @return [Repositext::Subtitle::OperationsForRepository]
@@ -36,6 +37,9 @@ next nil  unless file_name =~ /\/eng64-0212/
               patch
             ).compute
           }.compact
+
+$operations_group_signatures.each { |e| p e }
+
           Repositext::Subtitle::OperationsForRepository.new(
             {
               repository: @repository.name,
