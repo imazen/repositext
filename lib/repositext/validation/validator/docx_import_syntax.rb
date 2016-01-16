@@ -29,11 +29,16 @@ class Repositext
           document_xml_contents = docx_file.extract_docx_document_xml
           docx_parser = @options['docx_validation_parser_class'].new(
             document_xml_contents,
-            {}
+            {
+              'validation_errors' => errors,
+              'validation_warnings' => warnings,
+              'validation_file_descriptor' => @file_to_validate,
+              'validation_logger' => @logger,
+            }
           )
 
           # validate_character_inventory(docx_parser, errors, warnings)
-          # validate_parse_tree(docx_parser, errors, warnings)
+          validate_parse_tree(docx_parser, errors, warnings)
 
           Outcome.new(errors.empty?, nil, [], errors, warnings)
         end
@@ -44,15 +49,7 @@ class Repositext
         # @param [Array] errors collector for errors
         # @param [Array] warnings collector for warnings
         def validate_parse_tree(docx_parser, errors, warnings)
-          docx_parser.parse(
-            docx_parser.stories_to_import,
-            {
-              'validation_errors' => errors,
-              'validation_warnings' => warnings,
-              'validation_file_descriptor' => @file_to_validate.path,
-              'validation_logger' => @logger,
-            }
-          )
+          docx_parser.parse
         end
 
 # TODO: Verify that docx doesn't contain soft returns:
@@ -64,43 +61,6 @@ class Repositext
         # @param [Array] errors collector for errors
         # @param [Array] warnings collector for warnings
         def validate_character_inventory(docx_parser, errors, warnings)
-          docx = docx_parser.stories_to_import.first
-          docx_name = docx.name
-          docx_source = docx.body
-          # Detect invalid characters
-          str_sc = Kramdown::Utils::StringScanner.new(docx_source)
-          while !str_sc.eos? do
-            if (match = str_sc.scan_until(
-              Regexp.union(Repositext::Validation::Config::INVALID_CHARACTER_REGEXES)
-            ))
-              errors << Reportable.error(
-                [
-                  @file_to_validate.path,
-                  sprintf("story %5s", docx_name),
-                  sprintf("line %5s", str_sc.current_line_number)
-                ],
-                ['Invalid character', sprintf('U+%04X', match[-1].codepoints.first)]
-              )
-            else
-              break
-            end
-          end
-          # Build character inventory
-          if 'debug' == @logger.level
-            chars = Hash.new(0)
-            ignored_chars = [0x30..0x39, 0x41..0x5A, 0x61..0x7A]
-            docx_source.codepoints.each { |cp|
-              chars[cp] += 1  unless ignored_chars.any? { |r| r.include?(cp) }
-            }
-            chars = chars.sort_by { |k,v|
-              k
-            }.map { |(code,count)|
-              sprintf("U+%04x  #{ code.chr('UTF-8') }  %5d", code, count)
-            }
-            @reporter.add_stat(
-              Reportable.stat([@file_to_validate.path], ['Character Histogram', chars])
-            )
-          end
         end
 
       end
