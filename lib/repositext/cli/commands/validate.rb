@@ -35,12 +35,12 @@ class Repositext
         reset_validation_report(options, 'validate_docx_import')
         input_base_dir = config.compute_base_dir(options['base-dir'] || :docx_import_dir)
         input_file_selector = config.compute_file_selector(options['file-selector'] || :all_files)
-        docx_sources_file_extension = config.compute_file_extension(
+        docx_file_extension = config.compute_file_extension(
           options['file-extension'] || :docx_extension
         )
         file_specs = config.compute_validation_file_specs(
-          primary: [input_base_dir, input_file_selector, docx_sources_file_extension], # for reporting only
-          docx_sources: [input_base_dir, input_file_selector, docx_sources_file_extension],
+          primary: [input_base_dir, input_file_selector, docx_file_extension], # for reporting only
+          docx_files: [input_base_dir, input_file_selector, docx_file_extension],
           imported_at_files: [input_base_dir, input_file_selector, :at_extension],
           imported_repositext_files: [input_base_dir, input_file_selector, :repositext_extensions],
         )
@@ -50,6 +50,7 @@ class Repositext
           'kramdown_converter_method_name' => config.kramdown_converter_method(:to_at),
           'kramdown_parser_class' => config.kramdown_parser(:kramdown),
           'kramdown_validation_parser_class' => config.kramdown_parser(:kramdown_validation),
+          'repository' => repository,
         }.merge(options)
         if options['run_options'].include?('pre_import')
           Repositext::Validation::DocxPreImport.new(file_specs, validation_options).run

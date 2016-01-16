@@ -99,6 +99,8 @@ class Repositext
           case e
           when IO
             e.path
+          when Repositext::RFile
+            e.filename
           when String
             e
           else

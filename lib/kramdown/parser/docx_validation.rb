@@ -7,8 +7,6 @@ module Kramdown
 
     class DocxValidation < Kramdown::Parser::Docx
 
-      # TODO: build this out. Look at IdmlStory Validation
-
     end
   end
 end

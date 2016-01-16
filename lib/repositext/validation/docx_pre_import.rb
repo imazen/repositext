@@ -4,13 +4,13 @@ class Repositext
 
       # Specifies validations to run related to Docx import.
       def run_list
-        validate_files(:docx_sources) do |path|
-          # Validator::DocxImportSyntax.new(
-          #   File.open(path), @logger, @reporter, @options
-          # ).run
-          # Validator::IdmlImportRoundTrip.new(
-          #   File.open(path), @logger, @reporter, @options
-          # ).run
+        validate_files(:docx_files) do |docx_file|
+          Validator::DocxImportWorkflow.new(
+            docx_file, @logger, @reporter, @options
+          ).run
+          Validator::DocxImportSyntax.new(
+            docx_file, @logger, @reporter, @options
+          ).run
         end
       end
 

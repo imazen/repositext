@@ -36,6 +36,10 @@ class Repositext
         )
       end
 
+      def has_subtitles?
+        subtitles.any?
+      end
+
       # Returns subtitles
       # @return [Array<Subtitle>]
       def subtitles

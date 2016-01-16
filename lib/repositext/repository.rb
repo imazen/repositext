@@ -29,7 +29,7 @@ class Repositext
     end
 
     def language
-      raise "Implement me!"
+      raise "Language is only available in instances of 'Repository::Content'"
     end
 
     # Returns sha of latest commit that included filename
