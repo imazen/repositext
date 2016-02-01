@@ -49,12 +49,12 @@ module Kramdown
         def initialize(text_run)
           tr_style = text_run.at_xpath('./w:rPr')
           if tr_style
-            @bold = tr_style.at_xpath('./w:b')
-            @italic = tr_style.at_xpath('./w:i')
-            @smcaps = tr_style.at_xpath('./w:smallCaps')
+            @bold = tr_style.at_xpath('./w:b') # toggle property, no val
+            @italic = tr_style.at_xpath('./w:i') # toggle property, no val
+            @smcaps = tr_style.at_xpath('./w:smallCaps') # toggle property, no val
             @subscript = tr_style.at_xpath("./w:vertAlign[@w:val='subscript']")
             @superscript = tr_style.at_xpath("./w:vertAlign[@w:val='superscript']")
-            @underline = tr_style.at_xpath('./w:u')
+            @underline = (xn = tr_style.at_xpath('./w:u')) && 'none' != xn['w:val'] # val 'none' turns off underline
           end
         end
 
