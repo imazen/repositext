@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 =begin
 
 # Notes
@@ -40,26 +42,41 @@ class Repositext
         pdf = ''
         log = ''
         Dir.mktmpdir { |tmp_dir|
-          latex_filename = File.join(tmp_dir, 'tmp.tex')
-          File.write(latex_filename, latex)
-          command = [
-            "xelatex",
-            "-file-line-error",
-            "-interaction=nonstopmode",
-            "-synctex=1",
-            "-output-directory=#{ tmp_dir }",
-            latex_filename,
-          ].join(' ')
-          `#{ command }`
-          tex_file_contents = File.read(File.join(tmp_dir, 'tmp.tex'))
-          log_file_contents = File.read(File.join(tmp_dir, 'tmp.log'))
-          # puts '-' * 80
-          # puts Dir.entries(tmp_dir)
-          # puts '-' * 80
-          # puts tex_file_contents
-          # puts '-' * 80
-          # puts log_file_contents
-          # puts '-' * 80
+          has_overfull_hboxes = true
+          loop_count = 0
+          while has_overfull_hboxes && loop_count < 4 do
+            loop_count += 1
+            puts "   - converting latex to pdf (iteration #{ loop_count })"
+            convert_latex_to_pdf(tmp_dir, latex)
+            tex_file_contents = File.read(File.join(tmp_dir, 'tmp.tex'))
+            log_file_contents = File.read(File.join(tmp_dir, 'tmp.log'))
+
+            # puts '-' * 80
+            # puts Dir.entries(tmp_dir)
+            # puts '-' * 80
+            # puts tex_file_contents
+            # puts '-' * 80
+            # puts log_file_contents
+            # puts '-' * 80
+
+            ohbs = find_overfull_hboxes(log_file_contents)
+            ohbs.each { |e| puts "     #{ e.inspect }" }
+            if ohbs.any?
+              ohbs.each { |ohb|
+                # [{ overhang_in_pt: 46, line: 376, offensive_string: "A string" }]
+# TODO: ideally we'd replace it only on the specified line!
+                # We insert the `\linebreak` latex command to break the line
+                # before the last word in the line.
+                latex.gsub!(
+                  ohb[:offensive_string],
+                  ohb[:offensive_string].sub(/(\s+)(\S*)\z/, '\\linebreak\2')
+                )
+              }
+              has_overfull_hboxes = true
+            else
+              has_overfull_hboxes = false
+            end
+          end
 
           pdf_filename = File.join(tmp_dir, 'tmp.pdf')
           pdf = File.binread(pdf_filename)
@@ -67,6 +84,68 @@ class Repositext
         # TODO: consider not removing the tmp dir on exception so that the log
         # can be inspected. Or print out log on exception.
         pdf
+      end
+
+    protected
+
+      # @param tmp_dir [String] the tmp_dir to work inside of
+      # @param latex [String] latex source
+      def self.convert_latex_to_pdf(tmp_dir, latex)
+        latex_filename = File.join(tmp_dir, 'tmp.tex')
+        File.write(latex_filename, latex)
+        command = [
+          "xelatex",
+          "-file-line-error",
+          "-interaction=nonstopmode",
+          "-synctex=1",
+          "-output-directory=#{ tmp_dir }",
+          latex_filename,
+        ].join(' ')
+        `#{ command }`
+      end
+
+      # Returns any overfull hboxes
+      # @param log_file_contents [String] latex log file contents
+      # @return [Array<Hash>] [{ line: 375, contents: "line that is too long" }]
+      def self.find_overfull_hboxes(log_file_contents)
+        # We're looking for a log entry like this:
+        #
+        # Overfull \hbox (59.42838pt too wide) in paragraph at lines 557--558
+        # \EU1/Lohit-Tamil(0)/m/n/13.00003 மனைவி அல்லது கணவன் படுக்கையின் அருகில் நின்றுக
+        #  ொண்டிருக்கும்போது,
+        #  []
+        #
+
+        # The log file may contain invalid UTF8 byte sequences (see last line in example below)
+        # so we have to scrub the string before we run regexes on it.
+        #
+        # /var/folders/9m/_0s7926s0bd5hkb340dhzlh40000gn/T/d20160202-65202-8g6jgd/tmp.tex
+        # :1021: Undefined control sequence.
+        # <argument> \TEXTBF
+        #                    {\EMPH {எபிரெயர், ஏழாம் அத�...
+        # l.1021
+
+        matching_log_entries = log_file_contents.scrub.scan(
+          /
+            (?:^Overfull\s\\hbox\s\() # Start of line
+            (\d+) # overhang in pt
+            (?:\.\d*pt\stoo\swide\)\sin\sparagraph\sat\slines\s) # middle of line
+            (\d+) # line number
+            (?:[^\n]+\n) # until end of line
+            (?:[[:print:]]+\/[\d\.]+\s+) # font preamble
+            ([^\[]+) # offensive string
+            (?:\[\]) # closing brackets
+          /x
+        ).map { |overhang_in_pt, line, offensive_string|
+          {
+            overhang_in_pt: overhang_in_pt.to_i,
+            line: line.to_i,
+            offensive_string: offensive_string.gsub("\n", '').strip # remove newlines inserted by xelatex logger and surrounding spaces
+          }
+        }.find_all { |e|
+          # We fix all overfull hboxes with overhang > 5pt.
+          e[:overhang_in_pt] > 5
+        }
       end
 
     end
