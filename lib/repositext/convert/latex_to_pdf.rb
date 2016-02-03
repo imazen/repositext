@@ -64,9 +64,9 @@ class Repositext
             if ohbs.any?
               ohbs.each { |ohb|
                 # [{ overhang_in_pt: 46, line: 376, offensive_string: "A string" }]
-# TODO: ideally we'd replace it only on the specified line!
-                # We insert the `\linebreak` latex command to break the line
-                # before the last word in the line.
+                # We insert the `\linebreak` latex command at the last space in
+                # the line, so that the last word will be on a new line.
+                # OPTIMIZE: ideally we'd replace it only at the specified line! (:ohb[:line])
                 latex.gsub!(
                   ohb[:offensive_string],
                   ohb[:offensive_string].sub(/(\s+)(\S*)\z/, '\\linebreak\2')
