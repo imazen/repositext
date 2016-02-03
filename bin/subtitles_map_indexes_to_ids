@@ -6,7 +6,7 @@
 require 'repositext'
 
 repo_root = '/Users/johund/development/vgr-english'
-repository = Repositext::Repository.new(repo_root)
+repository = Repositext::Repository::Content.new(repo_root)
 
 from_sha1 = '39caa44953e06c07f7e6595c483587143317d41f' # Jan 14, 2016
 #to_sha1 = '25f7e9304b22e6bcef8be3675ea7bfc5d4232010' # Nov. 25, 2015

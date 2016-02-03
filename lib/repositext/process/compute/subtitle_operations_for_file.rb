@@ -57,7 +57,6 @@ class Repositext
 
         end
 
-
         # Initializes a new instance from high level objects.
         # @param content_at_file [Repositext::RFile]
         # @param patch [Rugged::Diff::Patch]

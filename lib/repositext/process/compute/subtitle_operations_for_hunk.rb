@@ -110,7 +110,7 @@ class Repositext
         # @param per_origin_line_groups [Array<Hash>]
         # @return [Array<Subtitle::Operation>]
         def compute_hunk_operations_for_deletion_addition(content_at_lines_with_subtitles, per_origin_line_groups)
-puts "New Hunk --------------------------------------------------------"
+# puts "New Hunk --------------------------------------------------------"
 #pp per_origin_line_groups
           deleted_lines_group = per_origin_line_groups.first
           added_lines_group = per_origin_line_groups.last
@@ -135,33 +135,48 @@ puts "New Hunk --------------------------------------------------------"
 
           # Compute aligned_subtitle_pairs
           aligned_subtitle_pairs = []
+          most_recent_existing_subtitle_id = nil # to create temp subtitle ids
+          temp_subtitle_offset = 0
           deleted_aligned_subtitles.each_with_index { |deleted_st,idx|
             added_st = added_aligned_subtitles[idx]
 
             # Compute aligned subtitle pair
             asp = {
-              type: nil, # :left_aligned|:right_aligned
+              type: nil, # :left_aligned|:right_aligned|...
               subtitle_object: nil, # Repositext::Subtitle, nil
               sim_left: [], # [sim<Float>, conf<Float>]
               sim_right: [], # [sim<Float>, conf<Float>]
               sim_abs: [], # [sim<Float>, conf<Float>]
               content_length_change: nil, # Integer from del to add
-              del: deleted_st, # { content: "word word word", old_linenos: [3,4,5] } # Hunk's deleted line
-              add: added_st, # { content: "word word word", old_linenos: [3,4,5] } # Hunk's added line
+              subtitle_count_change: nil, # Integer from del to add
+              del: deleted_st, # { content: "word word word", old_linenos: [3,4,5], subtitle_count: 0 } # Hunk's deleted line
+              add: added_st, # { content: "word word word", old_linenos: [3,4,5]. subtitle_count: 1 } # Hunk's added line
             }
 
             # Assign Subtitle object
-            case (deleted_st[:content] || '').count('@')
+            st_obj = case (deleted_st[:content] || '').count('@')
             when 0
-              asp[:subtitle_object] = nil
+              # Deleted content contains no subtitles, create dummy added subtitle object
+              ::Repositext::Subtitle.new(
+                persistent_id: [
+                  'tmp-',
+                  most_recent_existing_subtitle_id || 'hunk_start',
+                  '+',
+                  temp_subtitle_offset += 1,
+                ].join,
+                tmp_attrs: {}
+              )
             when 1
-              st_obj = hunk_subtitles.shift
-              st_obj.tmp_attrs[:before] = deleted_st[:content].gsub('@', '')  if deleted_st[:content]
-              st_obj.tmp_attrs[:after] = added_st[:content].gsub('@', '')  if added_st[:content]
-              asp[:subtitle_object] = st_obj
+              # Use next item in hunk's existing subtitle objects
+              temp_subtitle_offset = 0 # reset each time we find existing subtitle
+              most_recent_existing_subtitle_id = hunk_subtitles[0].persistent_id
+              hunk_subtitles.shift
             else
               raise "Handle this: #{ deleted_st.inspect }"
             end
+            st_obj.tmp_attrs[:before] = deleted_st[:content].gsub('@', '')  if deleted_st[:content]
+            st_obj.tmp_attrs[:after] = added_st[:content].gsub('@', '')  if added_st[:content]
+            asp[:subtitle_object] = st_obj
 
             # Compute various similarities between deleted and added content
             deleted_sim_text = (deleted_st[:content] || '').gsub('@', ' ').downcase
@@ -184,8 +199,8 @@ puts "New Hunk --------------------------------------------------------"
               false
             )
             asp[:content_length_change] = added_sim_text.length - deleted_sim_text.length # neg means text removal
-            asp[:type] = compute_subtitle_pair_type(asp)
             asp[:subtitle_count_change] = compute_subtitle_count_change(asp)
+            asp[:type] = compute_subtitle_pair_type(asp)
 
             aligned_subtitle_pairs << asp
           }
@@ -224,8 +239,6 @@ puts "New Hunk --------------------------------------------------------"
             end
 
             if @operations_group_type
-$operations_group_signatures[@operations_group_subtitle_pair_types] ||= 0
-$operations_group_signatures[@operations_group_subtitle_pair_types] += 1
               reset_operations_group!
             end
 
@@ -242,12 +255,13 @@ $operations_group_signatures[@operations_group_subtitle_pair_types] += 1
 
           # Compute operations from operations_groups
           collected_operations = []
+          previous_subtitle_object = nil
           collected_operations_groups.each { |operations_group|
-            og_subtitle_objects = operations_group.map { |e| e[:subtitle_object] }
             # operations_group is an array of aligned_subtitle_pairs
-if operations_group.length > 2
-puts aligner.inspect_alignment(140)
-end
+            og_subtitle_objects = operations_group.map { |e| e[:subtitle_object] }
+# if operations_group.length > 2
+# puts aligner.inspect_alignment(140)
+# end
             case operations_group.length
             when 0
               # No aligned_subtitle_pairs in group. Raise exception!
@@ -261,19 +275,26 @@ end
               when :right_aligned
                 # Content change. We don't track this.
               when :st_added
-# TODO: Do we have to create a dummy subtitle object?
-puts "Found :insert operation"
+# puts "Found :insert operation"
+                if previous_subtitle_object.nil?
+                  raise "We currently don't support insertion of new subtitles at the beginning of a hunk. This still needs to be added."
+                end
                 collected_operations << Subtitle::Operation.new_from_hash(
                   affectedStids: og_subtitle_objects,
                   operationId: '',
                   operationType: :insert,
+                  afterStid: previous_subtitle_object.persistent_id,
                 )
               when :st_removed
-puts "Found :delete operation"
+# puts "Found :delete operation"
+                if previous_subtitle_object.nil?
+                  raise "We currently don't support deletion of subtitles at the beginning of a hunk. This still needs to be added."
+                end
                 collected_operations << Subtitle::Operation.new_from_hash(
                   affectedStids: og_subtitle_objects,
                   operationId: '',
                   operationType: :delete,
+                  afterStid: previous_subtitle_object.persistent_id,
                 )
               when :unaligned
                 # Content change. We don't track this.
@@ -295,7 +316,7 @@ puts "Found :delete operation"
                   # First pair's content got longer => move right
                   :moveRight
                 end
-puts "Found #{ op_type.inspect } operation"
+# puts "Found #{ op_type.inspect } operation"
                 collected_operations << Subtitle::Operation.new_from_hash(
                   affectedStids: og_subtitle_objects,
                   operationId: '',
@@ -306,22 +327,15 @@ puts "Found #{ op_type.inspect } operation"
                 pair_with_gap = operations_group.detect { |e| 0 != e[:subtitle_count_change] }
                 if 1 == st_added_count
                   # a subtitle was added => split
-                  new_subtitle_obj = ::Repositext::Subtitle.new(
-                    persistent_id: 'new',
-                    tmp_attrs: {
-                      before: nil,
-                      after: pair_with_gap[:add][:content].gsub('@', ''),
-                    }
-                  )
-puts "Found :split operation"
+# puts "Found :split operation"
                   collected_operations << Subtitle::Operation.new_from_hash(
-                    affectedStids: og_subtitle_objects + [new_subtitle_obj],
+                    affectedStids: og_subtitle_objects,
                     operationId: '',
                     operationType: :split,
                   )
                 elsif 1 == st_removed_count
                   # a subtitle was removed => merge
-puts "Found :merge operation"
+# puts "Found :merge operation"
                   collected_operations << Subtitle::Operation.new_from_hash(
                     affectedStids: og_subtitle_objects,
                     operationId: '',
@@ -333,10 +347,9 @@ puts "Found :merge operation"
                 if 2 == st_added_count
                   # Two subtitles inserted
                   og_subtitle_objects.each { |subtitle_object|
-# TODO: Do we have to create a dummy subtitle object?
-puts "Found :insert operation"
+# puts "Found :insert operation"
                     collected_operations << Subtitle::Operation.new_from_hash(
-                      affectedStids: subtitle_object,
+                      affectedStids: [subtitle_object],
                       operationId: '',
                       operationType: :insert,
                     )
@@ -344,9 +357,9 @@ puts "Found :insert operation"
                 elsif 2 == st_removed_count
                   # Two subtitles deleted
                   og_subtitle_objects.each { |subtitle_object|
-puts "Found :delete operation"
+# puts "Found :delete operation"
                     collected_operations << Subtitle::Operation.new_from_hash(
-                      affectedStids: subtitle_object,
+                      affectedStids: [subtitle_object],
                       operationId: '',
                       operationType: :delete,
                     )
@@ -358,10 +371,13 @@ puts "Found :delete operation"
                 raise "Handle this: #{ operations_group.inspect }"
               end
             else
-puts "Found compound group:"
+# puts "Found subtitle operations group:"
               collected_operations += compute_operations_for_group(operations_group)
             end
+            #
+            previous_subtitle_object = og_subtitle_objects.last
           }
+collected_operations.each { |e| pp e.to_hash }
           collected_operations
         end
 
@@ -372,28 +388,27 @@ puts "Found compound group:"
             {
               content: e,
               length: e.length,
-              stid: 'todo',
+              subtitle_count: e.count('@'),
             }
           }
         end
 
         def compute_subtitle_count_change(al_st_pair)
-          if :st_added == al_st_pair[:type]
-            1
-          elsif :st_removed == al_st_pair[:type]
-            -1
-          else
-            0
-          end
+p al_st_pair
+          (
+            al_st_pair[:add][:subtitle_count] || 0 # may be :gap
+          ) - (
+            al_st_pair[:del][:subtitle_count] || 0 # may be :gap
+          )
         end
 
         def compute_subtitle_pair_type(al_st_pair)
           # check for gap first, so that we can assume presence of content in later checks.
-          if :gap == al_st_pair[:del][:type]
-            # Gap is on the deleted side, subtitle was added
+          if 1 == al_st_pair[:subtitle_count_change]
+            # Subtitle was added
             :st_added
-          elsif :gap == al_st_pair[:add][:type]
-            # Gap is on the added side, subtitle was removed
+          elsif -1 == al_st_pair[:subtitle_count_change]
+            # Subtitle was removed
             :st_removed
           elsif al_st_pair[:sim_abs].first > 0.9 and al_st_pair[:sim_abs].last > 0.9
             # or d_st[:content] == a_st[:content].strip.downcase ||
@@ -404,22 +419,6 @@ puts "Found compound group:"
             :right_aligned
           else
             :unaligned
-          end
-        end
-
-        def compute_aligned_similarity(a, b, alignment)
-          a = a.gsub('@', ' ').strip.downcase
-          b = b.gsub('@', ' ').strip.downcase
-          JaccardSimilarityComputer.comput
-          max_len = [a.length, b.length].min
-          return 0  if 0 == max_len
-          case alignment
-          when :left_aligned
-            a[0, max_len] == b[0, max_len] ? 1.0 : 0
-          when :right_aligned
-            a[-max_len..-1] == b[-max_len..-1] ? 1.0 : 0
-          else
-            raise "Handle this: #{ alignment.inspect }"
           end
         end
 
@@ -521,27 +520,8 @@ puts "Found compound group:"
         #       } # Hunk's added line
         #     }
         #   ]
+        # @return [Array<Subtitle::Operation>]
         def compute_operations_for_group(operations_group)
-operations_group.each { |al_st_pair|
-  added_content = (al_st_pair[:add][:content] || '').truncate(150)
-  deleted_content = (al_st_pair[:del][:content] || '').truncate(150)
-  max_len = [deleted_content.length, added_content.length].max
-  puts " - #{ al_st_pair[:type] }"
-  case al_st_pair[:type]
-  when :left_aligned
-    puts "   - #{ deleted_content }"
-    puts "   - #{ added_content }"
-  when :right_aligned
-    puts "   - #{ deleted_content.rjust(max_len) }"
-    puts "   - #{ added_content.rjust(max_len) }"
-  when :unaligned, :st_added, :st_removed
-    puts "   - #{ deleted_content.center(max_len) }"
-    puts "   - #{ added_content.center(max_len) }"
-  else
-    raise "Handle this: #{ al_st_pair.inspect }"
-  end
-}
-
           # Initialize state variables
           collected_operations = []
           cumulative_text_length_difference = 0
@@ -551,33 +531,108 @@ operations_group.each { |al_st_pair|
 
           # Iterate over each pair and determine subtitle operation
           operations_group.each_with_index { |al_st_pair, idx|
+            prev_al_st_pair = idx > 0 ? operations_group[idx - 1] : nil
+            next_al_st_pair = idx < (operations_group.length - 1) ? operations_group[idx + 1] : nil
+            added_content = (al_st_pair[:add][:content] || '')
+            deleted_content = (al_st_pair[:del][:content] || '')
+max_len = [deleted_content.length, added_content.length].max
+puts " - #{ al_st_pair[:type] }"
+case al_st_pair[:type]
+when :left_aligned
+  puts "   - #{ deleted_content }"
+  puts "   - #{ added_content }"
+when :right_aligned
+  puts "   - #{ deleted_content.rjust(max_len) }"
+  puts "   - #{ added_content.rjust(max_len) }"
+when :st_added, :st_removed, :unaligned
+  puts "   - #{ deleted_content.center(max_len) }"
+  puts "   - #{ added_content.center(max_len) }"
+else
+  raise "Handle this: #{ al_st_pair.inspect }"
+end
             case al_st_pair[:type]
-            when :st_added
-              # Determine which del st we split (left or right)
-            remaining_subtitle_count_difference += al_st_pair[:subtitle_count_change]
-            when :st_removed
-              # Determine to which del st we merge (to left or to right)
-            when :left_aligned, :right_aligned, :unaligned
-              # Determine if we move left or right
-              op_type = if al_st_pair[:content_length_change] < 0
-                # Pair's content got shorter from del to add => move left
-                :moveLeft
-              else
-                # Pair's content got longer from del to add => move right
-                :moveRight
-              end
-              collected_operations << Subtitle::Operation.new_from_hash(
-                affectedStids: al_st_pair[:subtitle_object],
+            when :left_aligned
+              # Contributes no operation itself.
+              # Only contributes current subtitle to affected subtitles for next operation.
+            when :right_aligned
+              # A move, affecting the previous and current subtitles
+              op_type = cumulative_text_length_difference < 0 ? :moveLeft : :moveRight
+              collected_operations << {
+                affectedStids: [prev_al_st_pair, al_st_pair].compact.map { |e| e[:subtitle_object] },
                 operationId: '',
                 operationType: op_type,
+              }
+            when :st_added
+              # A split of either previous or next subtitle.
+              if(
+                cumulative_text_length_difference > added_content.length / 2 or
+                next_al_st_pair.nil?
               )
+                # This added subtitle fits more than half into previous content change
+                # OR the group ends here,
+                # so we split the previous subtitle.
+                collected_operations << {
+                  affectedStids: [prev_al_st_pair, al_st_pair].compact.map { |e| e[:subtitle_object] },
+                  operationId: '',
+                  operationType: :split,
+                }
+              else
+                # This added subtitle doesn't fit more than half into previous
+                # content change,
+                # AND the group doesn't end here,
+                # so we split the next subtitle.
+                collected_operations << {
+                  affectedStids: [al_st_pair, next_al_st_pair].map { |e| e[:subtitle_object] },
+                  operationId: '',
+                  operationType: :split,
+                }
+              end
+              remaining_subtitle_count_difference -= al_st_pair[:subtitle_count_change]
+            when :st_removed
+              # A merge with either previous or next subtitle.
+              if(
+                cumulative_text_length_difference > added_content.length / 2 or
+                next_al_st_pair.nil?
+              )
+                # This deleted subtitle fits more than half into previous content change
+                # OR the group ends here,
+                # so we merge into the previous subtitle.
+                collected_operations << {
+                  affectedStids: [prev_al_st_pair, al_st_pair].compact.map { |e| e[:subtitle_object] },
+                  operationId: '',
+                  operationType: :merge,
+                }
+              else
+                # This deleted subtitle doesn't fit more than half into previous
+                # content change,
+                # AND the group doesn't end here,
+                # so we merge into the next subtitle.
+                collected_operations << {
+                  affectedStids: [al_st_pair, next_al_st_pair].map { |e| e[:subtitle_object] },
+                  operationId: '',
+                  operationType: :merge,
+                }
+              end
+              remaining_subtitle_count_difference -= al_st_pair[:subtitle_count_change]
+            when :unaligned
+              # A move?
+              op_type = cumulative_text_length_difference < 0 ? :moveLeft : :moveRight
+              collected_operations << {
+                affectedStids: [prev_al_st_pair, al_st_pair].compact.map { |e| e[:subtitle_object] },
+                operationId: '',
+                operationType: op_type,
+              }
             else
               raise "Handle this: #{ al_st_pair }"
             end
             # Update state
             cumulative_text_length_difference += al_st_pair[:content_length_change]
-
-            collected_operations
+# puts "   cumulative_text_length_difference: #{ cumulative_text_length_difference }"
+# puts "   remaining_subtitle_count_difference: #{ remaining_subtitle_count_difference }"
+          }
+# puts " Found #{ collected_operations.map { |e| e[:operationType] } } operations"
+          r = collected_operations.map { |operation_attrs|
+            Subtitle::Operation.new_from_hash(operation_attrs)
           }
         end
 

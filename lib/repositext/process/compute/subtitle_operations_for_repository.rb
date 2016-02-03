@@ -7,14 +7,13 @@ class Repositext
       class SubtitleOperationsForRepository
 
         # Initializes a new instance from high level objects.
-        # @param repository [Repositext::Repository]
+        # @param repository [Repositext::Repository::Content]
         # @param fromGitCommit [String]
         # @param toGitCommit [String]
         def initialize(repository, fromGitCommit, toGitCommit)
           @repository = repository
           @fromGitCommit = fromGitCommit
           @toGitCommit = toGitCommit
-$operations_group_signatures = {}
         end
 
         # @return [Repositext::Subtitle::OperationsForRepository]
@@ -28,7 +27,7 @@ next nil  unless file_name =~ /\/eng64-0212/
             file_path = File.join(@repository.base_dir, file_name)
             content_at_file = Repositext::RFile::Text.new(
               File.read(file_path),
-              Repositext::Language.find_by_code(:eng), # TODO: Get this from repo!
+              @repository.language,
               file_path,
               @repository
             )
@@ -37,8 +36,6 @@ next nil  unless file_name =~ /\/eng64-0212/
               patch
             ).compute
           }.compact
-
-$operations_group_signatures.each { |e| p e }
 
           Repositext::Subtitle::OperationsForRepository.new(
             {

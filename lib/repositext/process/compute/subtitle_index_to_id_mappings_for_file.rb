@@ -141,7 +141,6 @@ puts
             end
           }
 
-
           Repositext::Subtitle::IndexToIdMappingsForFile.new(
             @content_at_file,
             {

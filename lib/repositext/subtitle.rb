@@ -45,6 +45,18 @@ class Repositext
       %(#<Repositext::Subtitle @persistent_id=#{ persistent_id.inspect }, @record_id=#{ record_id.inspect }>)
     end
 
+    # Returns a Hash describing self
+    def to_hash
+      h = {
+        stid: persistent_id,
+        before: tmp_attrs[:before],
+        after: tmp_attrs[:after],
+      }
+      h[:comments] = "st_index: #{ tmp_attrs[:index] }"  if tmp_attrs[:index]
+      h[:afterStid] = tmp_attrs[:afterStid]  if tmp_attrs[:afterStid]
+      h
+    end
+
     def inspect
       to_s
     end

@@ -45,7 +45,7 @@ class Repositext
       end
 
       # @param attrs [Hash] with keys
-      # @option attrs [Array<Hash>] :affectedStids
+      # @option attrs [Array<Repositext::Subtitle>] :affectedStids
       # @option attrs [String] :operationId
       # @option attrs [Array<Hash>] :operationType
       def initialize(attrs)
@@ -68,15 +68,7 @@ class Repositext
           m[e] = self.send(e)
           m
         }
-        r[:affectedStids] = affectedStids.map { |e|
-          {
-            comments: "st_index: #{ e.tmp_attrs[:index] }",
-            stid: e.persistent_id,
-            before: e.tmp_attrs[:before],
-            after: e.tmp_attrs[:after],
-            afterStid: e.tmp_attrs[:afterStid],
-          }
-        }
+        r[:affectedStids] = affectedStids.map { |e| e.to_hash }
         r
       end
 
