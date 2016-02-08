@@ -30,8 +30,11 @@
 \newfontfamily\primaryfont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @primary_font_name %>}
 \newfontfamily\rtmainfont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @font_name %>}
 
-% \usepackage{polyglossia}
-% \setdefaultlanguage{malayalam}
+<% if @polyglossia_default_language %>
+  % Some languages require this package for correct font rendering
+  \usepackage{polyglossia}
+  \setdefaultlanguage{<%= @polyglossia_default_language %>}
+<% end %>
 
 % leading to set leading for document
 \usepackage{leading}
@@ -136,7 +139,11 @@
     \stepcounter{RtGapMarkCounter}}
 % command to render paragraph number. Pass the para number as argument.
 \newcommand{\RtParagraphNumber}[1]
+<% if @polyglossia_default_language %>
+  {\noindent\makebox[\parindent][l]{\raisebox{0.45ex}{{\textscale{0.67}{#1}}}}}
+<% else %>
   {\paragraphnumberfont\noindent\makebox[\parindent][l]{\raisebox{0.45ex}{{\textscale{0.67}{#1}}}}\rtmainfont}
+<% end %>
 % command to render record_mark. Pass rid as param
 \newcommand{\RtRecordMark}[1]
   {\noindent\colorbox{LightGrey}{Record#1}\par}
@@ -146,7 +153,11 @@
 
 % enviroment to render eagle
 \newenvironment{RtEagle}
+<% if @polyglossia_default_language %>
+  { }
+<% else %>
   {\paragraphnumberfont \rtmainfont}
+<% end %>
   {}
 % environment to render idparagraph paragraphs
 \newenvironment{RtIdParagraph}
@@ -154,11 +165,19 @@
   {\par}
 % environment to render idtitle1 paragraphs
 \newenvironment{RtIdTitle1}
+<% if @polyglossia_default_language %>
+  {\needspace{350\RtRelPt}\vspace*{\fill}\begin{center}\relscale{0.91}}
+<% else %>
   {\needspace{350\RtRelPt}\vspace*{\fill}\begin{center}\titlefont\relscale{0.91}}
+<% end %>
   {\end{center}}
 % environment to render idtitle1 paragraphs
 \newenvironment{RtIdTitle2}
+<% if @polyglossia_default_language %>
+  {\par\begin{center}\relscale{0.73}}
+<% else %>
   {\par\begin{center}\titlefont\relscale{0.73}}
+<% end %>
   {\par\end{center}}
 % environment to render meta info
 \newenvironment{RtMetaInfo}
@@ -202,15 +221,27 @@
  {\par}
 % environment to render ### header
 \newenvironment{RtSubTitle}
+<% if @polyglossia_default_language %>
+  {\begin{center}\relscale{1.5}}
+<% else %>
   {\begin{center}\titlefont\relscale{1.5}}
+<% end %>
   {\end{center}}
 % environment to render # header
 \newenvironment{RtTitle}
+<% if @polyglossia_default_language %>
+  {\begin{center}\relscale{2}}
+<% else %>
   {\begin{center}\titlefont\relscale{2}}
+<% end %>
   {\vspace{24\RtRelPt}\end{center}}
 % RtTitle2 font size is 16 (down from 22 of RtTitle)
 \newenvironment{RtTitle2}
+<% if @polyglossia_default_language %>
+  {\begin{center}\relscale{1.45}}
+<% else %>
   {\begin{center}\titlefont\relscale{1.45}}
+<% end %>
   {\vspace{24\RtRelPt}\end{center}}
 
 % avoid widows and orphans

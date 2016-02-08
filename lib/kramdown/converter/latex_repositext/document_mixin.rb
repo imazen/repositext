@@ -66,6 +66,16 @@ module Kramdown
           true
         end
 
+        # Returns the default language to use with polyglossia or nil if we don't
+        # need to use polyglossia for the given language.
+        # @param language_code_3_chars [String]
+        # @return [String, Nil]
+        def polyglossia_default_language(language_code_3_chars)
+          {
+            'mal' => 'malayalam',
+          }[language_code_3_chars]
+        end
+
       protected
 
         # Returns a complete latex document as string.
@@ -107,7 +117,9 @@ module Kramdown
             @options[:language_code_3_chars]
           )
           @page_settings = page_settings_for_latex_geometry_package
+          # Force foreign languages to use Excelsior for paragraph numbers.
           @paragraph_number_font_name = @options[:font_name_override] ? 'V-Excelsior LT Std' : @font_name
+          @polyglossia_default_language = polyglossia_default_language(@options[:language_code_3_chars])
           @primary_font_name = 'V-Calisto-St'
           @scale_factor = size_scale_factor
           @title_font_name = @options[:font_name_override] || 'V-Calisto-St'
@@ -123,7 +135,7 @@ module Kramdown
           # dependency boundary
           @meta_info = include_meta_info ? compute_meta_info(git_repo, latest_commit) : ''
 
-          erb = ERB.new(latex_template)
+          erb = ERB.new(latex_template, nil, '>')
           r = erb.result(binding)
           r
         end

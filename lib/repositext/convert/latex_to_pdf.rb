@@ -132,7 +132,7 @@ class Repositext
             (?:\.\d*pt\stoo\swide\)\sin\sparagraph\sat\slines\s) # middle of line
             (\d+) # line number
             (?:[^\n]+\n) # until end of line
-            (?:[[:print:]]+\/[\d\.]+\s+) # font preamble
+            (?:[^\s]+\s+) # font preamble until first space
             ([^\[]+) # offensive string
             (?:\[\]) # closing brackets
           /x
