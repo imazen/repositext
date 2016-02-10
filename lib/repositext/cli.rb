@@ -10,6 +10,7 @@ class Repositext
     include Cli::Compare
     include Cli::Convert
     include Cli::Copy
+    include Cli::Delete
     include Cli::Fix
     include Cli::GitRepo
     include Cli::Init

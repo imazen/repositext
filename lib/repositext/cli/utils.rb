@@ -52,6 +52,33 @@ class Repositext
         )
       end
 
+      # Deletes files
+      # @param input_base_dir [String] the base_dir path
+      # @param input_file_selector [String] the input file selector
+      # @param input_file_extension [String] the input file extension
+      # @param file_filter [Trequal]
+      # @param description [String]
+      # @param options [Hash]
+      # @param: See #process_files_helper below for param description
+      def self.delete_files(input_base_dir, input_file_selector, input_file_extension, file_filter, description, options)
+        file_pattern = [input_base_dir, input_file_selector, input_file_extension].join
+        with_console_output(description, file_pattern) do |counts|
+          Dir.glob(file_pattern).each do |filename|
+            if file_filter && !(file_filter === filename) # file_filter has to be LHS of `===`
+              $stderr.puts " - Skipping #{ filename } - doesn't match file_filter"
+              next
+            end
+
+            begin
+              $stderr.puts " - Deleting #{ filename }"
+              counts[:success] += 1
+              File.delete(filename)
+              counts[:total] += 1
+            end
+          end
+        end
+      end
+
       # Exports files to another format and location
       # @param input_base_dir [String] the base_dir path
       # @param input_file_selector [String] the input file selector
