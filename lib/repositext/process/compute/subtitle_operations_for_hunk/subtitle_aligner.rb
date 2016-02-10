@@ -43,7 +43,7 @@ class Repositext
           end
 
           def gap_indicator
-            { type: :gap }
+            { type: :gap, content: '', length: 0 }
           end
 
         end
