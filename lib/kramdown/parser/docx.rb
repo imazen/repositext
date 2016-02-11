@@ -49,7 +49,10 @@ module Kramdown
         def initialize(text_run)
           tr_style = text_run.at_xpath('./w:rPr')
           if tr_style
-            @bold = tr_style.at_xpath('./w:b') # toggle property, no val
+            # NOTE: w:b is supposed to be a toggle property (<w:b/>), however in
+            # some DOCX documents (ODT -> DOC -> DOCX), it has an unexpected
+            # `val` attribute that we need to check (<w:b w:val="false"/>):
+            @bold = (xn = tr_style.at_xpath('./w:b')) && 'false' != xn['w:val']
             @italic = tr_style.at_xpath('./w:i') # toggle property, no val
             @smcaps = tr_style.at_xpath('./w:smallCaps') # toggle property, no val
             @subscript = tr_style.at_xpath("./w:vertAlign[@w:val='subscript']")
