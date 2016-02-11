@@ -235,6 +235,7 @@ require 'repositext/validation/validator/subtitle_import_consistency'
 require 'repositext/validation/validator/subtitle_mark_at_beginning_of_every_paragraph'
 require 'repositext/validation/validator/subtitle_mark_counts_match'
 require 'repositext/validation/validator/subtitle_mark_no_significant_changes'
+require 'repositext/validation/validator/subtitle_mark_not_followed_by_space'
 require 'repositext/validation/validator/subtitle_mark_spacing'
 require 'repositext/validation/validator/utf8_encoding'
 # NOTE: Don't require the custom validator examples as they interfere with specs

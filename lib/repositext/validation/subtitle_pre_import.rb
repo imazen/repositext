@@ -15,6 +15,9 @@ class Repositext
             Validator::SubtitleMarkAtBeginningOfEveryParagraph.new(
               File.open(path), @logger, @reporter, @options.merge(:content_type => :import)
             ).run
+            Validator::SubtitleMarkNotFollowedBySpace.new(
+              File.open(path), @logger, @reporter, @options
+            )
           end
         end
 
