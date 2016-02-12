@@ -100,24 +100,24 @@ class Repositext
 
         # @return [Repositext::Subtitle::OperationsForFile]
         def compute
-puts
-puts "New file: ========================================================="
-puts @content_at_file.filename
-puts
+          last_stid = 'new_file'
+          hunk_index = -1
           operations_for_all_hunks = @hunks.inject([]) { |m,hunk|
-            m += SubtitleOperationsForHunk.new(
+            r = SubtitleOperationsForHunk.new(
               @content_at_lines_with_subtitles[(hunk.old_start - 1), hunk.old_lines],
-              hunk
+              hunk,
+              last_stid,
+              hunk_index += 1
             ).compute
-            m
+            last_stid = r[:last_stid]
+            m += r[:subtitle_operations]
           }
-# TODO: process cross-hunk/line/para subtitle moves. They are indicated by
-# ins/dels at the end of the first and the beginning of the second hunk.
+          # TODO: Check if we have cross-hunk/line/para subtitle moves. They are
+          # indicated by ins/dels at the end of the first and the beginning of
+          # the second hunk.
           Repositext::Subtitle::OperationsForFile.new(
             @content_at_file,
             {
-              fromGitCommit: nil,
-              toGitCommit: nil,
               comments: "File: #{ @content_at_file.basename }",
             },
             operations_for_all_hunks

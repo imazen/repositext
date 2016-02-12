@@ -935,6 +935,70 @@ class Repositext
         end
       end
 
+      # Generates a list of all subtitle operations for the given file set and
+      # git commits.
+      # from_sha1 = '39caa44953e06c07f7e6595c483587143317d41f' # Jan 14, 2016
+      # #to_sha1 = '25f7e9304b22e6bcef8be3675ea7bfc5d4232010' # Nov. 25, 2015
+      # #to_sha1 = '039d79e13d5670af5c810219a946c380f4d1cbc1' # Aug. 3, 2015
+      # to_sha1 = '3bc45ca672735158fca0b8516d26910d55c8b127' # May 2015 (for iOS mapping file)
+      # rt report subtitle_operations --skip-git-up-to-date-check=true --from-commit="39caa44953e06c07f7e6595c483587143317d41f" --to-commit="3bc45ca672735158fca0b8516d26910d55c8b127"
+      # Output format:
+      #     {
+      #       "comments": "productId: 62-0211",
+      #       "productIdentityId": "831",
+      #       "language": "eng",
+      #       "from": {
+      #         "gitCommit": "f54aac",
+      #       },
+      #       "to": {
+      #         "gitCommit": "ce1d40",
+      #       },
+      #       "operations": [
+      #         {
+      #           "operationType": "delete",
+      #           "operationId": "0-1", # hunk index + subtitle pair index
+      #           "affectedStids": [
+      #             {
+      #               "comments": "stIndex: 17",
+      #               "stid": "1234567",
+      #               "before": "@word1",
+      #               "after": null
+      #               "afterStid": "2345678",
+      #             }
+      #           ]
+      #         },
+      def report_subtitle_operations(options)
+        file_list_pattern = config.compute_glob_pattern(
+          options['base-dir'] || :content_dir,
+          options['file-selector'] || :all_files,
+          options['file-extension'] || :at_extension
+        )
+        file_list = Dir.glob(file_list_pattern)
+        if (file_filter = options['file_filter'])
+          file_list = file_list.find_all { |filename| file_filter === filename }
+        end
+        subtitle_ops = Repositext::Process::Compute::SubtitleOperationsForRepository.new(
+          repository,
+          options['from-commit'],
+          options['to-commit'],
+          file_list
+        ).compute
+        report_file_path = File.join(
+          config.base_dir(:reports_dir),
+          [
+            'subtitle_operations-from-',
+            options['from-commit'].first(10),
+            '-to-',
+            options['to-commit'].first(10),
+            '.json'
+          ].join
+        )
+        File.open(report_file_path, 'w') { |f|
+          f.write(subtitle_ops.to_json.to_s)
+        }
+        puts " - Writing JSON file to #{ report_file_path }"
+      end
+
       def report_words_with_apostrophe(options)
         # TODO: add report that shows all words starting with apostrophe that have only one character
         apostrophe_at_beginning = {}

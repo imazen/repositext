@@ -35,6 +35,7 @@ class Repositext
         #     content: "word word word",
         #     old_linenos: [3,4,5],
         #   } # Hunk's added line
+        #   index: [Integer]
         # }
 
         # @param content_at_lines_with_subtitles [Array<Hash>]
@@ -44,15 +45,25 @@ class Repositext
         #     subtitles: [<Subtitle>, ...],
         #   }
         # @param hunk [SubtitleOperationsForFile::Hunk]
-        def initialize(content_at_lines_with_subtitles, hunk)
+        # @param previous_hunk_last_stid [String] the last stid of the previous hunk
+        # @param hunk_index [Integer] index of hunk in file
+        def initialize(
+          content_at_lines_with_subtitles,
+          hunk,
+          previous_hunk_last_stid,
+          hunk_index
+        )
           @content_at_lines_with_subtitles = content_at_lines_with_subtitles
           @hunk = hunk
+          @previous_stid = previous_hunk_last_stid
+          @hunk_index = hunk_index
           @fsm = init_fsm
           @fsm_trigger_auto_event = nil
           reset_operations_group!
         end
 
-        # @return [Array<Subtitle::Operation>]
+        # @return [Hash]
+        # { last_stid: String, subtitle_operations: [Array<Subtitle::Operation>] }
         def compute
           # TODO: We may want to sort :addition and :deletion for consistency
           per_origin_line_groups = compute_per_origin_line_groups(@hunk)
@@ -66,16 +77,45 @@ class Repositext
               per_origin_line_groups
             )
           when [:deletion, :eof_newline_added, :addition]
-# TODO: Handle this
-            []
+            # We resolve the eof_newline_added by adding a newline to :deletion's content
+            polgs = [
+              per_origin_line_groups[0].tap { |e| e[:content] << "\n" },
+              per_origin_line_groups[1],
+            ]
+            compute_hunk_operations_for_deletion_addition(
+              @content_at_lines_with_subtitles,
+              polgs
+            )
           when [:addition]
-# TODO: Handle this
-            []
+            # Just addition. We create an empty :deletion
+            # We set :content to "\n" so that it matches the consistency
+            # check in #compute_hunk_operations_for_deletion_addition
+            polgs = [
+              { line_origin: :deletion, content: "\n", old_linenos: [] },
+              per_origin_line_groups[0],
+            ]
+            compute_hunk_operations_for_deletion_addition(
+              @content_at_lines_with_subtitles,
+              polgs
+            )
           when [:deletion]
-# TODO: Handle this
-            []
+            # Just deletion. We create an empty :addition
+            # We set :content to "\n" so that it matches the consistency
+            # check in #compute_hunk_operations_for_deletion_addition
+            polgs = [
+              per_origin_line_groups[0],
+              { line_origin: :addition, content: "\n", old_linenos: [] },
+            ]
+            compute_hunk_operations_for_deletion_addition(
+              @content_at_lines_with_subtitles,
+              polgs
+            )
           else
-            raise "Handle this: #{ hunk.inspect }"
+            puts "per_origin_line_groups:"
+            p per_origin_line_groups
+            puts "hunk:"
+            p @hunk
+            raise "Handle this"
           end
         end
 
@@ -121,7 +161,8 @@ class Repositext
         #     },
         #     ...
         #   ]
-        # @return [Array<Subtitle::Operation>]
+        # @return [Hash]
+        # { last_stid: String, subtitle_operations: [Array<Subtitle::Operation>] }
         def compute_hunk_operations_for_deletion_addition(
           content_at_lines_with_subtitles,
           per_origin_line_groups
@@ -134,6 +175,7 @@ class Repositext
           hunk_subtitles = content_at_lines_with_subtitles.map { |e|
             e[:subtitles]
           }.flatten
+
           # validate content_at and hunk consistency
           if original_content != deleted_lines_group[:content]
             raise "Mismatch between content_at and hunk:\n#{ original_content.inspect }\n#{ deleted_lines_group[:content].inspect }"
@@ -152,15 +194,22 @@ class Repositext
             hunk_subtitles
           )
 
+          # Use hunk's last stid or previous hunk's last stid
+          last_stid = ((ls = hunk_subtitles.last) and ls.persistent_id) || @previous_stid
+
           # Return early if all operations are insertions or deletions
           if(ops = detect_pure_insertions_or_deletions(aligned_subtitle_pairs)).any?
-            return ops
+            return { subtitle_operations: ops, last_stid: last_stid }
           end
 
           # Otherwise do the more involved operations analysis
           collected_operations_groups = compute_operations_groups(aligned_subtitle_pairs)
           collected_operations = compute_operations(collected_operations_groups)
-          collected_operations
+
+          {
+            subtitle_operations: collected_operations,
+            last_stid: last_stid,
+          }
         end
 
         # Checks if the hunk contains only insertions or deletions and returns
@@ -176,31 +225,42 @@ class Repositext
         #     subtitle_count_change: nil, # Integer from del to add
         #     del: deleted_st, # { content: "word word word", old_linenos: [3,4,5], subtitle_count: 0 } # Hunk's deleted line
         #     add: added_st, # { content: "word word word", old_linenos: [3,4,5]. subtitle_count: 1 } # Hunk's added line
+        #     index: [Integer]
         #   }
         # @return [Array<Subtitle::Operation>]
         def detect_pure_insertions_or_deletions(aligned_subtitle_pairs)
           if aligned_subtitle_pairs.all? { |e| [:st_added, :identical].include?(e[:type]) }
             # All insertions
-            aligned_subtitle_pairs.find_all { |e|
-              :st_added == e[:type]
-            }.map { |e|
-              Subtitle::Operation.new_from_hash(
-                affectedStids: [e[:subtitle_object]],
-                operationId: '',
-                operationType: :insert,
-              )
-            }
+            after_stid = @previous_stid
+            aligned_subtitle_pairs.map { |e|
+              r = nil
+              if :st_added == e[:type]
+                r = Subtitle::Operation.new_from_hash(
+                  affectedStids: [e[:subtitle_object]],
+                  operationId: [@hunk_index, e[:index]].join('-'),
+                  operationType: :insert,
+                  afterStid: after_stid,
+                )
+              end
+              after_stid = e[:subtitle_object].persistent_id
+              r
+            }.compact
           elsif aligned_subtitle_pairs.all? { |e| [:st_removed, :identical].include?(e[:type]) }
             # All deletions
-            aligned_subtitle_pairs.find_all { |e|
-              :st_removed == e[:type]
-            }.map { |e|
-              Subtitle::Operation.new_from_hash(
-                affectedStids: [e[:subtitle_object]],
-                operationId: '',
-                operationType: :delete,
-              )
-            }
+            after_stid = @previous_stid
+            aligned_subtitle_pairs.map { |e|
+              r = nil
+              if :st_removed == e[:type]
+                r = Subtitle::Operation.new_from_hash(
+                  affectedStids: [e[:subtitle_object]],
+                  operationId: [@hunk_index, e[:index]].join('-'),
+                  operationType: :delete,
+                  afterStid: after_stid,
+                )
+              end
+              after_stid = e[:subtitle_object].persistent_id
+              r
+            }.compact
           else
             # Other operations, return empty array
             []
@@ -218,12 +278,20 @@ class Repositext
         #     subtitle_count_change: nil, # Integer from del to add
         #     del: deleted_st, # { content: "word word word", old_linenos: [3,4,5], subtitle_count: 0 } # Hunk's deleted line
         #     add: added_st, # { content: "word word word", old_linenos: [3,4,5]. subtitle_count: 1 } # Hunk's added line
+        #     index: [Integer]
         #   }
         # @return [Array<Subtitle::Operation>]
         def compute_operations(collected_operations_groups)
           collected_operations = []
           previous_subtitle_object = nil
           collected_operations_groups.each { |operations_group|
+
+            # Get previous stid from previous hunk or previous subtitle object
+            after_stid = if previous_subtitle_object.nil?
+              @previous_stid
+            else
+              previous_subtitle_object.persistent_id
+            end
 
             # operations_group is an array of aligned_subtitle_pairs
             og_subtitle_objects = operations_group.map { |e| e[:subtitle_object] }
@@ -241,24 +309,18 @@ class Repositext
               when :right_aligned
                 # Content change. We don't track this.
               when :st_added
-                if previous_subtitle_object.nil?
-                  raise "We currently don't support insertion of new subtitles at the beginning of a hunk. This still needs to be added."
-                end
                 collected_operations << Subtitle::Operation.new_from_hash(
                   affectedStids: og_subtitle_objects,
-                  operationId: '',
+                  operationId: [@hunk_index, aligned_subtitle_pair[:index]].join('-'),
                   operationType: :insert,
-                  afterStid: previous_subtitle_object.persistent_id,
+                  afterStid: after_stid,
                 )
               when :st_removed
-                if previous_subtitle_object.nil?
-                  raise "We currently don't support deletion of subtitles at the beginning of a hunk. This still needs to be added."
-                end
                 collected_operations << Subtitle::Operation.new_from_hash(
                   affectedStids: og_subtitle_objects,
-                  operationId: '',
+                  operationId: [@hunk_index, aligned_subtitle_pair[:index]].join('-'),
                   operationType: :delete,
-                  afterStid: previous_subtitle_object.persistent_id,
+                  afterStid: after_stid,
                 )
               when :unaligned
                 # Content change. We don't track this.
@@ -282,7 +344,7 @@ class Repositext
                 end
                 collected_operations << Subtitle::Operation.new_from_hash(
                   affectedStids: og_subtitle_objects,
-                  operationId: '',
+                  operationId: [@hunk_index, operations_group[0][:index]].join('-'),
                   operationType: op_type,
                 )
               when 1
@@ -292,14 +354,14 @@ class Repositext
                   # a subtitle was added => split
                   collected_operations << Subtitle::Operation.new_from_hash(
                     affectedStids: og_subtitle_objects,
-                    operationId: '',
+                    operationId: [@hunk_index, pair_with_gap[:index]].join('-'),
                     operationType: :split,
                   )
                 elsif 1 == st_removed_count
                   # a subtitle was removed => merge
                   collected_operations << Subtitle::Operation.new_from_hash(
                     affectedStids: og_subtitle_objects,
-                    operationId: '',
+                    operationId: [@hunk_index, pair_with_gap[:index]].join('-'),
                     operationType: :merge,
                   )
                 else
@@ -332,6 +394,7 @@ class Repositext
         #     subtitle_count_change: nil, # Integer from del to add
         #     del: deleted_st, # { content: "word word word", old_linenos: [3,4,5], subtitle_count: 0 } # Hunk's deleted line
         #     add: added_st, # { content: "word word word", old_linenos: [3,4,5]. subtitle_count: 1 } # Hunk's added line
+        #     index: [Integer]
         #   }
         # @return [Array<Hash>] same format as aligned_subtitle_pairs
         def compute_operations_groups(aligned_subtitle_pairs)
@@ -397,6 +460,7 @@ class Repositext
         #     subtitle_count_change: nil, # Integer from del to add
         #     del: deleted_st, # { content: "word word word", old_linenos: [3,4,5], subtitle_count: 0 } # Hunk's deleted line
         #     add: added_st, # { content: "word word word", old_linenos: [3,4,5]. subtitle_count: 1 } # Hunk's added line
+        #     index: Integer # zero based, scoped by hunk
         #   }
         def compute_aligned_subtitle_pairs(
           deleted_aligned_subtitles,
@@ -404,6 +468,7 @@ class Repositext
           hunk_subtitles
         )
           # Compute aligned_subtitle_pairs
+          disposable_hunk_subtitles = hunk_subtitles.dup
           aligned_subtitle_pairs = []
           most_recent_existing_subtitle_id = nil # to create temp subtitle ids
           temp_subtitle_offset = 0
@@ -421,6 +486,7 @@ class Repositext
               subtitle_count_change: nil, # Integer from del to add
               del: deleted_st, # { content: "word word word", old_linenos: [3,4,5], subtitle_count: 0 } # Hunk's deleted line
               add: added_st, # { content: "word word word", old_linenos: [3,4,5]. subtitle_count: 1 } # Hunk's added line
+              index: idx, # [Integer]
             }
 
             # Assign Subtitle object
@@ -439,8 +505,8 @@ class Repositext
             when 1
               # Use next item in hunk's existing subtitle objects
               temp_subtitle_offset = 0 # reset each time we find existing subtitle
-              most_recent_existing_subtitle_id = hunk_subtitles[0].persistent_id
-              hunk_subtitles.shift
+              most_recent_existing_subtitle_id = disposable_hunk_subtitles[0].persistent_id
+              disposable_hunk_subtitles.shift
             else
               raise "Handle this: #{ deleted_st.inspect }"
             end
@@ -612,6 +678,7 @@ class Repositext
         #         content: "word word word",
         #         old_linenos: [3,4,5],
         #       } # Hunk's added line
+        #       index: [Integer]
         #     }
         #   ]
         # @return [Array<Subtitle::Operation>]
@@ -639,14 +706,14 @@ class Repositext
               op_type = cumulative_text_length_difference < 0 ? :moveLeft : :moveRight
               collected_operations << {
                 affectedStids: [prev_al_st_pair, al_st_pair].compact.map { |e| e[:subtitle_object] },
-                operationId: '',
+                operationId: [@hunk_index, al_st_pair[:index]].join('-'),
                 operationType: op_type,
               }
             when :st_added
               # A split
               collected_operations << {
                 affectedStids: [prev_al_st_pair, al_st_pair].compact.map { |e| e[:subtitle_object] },
-                operationId: '',
+                operationId: [@hunk_index, al_st_pair[:index]].join('-'),
                 operationType: :split,
               }
               remaining_subtitle_count_difference -= al_st_pair[:subtitle_count_change]
@@ -654,7 +721,7 @@ class Repositext
               # A merge
               collected_operations << {
                 affectedStids: [prev_al_st_pair, al_st_pair].compact.map { |e| e[:subtitle_object] },
-                operationId: '',
+                operationId: [@hunk_index, al_st_pair[:index]].join('-'),
                 operationType: :merge,
               }
               remaining_subtitle_count_difference -= al_st_pair[:subtitle_count_change]
@@ -663,7 +730,7 @@ class Repositext
               op_type = cumulative_text_length_difference < 0 ? :moveLeft : :moveRight
               collected_operations << {
                 affectedStids: [prev_al_st_pair, al_st_pair].compact.map { |e| e[:subtitle_object] },
-                operationId: '',
+                operationId: [@hunk_index, al_st_pair[:index]].join('-'),
                 operationType: op_type,
               }
             else

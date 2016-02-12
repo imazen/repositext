@@ -166,6 +166,10 @@ class Repositext
 
     desc 'report SPEC', 'Generates a report'
     long_desc long_description_for_report
+    method_option :'from-commit',
+                  :desc => "For commands that require from and to commit information (e.g., subtitle operations)"
+    method_option :'to-commit',
+                  :desc => "For commands that require from and to commit information (e.g., subtitle operations)"
     # @param [String] command_spec Specification of the operation
     def report(command_spec)
       check_that_current_branch_is_up_to_date_with_origin_master

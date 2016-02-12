@@ -8,7 +8,7 @@ class Repositext
     #
     class OperationsForFile
 
-      ATTR_NAMES = [:comments, :fromGitCommit, :toGitCommit]
+      ATTR_NAMES = [:comments]
 
       attr_accessor :content_at_file, :operations
       attr_accessor *ATTR_NAMES
@@ -74,7 +74,7 @@ class Repositext
           m
         }
         r[:productIdentityId] = product_identity_id
-        r[:langcode] = lang_code_3_chars
+        r[:language] = lang_code_3_chars
         r[:operations] = operations.map { |e| e.to_hash }
         r
       end

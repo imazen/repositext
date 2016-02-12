@@ -7,7 +7,12 @@ class Repositext
       describe SubtitleOperationsForHunk do
 
         let(:default_computer){
-          SubtitleOperationsForHunk.new([], 'dummy_hunk')
+          SubtitleOperationsForHunk.new(
+            [],
+            'dummy_hunk',
+            'previous_hunk_last_stid',
+            'hunk_index',
+          )
         }
         let(:default_subtitles){
           default_tmp_attrs = {
@@ -50,8 +55,9 @@ class Repositext
               %w[             @word3 word4 @word5 word6],
               [
                 {
-                  :operationId=>"",
+                  :operationId=>"hunk_index-0",
                   :operationType=>:delete,
+                  :afterStid=>"previous_hunk_last_stid",
                   :affectedStids=>[
                     {
                       :stid=>"1000000",
@@ -68,8 +74,9 @@ class Repositext
               %w[@word1 word2              @word5 word6],
               [
                 {
-                  :operationId=>"",
+                  :operationId=>"hunk_index-1",
                   :operationType=>:delete,
+                  :afterStid=>"1000000",
                   :affectedStids=>[
                     {
                       :stid=>"1000001",
@@ -86,8 +93,9 @@ class Repositext
               %w[@word1 word2 @word3 word4],
               [
                 {
-                  :operationId=>"",
+                  :operationId=>"hunk_index-2",
                   :operationType=>:merge,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     {
                       :stid=>"1000001",
@@ -108,8 +116,9 @@ class Repositext
               %w[@word1 word2 @word3 word4 @word5 word6],
               [
                 {
-                  :operationId=>"",
+                  :operationId=>"hunk_index-0",
                   :operationType=>:insert,
+                  :afterStid=>"previous_hunk_last_stid",
                   :affectedStids=>[
                     {
                       :stid=>"tmp-hunk_start+1",
@@ -126,8 +135,9 @@ class Repositext
               %w[@word1 word2 @word3 word4 @word5 word6],
               [
                 {
-                  :operationId=>"",
+                  :operationId=>"hunk_index-1",
                   :operationType=>:insert,
+                  :afterStid=>'1000000',
                   :affectedStids=>[
                     {
                       :stid=>"tmp-1000000+1",
@@ -139,13 +149,14 @@ class Repositext
               ],
             ],
             [
-              'Insert (at end)',
+              'Insert (at end, interpreted as split)',
               %w[@word1 word2 @word3 word4],
               %w[@word1 word2 @word3 word4 @word5 word6],
               [
                 {
-                  :operationId=>"",
+                  :operationId=>"hunk_index-2",
                   :operationType=>:split,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     {
                       :stid=>"1000001",
@@ -166,8 +177,9 @@ class Repositext
               %w[@word1 word2 @word3 word4 @word5 word6],
               [
                 {
-                  :operationId=>"",
+                  :operationId=>"hunk_index-0",
                   :operationType=>:insert,
+                  :afterStid=>'previous_hunk_last_stid',
                   :affectedStids=>[
                     {
                       :stid=>"tmp-hunk_start+1",
@@ -176,8 +188,9 @@ class Repositext
                     }
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-1",
                   :operationType=>:insert,
+                  :afterStid=>"tmp-hunk_start+1",
                   :affectedStids=>[
                     {
                       :stid=>"tmp-hunk_start+2",
@@ -186,8 +199,9 @@ class Repositext
                     }
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-2",
                   :operationType=>:insert,
+                  :afterStid=>"tmp-hunk_start+2",
                   :affectedStids=>[
                     {
                       :stid=>"tmp-hunk_start+3",
@@ -204,8 +218,9 @@ class Repositext
               %w[@word1 word2  word3 word4 @word5 word6],
               [
                 {
-                  :operationId=>"",
+                  :operationId=>"hunk_index-1",
                   :operationType=>:merge,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     {
                       :stid=>"1000000",
@@ -221,13 +236,14 @@ class Repositext
               ],
             ],
             [
-              'Move left',
+              'moveLeft',
               %w[@word1 word2  word3 @word4 @word5 word6],
               %w[@word1 word2 @word3  word4 @word5 word6],
               [
                 {
-                  :operationId=>"",
+                  :operationId=>"hunk_index-0",
                   :operationType=>:moveLeft,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     {
                       :stid=>"1000000",
@@ -243,13 +259,14 @@ class Repositext
               ],
             ],
             [
-              'Move right',
+              'moveRight',
               %w[@word1 word2 @word3  word4 @word5 word6],
               %w[@word1 word2  word3 @word4 @word5 word6],
               [
                 {
-                  :operationId=>"",
+                  :operationId=>"hunk_index-0",
                   :operationType=>:moveRight,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     {
                       :stid=>"1000000",
@@ -270,8 +287,9 @@ class Repositext
               %w[@word1 word2 @word3 word4 @word5 word6],
               [
                 {
-                  :operationId=>"",
+                  :operationId=>"hunk_index-1",
                   :operationType=>:split,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     {
                       :stid=>"1000000",
@@ -295,15 +313,17 @@ class Repositext
               %w[@0word1 word2   word3 word4 word5 @2word6   word7],
               [
                 {
-                  :operationId=>"",
+                  :operationId=>"hunk_index-1",
                   :operationType=>:merge,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000000", :before=>"0word1 word2 ", :after=>"0word1 word2 word3 word4 word5 " },
                     { :stid=>"1000001", :before=>"1word3 word4 word5 word6 ", :after=>"" },
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-2",
                   :operationType=>:moveLeft,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000001", :before=>"1word3 word4 word5 word6 ", :after=>"" },
                     { :stid=>"1000002", :before=>"2word7\n", :after=>"2word6 word7\n" },
@@ -317,15 +337,17 @@ class Repositext
               %w[@0word1 word2 word3 word4 word5 word6   word7 word8 @2word9 word10 word11 word12   word13 word14 word15 word16 word17 word18],
               [
                 {
-                  :operationId=>"",
+                  :operationId=>"hunk_index-1",
                   :operationType=>:merge,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000000", :before=>"0word1 word2 word3 word4 word5 word6 ", :after=>"0word1 word2 word3 word4 word5 word6 word7 word8 "},
                     { :stid=>"1000001", :before=>"1word7 word8 word9 word10 word11 word12 ", :after=>""}
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-2",
                   :operationType=>:moveLeft,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000001", :before=>"1word7 word8 word9 word10 word11 word12 ", :after=>""},
                     { :stid=>"1000002", :before=>"2word13 word14 word15 word16 word17 word18\n", :after=>"2word9 word10 word11 word12 word13 word14 word15 word16 word17 word18\n"}
@@ -339,22 +361,25 @@ class Repositext
               %w[@0word1 word2   word3 @2word4   word5 word6 @3word7   word8],
               [
                 {
-                  :operationId=>"",
+                  :operationId=>"hunk_index-1",
                   :operationType=>:merge,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000000", :before=>"0word1 word2 ", :after=>"0word1 word2 word3 " },
                     { :stid=>"1000001", :before=>"1word3 word4 ", :after=>"" },
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-2",
                   :operationType=>:moveLeft,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000001", :before=>"1word3 word4 ", :after=>"" },
                     { :stid=>"1000002", :before=>"2word5 word6 word7 ", :after=>"2word4 word5 word6 " },
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-3",
                   :operationType=>:moveLeft,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000002", :before=>"2word5 word6 word7 ", :after=>"2word4 word5 word6 " },
                     { :stid=>"1000003", :before=>"3word8\n", :after=>"3word7 word8\n" }
@@ -368,22 +393,25 @@ class Repositext
               %w[@0word1 word2   word3 @2word4   word5 word6   word7 @3word8],
               [
                 {
-                  :operationId=>"",
+                  :operationId=>"hunk_index-1",
                   :operationType=>:merge,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000000", :before=>"0word1 word2 ", :after=>"0word1 word2 word3 " },
                     { :stid=>"1000001", :before=>"1word3 word4 ", :after=>"" },
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-2",
                   :operationType=>:moveLeft,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000001", :before=>"1word3 word4 ", :after=>"" },
                     { :stid=>"1000002", :before=>"2word5 word6 ", :after=>"2word4 word5 word6 word7 " },
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-3",
                   :operationType=>:moveRight,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000002", :before=>"2word5 word6 ", :after=>"2word4 word5 word6 word7 " },
                     { :stid=>"1000003", :before=>"3word7 word8\n", :after=>"3word8\n" }
@@ -397,22 +425,25 @@ class Repositext
               %w[@0word1 word2   word3 @2word4   word5 word6 @3word7 @4word8],
               [
                 {
-                  :operationId=>"",
+                  :operationId=>"hunk_index-1",
                   :operationType=>:merge,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000000", :before=>"0word1 word2 ", :after=>"0word1 word2 word3 " },
                     { :stid=>"1000001", :before=>"1word3 word4 ", :after=>"" }
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-2",
                   :operationType=>:moveLeft,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000001", :before=>"1word3 word4 ", :after=>"" },
                     { :stid=>"1000002", :before=>"2word5 word6 ", :after=>"2word4 word5 word6 " }
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-4",
                   :operationType=>:split,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000003", :before=>"3word7 word8\n", :after=>"3word7 " },
                     { :stid=>"tmp-1000003+1", :before=>"", :after=>"4word8\n" }
@@ -426,15 +457,17 @@ class Repositext
               %w[@0word1 word2 @1word3   word4 @2word5 word6   word7 word8],
               [
                 {
-                  :operationId=>"",
+                  :operationId=>"hunk_index-0",
                   :operationType=>:moveLeft,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000000", :before=>"0word1 word2 word3 ", :after=>"0word1 word2 " },
                     { :stid=>"1000001", :before=>"1word4 ", :after=>"1word3 word4 " }
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-3",
                   :operationType=>:merge,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000002", :before=>"2word5 word6 ", :after=>"2word5 word6 word7 word8\n" },
                     { :stid=>"1000003", :before=>"3word7 word8\n", :after=>"" }
@@ -448,22 +481,25 @@ class Repositext
               %w[@0word1 @1word2   word3 @2word4   word5 @4word6   word7],
               [
                 {
-                  :operationId=>"",
+                  :operationId=>"hunk_index-0",
                   :operationType=>:moveLeft,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000000", :before=>"0word1 word2 ", :after=>"0word1 " },
                     { :stid=>"1000001", :before=>"1word3 ", :after=>"1word2 word3 " }
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-3",
                   :operationType=>:merge,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000002", :before=>"2word4 ", :after=>"2word4 word5 " },
                     { :stid=>"1000003", :before=>"3word5 word6 ", :after=>"" }
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-4",
                   :operationType=>:moveLeft,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000003", :before=>"3word5 word6 ", :after=>"" },
                     { :stid=>"1000004", :before=>"4word7\n", :after=>"4word6 word7\n" }
@@ -477,22 +513,25 @@ class Repositext
               %w[@0word1 @1word2   word3 @2word4   word5 @4word6 @5word7],
               [
                 {
-                  :operationId=>"",
+                  :operationId=>"hunk_index-0",
                   :operationType=>:moveLeft,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000000", :before=>"0word1 word2 ", :after=>"0word1 " },
                     { :stid=>"1000001", :before=>"1word3 ", :after=>"1word2 word3 " }
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-3",
                   :operationType=>:merge,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000002", :before=>"2word4 ", :after=>"2word4 word5 " },
                     { :stid=>"1000003", :before=>"3word5 ", :after=>"" }
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-5",
                   :operationType=>:split,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000004", :before=>"4word6 word7\n", :after=>"4word6 " },
                     { :stid=>"tmp-1000004+1", :before=>"", :after=>"5word7\n" }
@@ -506,15 +545,17 @@ class Repositext
               %w[@0word1 @1word2   word3 @2word4   word5],
               [
                 {
-                  :operationId=>"",
+                  :operationId=>"hunk_index-1",
                   :operationType=>:moveLeft,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000000", :before=>"0word1 word2 ", :after=>"0word1 " },
                     { :stid=>"1000001", :before=>"1word3 word4 ", :after=>"1word2 word3 " }
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-2",
                   :operationType=>:moveLeft,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000001", :before=>"1word3 word4 ", :after=>"1word2 word3 " },
                     { :stid=>"1000002", :before=>"2word5\n", :after=>"2word4 word5\n" }
@@ -528,15 +569,17 @@ class Repositext
               %w[@0word1 @1word2   word3   word4 @2word5],
               [
                 {
-                  :operationId=>"",
+                  :operationId=>"hunk_index-1",
                   :operationType=>:moveLeft,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000000", :before=>"0word1 word2 ", :after=>"0word1 " },
                     { :stid=>"1000001", :before=>"1word3 ", :after=>"1word2 word3 word4 " }
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-2",
                   :operationType=>:moveRight,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000001", :before=>"1word3 ", :after=>"1word2 word3 word4 " },
                     { :stid=>"1000002", :before=>"2word4 word5\n", :after=>"2word5\n" }
@@ -550,15 +593,17 @@ class Repositext
               %w[@0word1 @1word2   word3 @2word4 @3word5],
               [
                 {
-                  :operationId=>"",
+                  :operationId=>"hunk_index-0",
                   :operationType=>:moveLeft,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000000", :before=>"0word1 word2 ", :after=>"0word1 " },
                     { :stid=>"1000001", :before=>"1word3 ", :after=>"1word2 word3 " }
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-3",
                   :operationType=>:split,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000002", :before=>"2word4 word5\n", :after=>"2word4 " },
                     { :stid=>"tmp-1000002+1", :before=>"", :after=>"3word5\n" }
@@ -572,15 +617,17 @@ class Repositext
               %w[@0word1 word2   word3 @2word4 word5 word6   word7],
               [
                 {
-                  :operationId=>"",
+                  :operationId=>"hunk_index-1",
                   :operationType=>:moveRight,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000000", :before=>"0word1 word2 ", :after=>"0word1 word2 word3 "},
                     { :stid=>"1000001", :before=>"1word3 word4 word5 word6 ", :after=>"2word4 word5 word6 word7\n"}
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-2",
                   :operationType=>:merge,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000001", :before=>"1word3 word4 word5 word6 ", :after=>"2word4 word5 word6 word7\n"},
                     { :stid=>"1000002", :before=>"2word7\n", :after=>""}
@@ -594,29 +641,33 @@ class Repositext
               %w[@0word1   word2 @1word3 @2word4   word5 @4word6   word7   word8 @5word9],
               [
                 {
-                  :operationId=>"",
+                  :operationId=>"hunk_index-0",
                   :operationType=>:moveRight,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000000", :before=>"0word1 ", :after=>"0word1 word2 "},
                     { :stid=>"1000001", :before=>"1word2 word3 ", :after=>"1word3 "}
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-3",
                   :operationType=>:merge,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000002", :before=>"2word4 ", :after=>"2word4 word5 "},
                     { :stid=>"1000003", :before=>"3word5 word6 ", :after=>""}
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-4",
                   :operationType=>:moveLeft,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000003", :before=>"3word5 word6 ", :after=>""},
                     { :stid=>"1000004", :before=>"4word7 ", :after=>"4word6 word7 word8 "}
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-5",
                   :operationType=>:moveRight,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000004", :before=>"4word7 ", :after=>"4word6 word7 word8 "},
                     { :stid=>"1000005", :before=>"5word8 word9\n", :after=>"5word9\n"}
@@ -630,15 +681,17 @@ class Repositext
               %w[@0word1   word2 @1word3 @2word4   word5],
               [
                 {
-                  :operationId=>"",
+                  :operationId=>"hunk_index-1",
                   :operationType=>:moveRight,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000000", :before=>"0word1 ", :after=>"0word1 word2 "},
                     { :stid=>"1000001", :before=>"1word2 word3 word4 ", :after=>"1word3 "}
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-2",
                   :operationType=>:moveLeft,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000001", :before=>"1word2 word3 word4 ", :after=>"1word3 "},
                     { :stid=>"1000002", :before=>"2word5\n", :after=>"2word4 word5\n"}
@@ -652,29 +705,33 @@ class Repositext
               %w[@0word1   word2 @1word3   word4 @2word5 @3word6   word7 @5word8   word9],
               [
                 {
-                  :operationId=>"",
+                  :operationId=>"hunk_index-1",
                   :operationType=>:moveRight,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000000", :before=>"0word1 ", :after=>"0word1 word2 "},
                     { :stid=>"1000001", :before=>"1word2 word3 ", :after=>"1word3 word4 "}
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-2",
                   :operationType=>:moveRight,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000001", :before=>"1word2 word3 ", :after=>"1word3 word4 "},
                     { :stid=>"1000002", :before=>"2word4 word5 ", :after=>"2word5 "}
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-4",
                   :operationType=>:merge,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000003", :before=>"3word6 ", :after=>"3word6 word7 "},
                     { :stid=>"1000004", :before=>"4word7 word8 ", :after=>""}
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-5",
                   :operationType=>:moveLeft,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000004", :before=>"4word7 word8 ", :after=>""},
                     { :stid=>"1000005", :before=>"5word9\n", :after=>"5word8 word9\n"}
@@ -688,43 +745,49 @@ class Repositext
               %w[@0word1   word2 @1word3   word4 @2word5   word6 @3word7   word8 @4word9 @5word10   word11 @7word12   word13],
               [
                 {
-                  :operationId=>"",
+                  :operationId=>"hunk_index-1",
                   :operationType=>:moveRight,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000000", :before=>"0word1 ", :after=>"0word1 word2 "},
                     { :stid=>"1000001", :before=>"1word2 word3 ", :after=>"1word3 word4 "}
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-2",
                   :operationType=>:moveRight,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000001", :before=>"1word2 word3 ", :after=>"1word3 word4 "},
                     { :stid=>"1000002", :before=>"2word4 word5 ", :after=>"2word5 word6 "}
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-3",
                   :operationType=>:moveRight,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000002", :before=>"2word4 word5 ", :after=>"2word5 word6 "},
                     { :stid=>"1000003", :before=>"3word6 word7 ", :after=>"3word7 word8 "}
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-4",
                   :operationType=>:moveRight,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000003", :before=>"3word6 word7 ", :after=>"3word7 word8 "},
                     { :stid=>"1000004", :before=>"4word8 word9 ", :after=>"4word9 "}
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-6",
                   :operationType=>:merge,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000005", :before=>"5word10 ", :after=>"5word10 word11 "},
                     { :stid=>"1000006", :before=>"6word11 ", :after=>""}
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-8",
                   :operationType=>:merge,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000007", :before=>"7word12 ", :after=>"7word12 word13\n"},
                     { :stid=>"1000008", :before=>"8word13\n", :after=>""}
@@ -738,43 +801,49 @@ class Repositext
               %w[@0word1   word2 @1word3   word4 @2word5   word6 @3word7   word8 @4word9 @5word10 @6word11   word12 @7word13],
               [
                 {
-                  :operationId=>"",
+                  :operationId=>"hunk_index-1",
                   :operationType=>:moveRight,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000000", :before=>"0word1 ", :after=>"0word1 word2 "},
                     { :stid=>"1000001", :before=>"1word2 word3 ", :after=>"1word3 word4 "}
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-2",
                   :operationType=>:moveRight,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000001", :before=>"1word2 word3 ", :after=>"1word3 word4 "},
                     { :stid=>"1000002", :before=>"2word4 word5 ", :after=>"2word5 word6 "}
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-3",
                   :operationType=>:moveRight,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000002", :before=>"2word4 word5 ", :after=>"2word5 word6 "},
                     { :stid=>"1000003", :before=>"3word6 word7 ", :after=>"3word7 word8 "}
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-4",
                   :operationType=>:moveRight,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000003", :before=>"3word6 word7 ", :after=>"3word7 word8 "},
                     { :stid=>"1000004", :before=>"4word8 word9 ", :after=>"4word9 "}
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-6",
                   :operationType=>:split,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000005", :before=>"5word10 word11 ", :after=>"5word10 "},
                     { :stid=>"tmp-1000005+1", :before=>"", :after=>"6word11 word12 "}
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-7",
                   :operationType=>:moveRight,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"tmp-1000005+1", :before=>"", :after=>"6word11 word12 "},
                     { :stid=>"1000006", :before=>"7word12 word13\n", :after=>"7word13\n"}
@@ -788,15 +857,17 @@ class Repositext
               %w[@0word1   word2 @1word3   word4 @2word5],
               [
                 {
-                  :operationId=>"",
+                  :operationId=>"hunk_index-1",
                   :operationType=>:moveRight,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000000", :before=>"0word1 ", :after=>"0word1 word2 "},
                     { :stid=>"1000001", :before=>"1word2 word3 ", :after=>"1word3 word4 "}
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-2",
                   :operationType=>:moveRight,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000001", :before=>"1word2 word3 ", :after=>"1word3 word4 "},
                     { :stid=>"1000002", :before=>"2word4 word5\n", :after=>"2word5\n"}
@@ -810,15 +881,17 @@ class Repositext
               %w[@0word1 word2  word3 @1word4 @2word5 word6 @3word7 word8],
               [
                 {
-                  :operationId=>"",
+                  :operationId=>"hunk_index-0",
                   :operationType=>:moveRight,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000000", :before=>"0word1 word2 ", :after=>"0word1 word2 word3 "},
                     { :stid=>"1000001", :before=>"1word3 word4 ", :after=>"1word4 " },
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-3",
                   :operationType=>:split,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000002", :before=>"2word5 word6 word7 word8\n", :after=>"2word5 word6 " },
                     { :stid=>"tmp-1000002+1", :before=>"", :after=>"3word7 word8\n" },
@@ -832,15 +905,17 @@ class Repositext
               %w[@0word1 @1word2 @2word3   word4],
               [
                 {
-                  :operationId=>"",
+                  :operationId=>"hunk_index-1",
                   :operationType=>:split,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000000", :before=>"0word1 word2 word3 ", :after=>"0word1 " },
                     { :stid=>"tmp-1000000+1", :before=>"", :after=>"1word2 "}
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-2",
                   :operationType=>:moveLeft,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"tmp-1000000+1", :before=>"", :after=>"1word2 " },
                     { :stid=>"1000001", :before=>"2word4\n", :after=>"2word3 word4\n"}
@@ -854,22 +929,25 @@ class Repositext
               %w[@0word1 @1word2 @2word3   word4 @4word5   word6],
               [
                 {
-                  :operationId=>"",
+                  :operationId=>"hunk_index-1",
                   :operationType=>:split,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000000", :before=>"0word1 word2 ", :after=>"0word1 "},
                     { :stid=>"tmp-1000000+1", :before=>"", :after=>"1word2 "}
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-3",
                   :operationType=>:merge,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000001", :before=>"2word3 ", :after=>"2word3 word4 "},
                     { :stid=>"1000002", :before=>"3word4 word5 ", :after=>""}
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-4",
                   :operationType=>:moveLeft,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000002", :before=>"3word4 word5 ", :after=>""},
                     { :stid=>"1000003", :before=>"4word6\n", :after=>"4word5 word6\n"}
@@ -883,22 +961,25 @@ class Repositext
               %w[@0word1 @1word2 @2word3   word4 @3word5 @4word6],
               [
                 {
-                  :operationId=>"",
+                  :operationId=>"hunk_index-1",
                   :operationType=>:split,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000000", :before=>"0word1 word2 word3 ", :after=>"0word1 "},
                     { :stid=>"tmp-1000000+1", :before=>"", :after=>"1word2 "}
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-2",
                   :operationType=>:moveLeft,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"tmp-1000000+1", :before=>"", :after=>"1word2 "},
                     { :stid=>"1000001", :before=>"2word4 ", :after=>"2word3 word4 "}
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-4",
                   :operationType=>:split,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000002", :before=>"3word5 word6\n", :after=>"3word5 "},
                     { :stid=>"tmp-1000002+1", :before=>"", :after=>"4word6\n"}
@@ -912,29 +993,33 @@ class Repositext
               %w[@0word1 @1word3   word4 @2word5   word6 @3word7 @4word8   word9],
               [
                 {
-                  :operationId=>"",
+                  :operationId=>"hunk_index-1",
                   :operationType=>:split,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000000", :before=>"0word1 word3 ", :after=>"0word1 "},
                     { :stid=>"tmp-1000000+1", :before=>"", :after=>"1word3 word4 "}
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-2",
                   :operationType=>:moveRight,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"tmp-1000000+1", :before=>"", :after=>"1word3 word4 "},
                     { :stid=>"1000001", :before=>"2word4 word5 ", :after=>"2word5 word6 "}
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-3",
                   :operationType=>:moveRight,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000001", :before=>"2word4 word5 ", :after=>"2word5 word6 "},
                     { :stid=>"1000002", :before=>"3word6 word7 word8 ", :after=>"3word7 "}
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-4",
                   :operationType=>:moveLeft,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000002", :before=>"3word6 word7 word8 ", :after=>"3word7 "},
                     { :stid=>"1000003", :before=>"4word9\n", :after=>"4word8 word9\n"}
@@ -948,22 +1033,25 @@ class Repositext
               %w[@0word1 @1word3   word4 @2word5   word6 @3word7],
               [
                 {
-                  :operationId=>"",
+                  :operationId=>"hunk_index-1",
                   :operationType=>:split,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000000", :before=>"0word1 word3 ", :after=>"0word1 "},
                     { :stid=>"tmp-1000000+1", :before=>"", :after=>"1word3 word4 "}
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-2",
                   :operationType=>:moveRight,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"tmp-1000000+1", :before=>"", :after=>"1word3 word4 "},
                     { :stid=>"1000001", :before=>"2word4 word5 ", :after=>"2word5 word6 "}
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-3",
                   :operationType=>:moveRight,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000001", :before=>"2word4 word5 ", :after=>"2word5 word6 "},
                     { :stid=>"1000002", :before=>"3word6 word7\n", :after=>"3word7\n"}
@@ -977,15 +1065,17 @@ class Repositext
               %w[@0word1 word2 @1word3 word4 word5   word6 @2word7],
               [
                 {
-                  :operationId=>"",
+                  :operationId=>"hunk_index-1",
                   :operationType=>:split,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000000", :before=>"0word1 word2 word3 word4 word5 ", :after=>"0word1 word2 "},
                     { :stid=>"tmp-1000000+1", :before=>"", :after=>"1word3 word4 word5 word6 "}
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-2",
                   :operationType=>:moveRight,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"tmp-1000000+1", :before=>"", :after=>"1word3 word4 word5 word6 "},
                     { :stid=>"1000001", :before=>"2word6 word7\n", :after=>"2word7\n"}
@@ -999,15 +1089,17 @@ class Repositext
               %w[@0word1 word2 word3 @1word4   word5 word6 word7 @2word8 word9 word10 word11 word12 word13],
               [
                 {
-                  :operationId=>"",
+                  :operationId=>"hunk_index-1",
                   :operationType=>:split,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000000", :before=>"0word1 word2 word3 word4 ", :after=>"0word1 word2 word3 "},
                     { :stid=>"tmp-1000000+1", :before=>"", :after=>"1word4 word5 word6 word7 "}
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-2",
                   :operationType=>:moveRight,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"tmp-1000000+1", :before=>"", :after=>"1word4 word5 word6 word7 "},
                     { :stid=>"1000001", :before=>"2word5 word6 word7 word8 word9 word10 word11 word12 word13\n", :after=>"2word8 word9 word10 word11 word12 word13\n"}
@@ -1021,29 +1113,33 @@ class Repositext
               %w[@0word1 @1word2 @2word3 @3word4 @4word5 @5word6   word7 @6word8],
               [
                 {
-                  :operationId=>"",
+                  :operationId=>"hunk_index-1",
                   :operationType=>:split,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000000", :before=>"0word1 word2 ", :after=>"0word1 "},
                     { :stid=>"tmp-1000000+1", :before=>"", :after=>"1word2 "}
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-3",
                   :operationType=>:split,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000001", :before=>"2word3 word4 ", :after=>"2word3 "},
                     { :stid=>"tmp-1000001+1", :before=>"", :after=>"3word4 "}
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-5",
                   :operationType=>:split,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"1000002", :before=>"4word5 word6 ", :after=>"4word5 "},
                     { :stid=>"tmp-1000002+1", :before=>"", :after=>"5word6 word7 "}
                   ]
                 },{
-                  :operationId=>"",
+                  :operationId=>"hunk_index-6",
                   :operationType=>:moveRight,
+                  :afterStid=>nil,
                   :affectedStids=>[
                     { :stid=>"tmp-1000002+1", :before=>"", :after=>"5word6 word7 "},
                     { :stid=>"1000003", :before=>"6word7 word8\n", :after=>"6word8\n"}
@@ -1064,7 +1160,7 @@ class Repositext
                   { line_origin: :addition, content: add_c.join(' ') + "\n", old_linenos: nil },
                 ],
               )
-              r.map { |e| e.to_hash }.must_equal(xpect)
+              r[:subtitle_operations].map { |e| e.to_hash }.must_equal(xpect)
             end
 
           end

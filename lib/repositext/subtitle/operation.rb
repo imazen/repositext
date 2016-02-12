@@ -11,7 +11,7 @@ class Repositext
 
       attr_accessor :affectedStids
 
-      ATTR_NAMES = [:operationId, :operationType]
+      ATTR_NAMES = [:operationId, :operationType, :afterStid]
       attr_accessor *ATTR_NAMES
 
       # Instantiates a new instance of self from a Hash
