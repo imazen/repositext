@@ -154,12 +154,6 @@ class Repositext
           if correction_location
             # extract paragraph number
             ca[:paragraph_number] = correction_location.match(/paragraphs?\s+(\d+)/i)[1].to_s
-            # extract line number
-            if (match = correction_location.match(/lines?\s+([\d\-]+)/i))
-              ca[:line_number] = match[1].to_s
-            else
-              raise "Could not parse line number for correction ##{ ca[:correction_number] }, para ##{ ca[:paragraph_number] }"
-            end
             # extract reads
             s.skip_until(/\nreads:\s+/i) # advance up to and including reads: marker
             ca[:before] = s.scan(/.+?(?=\nbecomes:)/im).to_s.strip # fetch everything up to "Becomes:"
@@ -184,7 +178,6 @@ class Repositext
           has_missing_attrs = [
             :correction_number,
             :paragraph_number,
-            :line_number,
             :before,
             :after,
           ].any? { |attr| e[attr].nil? }
@@ -349,7 +342,7 @@ class Repositext
           [
             instructions,
             "      Replace with:                      '#{ correction[:after] }'",
-            "      in paragraph #{ correction[:paragraph_number] }, line #{ correction[:line_number] }",
+            "      in paragraph #{ correction[:paragraph_number] }",
           ].join("\n"),
           compute_line_number_from_paragraph_number(correction[:paragraph_number], corrected_at)
         )

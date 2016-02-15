@@ -146,9 +146,9 @@ Becomes: word1 word2 word4added word3
         }
         let(:corrections_attrs){
           [
-            { correction_number: '1', paragraph_number: '47', line_number: '4', before: "word1 word2 word3 word4 word5", after: "word1 (word2) word3 word4 word5" },
-            { correction_number: '2', paragraph_number: '54', line_number: '7', before: "word1 word2 word3", after: "word1 word2modified word3" },
-            { correction_number: '3', paragraph_number: '177', line_number: '6-7', before: "word1 word2 word3", after: "word1 word2 word4added word3" },
+            { correction_number: '1', paragraph_number: '47', before: "word1 word2 word3 word4 word5", after: "word1 (word2) word3 word4 word5" },
+            { correction_number: '2', paragraph_number: '54', before: "word1 word2 word3", after: "word1 word2modified word3" },
+            { correction_number: '3', paragraph_number: '177', before: "word1 word2 word3", after: "word1 word2 word4added word3" },
           ]
         }
 
