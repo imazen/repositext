@@ -49,12 +49,13 @@ module Kramdown
         def initialize(text_run)
           tr_style = text_run.at_xpath('./w:rPr')
           if tr_style
-            # NOTE: w:b is supposed to be a toggle property (<w:b/>), however in
-            # some DOCX documents (ODT -> DOC -> DOCX), it has an unexpected
-            # `val` attribute that we need to check (<w:b w:val="false"/>):
+            # NOTE: w:b, w:i, and w:smallCaps are supposed to be a toggle properties
+            # (<w:b/>), however in some DOCX documents (ODT -> DOC -> DOCX), they
+            # have an unexpected `val` attribute that we need to check
+            # (<w:b w:val="false"/>):
             @bold = (xn = tr_style.at_xpath('./w:b')) && 'false' != xn['w:val']
-            @italic = tr_style.at_xpath('./w:i') # toggle property, no val
-            @smcaps = tr_style.at_xpath('./w:smallCaps') # toggle property, no val
+            @italic = (xn = tr_style.at_xpath('./w:i')) && 'false' != xn['w:val']
+            @smcaps = (xn = tr_style.at_xpath('./w:smallCaps')) && 'false' != xn['w:val']
             @subscript = tr_style.at_xpath("./w:vertAlign[@w:val='subscript']")
             @superscript = tr_style.at_xpath("./w:vertAlign[@w:val='superscript']")
             @underline = (xn = tr_style.at_xpath('./w:u')) && 'none' != xn['w:val'] # val 'none' turns off underline
