@@ -35,13 +35,43 @@ class Repositext
             # No-ops
             # ----------------------------------------------------------------
             [
-              'Content change (insignificant)',
+              'Content change (correct word)',
               %w[@0word1 1word2  @1word3 3word4],
               %w[@0word1 1word2b @1word3 3word4],
               [],
             ],
             [
-              'Content change',
+              'Content change (delete word at beginning of subtitle)',
+              %w[@word1 word2 @word4  word5 word6 word7],
+              %w[@word1 word2        @word5 word6 word7],
+              [],
+            ],
+            [
+              'Content change (delete word in the middle of subtitle)',
+              %w[@word1 word2 @word4 word5 word6 word7],
+              %w[@word1 word2 @word4 word5       word7],
+              [],
+            ],
+            [
+              'Content change (delete word at end of subtitle)',
+              %w[@word1 word2 word3 @word4 word5],
+              %w[@word1 word2       @word4 word5],
+              [],
+            ],
+            [
+              'Content change (insert word at beginning of subtitle)',
+              %w[@word1 word2        @word5 word6 word7],
+              %w[@word1 word2 @word4  word5 word6 word7],
+              [],
+            ],
+            [
+              'Content change (insert word in the middle of subtitle)',
+              %w[@word1 word2 @word4 word5       word7],
+              %w[@word1 word2 @word4 word5 word6 word7],
+              [],
+            ],
+            [
+              'Content change (insert word at end of subtitle)',
               %w[@word1 word2       @word4 word5],
               %w[@word1 word2 word3 @word4 word5],
               [],
