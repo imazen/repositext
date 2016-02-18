@@ -103,17 +103,6 @@ module Kramdown
         case output_header_level(el.options[:level])
         when 1
           # render in RtTitle environment
-          # Since Jan 2016 we start wrapping titles with {: .italic.smcaps} IAL.
-          # This results in double application of \\RtSmCapsEmulation and breaks.
-          # So we remove the IAL class here where they exist since not all
-          # files have them.
-          if(
-            1 == el.children.length and
-            em_child = el.children.first and
-            em_child.has_class?('smcaps')
-          )
-            em_child.remove_class('smcaps')
-          end
           l_title = inner(el, opts)
           # capture first level 1 header as document title
           @document_title_plain_text ||= el.to_plain_text
@@ -124,7 +113,7 @@ module Kramdown
           l_title = l_title.gsub(
             /(?<=\\textsuperscript\{)([^\}]+)(?=\})/, "\\textscale{0.7}{" + '\1}'
           )
-          "\\begin{RtTitle}\n#{self.class.emulate_small_caps(l_title) }\n\\end{RtTitle}"
+          "\\begin{RtTitle}\n#{ l_title }\n\\end{RtTitle}"
         when 2
           # render in RtTitle2 environment
           l_title = inner(el, opts)
