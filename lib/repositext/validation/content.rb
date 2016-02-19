@@ -23,6 +23,7 @@ class Repositext
         end
         validate_files(:repositext_files) do |path|
           Validator::Utf8Encoding.new(File.open(path), @logger, @reporter, @options).run
+          Validator::CorrectLineEndings.new(File.open(path), @logger, @reporter, @options).run
         end
 
         # File pairs
