@@ -10,6 +10,8 @@ class Repositext
         # Single files
 
         validate_files(:content_at_files) do |path|
+          Validator::ContentAtFilesStartWithRecordMark.new(File.open(path), @logger, @reporter, @options).run
+          Validator::CorrectLineEndings.new(File.open(path), @logger, @reporter, @options).run
           Validator::EaglesConnectedToParagraph.new(File.open(path), @logger, @reporter, @options).run
           Validator::KramdownSyntaxAt.new(File.open(path), @logger, @reporter, @options).run
           if @options['is_primary_repo']
@@ -23,7 +25,6 @@ class Repositext
         end
         validate_files(:repositext_files) do |path|
           Validator::Utf8Encoding.new(File.open(path), @logger, @reporter, @options).run
-          Validator::CorrectLineEndings.new(File.open(path), @logger, @reporter, @options).run
         end
 
         # File pairs
