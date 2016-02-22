@@ -258,10 +258,24 @@ module Kramdown
         flag_match_found
       end
 
+      def process_node_del
+        # Change tracking: Deletion. Ignore this node.
+        # See process_node_ins.
+        ignore_node(xn)
+        flag_match_found
+      end
+
       def process_node_hyperlink(xn)
         # hyperlink -> Pull
         pull_node(xn)
         add_warning(xn, "Found #{ xn.name_and_class }")
+        flag_match_found
+      end
+
+      def process_node_ins
+        # Change tracking: Insertion. Pull this node.
+        # See process_node_del
+        pull_node(xn)
         flag_match_found
       end
 
