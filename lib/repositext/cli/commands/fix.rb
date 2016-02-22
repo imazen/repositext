@@ -250,6 +250,7 @@ class Repositext
           # Process all subfolders of root. Don't touch files in root.
           input_base_dirs = %w[
             content_dir
+            docx_import_dir
             folio_import_dir
             idml_import_dir
             plain_kramdown_export_dir
