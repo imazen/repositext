@@ -52,10 +52,10 @@ module Kramdown
             # NOTE: w:b, w:i, and w:smallCaps are supposed to be a toggle properties
             # (<w:b/>), however in some DOCX documents (ODT -> DOC -> DOCX), they
             # have an unexpected `val` attribute that we need to check
-            # (<w:b w:val="false"/>):
-            @bold = (xn = tr_style.at_xpath('./w:b')) && 'false' != xn['w:val']
-            @italic = (xn = tr_style.at_xpath('./w:i')) && 'false' != xn['w:val']
-            @smcaps = (xn = tr_style.at_xpath('./w:smallCaps')) && 'false' != xn['w:val']
+            # (<w:b w:val="false"/>). They could also be set to '0' if saved from MS Word.
+            @bold = (xn = tr_style.at_xpath('./w:b')) && !%w[false 0].include?(xn['w:val'])
+            @italic = (xn = tr_style.at_xpath('./w:i')) && !%w[false 0].include?(xn['w:val'])
+            @smcaps = (xn = tr_style.at_xpath('./w:smallCaps')) && !%w[false 0].include?(xn['w:val'])
             @subscript = tr_style.at_xpath("./w:vertAlign[@w:val='subscript']")
             @superscript = tr_style.at_xpath("./w:vertAlign[@w:val='superscript']")
             @underline = (xn = tr_style.at_xpath('./w:u')) && 'none' != xn['w:val'] # val 'none' turns off underline
