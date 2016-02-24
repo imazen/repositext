@@ -395,8 +395,14 @@ module Kramdown
       end
 
       def process_node_softhyphen(xn)
-        # softHyphen
-        # Todo: how to handle softHyphen
+        # softHyphen -> Ignore, raise warning
+        # Ignore for now, print a warning. There have been cases in the past
+        # where translators intended to use a hyphen, however it ended up as a
+        # softHyphen. Ignoring them would not be the expected behaviour.
+        # Let's see how often it occurs.
+        ignore_node(xn)
+        add_warning(xn, "Found #{ xn.name_and_class }")
+        flag_match_found
       end
 
       def process_node_t(xn)
