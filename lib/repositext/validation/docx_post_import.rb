@@ -16,6 +16,9 @@ class Repositext
           Validator::KramdownSyntaxAt.new(
             File.open(path), @logger, @reporter, @options
           ).run
+          Validator::ParagraphNumberSequencing.new(
+            File.open(path), @logger, @reporter, @options
+          ).run
         end
 
       end
