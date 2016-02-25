@@ -258,7 +258,7 @@ module Kramdown
         flag_match_found
       end
 
-      def process_node_del
+      def process_node_del(xn)
         # Change tracking: Deletion. Ignore this node.
         # See process_node_ins.
         ignore_node(xn)
@@ -272,7 +272,7 @@ module Kramdown
         flag_match_found
       end
 
-      def process_node_ins
+      def process_node_ins(xn)
         # Change tracking: Insertion. Pull this node.
         # See process_node_del
         pull_node(xn)
