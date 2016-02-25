@@ -65,7 +65,7 @@ class Repositext
       # Returns self as string suitable as part of console logging
       def log_to_console
         location = @location[1..-1] # remove file_descriptor
-        details = @details.first(2) # remove additional details
+        details = @details.first(3) # remove additional details
         [
           '    ',
           location.join(', ').ljust(33),
