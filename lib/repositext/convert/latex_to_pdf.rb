@@ -63,14 +63,7 @@ class Repositext
             ohbs.each { |e| puts "     #{ e.inspect }" }
             if ohbs.any?
               ohbs.each { |ohb|
-                # [{ overhang_in_pt: 46, line: 376, offensive_string: "A string" }]
-                # We insert the `\linebreak` latex command at the last space in
-                # the line, so that the last word will be on a new line.
-                # OPTIMIZE: ideally we'd replace it only at the specified line! (:ohb[:line])
-                latex.gsub!(
-                  ohb[:offensive_string],
-                  ohb[:offensive_string].sub(/(\s+)(\S*)\z/, '\\linebreak\2')
-                )
+                insert_line_break_into_ohb!(ohb, latex)
               }
               has_overfull_hboxes = true
             else
@@ -106,7 +99,7 @@ class Repositext
 
       # Returns any overfull hboxes
       # @param log_file_contents [String] latex log file contents
-      # @return [Array<Hash>] [{ line: 375, contents: "line that is too long" }]
+      # @return [Array<Hash>] [{ overhang_in_pt: 59, line: 557, offensive_string: "Offending text" }]
       def self.find_overfull_hboxes(log_file_contents)
         # We're looking for a log entry like this:
         #
@@ -146,6 +139,20 @@ class Repositext
           # We fix all overfull hboxes with overhang > 5pt.
           e[:overhang_in_pt] > 5
         }
+      end
+
+      # Inserts a latex linebreak into lines with overfull hboxes.
+      # @param ohb [Hash] { overhang_in_pt: 59, line: 557, offensive_string: "Offending text" }
+      # @param latex [String] the latex string, will be modified in place
+      def self.insert_line_break_into_ohb!(ohb, latex)
+        # [{ overhang_in_pt: 46, line: 376, offensive_string: "A string" }]
+        # We insert the `\linebreak` latex command followed by a newline at the
+        # last space in the line, so that the last word will be on a new line.
+        # OPTIMIZE: ideally we'd replace it only at the specified line! (:ohb[:line])
+        latex.gsub!(
+          ohb[:offensive_string],
+          ohb[:offensive_string].sub(/(\s+)(\S*)\z/, "\\linebreak\n" + '\2')
+        )
       end
 
     end
