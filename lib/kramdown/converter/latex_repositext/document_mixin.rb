@@ -172,11 +172,10 @@ module Kramdown
         def compute_header_title_latex(document_title_plain_text, document_title_latex, is_primary_repo, language_code_3_chars)
           if is_primary_repo
             # bold, italic, small caps and large font
-            # NOTE: All titles are wrapped in <em>, so that will take care of the italics part.
-            # That means we don't need to add it here.
+            # NOTE: All titles are wrapped in <em> and .smcaps, so that will
+            # take care of the italics and smallcaps.
             truncated = compute_truncated_title(document_title_plain_text, document_title_latex, 63, 3)
-            small_caps = ::Kramdown::Converter::LatexRepositext.emulate_small_caps(truncated)
-            "\\textscale{#{ 0.909091 * size_scale_factor }}{\\textbf{#{ small_caps }}}"
+            "\\textscale{#{ 0.909091 * size_scale_factor }}{\\textbf{#{ truncated }}}"
           else
             # regular, all caps and small font
             truncated = compute_truncated_title(document_title_plain_text, document_title_latex, 54, 3)
@@ -309,14 +308,28 @@ module Kramdown
                 Regexp.new(
                   Regexp.escape(
                     title_plain_text[plain_text_index]
-                  )
+                  ),
+                  true # small caps emulation will capitalize letters in `s`
                 )
               )
             )
               # match with current plain text character
               if !reached_truncation_length
-                # still room, use char from truncated string (so we get ellipsis)
-                new_title_latex << truncated_title_plain_text[plain_text_index]
+                # Still room, use char from truncated string (so we get ellipsis)
+                # We have to use whatever capitalization is in matching_plain_text_char
+                # if it is the same letter as the corresponding one in
+                # truncated_title_plain_text. Otherwise we use what's in
+                # truncated_title_plain_text (e.g., the ellipsis)
+                char_from_ttpt = truncated_title_plain_text[plain_text_index]
+                if matching_plain_text_char.downcase == char_from_ttpt.downcase
+                  # It's a matching letter, use capitalization from matching_plain_text_char
+                  # so that we get correct small caps emulation (upper case)
+                  new_title_latex << matching_plain_text_char
+                else
+                  # No letter match, this is probably an ellipsis
+                  new_title_latex << truncated_title_plain_text[plain_text_index]
+                end
+
               end
               plain_text_index += 1
               # detect whether we've reached truncation length
