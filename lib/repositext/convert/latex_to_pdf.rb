@@ -146,6 +146,9 @@ class Repositext
       # @param latex [String] the latex string, will be modified in place
       def self.insert_line_break_into_ohb!(ohb, latex)
         # [{ overhang_in_pt: 46, line: 376, offensive_string: "A string" }]
+        # Latex doesn't wrap the words because moving the last word to a new
+        # line would result in too much inter-word spacing on that line.
+        #
         # We insert the `\linebreak` latex command followed by a newline at the
         # last space in the line, so that the last word will be on a new line.
         # OPTIMIZE: ideally we'd replace it only at the specified line! (:ohb[:line])

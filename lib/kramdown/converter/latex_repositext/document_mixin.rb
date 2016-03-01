@@ -44,7 +44,7 @@ module Kramdown
 
         # Configure page settings. All values are in inches
         def page_settings(key = nil)
-          page_settings = {
+          {
             paperwidth: 8.5,
             paperheight: 11,
             inner: 1.304655,
@@ -140,8 +140,11 @@ module Kramdown
           r
         end
 
-        # @param [String] header_text
-        # @param [Boolean] is_primary_repo
+        # Wraps header_text in latex markup (this is the non-title header text)
+        # @param header_text [String]
+        # @param is_primary_repo [Boolean]
+        # @param language_code_3_chars [String]
+        # @return [String]
         def compute_header_text_latex(header_text, is_primary_repo, language_code_3_chars)
           if is_primary_repo
             # italic, small caps and large font
@@ -159,6 +162,8 @@ module Kramdown
           end
         end
 
+        # Truncates and wraps title in latex markup so it can be used in
+        # page header.
         # @param document_title_plain_text [String]
         # @param document_title_latex [String]
         # @param is_primary_repo [Boolean]
@@ -210,6 +215,10 @@ module Kramdown
           r
         end
 
+        # Computes the command to be used for page numbers in the page header.
+        # @param is_primary_repo [Boolean]
+        # @param language_code_3_chars [String]
+        # @return [String]
         def compute_page_number_command(is_primary_repo, language_code_3_chars)
           if is_primary_repo
             # bold, italic, small caps and large font
@@ -255,7 +264,9 @@ module Kramdown
         # @param title_latex [String] the title in latex format.
         # @param max_len [Integer] maximum length of returned string.
         # @param min_length_of_last_word [Integer] minimum length of last word in returned string
+        # @return [String]
         def compute_truncated_title(title_plain_text, title_latex, max_len, min_length_of_last_word)
+
           # Nothing to do if title_plain_text is already short enough
           return title_latex  if title_plain_text.length <= max_len
 
