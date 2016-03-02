@@ -29,14 +29,15 @@ class Repositext
       File.dirname(__FILE__)
     end
 
-    # Tries to find Rtfile, starting in current working directory and
-    # traversing up the directory hierarchy until it finds an Rtfile or
-    # reaches the file system root.
+    # Tries to find Rtfile, starting in content_type child directory of current
+    # working directory and traversing up the directory hierarchy until it finds
+    # an Rtfile or reaches the file system root.
     # NOTE: This code is inspired by Bundler's find_gemfile
+    # @param content_type [String] a valid content type
     # @return [String, nil] path to closest Rtfile or nil if none found.
-    def self.find_rtfile
+    def self.find_rtfile(content_type)
       previous = nil
-      current  = Dir.getwd
+      current  = File.join(Dir.getwd, "ct-#{ content_type }")
 
       until !File.directory?(current) || current == previous
         filename = File.join(current, 'Rtfile')
@@ -46,6 +47,19 @@ class Repositext
       nil
     end
 
+    # Returns the names of all valid content types
+    # @return [Array<String>]
+    def self.valid_content_types
+      %w[general]
+    end
+
+    # Verifies that content_type is given and valid
+    # @param content_type [String]
+    # @return [Boolean]
+    def self.valid_content_type?(content_type)
+      valid_content_types.include?(content_type)
+    end
+
     class_option :'base-dir',
                  :type => :string,
                  :desc => 'Specifies the input file base directory. Expects a named base_dir from Rtfile or an absolute directory path.'
@@ -53,6 +67,10 @@ class Repositext
                  :type => :boolean,
                  :default => false,
                  :desc => 'If true, only files that have been changed or added will be processed.'
+    class_option :'content-type',
+                 :type => :string,
+                 :required => true,
+                 :desc => 'Specifies which content type to operate on.'
     class_option :debug,
                  :type => :boolean,
                  :default => false,
