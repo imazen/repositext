@@ -70,13 +70,18 @@ class Repositext
       # Converts a subtitle filename to the corresponding repositext one
       # like so:
       #
-      # /47-0412_0002.en.txt => /eng47-0412_0002.at
+      # /47/47-0412_0002.en.txt => /47/eng47-0412_0002.at
+      # OR
+      # /cab_01_...1234.en.txt => /engcab_01...1234.at
       #
       # @param [String] st_filename the subtitle filename
       # @return [String] the corresponding repositext filename
       def self.convert_from_subtitle_import_to_repositext(st_filename)
         lang_code = st_filename.match(/(?<=\.)[[:alpha:]]{2}(?=\.txt\z)/).to_s # should be 'en'
-        st_filename.gsub(/(\d\d\/)(\d\d)/, ['\1', convert_language_code(lang_code), '\2'].join)
+        st_filename.gsub(
+                     /(?<=\/)(\d\d|cab)(?=[\-\_])/, # handle year digits or cab prefix
+                     [convert_language_code(lang_code), '\1'].join
+                   )
                    .gsub(/\.#{ lang_code }\.txt\z/, '.at')
       end
 
