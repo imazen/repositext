@@ -23,6 +23,13 @@ class Repositext
 
         # File pairs
 
+        # TODO: This section iterates over all content_at_files and then tries
+        # to find the corresponding subtitle import files. This breaks if the
+        # command is used without a file-selector and encounters a content at
+        # file for which no corresponding subtitle import file exists.
+        # The approach should be the other way around: Start with the subtitle
+        # import files and find the corresponding content_at file.
+
         # Validate that the subtitle/subtitle_tagging import still matches content_at
         # Define proc that computes subtitle/subtitle_tagging import filename from content_at filename
         si_file_name_proc = lambda { |input_filename, file_specs|
