@@ -355,6 +355,13 @@ module Kramdown
           "#{ Repositext::D_QUOTE_OPEN }~#{ Repositext::APOSTROPHE }")
         # Remove space after paragraph number to avoid fluctuations in indent
         lb.gsub!(/(\\RtParagraphNumber\{[^\}]+\})\s*/, '\1')
+        # Insert zero-width space after all elipses and emdashes.
+        # This gives latex the option to break a line after these characters.
+        # \hspace{0pt} is the latex equivalent of zero-width space (&#x200B;)
+        line_breakable_chars = Regexp.escape(
+          [Repositext::ELIPSIS, Repositext::EM_DASH].join
+        )
+        lb.gsub!(/(?<=[#{ line_breakable_chars }])/, "\\hspace{0pt}")
         lb
       end
 
