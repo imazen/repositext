@@ -101,6 +101,7 @@ class Repositext
           "-n#{ max_number_of_commits }",
           "--pretty=format:'%h|%an|%ad|%s'",
           "--date=short",
+          "--follow",
           "--",
           filepath.sub(/#{ @repo.workdir }\//, ''),
         ].join(' ')
