@@ -31,6 +31,27 @@ module Kramdown
         end
       end
 
+      describe "option :convert_smcaps_to_upper_case" do
+
+        let(:kramdown_with_em_smcaps){ "Word *Word word word*{: .smcaps} word."}
+
+        it "leaves text alone if turned off (default)" do
+          doc = Document.new(
+            kramdown_with_em_smcaps, { input: 'KramdownRepositext' }
+          )
+          doc.to_plain_text.must_equal "Word Word word word word."
+        end
+
+        it "converts text to upper case inside em.smcaps if turned on" do
+          doc = Document.new(
+            kramdown_with_em_smcaps,
+            { input: 'KramdownRepositext', convert_smcaps_to_upper_case: true }
+          )
+          doc.to_plain_text.must_equal "Word WORD WORD WORD word."
+        end
+
+      end
+
     end
   end
 end

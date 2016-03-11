@@ -12,13 +12,15 @@ module Kramdown
       def initialize(root, options)
         super
         @plain_text = '' # collector for plain text string
+        @convert_smcaps_to_upper_case = options[:convert_smcaps_to_upper_case]
       end
 
       # Extract conversion dispatcher into class method so that we can use it
       # from other places (e.g., when patching Kramdown::Element#to_plain_text)
       # @param el [Kramdown::Element]
+      # @param convert_to_upper_case [Boolean, optional], defaults to false.
       # @return [Array<String>, Nil] tuple of before and after text or nil if nothing to do
-      def self.convert_el(el)
+      def self.convert_el(el, convert_to_upper_case=false)
         case el.type
         when :a
           # nothing to do
@@ -50,7 +52,11 @@ module Kramdown
           # nothing to do
         when :text
           # capture value of all :text elements
-          [el.value, nil]
+          if convert_to_upper_case
+            [el.value.upcase, nil]
+          else
+            [el.value, nil]
+          end
         else
           raise "Handle this element: #{ el.inspect }"
         end
@@ -58,16 +64,31 @@ module Kramdown
 
       # Extracts plain text from tree
       # @param [Kramdown::Element] el
+      # @param options [Hash, optional]
       # @return [String] the plain text
-      def convert(el)
-        before, after = self.class.convert_el(el)
+      def convert(el, options = {})
+        options = {
+          convert_to_upper_case: false
+        }.merge(options)
+
+        # Detect em.smcaps and convert any contained text to upper case
+        if @convert_smcaps_to_upper_case && :em == el.type && el.has_class?('smcaps')
+          options[:convert_to_upper_case] = true
+        end
+
+        # Convert el to plain_text
+        before, after = self.class.convert_el(el, options[:convert_to_upper_case])
+
+        # Record `before` segment
         @plain_text << before  if before
 
         # walk the tree
-        el.children.each { |e| convert(e) }
+        el.children.each { |e| convert(e, options) }
 
+        # Record `after` segment
         @plain_text << after  if after
 
+        # Return @plain_text after finishing :root el
         if :root == el.type
           # return @plain_text for :root element
           return @plain_text.strip
