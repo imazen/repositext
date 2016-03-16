@@ -772,6 +772,30 @@ class Repositext
         }
       end
 
+      def report_multi_ruby_runner(options)
+        puts "This command tests invoking commands in multiple ruby VMs"
+        puts '-' * 80
+
+        mrr = MultiRubyRunner.new
+
+        puts
+        puts "Ruby version 1: jruby in vgr-table-export"
+        stdout = mrr.execute_command_in_directory(
+          "bundle exec ruby -v;",
+          File.expand_path('../../../../../../vgr-table-export', __FILE__)
+        )
+        puts stdout
+
+        puts
+        puts "Ruby version 2: mri in vgr-repositext"
+        stdout = mrr.execute_command_in_directory(
+          "bundle exec ruby -v;",
+          File.expand_path('../../../../../../vgr-repositext', __FILE__)
+        )
+        puts stdout
+        puts
+      end
+
       def report_quotes_details(options)
         output_lines = []
         ["'", '"'].each { |quote_char|
