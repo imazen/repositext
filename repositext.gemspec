@@ -27,7 +27,7 @@ Gem::Specification.new do |s|
   s.add_dependency('kramdown')
   s.add_dependency('logging')
   s.add_dependency('micromachine')
-  s.add_dependency('multi_ruby_runner')
+  s.add_dependency('multi_ruby_runner', '~> 1.0.2')
   s.add_dependency('needleman_wunsch_aligner')
   s.add_dependency('nokogiri')
   s.add_dependency('outcome')
