@@ -89,6 +89,7 @@ class Repositext
                  :required => true,
                  :desc => 'Specifies which Rtfile to use. Defaults to the closest Rtfile found in the directory hierarchy.'
     class_option :'skip-git-up-to-date-check',
+                 :aliases => "-g",
                  :type => :boolean,
                  :default => false,
                  :desc => 'If true, skips the check to make sure that the local repo is up-to-date with origin/master.'
