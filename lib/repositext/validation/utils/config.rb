@@ -90,7 +90,7 @@ class Repositext
         0x200A, # hair space
         0x200B, # discretionary line break (zero width space)
         0x200C, # zero width nonjoiner
-        0x200D, # zero width joiner
+      # 0x200D, # zero width joiner (used in some indian languages)
         0x200E, # left-to-right mark
         0x200F, # right-to-left mark
       # 0x2011 nonbreaking hyphen
