@@ -209,6 +209,32 @@ class Repositext
         Repositext::Validation::ParagraphStyleConsistency.new(file_specs, validation_options).run
       end
 
+      def validate_pdf_export(options)
+        options['report_file'] ||= File.join(
+          config.compute_base_dir(:reports_dir),
+          'validate_pdf_export.txt'
+        )
+        reset_validation_report(options, 'validate_pdf_export')
+        input_base_dir = config.compute_base_dir(options['base-dir'] || :pdf_export_dir)
+        input_file_selector = config.compute_file_selector(options['file-selector'] || :all_files)
+        file_specs = config.compute_validation_file_specs(
+          primary: [input_base_dir, input_file_selector, :pdf_extension], # for reporting only
+          exported_pdfs: [input_base_dir, input_file_selector, :pdf_extension],
+        )
+        # Spawn jruby process with extract_text_from_pdf_service
+        begin
+          extract_text_from_pdf_service = Repositext::Services::ExtractTextFromPdf.new
+          extract_text_from_pdf_service.start
+          validation_options = {
+            'repository' => repository,
+            'extract_text_from_pdf_service' => extract_text_from_pdf_service
+          }.merge(options)
+          Repositext::Validation::PdfExport.new(file_specs, validation_options).run
+        ensure
+          extract_text_from_pdf_service.stop
+        end
+      end
+
       def validate_rtfile(options)
         Repositext::Validation::Rtfile.new(
           config.compute_base_dir(options['base-dir'] || :rtfile_dir) + 'Rtfile',

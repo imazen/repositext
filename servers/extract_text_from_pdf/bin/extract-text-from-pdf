@@ -1,0 +1,105 @@
+#!/usr/bin/env ruby
+
+=begin
+
+This is a simple server process which extracts the plain text contents of
+a PDF file at path_to_pdf.
+
+Send it a command on a TCP socket at `port`:
+
+    "EXTRACT_TEXT /path/to/file.pdf"
+
+and it will return the plain text as string on the same connection, followed by EOF.
+
+Send "TERMINATE" to kill this server process.
+
+Send "PING" to test if the server is listening.
+
+OPTIMIZE: Currently we establish a new connection for every PDF file, and we
+don't have advanced concurrency. Let's see how well this works.
+
+Call like so:
+
+    ./bin/extract-text-from-pdf --port 1206
+
+=end
+
+require 'java'
+require 'socket'
+require 'pdfbox_text_extraction'
+
+if ARGV[0] != '--port' || (port = ARGV[1]).nil?
+  raise "Required argument --port not given"
+end
+
+# JRuby uses Java's socket implementation, and it's different from MRI's
+
+socket = ServerSocket.new(Socket::AF_INET, Socket::SOCK_STREAM, 0)
+sockaddr = ServerSocket.pack_sockaddr_in(port.to_i, "127.0.0.1")
+socket.bind(sockaddr, 5)
+# no call to listen...
+# socket.listen(5)
+
+loop {
+  readable, _, _ = IO.select([socket])
+  readable.each { |r|
+    begin
+      connection, addr = r.accept_nonblock
+    rescue IO::WaitReadable
+      next
+    end
+
+    request = connection.read
+    command, path_to_pdf = request.split
+
+    # Process the request
+    case command
+    when 'EXTRACT_TEXT'
+      connection.write(
+        PdfboxTextExtraction.run(
+          path_to_pdf,
+          {
+            crop_x: 0, # crop area top left corner x-coordinate
+            crop_y: 1.0, # crop area top left corner y-coordinate
+            crop_width: 8.5, # crop area width
+            crop_height: 9.4, # crop area height
+          }
+        )
+      )
+    when 'PING'
+      connection.write('PONG')
+    when 'TERMINATE'
+      exit
+    else
+      connection.write("Unhandled request: #{ request.inspect }")
+    end
+
+    # Close this connection (sending EOF).
+    connection.close
+  }
+}
+
+# =======================================================
+
+# This is what we'd do in MRI
+
+# # Establish a server listening on port
+# ServerSocket.tcp_server_loop(port.to_i) do |connection|
+
+#   # Get the client's request
+#   request = connection.read
+#   command, path_to_pdf = request.split
+
+#   # Process the request
+#   case command
+#   when 'EXTRACT_TEXT'
+#     connection.write(PdfboxTextExtraction.run(path_to_pdf))
+#   when 'TERMINATE'
+#     exit
+#   else
+#     connection.write("Unhandled request: #{ request.inspect }")
+#   end
+
+#   # Close this connection (sending EOF).
+#   connection.close
+# end

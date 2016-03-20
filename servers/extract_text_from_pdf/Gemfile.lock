@@ -1,0 +1,13 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    pdfbox_text_extraction (1.0.2)
+
+PLATFORMS
+  java
+
+DEPENDENCIES
+  pdfbox_text_extraction
+
+BUNDLED WITH
+   1.11.2
