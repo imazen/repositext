@@ -937,11 +937,12 @@ class Repositext
 
       # Generates a list of all subtitle operations for the given file set and
       # git commits.
-      # from_sha1 = '39caa44953e06c07f7e6595c483587143317d41f' # Jan 14, 2016
-      # #to_sha1 = '25f7e9304b22e6bcef8be3675ea7bfc5d4232010' # Nov. 25, 2015
-      # #to_sha1 = '039d79e13d5670af5c810219a946c380f4d1cbc1' # Aug. 3, 2015
+      # from_sha1 = 'b5064a949b4681cb9673c53ce1867de68817635b' # Jan 25, 2016 (the-table-v4)
+      # to_sha1 = 'c94b551257529068868799bf01a512a46bed1273' # March 1, 2016 (before restructure)
+      # to_sha1 = '25f7e9304b22e6bcef8be3675ea7bfc5d4232010' # Nov. 25, 2015
+      # to_sha1 = '039d79e13d5670af5c810219a946c380f4d1cbc1' # Aug. 3, 2015
       # to_sha1 = '3bc45ca672735158fca0b8516d26910d55c8b127' # May 2015 (for iOS mapping file)
-      # rt report subtitle_operations --skip-git-up-to-date-check=true --from-commit="39caa44953e06c07f7e6595c483587143317d41f" --to-commit="3bc45ca672735158fca0b8516d26910d55c8b127"
+      # rt sermons report subtitle_operations --skip-git-up-to-date-check=true --from-commit="b5064a949b4681cb9673c53ce1867de68817635b" --to-commit="c94b551257529068868799bf01a512a46bed1273"
       # Output format:
       #     {
       #       "comments": "productId: 62-0211",

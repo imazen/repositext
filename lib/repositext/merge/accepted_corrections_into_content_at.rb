@@ -26,7 +26,7 @@ class Repositext
     # opens each affected location in the user's configured text editor. The human
     # editor can apply the correction and save it manually.
     #
-    # Eeach of the two stages calls `.merge_corrections_into_content_at` with the
+    # Each of the two stages calls `.merge_corrections_into_content_at` with the
     # desired strategy (:auto or :manual). This method keeps track of the corrected
     # content AT. Then it iterates over all corrections and takes suitable action. It
     # returns the corrected content AT. It calls `.compute_merge_action` to
