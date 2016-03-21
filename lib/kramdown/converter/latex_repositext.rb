@@ -123,7 +123,7 @@ module Kramdown
           l_title = l_title.gsub(
             /(?<=\\textsuperscript\{)([^\}]+)(?=\})/, "\\textscale{0.7}{" + '\1}'
           )
-          "\\begin{RtTitle2}\n#{self.class.emulate_small_caps(l_title) }\n\\end{RtTitle2}"
+          "\\begin{RtTitle2}\n#{ l_title }\n\\end{RtTitle2}"
         when 3
           # render in RtSubTitle environment
           "\\begin{RtSubTitle}\n#{ inner(el, opts) }\n\\end{RtSubTitle}"
@@ -150,14 +150,7 @@ module Kramdown
             # render in RtIdTitle1 environment
             before << "\\begin{RtIdTitle1}\n"
             after << "\n\\end{RtIdTitle1}"
-            # emulate small caps
             inner_text = inner(el, opts)
-            # During transition where some titles contain {: .smcaps} class already,
-            # and others don't yet, we have to test whether we need to add
-            # smcaps manually:
-            if !inner_text.index('RtSmCapsEmulation')
-              inner_text = self.class.emulate_small_caps(inner_text)
-            end
             # differentiate between primary and non-primary repos
             if !@options[:is_primary_repo]
               # add space between title and date code
