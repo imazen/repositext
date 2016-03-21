@@ -27,17 +27,22 @@ class Repositext
         filename.sub(/\.at\z/, '.subtitle_markers.csv')
       end
 
-      def kramdown_doc
-        Kramdown::Document.new(
-          contents,
+      def has_subtitles?
+        subtitles.any?
+      end
+
+      # @param options [Hash, optional]
+      def kramdown_doc(options = {})
+        options = {
           is_primary_repositext_file: is_primary_repo,
           input: 'KramdownVgr',
           line_width: 100000, # set to very large value so that each para is on a single line
-        )
+        }.merge(options)
+        Kramdown::Document.new(contents, options)
       end
 
-      def has_subtitles?
-        subtitles.any?
+      def plain_text_contents(options)
+        kramdown_doc(options).to_plain_text
       end
 
       # Returns subtitles
