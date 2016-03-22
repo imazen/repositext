@@ -32,7 +32,7 @@ Gem::Specification.new do |s|
   s.add_dependency('nokogiri')
   s.add_dependency('outcome')
   s.add_dependency('parallel')
-  s.add_dependency('pragmatic_segmenter')
+  s.add_dependency('pragmatic_segmenter', '~> 0.3.7')
   s.add_dependency('ruby-graphviz')
   s.add_dependency('rubyzip')
   s.add_dependency('rugged', '~> 0.24')

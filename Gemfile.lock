@@ -5,13 +5,6 @@ GIT
     alignment (0.2.0)
 
 GIT
-  remote: https://github.com/diasks2/pragmatic_segmenter
-  revision: cc21fed00dca15bb4a307feca503c6f438721087
-  specs:
-    pragmatic_segmenter (0.3.7)
-      unicode
-
-GIT
   remote: https://github.com/lsegal/yard.git
   revision: 884a529f8a31b324ea8edf2ffc3ed83e69d0306b
   specs:
@@ -46,7 +39,7 @@ PATH
       nokogiri
       outcome
       parallel
-      pragmatic_segmenter
+      pragmatic_segmenter (~> 0.3.7)
       ruby-graphviz
       rubyzip
       rugged (~> 0.24)
@@ -91,6 +84,8 @@ GEM
       mini_portile2 (~> 2.0.0.rc2)
     outcome (1.0.1)
     parallel (1.6.2)
+    pragmatic_segmenter (0.3.7)
+      unicode
     rake (10.4.2)
     rice (2.0.0)
     ruby-graphviz (1.2.2)
@@ -115,7 +110,6 @@ DEPENDENCIES
   kramdown!
   minitest
   minitest-spec-expect
-  pragmatic_segmenter!
   rake
   repositext!
   ruby-prof

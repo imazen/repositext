@@ -14,6 +14,5 @@ gem 'kramdown', path: '../kramdown'
 
 
 gem 'alignment', git: 'https://github.com/bloomrain/alignment'
-gem 'pragmatic_segmenter', git: 'https://github.com/diasks2/pragmatic_segmenter'
 
 gem 'yard', git: 'https://github.com/lsegal/yard.git'
