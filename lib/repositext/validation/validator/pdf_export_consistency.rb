@@ -196,6 +196,12 @@ class Repositext
             "?\n"
           )
 
+          # Remove gap_mark indexes on recording pdfs. Example: `{123}`
+          sanitized_text.gsub!(/\{\d+\}/, '')
+
+          # Remove record_marks. Example: `Record id: rid-60281179\n`
+          sanitized_text.gsub!(/^Record id: rid-[^\n]+\n/, '')
+
           # Append newline and return
           sanitized_text + "\n"
         end
