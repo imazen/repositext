@@ -248,6 +248,8 @@ class Repositext
             )
           ]
         end
+        # Run pdf export validation after PDFs have been exported
+        validate_pdf_export(options)
       end
 
       # Export AT files in /content to plain kramdown (no record_marks,
