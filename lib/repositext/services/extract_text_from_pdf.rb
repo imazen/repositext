@@ -35,9 +35,10 @@ class Repositext
         puts "Starting PDF text extraction server"
 
         mrr = MultiRubyRunner.new
+        server_root_path = File.expand_path("../../../../servers/extract_text_from_pdf", __FILE__)
         child_pid = mrr.execute_command_in_directory(
-          "./bin/extract-text-from-pdf --port #{ @port }",
-          File.expand_path("../../../../servers/extract_text_from_pdf", __FILE__),
+          "#{ File.join(server_root_path, "bin/extract-text-from-pdf") } --port #{ @port }",
+          server_root_path,
           { blocking: false }
         )
 
