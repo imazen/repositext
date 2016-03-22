@@ -140,33 +140,52 @@ class Repositext
       # @param [String] accepted_corrections
       # @return [Array<Hash>] a hash describing the corrections
       def self.extract_corrections(accepted_corrections)
-        corrections = []
-        s = StringScanner.new(accepted_corrections)
-        while !s.eos? do
-          ca = {}
-          # Advance cursor up to and excluding next numbered correction
-          s.skip_until(/\n(?=\d+\.)/)
-          # capture correction number
-          correction_number = s.scan(/\d+/)
-          ca[:correction_number] = correction_number  if correction_number
-          # capture remainder of numbered correction's first line
-          correction_location = s.scan(/\.[^\n]+/)
-          if correction_location
-            # extract paragraph number
-            ca[:paragraph_number] = correction_location.match(/paragraphs?\s+(\d+)/i)[1].to_s
-            # extract reads
-            s.skip_until(/\nreads:\s+/i) # advance up to and including reads: marker
-            ca[:before] = s.scan(/.+?(?=\nbecomes:)/im).to_s.strip # fetch everything up to "Becomes:"
-            # extract becomes
-            s.skip_until(/\nbecomes:\s+/i) # advance up to and including becomes: marker
-            ca[:after] = s.scan(/.+?(?=(\n{2,}\d+\.|\s+\z))/m).to_s.strip # fetch up to next correction number, or end of document
-          else
-            # No more corrections found
-            s.terminate
+        editor_initials = %w[JSR NCH RMM]
+        segment_start_regexes = [
+          { key: :first_line, regex: /(?=^\d+\.)/ }, # first line, starting with correction number
+          { key: :before, regex: /^Reads:/ }, # `Reads:` segment
+          { key: :after, regex: /^Becomes:/ }, # `Becomes:` segment
+          { key: :submitted, regex: /^Submitted:/ }, # `Submitted:` segment
+          { key: :no_change, regex: /^ASREADS/ }, # `ASREADS:` segment
+          { key: :translator_note, regex: /^TRN:/ }, # Translator notes
+        ] + editor_initials.map { |e| { key: "#{ e }_note".downcase.to_sym, regex: /^#{ e }:/ } } # editor notes
+        # Each segment ends at beginning of next segment, or at end of string
+        segment_end_regex = Regexp.new(
+          (segment_start_regexes.map{ |e| e[:regex] } + [/\z/]).join('|')
+        )
+        # Remove preamble. We want corrections only
+        corrections_only = accepted_corrections.sub(/.*?(?=^\d+\.)/m, '')
+        individual_corrections = corrections_only.split(/(?=^\d+\.)/)
+
+        # Return array of correction attributes
+        individual_corrections.map { |correction_text|
+
+          c_attrs = {}
+          s = StringScanner.new(correction_text)
+          segment_start_regexes.each do |e|
+            segment_key = e[:key]
+            segment_start_regex = e[:regex]
+            s.reset
+            if s.skip_until(segment_start_regex) # advance up to and including segment start marker
+              # fetch everything up to next segment start
+              c_attrs[segment_key] = s.scan(/.+?(?=#{ segment_end_regex })/m).to_s.strip
+            end
           end
-          corrections << ca  if !ca.empty?
-        end
-        corrections
+
+          # extract correction number
+          c_attrs[:correction_number] = c_attrs[:first_line].match(/^\d+/)[0].to_s
+          c_attrs[:paragraph_number] = c_attrs[:first_line].match(/paragraphs?\s+(\d+)/i)[1].to_s
+
+          # Handle :no_change vs. :after
+          if c_attrs[:no_change]
+            # We found `ASREADS`, change attrs so that no change will be applied
+            c_attrs[:no_change] = true
+            # make sure `Becomes` is not present as well.
+            raise("Unexpected `Becomes`: #{ correction_text }") if c_attrs[:after]
+          end
+
+          c_attrs # Return correction attributes
+        }
       end
 
       # Validates the extracted corrections
@@ -176,11 +195,15 @@ class Repositext
         with_missing_attrs = []
         corrections.each { |e|
           has_missing_attrs = [
-            :correction_number,
-            :paragraph_number,
-            :before,
-            :after,
-          ].any? { |attr| e[attr].nil? }
+            [:after, :no_change],
+            [:before],
+            [:correction_number],
+            [:first_line],
+            [:paragraph_number],
+          ].any? { |attrs_group|
+            # Are there any groups that have none of their attrs present in correction?
+            attrs_group.none? { |attr| e[attr] }
+          }
           if has_missing_attrs
             with_missing_attrs << e
           end
@@ -193,7 +216,7 @@ class Repositext
 
         # Check that before and after are not identical
         corrections.each { |e|
-          if e[:before] == e[:after]
+          if !e[:no_change] && e[:before] == e[:after]
             raise InvalidCorrectionAttributes.new(
               "Identical reads and becomes: #{ e.inspect }"
             )
@@ -250,6 +273,8 @@ class Repositext
       # @param [String] relevant_paragraphs
       # @return [Array] with the merge action and an optional specifier
       def self.compute_merge_action(strategy, correction, relevant_paragraphs)
+        return [:do_nothing]  if correction[:no_change]
+
         # count the various matches
         exact_before_matches_count = relevant_paragraphs.scan(correction[:before]).length
         exact_after_matches_count = relevant_paragraphs.scan(correction[:after]).length

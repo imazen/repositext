@@ -82,6 +82,12 @@ class Repositext
             [:do_nothing],
           ],
           [
+            :auto,
+            { :before => '_', :no_change => true },
+            "before word1 word2 after",
+            [:do_nothing],
+          ],
+          [
             :manual,
             { :before => 'no match', :after => 'word1 word2' },
             "before word1 word2 after",
@@ -129,35 +135,182 @@ class Repositext
 
       describe 'extract_corrections' do
 
-        let(:corrections_to_extract){
-          %(
-1. Page 7, Paragraph 47, Line 4
-Reads: word1 word2 word3 word4 word5
-Becomes: word1 (word2) word3 word4 word5
-
-2. Page 8, Paragraphs 54-57, Line 7
-Reads: word1 word2 word3
-Becomes: word1 word2modified word3
-
-3. Page 27, Paragraph 177, Lines 6-7
-Reads: word1 word2 word3
-Becomes: word1 word2 word4added word3
-          )
-        }
-        let(:corrections_attrs){
+        [
           [
-            { correction_number: '1', paragraph_number: '47', before: "word1 word2 word3 word4 word5", after: "word1 (word2) word3 word4 word5" },
-            { correction_number: '2', paragraph_number: '54', before: "word1 word2 word3", after: "word1 word2modified word3" },
-            { correction_number: '3', paragraph_number: '177', before: "word1 word2 word3", after: "word1 word2 word4added word3" },
-          ]
-        }
+            %(
+              Simplest case: single line `Reads` and `Becomes`
 
-        it "extracts corrections" do
-          AcceptedCorrectionsIntoContentAt.extract_corrections(
-            corrections_to_extract
-          ).must_equal(corrections_attrs)
+              1. Page 7, Paragraph 47, Line 4
+              Reads: word1 word2 word3 word4 word5
+              Becomes: word1 (word2) word3 word4 word5
+
+              2. Page 8, Paragraphs 54-57, Line 7
+              Reads: word1 word2 word3
+              Becomes: word1 word2modified word3
+
+              3. Page 27, Paragraph 177, Lines 6-7
+              Reads: word1 word2 word3
+              Becomes: word1 word2 word4added word3
+            ),
+            [
+              {
+                :after=>"word1 (word2) word3 word4 word5",
+                :before=>"word1 word2 word3 word4 word5",
+                :correction_number=>"1",
+                :first_line=>"1. Page 7, Paragraph 47, Line 4",
+                :paragraph_number=>"47"
+              }, {
+                :after=>"word1 word2modified word3",
+                :before=>"word1 word2 word3",
+                :correction_number=>"2",
+                :first_line=>"2. Page 8, Paragraphs 54-57, Line 7",
+                :paragraph_number=>"54"
+              }, {
+                :after=>"word1 word2 word4added word3",
+                :before=>"word1 word2 word3",
+                :correction_number=>"3",
+                :first_line=>"3. Page 27, Paragraph 177, Lines 6-7",
+                :paragraph_number=>"177"
+              }
+            ]
+          ],
+          [
+            %(
+              Case: `Becomes` overrides `Submitted`
+
+              1. Page 7, Paragraph 47, Line 4
+              Reads: word1 word2 word3 word4 word5
+              Submitted: word1 [word2] word3 word4 word5
+              Becomes: word1 (word2) word3 word4 word5
+            ),
+            [
+              {
+                :after=>"word1 (word2) word3 word4 word5",
+                :before=>"word1 word2 word3 word4 word5",
+                :correction_number=>"1",
+                :first_line=>"1. Page 7, Paragraph 47, Line 4",
+                :paragraph_number=>"47",
+                :submitted=>"word1 [word2] word3 word4 word5",
+              }
+            ]
+          ],
+          [
+            %(
+              Case: Leave text as is
+
+              1. Page 7, Paragraph 47, Line 4
+              Reads: word1 word2 word3 word4 word5
+              Submitted: word1 [word2] word3 word4 word5
+              ASREADS
+            ),
+            [
+              {
+                :before=>"word1 word2 word3 word4 word5",
+                :correction_number=>"1",
+                :first_line=>"1. Page 7, Paragraph 47, Line 4",
+                :no_change=>true,
+                :paragraph_number=>"47",
+                :submitted=>"word1 [word2] word3 word4 word5",
+              }
+            ]
+          ],
+          [
+            %(
+              Case: Translator notes
+
+              1. Page 7, Paragraph 47, Line 4
+              Reads: word1 word2 word3 word4 word5
+              Becomes: word1 (word2) word3 word4 word5
+              TRN: This is a translator note.
+
+            ),
+            [
+              {
+                :after=>"word1 (word2) word3 word4 word5",
+                :before=>"word1 word2 word3 word4 word5",
+                :correction_number=>"1",
+                :first_line=>"1. Page 7, Paragraph 47, Line 4",
+                :paragraph_number=>"47",
+                :translator_note=>"This is a translator note."
+              }
+            ]
+          ],
+          [
+            %(
+              Case: Editor notes
+
+              1. Page 7, Paragraph 47, Line 4
+              Reads: word1 word2 word3 word4 word5
+              Becomes: word1 (word2) word3 word4 word5
+              NCH: This is an editor note.
+
+            ),
+            [
+              {
+                :after=>"word1 (word2) word3 word4 word5",
+                :before=>"word1 word2 word3 word4 word5",
+                :correction_number=>"1",
+                :first_line=>"1. Page 7, Paragraph 47, Line 4",
+                :paragraph_number=>"47",
+                :nch_note=>"This is an editor note."
+              }
+            ]
+          ],
+          [
+            %(
+              Case: Multi line content
+
+              1. Page 7, Paragraph 47, Line 4
+              Reads: para1 word1 word2 word3 word4 word5
+              {: .normal}
+
+              para2 word1 word2 word3
+              {: .normal}
+              Becomes: para1 word1 (word2) word3 word4 word5
+              {: .normal}
+
+              para2 word1 word2 word3
+              {: .normal}
+            ),
+            [
+              {
+                :after=>"para1 word1 (word2) word3 word4 word5\n{: .normal}\n\npara2 word1 word2 word3\n{: .normal}",
+                :before=>"para1 word1 word2 word3 word4 word5\n{: .normal}\n\npara2 word1 word2 word3\n{: .normal}",
+                :correction_number=>"1",
+                :first_line=>"1. Page 7, Paragraph 47, Line 4",
+                :paragraph_number=>"47",
+              }
+            ]
+          ],
+          [
+            %(
+              Case: Different order
+
+              1. Page 7, Paragraph 47, Line 4
+              TRN: A translator note.
+              Becomes: word1 (word2) word3 word4 word5
+              NCH: An editor note.
+              Reads: word1 word2 word3 word4 word5
+            ),
+            [
+              {
+                :after=>"word1 (word2) word3 word4 word5",
+                :before=>"word1 word2 word3 word4 word5",
+                :correction_number=>"1",
+                :first_line=>"1. Page 7, Paragraph 47, Line 4",
+                :paragraph_number=>"47",
+                :nch_note=>"An editor note.",
+                :translator_note=>"A translator note."
+              }
+            ]
+          ],
+        ].each do |(test_string, xpect)|
+          it "extracts correct attrs" do
+            AcceptedCorrectionsIntoContentAt.extract_corrections(
+              test_string.gsub('              ', '') # remove leading spaces
+            ).must_equal(xpect)
+          end
         end
-
       end
 
       describe 'extract_relevant_paragraphs' do
@@ -304,30 +457,83 @@ Becomes: word1 word2 word4added word3
       describe 'validate_corrections' do
         [
           [
+            [
+              {
+                :after => 'value_a',
+                :before => 'value_b',
+                :correction_number => 'value',
+                :first_line => 'value',
+                :paragraph_number => 'value',
+              }
+            ],
+            nil,
+          ],
+
+          [
+            [
+              {
+                :before => 'value_b',
+                :no_change => true,
+                :correction_number => 'value',
+                :first_line => 'value',
+                :paragraph_number => 'value',
+              }
+            ],
+            nil,
+          ],
+
+          [
+            [
+              {
+                :after => 'va',
+                :before => 'vb',
+                :correction_number => '1',
+                :first_line => 'value',
+                :paragraph_number => 'v',
+              }, {
+                :after => 'va',
+                :before => 'vb',
+                :correction_number => '2',
+                :first_line => 'value',
+                :paragraph_number => 'v',
+              },
+            ],
+            nil,
+          ],
+
+          [
             [{}],
             AcceptedCorrectionsIntoContentAt::InvalidCorrectionAttributes,
           ],
-          [
-            [{ :correction_number => 'value', :paragraph_number => 'value', :line_number => 'value', :before => 'value_b', :after => 'value_a' }],
-            nil,
-          ],
+
           [
             [
-              { :correction_number => '1', :paragraph_number => 'v', :line_number => 'v', :before => 'vb', :after => 'va' },
-              { :correction_number => '2', :paragraph_number => 'v', :line_number => 'v', :before => 'vb', :after => 'va' },
-            ],
-            nil,
-          ],
-          [
-            [
-              { :correction_number => '1', :paragraph_number => 'v', :line_number => 'v', :before => 'vb', :after => 'va' },
-              { :correction_number => '3', :paragraph_number => 'v', :line_number => 'v', :before => 'vb', :after => 'va' },
+              {
+                :after => 'va',
+                :before => 'vb',
+                :correction_number => '1',
+                :first_line => 'value',
+                :paragraph_number => 'v',
+              }, {
+                :after => 'va',
+                :before => 'vb',
+                :correction_number => '3',
+                :first_line => 'value',
+                :paragraph_number => 'v',
+              },
             ],
             AcceptedCorrectionsIntoContentAt::InvalidCorrectionNumber,
           ],
+
           [
             [
-              { :correction_number => '1', :paragraph_number => 'v', :line_number => 'v', :before => 'identical', :after => 'identical' },
+              {
+                :after => 'identical',
+                :before => 'identical',
+                :correction_number => '1',
+                :first_line => 'v',
+                :paragraph_number => 'v',
+              },
             ],
             AcceptedCorrectionsIntoContentAt::InvalidCorrectionAttributes,
           ],
