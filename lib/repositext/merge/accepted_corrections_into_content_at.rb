@@ -36,11 +36,11 @@ class Repositext
     # each correction. It computes three counts of matches to decide on a
     # strategy:
     #
-    # * `exact_before_matches_count`: How many times does `correction[:before]`
+    # * `exact_before_matches_count`: How many times does `correction[:reads]`
     #   match exactly with current content_at's relevant paragraphs.
-    # * `.exact_after_matches_count`: How many times does `correction[:after]`
+    # * `.exact_after_matches_count`: How many times does `correction[:becomes]`
     #   match exactly with current content_at's relevant paragraphs.
-    # * `.fuzzy_after_matches_count`: How many times does `correction[:after]`
+    # * `.fuzzy_after_matches_count`: How many times does `correction[:becomes]`
     #   match with content at's relevant paragraphs after all gap_marks and
     #   subtitle_marks have been removed from both.
     #
@@ -61,10 +61,6 @@ class Repositext
     #
     class AcceptedCorrectionsIntoContentAt
 
-      class InvalidAcceptedCorrectionsFile < StandardError; end
-      class InvalidCorrectionAttributes < StandardError; end
-      class InvalidCorrectionNumber < StandardError; end
-
       # Auto-merges accepted_corrections into content_at in unambiguous corrections
       # that can be applied automatically.
       # @param accepted_corrections [String]
@@ -72,10 +68,7 @@ class Repositext
       # @param content_at_filename [String]
       # @return [Outcome] the merged document is returned as #result if successful.
       def self.merge_auto(accepted_corrections, content_at, content_at_filename)
-        sanitized_corrections = sanitize_line_breaks(accepted_corrections)
-        validate_accepted_corrections_file(sanitized_corrections)
-        corrections = extract_corrections(sanitized_corrections)
-        validate_corrections(corrections)
+        corrections = extract_corrections(accepted_corrections)
         outcome = merge_corrections_into_content_at(:auto, corrections, content_at, content_at_filename)
       end
 
@@ -86,150 +79,16 @@ class Repositext
       # @param content_at_filename [String]
       # @return [Outcome] the merged document is returned as #result if successful.
       def self.merge_manually(accepted_corrections, content_at, content_at_filename)
-        sanitized_corrections = sanitize_line_breaks(accepted_corrections)
-        corrections = extract_corrections(sanitized_corrections)
-        validate_corrections(corrections)
+        corrections = extract_corrections(accepted_corrections)
         outcome = merge_corrections_into_content_at(:manual, corrections, content_at, content_at_filename)
       end
 
     protected
 
-      # Replaces all \r with \n
-      def self.sanitize_line_breaks(txt)
-        txt.gsub("\r", "\n")
-      end
-
-      # Validates the contents of the accepted_corrections file before it attempts
-      # any parsing.
-      # @param accepted_corrections [String]
-      def self.validate_accepted_corrections_file(accepted_corrections)
-        # Validate that no invalid characters are in correction file
-        # NOTE: straight double quotes are allowed inside kramdown IALs, so we
-        # convert them to a placeholder string ('<sdq>') for validation purposes.
-        txt = accepted_corrections.gsub(/(?<=\{)[^\{\}]*(?=\})/) { |inside_ial|
-          inside_ial.gsub(/"/, '<sdq>')
-        }
-
-        invalid_chars = []
-        [
-          [/–/, 'EN DASH'],
-          [/"/, 'Straight double quote'],
-          [/'/, 'Straight single quote'],
-          [/\r/, 'Carriage return'],
-        ].each do |(regex, description)|
-          s = StringScanner.new(txt)
-          while !s.eos? do
-            inv_char = s.scan_until(/.{,5}#{ regex }/) # match up to 5 chars before invalid char for reporting context
-            if inv_char
-              previous_text = txt[0..(s.pos - 1)]
-              line_num = previous_text.count("\n") + 1
-              context = s.matched[(-[10, s.matched.length].min)..-1] + s.rest[0,10]
-              invalid_chars << " - #{ description } on line #{ line_num }: #{ context.inspect }"
-            else
-              s.terminate
-            end
-          end
-        end
-        if invalid_chars.any?
-          msg = ["Invalid characters:"]
-          msg += invalid_chars
-          raise InvalidAcceptedCorrectionsFile.new(msg.join("\n"))
-        end
-      end
-
       # @param [String] accepted_corrections
       # @return [Array<Hash>] a hash describing the corrections
       def self.extract_corrections(accepted_corrections)
-        editor_initials = %w[JSR NCH RMM]
-        segment_start_regexes = [
-          { key: :first_line, regex: /(?=^\d+\.)/ }, # first line, starting with correction number
-          { key: :before, regex: /^Reads:/ }, # `Reads:` segment
-          { key: :after, regex: /^Becomes:/ }, # `Becomes:` segment
-          { key: :submitted, regex: /^Submitted:/ }, # `Submitted:` segment
-          { key: :no_change, regex: /^ASREADS/ }, # `ASREADS:` segment
-          { key: :translator_note, regex: /^TRN:/ }, # Translator notes
-        ] + editor_initials.map { |e| { key: "#{ e }_note".downcase.to_sym, regex: /^#{ e }:/ } } # editor notes
-        # Each segment ends at beginning of next segment, or at end of string
-        segment_end_regex = Regexp.new(
-          (segment_start_regexes.map{ |e| e[:regex] } + [/\z/]).join('|')
-        )
-        # Remove preamble. We want corrections only
-        corrections_only = accepted_corrections.sub(/.*?(?=^\d+\.)/m, '')
-        individual_corrections = corrections_only.split(/(?=^\d+\.)/)
-
-        # Return array of correction attributes
-        individual_corrections.map { |correction_text|
-
-          c_attrs = {}
-          s = StringScanner.new(correction_text)
-          segment_start_regexes.each do |e|
-            segment_key = e[:key]
-            segment_start_regex = e[:regex]
-            s.reset
-            if s.skip_until(segment_start_regex) # advance up to and including segment start marker
-              # fetch everything up to next segment start
-              c_attrs[segment_key] = s.scan(/.+?(?=#{ segment_end_regex })/m).to_s.strip
-            end
-          end
-
-          # extract correction number
-          c_attrs[:correction_number] = c_attrs[:first_line].match(/^\d+/)[0].to_s
-          c_attrs[:paragraph_number] = c_attrs[:first_line].match(/paragraphs?\s+(\d+)/i)[1].to_s
-
-          # Handle :no_change vs. :after
-          if c_attrs[:no_change]
-            # We found `ASREADS`, change attrs so that no change will be applied
-            c_attrs[:no_change] = true
-            # make sure `Becomes` is not present as well.
-            raise("Unexpected `Becomes`: #{ correction_text }") if c_attrs[:after]
-          end
-
-          c_attrs # Return correction attributes
-        }
-      end
-
-      # Validates the extracted corrections
-      # @param corrections [Array<Hash>]
-      def self.validate_corrections(corrections)
-        # Validate that each correction has the required attrs
-        with_missing_attrs = []
-        corrections.each { |e|
-          has_missing_attrs = [
-            [:after, :no_change],
-            [:before],
-            [:correction_number],
-            [:first_line],
-            [:paragraph_number],
-          ].any? { |attrs_group|
-            # Are there any groups that have none of their attrs present in correction?
-            attrs_group.none? { |attr| e[attr] }
-          }
-          if has_missing_attrs
-            with_missing_attrs << e
-          end
-        }
-        if with_missing_attrs.any?
-          raise InvalidCorrectionAttributes.new(
-            "Not all attrs are present: #{ with_missing_attrs.inspect }"
-          )
-        end
-
-        # Check that before and after are not identical
-        corrections.each { |e|
-          if !e[:no_change] && e[:before] == e[:after]
-            raise InvalidCorrectionAttributes.new(
-              "Identical reads and becomes: #{ e.inspect }"
-            )
-          end
-        }
-
-        # Validate that we get consecutive correction_numbers
-        correction_numbers = corrections.map { |e| e[:correction_number].to_i }.sort
-        correction_numbers.each_cons(2) { |x,y|
-          if y != x + 1
-            raise InvalidCorrectionNumber.new("Correction numbers are not consecutive: #{ [x,y].inspect }")
-          end
-        }
+        Repositext::Process::Extract::SubmittedSpotCorrections.extract(accepted_corrections)
       end
 
       # Merges corrections into content_at
@@ -276,8 +135,8 @@ class Repositext
         return [:do_nothing]  if correction[:no_change]
 
         # count the various matches
-        exact_before_matches_count = relevant_paragraphs.scan(correction[:before]).length
-        exact_after_matches_count = relevant_paragraphs.scan(correction[:after]).length
+        exact_before_matches_count = relevant_paragraphs.scan(correction[:reads]).length
+        exact_after_matches_count = relevant_paragraphs.scan(correction[:becomes]).length
         fuzzy_after_matches_count = compute_fuzzy_after_matches_count(correction, relevant_paragraphs)
         # First decision criterion must be strategy since we have to keep automated
         # changes separate from manual ones (one operates on string in memory,
@@ -299,17 +158,17 @@ class Repositext
           end
         when :manual
           if (0 == exact_before_matches_count)
-            # No exact :before matches found
+            # No exact :reads matches found
             if 1 == exact_after_matches_count
               [:report_already_applied, 'Exact']
             elsif 1 == fuzzy_after_matches_count
               [:report_already_applied, '~Fuzzy (ignoring gap_marks and subtitle_marks)']
             else
-              # Either none or multiple :after matches
+              # Either none or multiple :becomes matches
               [:apply_manually, :no_match_found]
             end
           else
-            # Multiple exact :before matches found
+            # Multiple exact :reads matches found
             [:apply_manually, :multiple_matches_found]
           end
         else
@@ -327,13 +186,13 @@ class Repositext
         $stderr.puts l
       end
 
-      # Returns the number of fuzzy :after matches in txt
+      # Returns the number of fuzzy :becomes matches in txt
       # @param [Hash] correction
       # @param [String] txt the text in relevant_paragraphs
       # @return [Integer]
       def self.compute_fuzzy_after_matches_count(correction, txt)
         # Try fuzzy match: Remove gap_marks and subtitle_marks and see if that was applied already
-        fuzzy_correction_after = correction[:after].gsub(/[%@]/, '')
+        fuzzy_correction_after = correction[:becomes].gsub(/[%@]/, '')
         fuzzy_txt = txt.gsub(/[%@]/, '')
         fuzzy_txt.scan(fuzzy_correction_after).size
       end
@@ -349,12 +208,12 @@ class Repositext
         when :no_match_found
           [
             "    ##{ correction[:correction_number] }: No match found, apply correction manually:",
-            "      Could not find exact phrase        '#{ correction[:before] }'",
+            "      Could not find exact phrase        '#{ correction[:reads] }'",
           ]
         when :multiple_matches_found
           [
             "    ##{ correction[:correction_number] }: Multiple matches found, apply correction manually:",
-            "      Found multiple instances of phrase '#{ correction[:before] }'",
+            "      Found multiple instances of phrase '#{ correction[:reads] }'",
           ]
         else
           raise "Invalid reason: #{ reason.inspect }"
@@ -366,10 +225,10 @@ class Repositext
           content_at_filename,
           [
             instructions,
-            "      Replace with:                      '#{ correction[:after] }'",
+            "      Replace with:                      '#{ correction[:becomes] }'",
             "      in paragraph #{ correction[:paragraph_number] }",
           ].join("\n"),
-          compute_line_number_from_paragraph_number(correction[:paragraph_number], corrected_at)
+          correction[:paragraph_start_line_number]
         )
       end
 
@@ -380,7 +239,7 @@ class Repositext
       # @param [Array] report_lines collector for report output
       def self.replace_perfect_match!(correction, corrected_at, relevant_paragraphs, report_lines)
         # First apply correction to relevant paragraphs
-        corrected_relevant_paragraphs = relevant_paragraphs.gsub(correction[:before], correction[:after])
+        corrected_relevant_paragraphs = relevant_paragraphs.gsub(correction[:reads], correction[:becomes])
         # Then apply corrected_relevant_paragraphs to corrected_at
         exact_matches_count = corrected_at.scan(relevant_paragraphs).size
         if 1 == exact_matches_count
@@ -395,94 +254,11 @@ class Repositext
         end
       end
 
-      # Given txt and paragraph_number, returns the line at which paragraph_number starts
-      # @param [Integer, String] paragraph_number
-      # @param [String] txt
-      # @return [Integer] the line number (1-based)
-      def self.compute_line_number_from_paragraph_number(paragraph_number, txt)
-        regex = /
-          .*? # match anything non greedily
-          #{ dynamic_paragraph_number_regex(paragraph_number, txt) } # match paragraph number span
-        /xm # multiline
-        text_before_paragraph = txt.match(regex).to_s
-        line_number = text_before_paragraph.count("\n") + 1
-      end
-
       # Opens filename in sublime and places cursor at line and col
       def self.open_in_sublime(filename, console_instructions, line=nil, col=nil)
         location_spec = [filename, line, col].compact.map { |e| e.to_s.strip }.join(':')
         $stderr.puts console_instructions
         `subl --wait --new-window #{ location_spec }`
-      end
-
-      # Dynamically generates a regex that matches pararaph_number
-      # @param [Integer, String] paragraph_number
-      # @param [String] txt the containing text, used to determine the first paragraph number (may not be 1)
-      def self.dynamic_paragraph_number_regex(paragraph_number, txt)
-        if compute_first_para_num(txt) == paragraph_number.to_s
-          # First paragraph doesn't have a number, match beginning of document
-          /\A/
-        else
-          /\n[@%]{0,2}\*#{ paragraph_number.to_s.strip }\*\{\:\s\.pn\}/
-        end
-      end
-
-      PARA_NUM_REGEX = /^[@%]{0,2}\*(\d+[a-z]?)\*\{\: \.pn\}/
-
-      # Returns the number of the first paragraph. Normally '1', however there
-      # are exceptions.
-      # @param [String] txt
-      # @return [String] the first paragraph number as string
-      def self.compute_first_para_num(txt)
-        fpn = (txt.match(PARA_NUM_REGEX)[1].to_s.to_i - 1).to_s
-        fpn = '1'  if '0' == fpn # in case first para has a number
-        fpn
-      end
-
-      # Returns the number of the last paragraph.
-      # @param [String] txt
-      # @return [String] the last paragraph number as string
-      def self.compute_last_para_num(txt)
-        # scan returns an array of arrays. We want the first entry of the last array
-        txt.scan(PARA_NUM_REGEX).last.first
-      end
-
-      # Extracts relevant paragraphs from txt, based on paragraph_number
-      # @param [String] txt the complete text to extract relevant paragraphs from
-      # @param [Hash] correction attrs for a single correction
-      # @return [String] the text of the relevant paragraphs
-      def self.extract_relevant_paragraphs(txt, correction)
-        # Check if correction was already applied to the relevant paragraph
-        # Extract relevant paragraph
-        or_match_on_eagle_or_end_of_string = if compute_first_para_num(txt) == correction[:paragraph_number].to_s
-          # Don't stop at eagle when looking for paragraph 1, because it would stop at the starting eagle
-          ''
-        elsif compute_last_para_num(txt) == correction[:paragraph_number].to_s
-          # We're looking at the last paragraph, stop at eagle first, or end of string if no eagle present
-          '||\z'
-        else
-          # Stop also at eagle in case we're looking at the last paragraph that doesn't have a subsequent one
-          '|'
-        end
-        # Capture more than a single paragraph for corrections that span paragraph boundaries
-        how_many_paras_to_match = (correction[:after].scan('*{: .pn}').size) + 1
-        stop_para_number = how_many_paras_to_match.times.each.inject(
-          correction[:paragraph_number]
-        ) { |m,e| m.succ }
-        relevant_paragraphs = txt.match(
-          /
-            #{ dynamic_paragraph_number_regex(correction[:paragraph_number], txt) } # match paragraph number span
-            .*? # match anything nongreedily
-            (?=(
-              #{ dynamic_paragraph_number_regex(stop_para_number, txt) } # stop before next paragraph number
-              #{ or_match_on_eagle_or_end_of_string }
-            ))
-          /xm # multiline
-        ).to_s
-        if '' == relevant_paragraphs
-          raise "Could not find paragraph #{ correction[:paragraph_number] }"
-        end
-        relevant_paragraphs
       end
 
     end

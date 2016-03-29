@@ -242,6 +242,23 @@ class Repositext
         ).run
       end
 
+      def validate_spot_sheet(options)
+        options['report_file'] ||= config.compute_glob_pattern(:accepted_corrections_dir, :validation_report_file, '')
+        reset_validation_report(options, 'validate_spot_sheet_reads_consistency')
+        input_base_dir = config.compute_base_dir(options['base-dir'] || :accepted_corrections_dir)
+        input_file_selector = config.compute_file_selector(options['file-selector'] || :all_files)
+        txt_file_extension = config.compute_file_extension(options['file-extension'] || :txt_extension)
+        file_specs = config.compute_validation_file_specs(
+          primary: [input_base_dir, input_file_selector, txt_file_extension], # for reporting only
+          accepted_corrections_files: [input_base_dir, input_file_selector, txt_file_extension],
+        )
+        validation_options = {
+          'validate_or_merge' => options['validate_or_merge'] || 'validate',
+          'repository' => repository,
+        }.merge(options)
+        Repositext::Validation::SpotSheet.new(file_specs, validation_options).run
+      end
+
       def validate_subtitle_mark_no_significant_changes(options)
         options['report_file'] ||= config.compute_glob_pattern(:content_dir, :validation_report_file, '')
         reset_validation_report(options, 'validate_subtitle_mark_no_significant_changes')

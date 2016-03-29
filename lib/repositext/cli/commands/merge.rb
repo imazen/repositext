@@ -14,6 +14,9 @@ class Repositext
       # and they don't overwrite any manual corrections prior to when the script
       # stores auto corrections to disk.
       def merge_accepted_corrections_into_content_at(options)
+        # First validate the spot sheets and cancel process if errors are found.
+        validate_spot_sheet(options.merge('validate_or_merge' => 'merge'))
+
         accepted_corrections_base_dir = config.compute_base_dir(
           options['base-dir'] ||
           options['base-dir-1'] ||
