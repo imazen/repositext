@@ -23,16 +23,6 @@ class Repositext
 
       end
 
-      describe '#corresponding_content_at_filename' do
-
-        it 'computes default filename' do
-          default_rfile.corresponding_content_at_filename.must_match(
-            /rt\-english\/content\/62\/eng62\-0101e_1234\.at\z/
-          )
-        end
-
-      end
-
     end
 
   end

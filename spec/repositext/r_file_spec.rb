@@ -120,6 +120,20 @@ class Repositext
       end
     end
 
+    describe '#corresponding_content_at_filename' do
+
+      it 'computes default filename' do
+        filename = '/docx_import/62/eng62-0101e_1234.docx'
+        path_to_repo = Repository::Test.create!('rt-english').first
+        repository = Repository::Content.new(path_to_repo)
+        rfile = RFile::Binary.new(contents, language, filename, repository)
+        rfile.corresponding_content_at_filename.must_match(
+          /rt\-english\/content\/62\/eng62\-0101e_1234\.at\z/
+        )
+      end
+
+    end
+
   end
 
 end
