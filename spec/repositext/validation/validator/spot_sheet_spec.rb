@@ -36,6 +36,9 @@ class Repositext
               validator, logger, reporter = build_validator_logger_and_reporter(
                 SpotSheet,
                 FileLikeStringIO.new('_path', '_txt'),
+                nil,
+                nil,
+                { 'validate_or_merge' => 'validate' }
               )
               errors = []
               warnings = []
@@ -149,6 +152,9 @@ class Repositext
               validator, logger, reporter = build_validator_logger_and_reporter(
                 SpotSheet,
                 FileLikeStringIO.new('_path', '_txt'),
+                nil,
+                nil,
+                { 'validate_or_merge' => 'validate' }
               )
               errors = []
               warnings = []
@@ -285,7 +291,7 @@ class Repositext
 
         end
 
-        describe 'validate_corrections_and_content_at' do
+        describe 'validate_corrections_and_content_at (`validate`)' do
           [
             [
               {
@@ -336,6 +342,9 @@ class Repositext
               validator, logger, reporter = build_validator_logger_and_reporter(
                 SpotSheet,
                 FileLikeStringIO.new('_path', '_txt'),
+                nil,
+                nil,
+                { 'validate_or_merge' => 'validate' }
               )
               errors = []
               warnings = []
@@ -354,34 +363,126 @@ class Repositext
             end
           end
 
-          it "raises exception on error when part of `merge`" do
-            validator, logger, reporter = build_validator_logger_and_reporter(
-              SpotSheet,
-              FileLikeStringIO.new('_path', '_txt'),
-              nil,
-              nil,
-              { 'validate_or_merge' => 'merge' }
-            )
-            errors = []
-            warnings = []
+        end
 
-            lambda {
-              validator.send(
-                :validate_corrections_and_content_at,
-                [
-                  {
-                    :becomes => 'text after',
-                    :reads => 'text before',
-                    :correction_number => '1',
-                    :first_line => 'v',
-                    :paragraph_number => 2,
-                  }
-                ],
-                %(the heading\n\nParagraph one without para num.\n\n*2*{: .pn} para 2 with text before and another text before\n\n),
-                errors,
-                warnings
+        describe 'validate_corrections_and_content_at (`merge`)' do
+          [
+            [
+              {
+                :becomes => 'text after',
+                :reads => 'text before',
+                :correction_number => '1',
+                :first_line => 'v',
+                :paragraph_number => 2,
+              },
+              %(the heading\n\nParagraph one without para num.\n\n*2*{: .pn} para 2 with text before\n\n),
+              false,
+            ],
+            [
+              {
+                :becomes => 'text after',
+                :reads => 'text before with subtitle_mark and gap_mark diff',
+                :correction_number => '1',
+                :first_line => 'v',
+                :paragraph_number => 2,
+              },
+              %(the heading\n\nParagraph one without para num.\n\n*2*{: .pn} para 2 with text before with @subtitle_mark and %gap_mark diff\n\n),
+              true,
+            ],
+            [
+              {
+                :becomes => 'text after',
+                :reads => 'text before',
+                :correction_number => '1',
+                :first_line => 'v',
+                :paragraph_number => 2,
+              },
+              %(the heading\n\nParagraph one without para num.\n\n*2*{: .pn} para 2 with text before and another text before\n\n),
+              true,
+            ],
+            [
+              {
+                :becomes => 'text after',
+                :reads => 'non existent',
+                :correction_number => '1',
+                :first_line => 'v',
+                :paragraph_number => 2,
+              },
+              %(the heading\n\nParagraph one without para num.\n\n*2*{: .pn} para 2 without the expected text\n\n),
+              true,
+            ],
+          ].each do |correction, content_at, xpect_error|
+            it "handles #{ content_at.inspect }" do
+              validator, logger, reporter = build_validator_logger_and_reporter(
+                SpotSheet,
+                FileLikeStringIO.new('_path', '_txt'),
+                nil,
+                nil,
+                { 'validate_or_merge' => 'merge' }
               )
-            }.must_raise(SpotSheet::InvalidCorrectionAndContentAt)
+              errors = []
+              warnings = []
+
+              if xpect_error
+                lambda {
+                  validator.send(
+                    :validate_corrections_and_content_at,
+                    [correction],
+                    content_at,
+                    errors,
+                    warnings
+                  )
+                }.must_raise(SpotSheet::InvalidCorrectionAndContentAt)
+              else
+                validator.send(
+                  :validate_corrections_and_content_at,
+                  [correction],
+                  content_at,
+                  errors,
+                  warnings
+                )
+                1.must_equal(1)
+              end
+            end
+          end
+
+        end
+
+        describe '#santize_corrections_txt' do
+
+          [
+            [
+              %(should not get modified),
+              %(should not get modified),
+            ],
+            [
+              %(normalizes newlines\rnext line),
+              %(normalizes newlines\nnext line),
+            ],
+            [
+              %(converts\ttabs\nto\tspaces),
+              %(converts tabs\nto spaces),
+            ],
+            [
+              %(converts    multiple    spaces   to  single  ones),
+              %(converts multiple spaces to single ones),
+            ],
+            [
+              %(  removes\n  leading\n   whitespace\nfor each line),
+              %(removes\nleading\nwhitespace\nfor each line),
+            ],
+            [
+              %(  and now\r  all\t  together),
+              %(and now\nall together),
+            ],
+          ].each do |test_string, xpect|
+            it "handles #{ test_string.inspect }" do
+              validator, logger, reporter = build_validator_logger_and_reporter(
+                SpotSheet,
+                FileLikeStringIO.new('_path', '_txt'),
+              )
+              validator.send(:sanitize_corrections_txt,test_string).must_equal(xpect)
+            end
           end
 
         end

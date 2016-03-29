@@ -5,9 +5,9 @@ class Repositext
       # Extracts corrections from submitted text file
       class SubmittedSpotCorrections
 
-        # @param [String] accepted_corrections
+        # @param spot_corrections_file_contents [String]
         # @return [Array<Hash>] a hash describing the corrections
-        def self.extract(accepted_corrections_file_contents)
+        def self.extract(spot_corrections_file_contents)
           editor_initials = %w[JSR NCH RMM]
           segment_start_regexes = [
             { key: :first_line, regex: /(?=^\d+\.)/ }, # first line, starting with correction number
@@ -21,10 +21,8 @@ class Repositext
           segment_end_regex = Regexp.new(
             (segment_start_regexes.map{ |e| e[:regex] } + [/\z/]).join('|')
           )
-          # Replace all \r with \n
-          sanitized_corrections = accepted_corrections_file_contents.gsub("\r", "\n")
           # Remove preamble. We want corrections only
-          corrections_only = sanitized_corrections.sub(/.*?(?=^\d+\.)/m, '')
+          corrections_only = spot_corrections_file_contents.sub(/.*?(?=^\d+\.)/m, '')
 
           individual_corrections = corrections_only.split(/(?=^\d+\.)/)
 

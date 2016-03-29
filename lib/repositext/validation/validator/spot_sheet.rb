@@ -26,19 +26,23 @@ class Repositext
 
       protected
 
-        # @param accepted_corrections_file_name [String] absolute path to the corrections file
+        # @param submitted_corrections_file_name [String] absolute path to the corrections file
         # @return [Outcome]
-        def spot_sheet_valid?(accepted_corrections_file_name)
+        def spot_sheet_valid?(submitted_corrections_file_name)
           repository = @options['repository']
           language = repository.language
           accepted_corrections_file = Repositext::RFile::Text.new(
-            File.read(accepted_corrections_file_name),
+            File.read(submitted_corrections_file_name),
             language,
-            accepted_corrections_file_name,
+            submitted_corrections_file_name,
             repository
           )
-          corrections = Process::Extract::SubmittedSpotCorrections.extract(
+
+          sanitized_corrections_txt = sanitize_corrections_txt(
             accepted_corrections_file.contents
+          )
+          corrections = Process::Extract::SubmittedSpotCorrections.extract(
+            sanitized_corrections_txt
           )
           content_at = accepted_corrections_file.corresponding_content_at_contents
 
@@ -93,11 +97,14 @@ class Repositext
           if invalid_chars.any?
             loc = [@file_to_validate]
             desc = ['Contains invalid characters:'] + invalid_chars
-            if 'merge' == @options['validate_or_merge']
+            case @options['validate_or_merge']
+            when 'merge'
               # This is part of `merge` command, raise an exception if we find error
               raise(InvalidCorrectionsFile.new((loc + desc).join("\n")))
-            else
+            when 'validate'
               errors << Reportable.error(loc, desc)
+            else
+              raise "Handle this: #{ @options['validate_or_merge'].inspect }"
             end
           end
         end
@@ -109,12 +116,13 @@ class Repositext
         def validate_corrections(corrections, errors, warnings)
           # Validate that each correction has the required attrs
           required_attrs_groups = [
-            if 'merge' == @options['validate_or_merge']
-              # This is part of merge
+            case @options['validate_or_merge']
+            when 'merge'
               [:becomes, :no_change]
-            else
-              # This is just a validation
+            when 'validate'
               [:submitted]
+            else
+              raise "Handle this: #{ @options['validate_or_merge'].inspect }"
             end,
             [:reads],
             [:correction_number],
@@ -128,11 +136,14 @@ class Repositext
             })
               loc = [@file_to_validate, "Correction ##{ corr[:correction_number] }"]
               desc = ['Missing attributes', "One of `#{ mag.to_s }` is missing:", corr.inspect]
-              if 'merge' == @options['validate_or_merge']
+              case @options['validate_or_merge']
+              when 'merge'
                 # This is part of `merge` command, raise an exception if we find error
                 raise(InvalidCorrection.new((loc + desc).join("\n")))
-              else
+              when 'validate'
                 errors << Reportable.error(loc, desc)
+              else
+                raise "Handle this: #{ @options['validate_or_merge'].inspect }"
               end
             end
           }
@@ -145,11 +156,14 @@ class Repositext
                 'Identical `Reads` and (`Becomes` or `Submitted`):',
                 "`Reads`: `#{ corr[:reads].to_s }`, (`Becomes` or `Submitted`): `#{ (corr[:becomes] || corr[:submitted]).to_s }`",
               ]
-              if 'merge' == @options['validate_or_merge']
+              case @options['validate_or_merge']
+              when 'merge'
                 # This is part of `merge` command, raise an exception if we find error
                 raise(InvalidCorrection.new((loc + desc).join("\n")))
-              else
+              when 'validate'
                 errors << Reportable.error(loc, desc)
+              else
+                raise "Handle this: #{ @options['validate_or_merge'].inspect }"
               end
             end
           }
@@ -163,11 +177,14 @@ class Repositext
                 'Non consecutive correction numbers:',
                 "#{ x } was followed by #{ y }",
               ]
-              if 'merge' == @options['validate_or_merge']
+              case @options['validate_or_merge']
+              when 'merge'
                 # This is part of `merge` command, raise an exception if we find error
                 raise(InvalidCorrection.new((loc + desc).join("\n")))
-              else
+              when 'validate'
                 errors << Reportable.error(loc, desc)
+              else
+                raise "Handle this: #{ @options['validate_or_merge'].inspect }"
               end
             end
           }
@@ -215,11 +232,14 @@ class Repositext
                 'Corresponding content AT not found:',
                 "`Reads`: #{ corr_reads_txt }",
               ]
-              if 'merge' == @options['validate_or_merge']
+              case @options['validate_or_merge']
+              when 'merge'
                 # This is part of `merge` command, raise an exception if we find error
                 raise(InvalidCorrectionAndContentAt.new((loc + desc).join("\n")))
-              else
+              when 'validate'
                 errors << Reportable.error(loc, desc)
+              else
+                raise "Handle this: #{ @options['validate_or_merge'].inspect }"
               end
             else
               # Found more than one, report error
@@ -228,15 +248,31 @@ class Repositext
                 'Multiple instances of `Reads` found:',
                 "Found #{ num_reads_occurrences } instances of `#{ corr_reads_txt }`",
               ]
-              if 'merge' == @options['validate_or_merge']
+              case @options['validate_or_merge']
+              when 'merge'
                 # This is part of `merge` command, raise an exception if we find error
                 raise(InvalidCorrectionAndContentAt.new((loc + desc).join("\n")))
-              else
+              when 'validate'
                 errors << Reportable.error(loc, desc)
+              else
+                raise "Handle this: #{ @options['validate_or_merge'].inspect }"
               end
             end
 
           end
+        end
+
+        def sanitize_corrections_txt(raw_corrections_txt)
+          r = raw_corrections_txt.dup
+          # Replace all \r with \n
+          r.gsub!("\r", "\n")
+          # Convert all tabs to spaces
+          r.gsub!(/\t/, ' ')
+          # Convert multiple consecutive spaces to single space
+          r.gsub!(/ +/, ' ')
+          # Remove all leading whitespace per line
+          r.gsub!(/^ +/, '')
+          r
         end
 
       end
