@@ -4,19 +4,6 @@ class Repositext
   class Subtitle
     describe Operation do
 
-      let(:contentChangeDefaultAttrs){
-        {
-          affectedStids: [
-            {
-              stid: "1234567",
-              before: "@word3 word4 word5",
-              after: "@word3 word4",
-            },
-          ],
-          operationId: '123',
-          operationType: :contentChange,
-        }
-      }
       let(:deleteDefaultAttrs){
         {
           affectedStids: [
@@ -27,6 +14,7 @@ class Repositext
               afterStid: "4567890",
             },
           ],
+          afterStid: nil,
           operationId: '123',
           operationType: :delete,
         }
@@ -41,6 +29,7 @@ class Repositext
               afterStid: "4567890",
             },
           ],
+          afterStid: nil,
           operationId: '123',
           operationType: :insert,
         }
@@ -59,6 +48,7 @@ class Repositext
               after: nil,
             },
           ],
+          afterStid: nil,
           operationId: '123',
           operationType: :merge,
         }
@@ -77,6 +67,7 @@ class Repositext
               after: "@word2 word3 word4",
             },
           ],
+          afterStid: nil,
           operationId: '123',
           operationType: :moveLeft,
         }
@@ -95,6 +86,7 @@ class Repositext
               after: "@word4",
             },
           ],
+          afterStid: nil,
           operationId: '123',
           operationType: :moveLeft,
         }
@@ -113,6 +105,7 @@ class Repositext
               after: "@word3 word4",
             },
           ],
+          afterStid: nil,
           operationId: '123',
           operationType: :split,
         }
@@ -121,7 +114,6 @@ class Repositext
       describe '.from_hash and .to_hash (roundtrip)' do
 
         %w[
-          contentChangeDefaultAttrs
           deleteDefaultAttrs
           insertDefaultAttrs
           mergeDefaultAttrs

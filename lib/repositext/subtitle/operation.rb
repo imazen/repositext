@@ -22,8 +22,6 @@ class Repositext
       # @return [Operation]
       def self.new_from_hash(attrs)
         class_name = case attrs[:operationType].to_sym
-        when :contentChange
-          'ContentChange'
         when :delete
           'Delete'
         when :insert
