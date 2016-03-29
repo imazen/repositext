@@ -22,8 +22,8 @@ class Repositext
         default_subtitle.char_length.must_equal(72)
       end
 
-      it 'initializes contents' do
-        default_subtitle.contents.must_equal('subtitle contents')
+      it 'initializes content' do
+        default_subtitle.content.must_equal('subtitle contents')
       end
 
       it 'initializes persistent_id' do
