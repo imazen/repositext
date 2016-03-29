@@ -185,9 +185,22 @@ class Repositext
               content_at
             )
 
+            corr_reads_txt, content_at_rel_para_txt = case @options['validate_or_merge']
+            when 'merge'
+              # Leave them as is
+              [corr[:reads], content_at_relevant_paragraphs[:relevant_paragraphs]]
+            when 'validate'
+              # Remove subtitle_marks and gap_marks from both
+              [corr[:reads], content_at_relevant_paragraphs[:relevant_paragraphs]].map { |e|
+                e.gsub(/[@%]/, '')
+              }
+            else
+              raise "Handle this: #{ @options['validate_or_merge'].inspect }"
+            end
+
             # Number of `Reads` occurrences
-            num_reads_occurrences = content_at_relevant_paragraphs[:relevant_paragraphs].scan(
-              corr[:reads]
+            num_reads_occurrences = content_at_rel_para_txt.scan(
+              corr_reads_txt
             ).length
             # Validate that `reads` fragments are unambiguous in given file and paragraph.
             case num_reads_occurrences
@@ -200,7 +213,7 @@ class Repositext
               loc = [@file_to_validate, "Correction ##{ corr[:correction_number] }"]
               desc = [
                 'Corresponding content AT not found:',
-                "`Reads`: #{ corr[:reads] }",
+                "`Reads`: #{ corr_reads_txt }",
               ]
               if 'merge' == @options['validate_or_merge']
                 # This is part of `merge` command, raise an exception if we find error
@@ -213,7 +226,7 @@ class Repositext
               loc = [@file_to_validate, "Correction ##{ corr[:correction_number] }"]
               desc = [
                 'Multiple instances of `Reads` found:',
-                "Found #{ num_reads_occurrences } instances of `#{ corr[:reads] }`",
+                "Found #{ num_reads_occurrences } instances of `#{ corr_reads_txt }`",
               ]
               if 'merge' == @options['validate_or_merge']
                 # This is part of `merge` command, raise an exception if we find error

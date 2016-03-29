@@ -301,6 +301,17 @@ class Repositext
             [
               {
                 :becomes => 'text after',
+                :reads => 'text before with subtitle_mark and gap_mark diff',
+                :correction_number => '1',
+                :first_line => 'v',
+                :paragraph_number => 2,
+              },
+              %(the heading\n\nParagraph one without para num.\n\n*2*{: .pn} para 2 with text before with @subtitle_mark and %gap_mark diff\n\n),
+              [0, nil]
+            ],
+            [
+              {
+                :becomes => 'text after',
                 :reads => 'text before',
                 :correction_number => '1',
                 :first_line => 'v',
