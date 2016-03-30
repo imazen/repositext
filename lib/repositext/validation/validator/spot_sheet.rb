@@ -31,7 +31,7 @@ class Repositext
         def spot_sheet_valid?(submitted_corrections_file_name)
           repository = @options['repository']
           language = repository.language
-          accepted_corrections_file = Repositext::RFile::Text.new(
+          submitted_corrections_file = Repositext::RFile::Text.new(
             File.read(submitted_corrections_file_name),
             language,
             submitted_corrections_file_name,
@@ -39,18 +39,24 @@ class Repositext
           )
 
           sanitized_corrections_txt = sanitize_corrections_txt(
-            accepted_corrections_file.contents
+            submitted_corrections_file.contents
           )
           corrections = Process::Extract::SubmittedSpotCorrections.extract(
             sanitized_corrections_txt
           )
-          content_at = accepted_corrections_file.corresponding_content_at_contents
+          corresponding_content_at_file = submitted_corrections_file.corresponding_content_at_file
+
+          if corresponding_content_at_file.nil?
+            raise "\nCould not find corresponding content AT file: #{ submitted_corrections_file.corresponding_content_at_filename.inspect }"
+          end
+
+          content_at = corresponding_content_at_file.contents
 
           errors = []
           warnings = []
 
           validate_corrections_file(
-            accepted_corrections_file.contents, errors, warnings
+            sanitized_corrections_txt, errors, warnings
           )
           validate_corrections(
             corrections, errors, warnings
@@ -88,7 +94,7 @@ class Repositext
                 previous_text = txt[0..(s.pos - 1)]
                 line_num = previous_text.count("\n") + 1
                 context = s.matched[(-[10, s.matched.length].min)..-1] + s.rest[0,10]
-                invalid_chars << " - #{ description } on line #{ line_num }: #{ context.inspect }"
+                invalid_chars << " - #{ description } on line #{ line_num }: #{ context }"
               else
                 s.terminate
               end
