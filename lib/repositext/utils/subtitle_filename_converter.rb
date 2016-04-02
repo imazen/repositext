@@ -23,6 +23,7 @@ class Repositext
         %w[nor no],
         %w[nst nst],
         %w[por pt],
+        %w[rus ru],
         %w[sho sn],
         %w[spn es],
         %w[swa sw],
