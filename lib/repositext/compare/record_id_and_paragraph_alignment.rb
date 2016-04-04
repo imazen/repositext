@@ -239,7 +239,7 @@ class Repositext
       # @return [Float] 1.0 for identity, 0.0 for completely different, nothing in common.
       def self.compute_text_similarity(txt_1, txt_2, which_end, text_window_size, fall_back)
         words_1, words_2 = [txt_1, txt_2].map { |e|
-          e = e.downcase
+          e = e.unicode_downcase
           case fall_back
           when :remove_editors_notes
             e.gsub!(/\[[^\]]+\]/, '') # remove editors notes

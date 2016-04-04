@@ -53,7 +53,7 @@ module Kramdown
         when :text
           # capture value of all :text elements
           if convert_to_upper_case
-            [el.value.upcase, nil]
+            [el.value.unicode_upcase, nil]
           else
             [el.value, nil]
           end

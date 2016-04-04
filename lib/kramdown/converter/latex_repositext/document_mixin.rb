@@ -154,7 +154,7 @@ module Kramdown
             "\\textscale{#{ 0.909091 * size_scale_factor }}{\\textbf{\\textit{#{ t }}}}"
           else
             # regular, all caps and small font
-            r = "\\textscale{#{ 0.7 * size_scale_factor }}{#{ UnicodeUtils.upcase(escape_latex_text(header_text)) }}"
+            r = "\\textscale{#{ 0.7 * size_scale_factor }}{#{ escape_latex_text(header_text).unicode_upcase }}"
             if 'chn' == language_code_3_chars
               r = "\\textbf{#{ r }}"
             end
@@ -184,7 +184,7 @@ module Kramdown
             # The italic is neutralized because the upcase command converts
             # "\emph" => "\EMPH" which is not recognized by latex, so no italics is applied.
             # So for the time being I'll leave it as is.
-            r = "\\textscale{#{ 0.7 * size_scale_factor }}{#{ UnicodeUtils.upcase(truncated) }}"
+            r = "\\textscale{#{ 0.7 * size_scale_factor }}{#{ truncated.unicode_upcase }}"
             if 'chn' == language_code_3_chars
               r = "\\textbf{#{ r }}"
             end
@@ -321,7 +321,7 @@ module Kramdown
                 # truncated_title_plain_text. Otherwise we use what's in
                 # truncated_title_plain_text (e.g., the ellipsis)
                 char_from_ttpt = truncated_title_plain_text[plain_text_index]
-                if matching_plain_text_char.downcase == char_from_ttpt.downcase
+                if matching_plain_text_char.unicode_downcase == char_from_ttpt.unicode_downcase
                   # It's a matching letter, use capitalization from matching_plain_text_char
                   # so that we get correct small caps emulation (upper case)
                   new_title_latex << matching_plain_text_char

@@ -37,4 +37,20 @@ class String
     "#{ omission }#{ self[start.. -1] }"
   end
 
+  # Returns unicode aware lower case version of self.
+  # NOTE: We should make this method locale specific (using 2-letter lang code).
+  # See UnicodeUtils gem for details:
+  # https://github.com/lang/unicode_utils#synopsis
+  def unicode_downcase
+    UnicodeUtils.downcase(self)
+  end
+
+  # Returns unicode aware upper case version of self.
+  # NOTE: We should make this method locale specific (using 2-letter lang code).
+  # See UnicodeUtils gem for details:
+  # https://github.com/lang/unicode_utils#synopsis
+  def unicode_upcase
+    UnicodeUtils.upcase(self)
+  end
+
 end

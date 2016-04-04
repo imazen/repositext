@@ -16,7 +16,7 @@ class Repositext
             { key: :submitted, regex: /^Submitted:/ }, # `Submitted:` segment
             { key: :no_change, regex: /^ASREADS/ }, # `ASREADS:` segment
             { key: :translator_note, regex: /^TRN:/ }, # Translator notes
-          ] + editor_initials.map { |e| { key: "#{ e }_note".downcase.to_sym, regex: /^#{ e }:/ } } # editor notes
+          ] + editor_initials.map { |e| { key: "#{ e }_note".unicode_downcase.to_sym, regex: /^#{ e }:/ } } # editor notes
           # Each segment ends at beginning of next segment, or at end of string
           segment_end_regex = Regexp.new(
             (segment_start_regexes.map{ |e| e[:regex] } + [/\z/]).join('|')

@@ -20,12 +20,7 @@ module Kramdown
               [[:lower:]]+ # capture all lower case letters
             )
           /x,
-        ) { |e|
-          # NOTE: We should make #upcase locale specific (using 2-letter lang code).
-          # See UnicodeUtils gem for details:
-          # https://github.com/lang/unicode_utils#synopsis
-          %(\\RtSmCapsEmulation{#{ UnicodeUtils.upcase(e) }})
-        }
+        ) { |e| %(\\RtSmCapsEmulation{#{ e.unicode_upcase }}) }
         r
       end
 

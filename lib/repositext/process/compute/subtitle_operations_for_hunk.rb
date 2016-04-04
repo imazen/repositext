@@ -515,8 +515,8 @@ class Repositext
             asp[:subtitle_object] = st_obj
 
             # Compute various similarities between deleted and added content
-            deleted_sim_text = deleted_st[:content].gsub('@', ' ').downcase
-            added_sim_text = added_st[:content].gsub('@', ' ').downcase
+            deleted_sim_text = deleted_st[:content].gsub('@', ' ').unicode_downcase
+            added_sim_text = added_st[:content].gsub('@', ' ').unicode_downcase
             asp[:sim_left] = JaccardSimilarityComputer.compute(
               deleted_sim_text,
               added_sim_text,
@@ -571,7 +571,7 @@ class Repositext
             # Subtitle was removed
             :st_removed
           elsif al_st_pair[:sim_abs].first > 0.9 and al_st_pair[:sim_abs].last > 0.9
-            # or d_st[:content] == a_st[:content].strip.downcase ||
+            # or d_st[:content] == a_st[:content].strip.unicode_downcase ||
             :identical
           elsif al_st_pair[:sim_left].first > 0.9 and al_st_pair[:sim_left].last > 0.9
             :left_aligned

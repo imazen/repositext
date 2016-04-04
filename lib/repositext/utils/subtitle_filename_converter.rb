@@ -93,11 +93,11 @@ class Repositext
         r = case lang_code.length
         when 2
           # return corresponding 3 char code
-          mapping = LANGUAGE_CODE_MAP.detect { |e| lang_code.downcase == e.last }
+          mapping = LANGUAGE_CODE_MAP.detect { |e| lang_code.unicode_downcase == e.last }
           mapping ? mapping.first : nil
         when 3
           # return corresponding 2 char code
-          mapping = LANGUAGE_CODE_MAP.detect { |e| lang_code.downcase == e.first }
+          mapping = LANGUAGE_CODE_MAP.detect { |e| lang_code.unicode_downcase == e.first }
           mapping ? mapping.last : nil
         else
           raise(ArgumentError.new("Invalid lang_code length, must be 2 or 3 chars: #{ lang_code.inspect }"))

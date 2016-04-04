@@ -31,4 +31,26 @@ describe String do
     end
   end
 
+  describe '#unicode_downcase' do
+    [
+      ["WORD", "word"],
+      ["WÊRD", "wêrd"],
+    ].each do |test_string, xpect|
+      it "handles #{ test_string.inspect }" do
+        test_string.unicode_downcase.must_equal(xpect)
+      end
+    end
+  end
+
+  describe '#unicode_upcase' do
+    [
+      ["word", "WORD"],
+      ["wêrd", "WÊRD"],
+    ].each do |test_string, xpect|
+      it "handles #{ test_string.inspect }" do
+        test_string.unicode_upcase.must_equal(xpect)
+      end
+    end
+  end
+
 end

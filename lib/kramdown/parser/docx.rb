@@ -462,7 +462,7 @@ module Kramdown
       def lowercase_node_text_contents!(xn)
         xn.children.each { |xnc|
           if xnc.text?
-            xnc.content = UnicodeUtils.downcase(xnc.content)
+            xnc.content = xnc.content.unicode_downcase
           else
             add_warning(
               xn,
