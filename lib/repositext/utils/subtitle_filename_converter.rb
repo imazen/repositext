@@ -3,6 +3,7 @@ class Repositext
     # Converts filenames between repositext and subtitle/subtitle_tagging conventions.
     class SubtitleFilenameConverter
 
+      # TODO: handle this via Repositext::Language!
       # Maps from 3 to 2 character language codes
       LANGUAGE_CODE_MAP = [
         %w[afr af],
