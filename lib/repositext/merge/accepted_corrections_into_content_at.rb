@@ -102,7 +102,11 @@ class Repositext
         corrected_at = content_at.dup
 
         corrections.each { |correction|
-          relevant_paragraphs = extract_relevant_paragraphs(corrected_at, correction)
+          relevant_paragraphs_attrs = Process::Extract::SpotCorrectionRelevantParagraphs.extract(
+            correction,
+            corrected_at
+          )
+          relevant_paragraphs = relevant_paragraphs_attrs[:relevant_paragraphs]
           merge_action, specifier = compute_merge_action(strategy, correction, relevant_paragraphs)
           case merge_action
           when :apply_automatically
@@ -115,7 +119,8 @@ class Repositext
               corrected_at,
               report_lines,
               content_at_filename,
-              specifier
+              specifier,
+              relevant_paragraphs_attrs[:paragraph_start_line_number]
             )
           when :do_nothing
             # do exactly that
@@ -198,12 +203,13 @@ class Repositext
       end
 
       # This method is called when correction cannot be applied automatically.
-      # @param [Hash] correction
-      # @param [String] corrected_at will be updated in place
-      # @param [Array] report_lines collector for report output
-      # @param [String] content_at_filename filename of the content_at file
-      # @param [Symbol] reason one of :no_match_found, or :multiple_matches_found
-      def self.manually_edit_correction!(correction, corrected_at, report_lines, content_at_filename, reason)
+      # @param correction [Hash]
+      # @param corrected_at [String] will be updated in place
+      # @param report_lines [Array] collector for report output
+      # @param content_at_filename [String] filename of the content_at file
+      # @param reason [Symbol] one of :no_match_found, or :multiple_matches_found
+      # @param paragraph_start_line_number [Integer]
+      def self.manually_edit_correction!(correction, corrected_at, report_lines, content_at_filename, reason, paragraph_start_line_number)
         log_line, instructions = case reason
         when :no_match_found
           [
@@ -228,7 +234,7 @@ class Repositext
             "      Replace with:                      '#{ correction[:becomes] }'",
             "      in paragraph #{ correction[:paragraph_number] }",
           ].join("\n"),
-          correction[:paragraph_start_line_number]
+          paragraph_start_line_number
         )
       end
 

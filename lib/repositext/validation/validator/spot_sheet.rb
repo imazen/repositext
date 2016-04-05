@@ -16,7 +16,6 @@ class Repositext
 
         class InvalidCorrectionsFile < StandardError; end
         class InvalidCorrection < StandardError; end
-        class InvalidCorrectionAndContentAt < StandardError; end
 
         # Runs all validations for self
         def run
@@ -61,9 +60,15 @@ class Repositext
           validate_corrections(
             corrections, errors, warnings
           )
-          validate_corrections_and_content_at(
-            corrections, content_at, errors, warnings
-          )
+          if 'validate' == @options['validate_or_merge']
+            # Only in 'validate' mode do we compare corrections and content_at.
+            # In 'merge' mode we leave it up to the merge command to detect
+            # no match or multiple matches found and open the file in editor
+            # for manual review.
+            validate_corrections_and_content_at(
+              corrections, content_at, errors, warnings
+            )
+          end
 
           Outcome.new(errors.empty?, nil, [], errors, warnings)
         end
@@ -208,18 +213,9 @@ class Repositext
               content_at
             )
 
-            corr_reads_txt, content_at_rel_para_txt = case @options['validate_or_merge']
-            when 'merge'
-              # Leave them as is
-              [corr[:reads], content_at_relevant_paragraphs[:relevant_paragraphs]]
-            when 'validate'
-              # Remove subtitle_marks and gap_marks from both
-              [corr[:reads], content_at_relevant_paragraphs[:relevant_paragraphs]].map { |e|
-                e.gsub(/[@%]/, '')
-              }
-            else
-              raise "Handle this: #{ @options['validate_or_merge'].inspect }"
-            end
+            # Remove subtitle_marks and gap_marks from both
+            corr_reads_txt = corr[:reads].gsub(/[@%]/, '')
+            content_at_rel_para_txt = content_at_relevant_paragraphs[:relevant_paragraphs].gsub(/[@%]/, '')
 
             # Number of `Reads` occurrences
             num_reads_occurrences = content_at_rel_para_txt.scan(
@@ -238,15 +234,7 @@ class Repositext
                 'Corresponding content AT not found:',
                 "`Reads`: #{ corr_reads_txt }",
               ]
-              case @options['validate_or_merge']
-              when 'merge'
-                # This is part of `merge` command, raise an exception if we find error
-                raise(InvalidCorrectionAndContentAt.new((loc + desc).join("\n")))
-              when 'validate'
-                errors << Reportable.error(loc, desc)
-              else
-                raise "Handle this: #{ @options['validate_or_merge'].inspect }"
-              end
+              errors << Reportable.error(loc, desc)
             else
               # Found more than one, report error
               loc = [@file_to_validate, "Correction ##{ corr[:correction_number] }"]
@@ -254,15 +242,7 @@ class Repositext
                 'Multiple instances of `Reads` found:',
                 "Found #{ num_reads_occurrences } instances of `#{ corr_reads_txt }`",
               ]
-              case @options['validate_or_merge']
-              when 'merge'
-                # This is part of `merge` command, raise an exception if we find error
-                raise(InvalidCorrectionAndContentAt.new((loc + desc).join("\n")))
-              when 'validate'
-                errors << Reportable.error(loc, desc)
-              else
-                raise "Handle this: #{ @options['validate_or_merge'].inspect }"
-              end
+              errors << Reportable.error(loc, desc)
             end
 
           end
