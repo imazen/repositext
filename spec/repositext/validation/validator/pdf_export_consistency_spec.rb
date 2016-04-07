@@ -47,6 +47,10 @@ class Repositext
               %(insertion of space before closing double quote” word1 word2\n),
               %(insertion of space before closing double quote ” word1 word2\n),
             ],
+            [
+              %(NO-BREAK SPACE\u00A0word1 word2\n),
+              %(NO-BREAK SPACE word1 word2\n),
+            ],
           ].each do |content_at_plain_text, pdf_raw_text|
             it "handles #{ pdf_raw_text.inspect }" do
               validator, logger, reporter = build_validator_logger_and_reporter(
@@ -134,8 +138,9 @@ class Repositext
 
         describe '#sanitize_content_at_plain_text' do
           [
-            [%(plain text), %(plain text\n) ],
-            [%(  strips surrounding space  ), %(strips surrounding space\n) ],
+            [%(plain text), %(plain text\n)],
+            [%(  strips surrounding space  ), %(strips surrounding space\n)],
+            [%(Converts NO-BREAK SPACE\u00A0to regular space), %(Converts NO-BREAK SPACE to regular space\n)],
           ].each do |pdf_raw_text, xpect|
             it "handles #{ pdf_raw_text.inspect }" do
               validator, logger, reporter = build_validator_logger_and_reporter(
@@ -145,7 +150,7 @@ class Repositext
                   FileLikeStringIO.new('_path', '_txt'),
                 ]
               )
-              validator.send(:sanitize_pdf_raw_text, pdf_raw_text).must_equal(xpect)
+              validator.send(:sanitize_content_at_plain_text, pdf_raw_text).must_equal(xpect)
             end
           end
         end
