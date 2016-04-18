@@ -17,11 +17,8 @@ class Repositext
         # to skip this validation.
         # See [Issue #322](https://vgrtr.vgr.local/vgr-repositext/vgr-repositext/issues/322) for details.
         def language_codes_to_skip
-          %i[
-            pun
-          ]
+          %i[]
         end
-
 
         # @param pdf_file_name [String] absolute path to the PDF file
         # @return [Outcome]
