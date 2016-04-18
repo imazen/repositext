@@ -349,7 +349,14 @@ module Kramdown
         line_breakable_chars = Regexp.escape(
           [Repositext::ELIPSIS, Repositext::EM_DASH, '-'].join
         )
-        lb.gsub!(/(?<=[#{ line_breakable_chars }])/, "\\hspace{0pt}")
+        # Exceptions: Don't insert zero-width space if followed by no-break characters:
+        no_break_following_chars = Regexp.escape(
+          [Repositext::S_QUOTE_CLOSE, Repositext::D_QUOTE_CLOSE].join
+        )
+        lb.gsub!(
+          /(?<=[#{ line_breakable_chars }])(?![#{ no_break_following_chars }])/,
+          "\\hspace{0pt}"
+        )
         lb
       end
 
