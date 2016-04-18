@@ -13,11 +13,30 @@ class Repositext
 
       protected
 
+        # For some languages the PDF text extraction does not work, so we have
+        # to skip this validation.
+        # See [Issue #322](https://vgrtr.vgr.local/vgr-repositext/vgr-repositext/issues/322) for details.
+        def language_codes_to_skip
+          %i[
+            pun
+          ]
+        end
+
+
         # @param pdf_file_name [String] absolute path to the PDF file
         # @return [Outcome]
         def pdf_export_consistent?(pdf_file_name)
           repository = @options['repository']
           language = repository.language
+
+          if language_codes_to_skip.include?(language.code_3_chars)
+            # Skip certain languages
+            @logger.warning(
+              "Skipped validation PdfExportConsistency because language #{ language.name } is not supported"
+            )
+            return Outcome.new(true, nil, [], [], [])
+          end
+
           pdf_file_stub = Repositext::RFile::Binary.new(
             '_', language, pdf_file_name, repository
           )
