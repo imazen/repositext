@@ -180,9 +180,28 @@ class Repositext
           }
 
           # Validate that we get consecutive correction_numbers
-          correction_numbers = corrections.map { |e| e[:correction_number].to_i }.sort
+          # Valid scenarios:
+          # '1', '2', '3'
+          # '1', '2', '2a', '2b', '3'
+          correction_numbers = corrections.map { |e| e[:correction_number] }
           correction_numbers.each_cons(2) { |x,y|
-            if y != x + 1
+            valid = case [x,y].join('_')
+            when /^(\d+_\d+)$/
+              # Both are digits only: increment x by one
+              x.to_i + 1 == y.to_i
+            when /^(\d+_\d+[a-z])$/
+              # From digits only to digits with letter: same digits, letter 'a'
+              x.to_i == y.to_i && y =~ /a$/
+            when /^(\d+[a-z]_\d+[a-z])$/
+              # Both are digits with letter: same digits, next letter
+              x.succ == y
+            when /^(\d+[a-z]_\d+)$/
+              # From digits with letter to digits only: increment digits, ignore letter
+              x.to_i + 1 == y.to_i
+            else
+              raise "Handle this: #{ [x,y].inspect }"
+            end
+            if !valid
               loc = [@file_to_validate, "Correction ##{ y }"]
               desc = [
                 'Non consecutive correction numbers:',
@@ -212,7 +231,6 @@ class Repositext
               corr,
               content_at
             )
-
             # Remove subtitle_marks and gap_marks from both
             corr_reads_txt = corr[:reads].gsub(/[@%]/, '')
             content_at_rel_para_txt = content_at_relevant_paragraphs[:relevant_paragraphs].gsub(/[@%]/, '')

@@ -176,6 +176,44 @@ class Repositext
                 }
               ]
             ],
+            [
+              %(
+                Case: Numbers with letters
+
+                1. Page 7, Paragraph 47, Line 4
+                Reads: word1 word2 word3 word4 word5
+                Becomes: word1 (word2) word3 word4 word5
+
+                1a. Page 8, Paragraphs 54-57, Line 7
+                Reads: word1 word2 word3
+                Becomes: word1 word2modified word3
+
+                2. Page 27, Paragraph 177, Lines 6-7
+                Reads: word1 word2 word3
+                Becomes: word1 word2 word4added word3
+              ),
+              [
+                {
+                  :becomes=>"word1 (word2) word3 word4 word5",
+                  :reads=>"word1 word2 word3 word4 word5",
+                  :correction_number=>"1",
+                  :first_line=>"1. Page 7, Paragraph 47, Line 4",
+                  :paragraph_number=>"47"
+                }, {
+                  :becomes=>"word1 word2modified word3",
+                  :reads=>"word1 word2 word3",
+                  :correction_number=>"1a",
+                  :first_line=>"1a. Page 8, Paragraphs 54-57, Line 7",
+                  :paragraph_number=>"54"
+                }, {
+                  :becomes=>"word1 word2 word4added word3",
+                  :reads=>"word1 word2 word3",
+                  :correction_number=>"2",
+                  :first_line=>"2. Page 27, Paragraph 177, Lines 6-7",
+                  :paragraph_number=>"177"
+                }
+              ]
+            ],
           ].each do |(test_string, xpect)|
             it "extracts correct attrs" do
               SubmittedSpotCorrections.extract(

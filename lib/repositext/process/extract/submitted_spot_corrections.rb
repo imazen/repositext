@@ -9,8 +9,9 @@ class Repositext
         # @return [Array<Hash>] a hash describing the corrections
         def self.extract(spot_corrections_file_contents)
           editor_initials = %w[JSR NCH RMM]
+          correction_number_regex = /^\d+[a-z]?/
           segment_start_regexes = [
-            { key: :first_line, regex: /(?=^\d+\.)/ }, # first line, starting with correction number
+            { key: :first_line, regex: /(?=#{ correction_number_regex }\.)/ }, # first line, starting with correction number
             { key: :reads, regex: /^Reads:/ }, # `Reads:` segment
             { key: :becomes, regex: /^Becomes:/ }, # `Becomes:` segment
             { key: :submitted, regex: /^Submitted:/ }, # `Submitted:` segment
@@ -22,9 +23,10 @@ class Repositext
             (segment_start_regexes.map{ |e| e[:regex] } + [/\z/]).join('|')
           )
           # Remove preamble. We want corrections only
-          corrections_only = spot_corrections_file_contents.sub(/.*?(?=^\d+\.)/m, '')
+          corrections_only = spot_corrections_file_contents.sub(/.*?(?=#{ correction_number_regex }\.)/m, '')
 
-          individual_corrections = corrections_only.split(/(?=^\d+\.)/)
+          # Split on lines that begin with correction numbers
+          individual_corrections = corrections_only.split(/(?=#{ correction_number_regex }\.)/)
 
           # Return array of correction attributes
           individual_corrections.map { |correction_text|
@@ -42,7 +44,7 @@ class Repositext
             end
 
             # extract correction number
-            c_attrs[:correction_number] = c_attrs[:first_line].match(/^\d+/)[0].to_s
+            c_attrs[:correction_number] = c_attrs[:first_line].match(/#{ correction_number_regex }(?=\.)/)[0].to_s
             c_attrs[:paragraph_number] = c_attrs[:first_line].match(/paragraphs?\s+(\d+)/i)[1].to_s
 
             # Handle :no_change vs. :becomes
