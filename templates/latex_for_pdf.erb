@@ -20,6 +20,8 @@
 % fixltx2e to support \textsubscript command
 \usepackage{fixltx2e}
 
+\usepackage{lettrine}
+
 % fontspec to use custom fonts
 \usepackage{fontspec}
 % turn off ligatures
@@ -150,14 +152,13 @@
 % command to emulate lower-case small-caps chars
 \newcommand{\RtSmCapsEmulation}[1]
   {\textscale{0.7}{#1}}
+% command to render last eagle
+\newcommand{\RtLastEagle}
+  {\hspace*{\fill}~\mbox\makebox{\raisebox{-0.5ex}}\penalty -9999}
 
-% enviroment to render eagle
-\newenvironment{RtEagle}
-<% if @polyglossia_default_language %>
-  { }
-<% else %>
-  {\paragraphnumberfont \rtmainfont}
-<% end %>
+% enviroment to render first eagle
+\newenvironment{RtFirstEagle}
+  <%= @first_eagle %>
   {}
 % environment to render idparagraph paragraphs
 \newenvironment{RtIdParagraph}
