@@ -333,14 +333,49 @@ module Kramdown
             raise(LeftoverTempGapMarkNumberError.new("Leftover temp gap mark number: #{ ltgmn.to_s.inspect }"))
           end
         end
-        # eagle: replace eagle with latex command for custom formatting
-        lb.gsub!(//, "\\RtEagle")
-        # eagle: force space after leading eagle
-        lb.gsub!(/(?<=\\RtEagle)\ /, '\\ ')
+
+        # Replace leading and trailing eagles with latex command/environment for
+        # custom formatting
+        # NOTE: Do this after processing gap_marks
+        lb.gsub!(
+          /
+            ( # first capture group
+              ^ # beginning of line
+              # NOTE we do not expect any subtitle marks in latex
+              (?: # non capture group
+                #{ Regexp.escape("\\RtGapMarkText{}") }
+              )? # optional
+            )
+             # eagle
+            \s* # zero or more whitespace chars
+            ( # second capture group
+              [^]{10,} # at least ten non eagle chars
+            )
+            (?!$) # not followed by line end
+          /x,
+          '\1' + "\\RtFirstEagle " + '\2' # we use an environment for first eagle
+        )
+        lb.gsub!(
+          /
+            (?!<^) # not preceded by line start
+            ( # first capture group
+              [^]{10,} # at least ten non eagle chars
+            )
+            \s* # zero or more whitespace chars
+             # eagle
+            ( # second capture group
+              [^]{,3} # up to three non eagle chars
+              $ # end of line
+            )
+          /x,
+          '\1' + " \\RtLastEagle{}" + '\2' # we use a command for last eagle
+        )
+
         # Don't break lines between double open quote and apostrophe (via ~)
         lb.gsub!(
           "#{ Repositext::D_QUOTE_OPEN } #{ Repositext::APOSTROPHE }",
-          "#{ Repositext::D_QUOTE_OPEN }~#{ Repositext::APOSTROPHE }")
+          "#{ Repositext::D_QUOTE_OPEN }~#{ Repositext::APOSTROPHE }"
+        )
         # Remove space after paragraph number to avoid fluctuations in indent
         lb.gsub!(/(\\RtParagraphNumber\{[^\}]+\})\s*/, '\1')
         # Insert zero-width space after all elipses, emdashes, and hyphens.
