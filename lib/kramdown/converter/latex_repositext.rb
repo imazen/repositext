@@ -386,7 +386,7 @@ module Kramdown
         )
         # Exceptions: Don't insert zero-width space if followed by no-break characters:
         no_break_following_chars = Regexp.escape(
-          [Repositext::S_QUOTE_CLOSE, Repositext::D_QUOTE_CLOSE].join
+          [Repositext::S_QUOTE_CLOSE, Repositext::D_QUOTE_CLOSE, ')'].join
         )
         lb.gsub!(
           /(?<=[#{ line_breakable_chars }])(?![#{ no_break_following_chars }])/,
