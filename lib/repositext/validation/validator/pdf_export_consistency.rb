@@ -135,6 +135,11 @@ class Repositext
               # Ignore missing horizontal_rule in PDF
               next  if "* * * * * * *\n" == txt_diff
 
+              # With drop cap first eagle, pdf extractor gets confused and
+              # doesn't insert a space between the first and second line.
+              # It's safe to ignore.
+              next  if (' ' == txt_diff) && ('line 2' == location) && (content_at_plain_text.index(""))
+
               # Prepare error reporting data
               description = "Missing "
               text_difference = txt_diff.inspect
