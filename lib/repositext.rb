@@ -148,7 +148,8 @@ require 'repositext/validation/validator'
 
 # Dependency boundary
 
-require 'kramdown/converter/latex_repositext_book'
+require 'kramdown/converter/latex_repositext_book_bound'
+require 'kramdown/converter/latex_repositext_book_regular'
 require 'kramdown/converter/latex_repositext_comprehensive'
 require 'kramdown/converter/latex_repositext_plain'
 require 'kramdown/converter/latex_repositext_recording'

@@ -1,0 +1,44 @@
+module Kramdown
+  module Converter
+    class LatexRepositextBookBound < LatexRepositext
+
+      include DocumentMixin
+
+      # Configure page settings. All values are in inches
+      # @param [Symbol, optional] key
+      def page_settings(key = nil)
+        ps = {
+          english_bound: {
+            paperwidth: 5.375,
+            paperheight: 8.375,
+            inner: 0.6875,
+            outer: 0.5208,
+            top: 0.7733,
+            bottom: 0.471,
+            headsep: 0.1,
+          },
+          foreign_bound: {
+            paperwidth: 5.375,
+            paperheight: 8.375,
+            inner: 0.6875,
+            outer: 0.5208,
+            top: 0.76,
+            bottom: 0.5,
+            headsep: 0.1,
+          },
+        }
+        ps = ps[key]  if key
+        ps
+      end
+
+      def size_scale_factor
+        1.0
+      end
+
+      def include_meta_info
+        false
+      end
+
+    end
+  end
+end

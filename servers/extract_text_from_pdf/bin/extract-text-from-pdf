@@ -55,16 +55,56 @@ loop {
     # Process the request
     case command
     when 'EXTRACT_TEXT'
+      # set crop area depending on pdf variant
+      pdf_file_basename = path_to_pdf.split('/').last
+      crop_area_attrs = case pdf_file_basename
+      when /^eng.*\.book_bound\.pdf$/
+        # English bound book
+        {
+          crop_x: 0, # crop area top left corner x-coordinate
+          crop_y: 1.0, # crop area top left corner y-coordinate
+          crop_width: 5.5, # crop area width
+          crop_height: 6.6, # crop area height
+        }
+      when /^eng.*\.book_regular\.pdf$/
+        # English regular book
+        {
+          crop_x: 0, # crop area top left corner x-coordinate
+          crop_y: 0.7, # crop area top left corner y-coordinate
+          crop_width: 5.5, # crop area width
+          crop_height: 7.26, # crop area height
+        }
+      when /\.book_bound\.pdf$/
+        # Foreign bound book
+        {
+          crop_x: 0, # crop area top left corner x-coordinate
+          crop_y: 1.0, # crop area top left corner y-coordinate
+          crop_width: 5.5, # crop area width
+          crop_height: 6.6, # crop area height
+        }
+      when /\.book_regular\.pdf$/
+        # Foreign regular book
+        {
+          crop_x: 0, # crop area top left corner x-coordinate
+          crop_y: 0.7, # crop area top left corner y-coordinate
+          crop_width: 5.5, # crop area width
+          crop_height: 7.26, # crop area height
+        }
+      else
+        # other variants
+        {
+          crop_x: 0, # crop area top left corner x-coordinate
+          crop_y: 1.0, # crop area top left corner y-coordinate
+          crop_width: 8.5, # crop area width
+          crop_height: 9.4, # crop area height
+        }
+      end
       connection.write(
         PdfboxTextExtraction.run(
           path_to_pdf,
           {
-            crop_x: 0, # crop area top left corner x-coordinate
-            crop_y: 1.0, # crop area top left corner y-coordinate
-            crop_width: 8.5, # crop area width
-            crop_height: 9.4, # crop area height
             spacing_tolerance: 0.3, # Set the space width-based tolerance value that is used to estimate where spaces in text should be added.
-          }
+          }.merge(crop_area_attrs)
         )
       )
     when 'PING'

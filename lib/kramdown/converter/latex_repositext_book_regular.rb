@@ -1,6 +1,6 @@
 module Kramdown
   module Converter
-    class LatexRepositextBook < LatexRepositext
+    class LatexRepositextBookRegular < LatexRepositext
 
       include DocumentMixin
 
@@ -8,15 +8,6 @@ module Kramdown
       # @param [Symbol, optional] key
       def page_settings(key = nil)
         ps = {
-          english_bound: {
-            paperwidth: 5.375,
-            paperheight: 8.375,
-            inner: 0.6875,
-            outer: 0.5208,
-            top: 0.7733,
-            bottom: 0.471,
-            headsep: 0.1,
-          },
           english_regular: {
             paperwidth: 5.4375,
             paperheight: 8.375,
@@ -26,15 +17,6 @@ module Kramdown
             bottom: 0.1202,
             headsep: 0.076,
             footskip: 0.3515,
-          },
-          foreign_bound: {
-            paperwidth: 5.375,
-            paperheight: 8.375,
-            inner: 0.6875,
-            outer: 0.5208,
-            top: 0.76,
-            bottom: 0.5,
-            headsep: 0.1,
           },
           foreign_regular: {
             paperwidth: 5.4375,

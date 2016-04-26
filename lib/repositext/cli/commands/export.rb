@@ -70,41 +70,43 @@ class Repositext
         end
       end
 
-      def export_pdf_book(options)
-        case
-        when config.setting(:is_primary_repo) && true # TODO: add check for bound or regular
+      def export_pdf_book_bound(options)
+        if config.setting(:is_primary_repo)
           export_pdf_base(
-            'pdf_book',
-            options.merge(
-              'include-version-control-info' => false,
-              'page_settings_key' => :english_regular,
-            )
-          )
-        when config.setting(:is_primary_repo) && false # TODO: add check for bound or regular
-          export_pdf_base(
-            'pdf_book',
+            'pdf_book_bound',
             options.merge(
               'include-version-control-info' => false,
               'page_settings_key' => :english_bound,
             )
           )
-        when !config.setting(:is_primary_repo) && true # TODO: add check for bound or regular
+        else
           export_pdf_base(
-            'pdf_book',
-            options.merge(
-              'include-version-control-info' => false,
-              'page_settings_key' => :foreign_regular,
-            )
-          )
-        when !config.setting(:is_primary_repo) && false # TODO: add check for bound or regular
-          export_pdf_base(
-            'pdf_book',
+            'pdf_book_bound',
             options.merge(
               'include-version-control-info' => false,
               'page_settings_key' => :foreign_bound,
             )
           )
+        end
+      end
+
+      def export_pdf_book_regular(options)
+        if config.setting(:is_primary_repo)
+          export_pdf_base(
+            'pdf_book_regular',
+            options.merge(
+              'include-version-control-info' => false,
+              'page_settings_key' => :english_regular,
+            )
+          )
         else
+          export_pdf_base(
+            'pdf_book_regular',
+            options.merge(
+              'include-version-control-info' => false,
+              'page_settings_key' => :foreign_regular,
+            )
+          )
         end
       end
 
@@ -231,7 +233,7 @@ class Repositext
           root, warnings = config.kramdown_parser(:kramdown).parse(contents)
           kramdown_doc = Kramdown::Document.new('', options)
           kramdown_doc.root = root
-          latex_converter_method = variant.gsub(/\Apdf/, 'to_latex_repositext')
+          latex_converter_method = variant.sub(/\Apdf/, 'to_latex_repositext')
           latex = kramdown_doc.send(latex_converter_method)
           if options[:post_process_latex_proc]
             latex = options[:post_process_latex_proc].call(latex, options)
@@ -243,7 +245,7 @@ class Repositext
               true,
               {
                 contents: pdf,
-                extension: "#{ variant.split('_').last }.pdf",
+                extension: "#{ variant.sub(/\Apdf_/, '') }.pdf",
                 output_is_binary: true,
               }
             )
@@ -414,7 +416,8 @@ class Repositext
 
       def export_pdf_variants
         %w[
-          pdf_book
+          pdf_book_bound
+          pdf_book_regular
           pdf_comprehensive
           pdf_plain
           pdf_recording
