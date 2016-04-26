@@ -63,7 +63,7 @@ loop {
             crop_y: 1.0, # crop area top left corner y-coordinate
             crop_width: 8.5, # crop area width
             crop_height: 9.4, # crop area height
-            spacing_tolerance: 0.1, # Set the space width-based tolerance value that is used to estimate where spaces in text should be added.
+            spacing_tolerance: 0.3, # Set the space width-based tolerance value that is used to estimate where spaces in text should be added.
           }
         )
       )
