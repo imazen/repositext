@@ -29,6 +29,7 @@ production there will be an exception.
 # Options:
 # * :merge_record_ids_into_idml: imports all folio files and merges record ids where idml exists
 # * :only_use_if_idml_not_present: imports all folio files, only uses folio where idml does not exist
+setting :first_eagle_override, nil # This is an optional setting if a repo requires differnt settings for the first eagle.
 setting :folio_import_strategy, :only_use_if_idml_not_present
 setting :font_leading_override, nil # This is an optional setting if a repo requires a different leading, e.g., 11.8 (float number)
 setting :font_name_override, nil # This is an optional setting if a repo requires a different font, e.g., 'Times New Roman'
