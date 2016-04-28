@@ -12,7 +12,7 @@ setting :folio_import_strategy, :only_use_if_idml_not_present
 setting :font_leading_override, nil # This is an optional setting if a repo requires a different leading, e.g., 11.8 (float number)
 setting :font_name_override, nil # This is an optional setting if a repo requires a different font, e.g., 'Times New Roman'
 setting :font_size_override, nil # This is an optional setting if a repo requires a different font size. Valid settings: 10,11,12 (integer)
-setting :is_primary_repo, true
+setting :is_primary_content_type, true
 setting :language_code_2_chars, 'en' # See iso 639-1 for a list of all two character language codes
 setting :language_code_3_chars, 'eng'
 setting :pdf_export_header_text, 'PDF header text'
