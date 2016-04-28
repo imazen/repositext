@@ -20,9 +20,9 @@ class Repositext
           repositext_files: [input_base_dir, input_file_selector, :repositext_extensions],
         )
         validation_options = {
-          'is_primary_repo' => config.setting(:is_primary_repo),
+          'is_primary_content_type' => config.setting(:is_primary_content_type),
           'kramdown_validation_parser_class' => config.kramdown_parser(:kramdown_validation),
-          'primary_repo_transform_params' => primary_repo_transform_params,
+          'primary_content_type_transform_params' => primary_content_type_transform_params,
         }.merge(options)
         Repositext::Validation::Content.new(file_specs, validation_options).run
       end
@@ -50,7 +50,7 @@ class Repositext
           'kramdown_converter_method_name' => config.kramdown_converter_method(:to_at),
           'kramdown_parser_class' => config.kramdown_parser(:kramdown),
           'kramdown_validation_parser_class' => config.kramdown_parser(:kramdown_validation),
-          'repository' => repository,
+          'content_type' => content_type,
         }.merge(options)
         if options['run_options'].include?('pre_import')
           Repositext::Validation::DocxPreImport.new(file_specs, validation_options).run
@@ -202,9 +202,9 @@ class Repositext
           content_at_files: [input_base_dir, input_file_selector, :at_extension],
         )
         validation_options = {
-          'is_primary_repo' => config.setting(:is_primary_repo),
+          'is_primary_content_type' => config.setting(:is_primary_content_type),
           'kramdown_parser_class' => config.kramdown_parser(:kramdown),
-          'primary_repo_transform_params' => primary_repo_transform_params,
+          'primary_content_type_transform_params' => primary_content_type_transform_params,
         }.merge(options)
         Repositext::Validation::ParagraphStyleConsistency.new(file_specs, validation_options).run
       end
@@ -226,7 +226,7 @@ class Repositext
           extract_text_from_pdf_service = Repositext::Services::ExtractTextFromPdf.new
           extract_text_from_pdf_service.start
           validation_options = {
-            'repository' => repository,
+            'content_type' => content_type,
             'extract_text_from_pdf_service' => extract_text_from_pdf_service
           }.merge(options)
           Repositext::Validation::PdfExport.new(file_specs, validation_options).run
@@ -237,7 +237,7 @@ class Repositext
 
       def validate_rtfile(options)
         Repositext::Validation::Rtfile.new(
-          config.compute_base_dir(options['base-dir'] || :rtfile_dir) + 'Rtfile',
+          config.compute_base_dir(options['base-dir'] || :content_type_dir) + 'Rtfile',
           config
         ).run
       end
@@ -254,7 +254,7 @@ class Repositext
         )
         validation_options = {
           'validate_or_merge' => options['validate_or_merge'] || 'validate',
-          'repository' => repository,
+          'content_type' => content_type,
         }.merge(options)
         Repositext::Validation::SpotSheet.new(file_specs, validation_options).run
       end
@@ -270,7 +270,7 @@ class Repositext
           content_at_files: [input_base_dir, input_file_selector, at_file_extension],
         )
         validation_options = {
-          'primary_repo_transform_params' => primary_repo_transform_params,
+          'primary_content_type_transform_params' => primary_content_type_transform_params,
         }.merge(options)
         Repositext::Validation::SubtitleMarkNoSignificantChanges.new(file_specs, validation_options).run
       end
@@ -297,10 +297,10 @@ class Repositext
           subtitle_export_files: [:subtitle_export_dir, input_file_selector, subtitle_files_extension],
         )
         validation_options = {
-          'is_primary_repo' => config.setting(:is_primary_repo),
+          'is_primary_content_type' => config.setting(:is_primary_content_type),
           'kramdown_parser_class' => config.kramdown_parser(:kramdown),
           'kramdown_validation_parser_class' => config.kramdown_parser(:kramdown_validation),
-          'primary_repo_transform_params' => primary_repo_transform_params,
+          'primary_content_type_transform_params' => primary_content_type_transform_params,
           'subtitle_converter_method_name' => config.kramdown_converter_method(:to_subtitle),
           'subtitle_export_converter_method_name' => config.kramdown_converter_method(:to_subtitle),
         }.merge(options)
@@ -333,10 +333,10 @@ class Repositext
           subtitle_export_files: [:subtitle_tagging_export_dir, input_file_selector, subtitle_tagging_files_extension],
         )
         validation_options = {
-          'is_primary_repo' => config.setting(:is_primary_repo),
+          'is_primary_content_type' => config.setting(:is_primary_content_type),
           'kramdown_parser_class' => config.kramdown_parser(:kramdown),
           'kramdown_validation_parser_class' => config.kramdown_parser(:kramdown_validation),
-          'primary_repo_transform_params' => primary_repo_transform_params,
+          'primary_content_type_transform_params' => primary_content_type_transform_params,
           'subtitle_converter_method_name' => config.kramdown_converter_method(:to_subtitle_tagging),
           'subtitle_export_converter_method_name' => config.kramdown_converter_method(:to_subtitle),
         }.merge(options)
@@ -373,12 +373,12 @@ class Repositext
       end
 
       # Returns a hash with transform params for the primary repo
-      def primary_repo_transform_params
+      def primary_content_type_transform_params
         {
           filename: nil,
           language_code_3_chars: config.setting(:language_code_3_chars),
-          rtfile_dir: config.base_dir(:rtfile_dir),
-          relative_path_to_primary_repo: config.setting(:relative_path_to_primary_repo),
+          content_type_dir: config.base_dir(:content_type_dir),
+          relative_path_to_primary_content_type: config.setting(:relative_path_to_primary_content_type),
           primary_repo_lang_code: config.setting(:primary_repo_lang_code)
         }
       end

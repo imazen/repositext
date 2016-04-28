@@ -28,13 +28,13 @@ class Repositext
         # @param submitted_corrections_file_name [String] absolute path to the corrections file
         # @return [Outcome]
         def spot_sheet_valid?(submitted_corrections_file_name)
-          repository = @options['repository']
-          language = repository.language
+          content_type = @options['content_type']
+          language = content_type.language
           submitted_corrections_file = Repositext::RFile::Text.new(
             File.read(submitted_corrections_file_name),
             language,
             submitted_corrections_file_name,
-            repository
+            content_type
           )
 
           sanitized_corrections_txt = sanitize_corrections_txt(

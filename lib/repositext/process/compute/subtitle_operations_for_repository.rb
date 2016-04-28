@@ -45,7 +45,7 @@ class Repositext
             file_path = File.join(@repository.base_dir, file_name)
             content_at_file = Repositext::RFile::Text.new(
               File.read(file_path),
-              @repository.language,
+              @content_type.language,
               file_path,
               @repository
             )

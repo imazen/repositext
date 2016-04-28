@@ -203,7 +203,7 @@ class Repositext
                 # use new api
                 # TODO: once all calls use new API, move assignment of repo and language out of loop
                 repository = options[:repository]
-                language = repository.language
+                language = content_type.language
                 block.call(
                   Repositext::RFile.get_class_for_binary_or_not(
                     options[:input_is_binary]
@@ -402,7 +402,7 @@ class Repositext
                     # use new api
                     # TODO: once all calls use new API, move assignment of repo and language out of loop
                     repository = options[:repository]
-                    language = repository.language
+                    language = content_type.language
                     block.call(
                       Repositext::RFile.get_class_for_binary_or_not(
                         options[:input_is_binary]
@@ -428,7 +428,7 @@ class Repositext
                   # use new api
                   # TODO: once all calls use new API, move assignment of repo and language out of loop
                   repository = options[:repository]
-                  language = repository.language
+                  language = content_type.language
                   block.call(
                     Repositext::RFile.get_class_for_binary_or_not(
                       options[:input_is_binary]

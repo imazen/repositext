@@ -11,7 +11,7 @@ class Repositext
         validate_files(:subtitle_import_files) do |path|
           Validator::Utf8Encoding.new(File.open(path), @logger, @reporter, @options).run
           next  if path.index('markers.') # skip markers files
-          if @options['is_primary_repo']
+          if @options['is_primary_content_type']
             Validator::SubtitleMarkAtBeginningOfEveryParagraph.new(
               File.open(path), @logger, @reporter, @options.merge(:content_type => :import)
             ).run

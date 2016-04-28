@@ -3,7 +3,6 @@ class Repositext
 
     # Contains code that is specific to Content AT files
     module ContentAtMixin
-
       def compute_similarity_with_corresponding_primary_file
         Kramdown::TreeStructuralSimilarity.new(
           corresponding_primary_file.kramdown_doc,
@@ -19,7 +18,7 @@ class Repositext
           File.read(corresponding_subtitle_markers_csv_filename),
           language,
           corresponding_subtitle_markers_csv_filename,
-          repository
+          content_type
         )
       end
 
@@ -34,7 +33,7 @@ class Repositext
       # @param options [Hash, optional]
       def kramdown_doc(options = {})
         options = {
-          is_primary_repositext_file: is_primary_repo,
+          is_primary_repositext_file: is_primary_content_type,
           input: 'KramdownVgr',
           line_width: 100000, # set to very large value so that each para is on a single line
         }.merge(options)
@@ -51,7 +50,6 @@ class Repositext
         return []  if (csmcf = corresponding_subtitle_markers_csv_file).nil?
         Repositext::Subtitle::ExtractFromStmCsvFile.new(csmcf).extract
       end
-
     end
   end
 end

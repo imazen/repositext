@@ -1,7 +1,11 @@
 # Manages configuration of Cli instance (via Rtfile)
 class Repositext
   class Cli
+
+    # Config is loaded from a number of places (in hierarchical order).
     class Config
+
+      include HasSettingsHierarchy
 
       BASE_DIR_NAME_REGEX = /\A\w+_dir\z/
       FILE_EXTENSION_NAME_REGEX = /\A\w+_extensions?\z/
@@ -10,121 +14,77 @@ class Repositext
       # @param rtfile_path [String] absolute path to the rtfile, including filename
       def initialize(rtfile_path)
         @rtfile_path = rtfile_path
-        @base_dirs = {}
-        @file_selectors = {}
-        @file_extensions = {}
-        @kramdown_converter_methods = {}
-        @kramdown_parsers = {}
-        @settings = {}
+        @effective_settings = {}
+        @settings_hierarchy = {}
       end
 
-      def eval
-        RtfileParser.new(self).eval_rtfile(@rtfile_path)
-      end
-
-      # Use this method in DSL methods to add a base directory to config
-      # @param name [String, Symbol] the name of the base dir under which it
-      #     will be referenced.
-      # @param base_dir_string [String] A string with an absolute directory path
-      def add_base_dir(name, base_dir_string)
-        if name.to_s !~ BASE_DIR_NAME_REGEX
-          raise ArgumentError.new("A base dir name must match this regex: #{ BASE_DIR_NAME_REGEX.inspect }")
-        end
-        # guarantee trailing slash
-        bd = base_dir_string.to_s.gsub(/\/\z/, '') + '/'
-        @base_dirs[name.to_sym] = bd
-      end
-
-      # Use this method in DSL methods to add a file extension to config
-      # @param name [String, Symbol] the name of the file extension under which it
-      #     will be referenced
-      # @param extension_string [String] A string with an absolute file path that can be
-      #     passed to Dir.glob
-      def add_file_extension(name, extension_string)
-        if name.to_s !~ FILE_EXTENSION_NAME_REGEX
-          raise ArgumentError.new("A file extension name must match this regex: #{ FILE_EXTENSION_NAME_REGEX.inspect }")
-        end
-        @file_extensions[name.to_sym] = extension_string.to_s
-      end
-
-      # Use this method in DSL methods to add a file selector to config
-      # @param name [String, Symbol] the name of the file selector under which it
-      #     will be referenced
-      # @param selector_string [String] A string with an absolute file path that can be
-      #     passed to Dir.glob
-      def add_file_selector(name, selector_string)
-        if name.to_s !~ FILE_SELECTOR_NAME_REGEX
-          raise ArgumentError.new("A file selector name must match this regex: #{ FILE_SELECTOR_NAME_REGEX.inspect }")
-        end
-        @file_selectors[name.to_sym] = selector_string.to_s
-      end
-
-      # Use this method in DSL methods to add a kramdown converter method to config
-      # @param name [String, Symbol] the name of the kramdown converter method under which it
-      #     will be referenced
-      # @param method_name [Symbol] the name of the method
-      def add_kramdown_converter_method(name, method_name)
-        @kramdown_converter_methods[name.to_sym] = method_name.to_sym
-      end
-
-      # Use this method in DSL methods to add a parser to config
-      # @param name [String, Symbol] the name of the parser under which it
-      #     will be referenced
-      # @param class_name [String] the complete name of the parser class. Will be constantized.
-      def add_kramdown_parser(name, class_name)
-        @kramdown_parsers[name.to_sym] = Object.const_get(class_name)
-      end
-
-      # Use this method in DSL methods to add a setting.
-      # @param setting_key [String, Symbol]
-      # @param setting_val [Object]
-      def add_setting(setting_key, setting_val)
-        @settings[setting_key.to_sym] = setting_val
+      # Checks from repositext level down to content_type level for JSON data
+      # files and Rtfiles to collect settings.
+      def compute
+        @settings_hierarchy = compute_required_settings_hierarchy(@rtfile_path)
+        @effective_settings = compute_effective_settings
       end
 
       # Retrieve a base dir
       # @param name [String, Symbol]
       def base_dir(name)
-        if name.to_s !~ BASE_DIR_NAME_REGEX
+        name = name.to_s
+        if name !~ BASE_DIR_NAME_REGEX
           raise ArgumentError.new("A base dir name must match this regex: #{ BASE_DIR_NAME_REGEX.inspect }")
         end
-        get_config_val(@base_dirs, name)
+        # Guarantee trailing slash
+        File.join(@effective_settings["base_dir_#{ name }"], '')
       end
 
       # Retrieve a file extension
       # @param name [String, Symbol]
       def file_extension(name)
-        if name.to_s !~ FILE_EXTENSION_NAME_REGEX
+        name = name.to_s
+        if name !~ FILE_EXTENSION_NAME_REGEX
           raise ArgumentError.new("A file pattern name must match this regex: #{ FILE_EXTENSION_NAME_REGEX.inspect }")
         end
-        get_config_val(@file_extensions, name)
+        @effective_settings["file_extension_#{ name }"]
       end
 
       # Retrieve a file selector
       # @param name [String, Symbol]
       def file_selector(name)
-        if name.to_s !~ FILE_SELECTOR_NAME_REGEX
+        name = name.to_s
+        if name !~ FILE_SELECTOR_NAME_REGEX
           raise ArgumentError.new("A file pattern name must match this regex: #{ FILE_SELECTOR_NAME_REGEX.inspect }")
         end
-        get_config_val(@file_selectors, name)
+        @effective_settings["file_selector_#{ name }"]
       end
 
       # Retrieve a kramdown converter method
       # @param name [String, Symbol]
-      def kramdown_converter_method(name)
-        get_config_val(@kramdown_converter_methods, name)
+      def kramdown_converter_method(name, raise_on_unknown_key=true)
+        key = "kramdown_converter_method_#{ name.to_s }"
+        if raise_on_unknown_key && !@effective_settings.keys.include?(key)
+          raise RtfileError.new("You requested an unknown key: #{ key.inspect }")
+        end
+        @effective_settings[key]
       end
 
       # Retrieve a kramdown parser
       # @param name [String, Symbol]
-      def kramdown_parser(name)
-        get_config_val(@kramdown_parsers, name)
+      def kramdown_parser(name, raise_on_unknown_key=true)
+        key = "kramdown_parser_#{ name.to_s }"
+        if raise_on_unknown_key && !@effective_settings.keys.include?(key)
+          raise RtfileError.new("You requested an unknown key: #{ key.inspect }")
+        end
+        Object.const_get(@effective_settings[key])
       end
 
-      # @param key [Symbol]
+      # @param key [String, Symbol]
       # @param raise_on_unknown_key [Boolean, optional] defaults to true. Set to false for optional settings
       def setting(key, raise_on_unknown_key = true)
-        get_config_val(@settings, key, raise_on_unknown_key)
+        key = key.to_s
+        if raise_on_unknown_key && !@effective_settings.keys.include?(key)
+          raise RtfileError.new("You requested an unknown key: #{ key.inspect }")
+        end
+        # NOTE: Avoid accidental changes to config values via destructive methods or '<<'!!
+        @effective_settings[key].freeze
       end
 
       # Computes an absolute base_dir path from a_base_dir. First segment of file_spec.
@@ -213,28 +173,13 @@ class Repositext
         }
       end
 
-      # Returns the absolute path of primary_repo with a guaranteed trailing
-      # slash at the end
-      def primary_repo_base_dir
+      # Returns the absolute path of primary_content_type with a guaranteed
+      # trailing slash at the end
+      def primary_content_type_base_dir
         File.expand_path(
-          setting(:relative_path_to_primary_repo),
-          base_dir(:rtfile_dir)
+          setting(:relative_path_to_primary_content_type),
+          base_dir(:content_type_dir)
         ).sub(/\/?\z/, '') + '/'
-      end
-
-    private
-
-      # Returns a key's value from container. Raises if an unknown key is requested.
-      # @param container [Hash] the Hash that contains the key
-      # @param key [Symbol]
-      # @param raise_on_unknown_key [Boolean, optional]
-      def get_config_val(container, key, raise_on_unknown_key = true)
-        key = key.to_sym
-        if raise_on_unknown_key && !container.keys.include?(key)
-          raise RtfileError.new("You requested an unknown key: #{ key.inspect }")
-        end
-        # NOTE: Avoid accidental changes to config values via destructive methods or '<<'!!
-        container[key].freeze
       end
 
     end

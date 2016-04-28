@@ -15,14 +15,14 @@ class Repositext
     describe '.relative_path_from_to' do
       [
         [
-          '/path/to/rt-spanish/content/15/',
-          '/path/to/rt-english/content/15/eng15-1231_1234.at',
-          '../../../rt-english/content/15/eng15-1231_1234.at',
+          '/path/to/rt-spanish/ct-general/content/15/',
+          '/path/to/rt-english/ct-general/content/15/eng15-1231_1234.at',
+          '../../../../rt-english/ct-general/content/15/eng15-1231_1234.at',
         ],
         [
-          '/path/to/rt-spanish/content/15/',
-          '/path/to/rt-english/content/15/eng15-1231_1234.subtitle_markers.csv',
-          '../../../rt-english/content/15/eng15-1231_1234.subtitle_markers.csv',
+          '/path/to/rt-spanish/ct-general/content/15/',
+          '/path/to/rt-english/ct-general/content/15/eng15-1231_1234.subtitle_markers.csv',
+          '../../../../rt-english/ct-general/content/15/eng15-1231_1234.subtitle_markers.csv',
         ],
       ].each do |source_path, target_path, xpect|
         it "handles #{ source_path.inspect }" do
@@ -125,10 +125,12 @@ class Repositext
       it 'computes default filename' do
         filename = '/docx_import/62/eng62-0101e_1234.docx'
         path_to_repo = Repository::Test.create!('rt-english').first
-        repository = Repository::Content.new(path_to_repo)
-        rfile = RFile::Binary.new(contents, language, filename, repository)
+        content_type = ContentType.new(
+          File.join(path_to_repo, 'ct-general')
+        )
+        rfile = RFile::Binary.new(contents, language, filename, content_type)
         rfile.corresponding_content_at_filename.must_match(
-          /rt\-english\/content\/62\/eng62\-0101e_1234\.at\z/
+          /rt\-english\/ct\-general\/content\/62\/eng62\-0101e_1234\.at\z/
         )
       end
 

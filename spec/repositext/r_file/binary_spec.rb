@@ -9,11 +9,7 @@ class Repositext
       let(:contents) { 'some binary contents' }
       let(:language) { Language::English.new }
       let(:filename) { '/docx_import/62/eng62-0101e_1234.docx' }
-      let(:repository) {
-        path_to_repo = Repository::Test.create!('rt-english').first
-        Repository::Content.new(path_to_repo)
-      }
-      let(:default_rfile) { RFile::Binary.new(contents, language, filename, repository) }
+      let(:default_rfile) { RFile::Binary.new(contents, language, filename) }
 
       describe '#is_binary' do
 

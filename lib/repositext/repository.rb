@@ -28,10 +28,6 @@ class Repositext
       %(#<#{ self.class.name }:#{ object_id } #name=#{ name.inspect })
     end
 
-    def language
-      raise "Language is only available in instances of 'Repository::Content'"
-    end
-
     # Returns sha of latest commit that included filename
     # @param [String] filename
     # @return [Rugged::Commit] a commit git object. Responds to the following

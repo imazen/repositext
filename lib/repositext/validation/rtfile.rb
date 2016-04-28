@@ -49,7 +49,7 @@ class Repositext
       # @param [String] rtfile_path to the reference config (Rtfile template)
       # @return [Repositext::Cli::Config] a reference config
       def load_reference_config(rtfile_path)
-        Repositext::Cli::Config.new(rtfile_path).tap(&:eval)
+        Repositext::Cli::Config.new(rtfile_path).tap(&:compute)
       end
 
       # Finds keys that are in @reference_config but not in @validated_config

@@ -49,7 +49,7 @@ class Repositext
       def fix_add_line_breaks(options)
         Repositext::Cli::Utils.change_files_in_place(
           config.compute_glob_pattern(
-            options['base-dir'] || :rtfile_dir,
+            options['base-dir'] || :content_type_dir,
             options['file-selector'] || :all_files,
             options['file-extension'] || :html_extension
           ),
@@ -162,8 +162,8 @@ class Repositext
             Repositext::Utils::CorrespondingPrimaryFileFinder.find(
               filename: filename,
               language_code_3_chars: config.setting(:language_code_3_chars),
-              rtfile_dir: config.base_dir(:rtfile_dir),
-              relative_path_to_primary_repo: config.setting(:relative_path_to_primary_repo),
+              content_type_dir: config.base_dir(:content_type_dir),
+              relative_path_to_primary_content_type: config.setting(:relative_path_to_primary_content_type),
               primary_repo_lang_code: config.setting(:primary_repo_lang_code)
             )
           }
@@ -230,7 +230,7 @@ class Repositext
         # we touch lots of directories as part of an import.
         # Repositext::Cli::Utils.change_files_in_place(
         #   config.compute_glob_pattern(
-        #     options['base-dir'] || :rtfile_dir,
+        #     options['base-dir'] || :content_type_dir,
         #     options['file-selector'] || :all_files,
         #     options['file-extension'] || :repositext_extensions
         #   ),

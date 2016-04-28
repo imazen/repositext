@@ -121,7 +121,7 @@ class Repositext
           options.merge({ 'base-dir' => :content_dir, 'file-extension' => :at_extension })
         )
         fix_normalize_trailing_newlines(options)
-        if config.setting(:is_primary_repo)
+        if config.setting(:is_primary_content_type)
           # Handle subtitle_marker CSV files only when we're working in the primary repo.
           copy_subtitle_marker_csv_files_to_content(
             options.merge({ 'base-dir' => :subtitle_import_dir, 'file-extension' => :txt_extension })
@@ -144,7 +144,7 @@ class Repositext
           options.merge({ 'base-dir' => :content_dir, 'file-extension' => :at_extension })
         )
         fix_normalize_trailing_newlines(options)
-        if config.setting(:is_primary_repo)
+        if config.setting(:is_primary_content_type)
           # Handle subtitle_marker CSV files only when we're working in the primary repo.
           copy_subtitle_marker_csv_files_to_content(
             options.merge({ 'base-dir' => :subtitle_tagging_import_dir, 'file-extension' => :txt_extension })
@@ -207,8 +207,8 @@ class Repositext
               Repositext::Utils::CorrespondingPrimaryFileFinder.find(
                 filename: filename,
                 language_code_3_chars: config.setting(:language_code_3_chars),
-                rtfile_dir: config.base_dir(:rtfile_dir),
-                relative_path_to_primary_repo: config.setting(:relative_path_to_primary_repo),
+                content_type_dir: config.base_dir(:content_type_dir),
+                relative_path_to_primary_content_type: config.setting(:relative_path_to_primary_content_type),
                 primary_repo_lang_code: config.setting(:primary_repo_lang_code)
               ).gsub(
                 '/idml_import/', '/content/'

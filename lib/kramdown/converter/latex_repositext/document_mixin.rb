@@ -98,24 +98,24 @@ module Kramdown
           @date_code = date_code.capitalize
           @first_eagle = @options[:first_eagle_override] || "{\\paragraphnumberfont\\lettrine[lines=2,lraise=0.355,findent=8.3,nindent=0]{\\textscale{0.465}}\\rtmainfont}"
           @font_leading = @options[:font_leading_override] || 11.8
-          @font_name = @options[:font_name_override] || (@options[:is_primary_repo] ? 'V-Calisto-St' : 'V-Excelsior LT Std')
+          @font_name = @options[:font_name_override] || (@options[:is_primary_content_type] ? 'V-Calisto-St' : 'V-Excelsior LT Std')
           @font_size = @options[:font_size_override] || 11
           @header_text = compute_header_text_latex(
             @options[:header_text],
-            @options[:is_primary_repo],
+            @options[:is_primary_content_type],
             @options[:language_code_3_chars]
           )
           @header_title = compute_header_title_latex(
             document_title_plain_text,
             document_title_latex,
-            @options[:is_primary_repo],
+            @options[:is_primary_content_type],
             @options[:language_code_3_chars]
           )
           @include_meta_info = include_meta_info
-          @is_primary_repo = @options[:is_primary_repo]
+          @is_primary_content_type = @options[:is_primary_content_type]
           @latest_commit_hash = latest_commit.oid[0,8]
           @page_number_command = compute_page_number_command(
-            @options[:is_primary_repo],
+            @options[:is_primary_content_type],
             @options[:language_code_3_chars]
           )
           @page_settings = page_settings_for_latex_geometry_package
@@ -144,11 +144,11 @@ module Kramdown
 
         # Wraps header_text in latex markup (this is the non-title header text)
         # @param header_text [String]
-        # @param is_primary_repo [Boolean]
+        # @param is_primary_content_type [Boolean]
         # @param language_code_3_chars [String]
         # @return [String]
-        def compute_header_text_latex(header_text, is_primary_repo, language_code_3_chars)
-          if is_primary_repo
+        def compute_header_text_latex(header_text, is_primary_content_type, language_code_3_chars)
+          if is_primary_content_type
             # italic, small caps and large font
             t = ::Kramdown::Converter::LatexRepositext.emulate_small_caps(
               escape_latex_text(header_text)
@@ -168,11 +168,11 @@ module Kramdown
         # page header.
         # @param document_title_plain_text [String]
         # @param document_title_latex [String]
-        # @param is_primary_repo [Boolean]
+        # @param is_primary_content_type [Boolean]
         # @param language_code_3_chars [String]
         # @return [String]
-        def compute_header_title_latex(document_title_plain_text, document_title_latex, is_primary_repo, language_code_3_chars)
-          if is_primary_repo
+        def compute_header_title_latex(document_title_plain_text, document_title_latex, is_primary_content_type, language_code_3_chars)
+          if is_primary_content_type
             # bold, italic, small caps and large font
             # NOTE: All titles are wrapped in <em> and .smcaps, so that will
             # take care of the italics and smallcaps.
@@ -217,11 +217,11 @@ module Kramdown
         end
 
         # Computes the command to be used for page numbers in the page header.
-        # @param is_primary_repo [Boolean]
+        # @param is_primary_content_type [Boolean]
         # @param language_code_3_chars [String]
         # @return [String]
-        def compute_page_number_command(is_primary_repo, language_code_3_chars)
-          if is_primary_repo
+        def compute_page_number_command(is_primary_content_type, language_code_3_chars)
+          if is_primary_content_type
             # bold, italic, small caps and large font
             "\\textscale{#{ 0.909091 * size_scale_factor }}{\\textbf{\\textit{\\thepage}}}"
           else

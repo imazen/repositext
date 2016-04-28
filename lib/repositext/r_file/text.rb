@@ -5,17 +5,18 @@ class Repositext
     class Text < RFile
 
       include ContentMixin
-      # specificity boundary
+      # Specificity boundary
       include ContentAtMixin
 
       # Returns the corresponding primary content AT file for foreign text files
       # that are not content AT. E.g., DOCX imported at files.
       def corresponding_primary_content_at_file
+        cpct = corresponding_primary_content_type
         self.class.new(
           File.read(corresponding_primary_filename),
-          corresponding_primary_repository.language,
+          cpct.language,
           corresponding_primary_filename,
-          corresponding_primary_repository
+          cpct
         )
       end
 
@@ -24,25 +25,26 @@ class Repositext
       end
 
       def corresponding_primary_file
-        return self  if is_primary_repo
+        return self  if is_primary_content_type
 
+        cpct = corresponding_primary_content_type
         self.class.new(
           File.read(corresponding_primary_filename),
-          corresponding_primary_repository.language,
+          cpct.language,
           corresponding_primary_filename,
-          corresponding_primary_repository
+          cpct
         )
       end
 
       def corresponding_primary_filename
-        return filename  if is_primary_repo
+        return filename  if is_primary_content_type
 
         primary_filename = filename.sub(
-          repository.config_base_dir(:rtfile_dir),
-          corresponding_primary_repo_base_dir
+          content_type.base_dir,
+          corresponding_primary_content_type.base_dir
         ).sub(
-          /\/#{ repository.config_setting(:language_code_3_chars) }/,
-          "/#{ repository.config_setting(:primary_repo_lang_code) }"
+          /\/#{ content_type.config_setting(:language_code_3_chars) }/,
+          "/#{ content_type.config_setting(:primary_repo_lang_code) }"
         )
       end
 

@@ -3,12 +3,13 @@ class Repositext
   # Represents an abstract RFile. Use concrete classes `Text` and `Binary`.
   class RFile
 
-    attr_reader :contents, :filename, :language, :repository
+    attr_reader :content_type, :contents, :filename, :language
 
-    delegate :corresponding_primary_repo_base_dir,
-             :corresponding_primary_repository,
-             :is_primary_repo,
-             to: :repository,
+    delegate :corresponding_primary_content_type_base_dir,
+             :corresponding_primary_content_type,
+             :is_primary_content_type,
+             :repository,
+             to: :content_type,
              prefix: false
 
     # Returns a relative path from source_path to target_path.
@@ -31,17 +32,18 @@ class Repositext
     # @param contents [String] the file's contents as string
     # @param language [Language] the file's language
     # @param filename [String] the file's absolute path
-    # @param repository [Repositext::Repository, optional] the repository this file belongs to
-    #     Required for certain operations. TODO: document here which ones.
-    def initialize(contents, language, filename, repository=nil)
+    # @param content_type [Repositext::ContentType, optional] the content_type
+    #     this file belongs to. Required for certain operations.
+    #     TODO: document here which ones.
+    def initialize(contents, language, filename, content_type=nil)
       raise ArgumentError.new("Invalid contents: #{ contents.inspect }")  unless contents.is_a?(String)
       raise ArgumentError.new("Invalid language: #{ language.inspect }")  unless language.is_a?(Language)
       raise ArgumentError.new("Invalid filename: #{ filename.inspect }")  unless filename.is_a?(String)
-      raise ArgumentError.new("Invalid repository: #{ repository.inspect }")  unless (repository.nil? || repository.is_a?(Repository))
+      raise ArgumentError.new("Invalid content_type: #{ content_type.inspect }")  unless (content_type.nil? || content_type.is_a?(ContentType))
       @contents = contents
       @language = language
       @filename = filename
-      @repository = repository
+      @content_type = content_type
     end
 
     # Returns just the name without path
@@ -76,6 +78,7 @@ class Repositext
         %(@contents=#{ is_binary ? '<binary>' : contents.truncate(50).inspect }),
         %(@filename=#{ filename.inspect }),
         %(@repository=#{ repository.inspect }),
+        %(@content_type=#{ content_type.inspect }),
       ].join(' ')
     end
 
@@ -96,19 +99,19 @@ class Repositext
       return nil  if !File.exists?(ccat_filename)
       RFile::Text.new(
         File.read(corresponding_content_at_filename),
-        repository.language,
+        content_type.language,
         ccat_filename,
-        repository
+        content_type
       )
     end
 
     def corresponding_content_at_filename
       File.join(
-        repository.config_base_dir(:rtfile_dir),
+        content_type.base_dir,
         'content',
         extract_year,
         [
-          repository.config_setting(:language_code_3_chars),
+          content_type.config_setting(:language_code_3_chars),
           extract_date_code,
           '_',
           extract_product_identity_id,

@@ -94,7 +94,7 @@ class Repositext
         input_file_extension = config.compute_file_extension(options['file-extension'] || :csv_extension)
         # grab source marker_csv file from primary repo
         primary_repo_input_base_dir = input_base_dir.sub(
-          config.base_dir(:rtfile_dir), config.primary_repo_base_dir
+          config.base_dir(:content_type_dir), config.primary_content_type_base_dir
         )
         output_base_dir = options['output'] || config.base_dir(:subtitle_export_dir)
         Repositext::Cli::Utils.copy_files(

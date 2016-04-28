@@ -10,7 +10,7 @@ class Repositext
         validate_files(:content_at_files) do |path|
           Validator::KramdownSyntaxAt.new(File.open(path), @logger, @reporter, @options).run
           Validator::Utf8Encoding.new(File.open(path), @logger, @reporter, @options).run
-          if @options['is_primary_repo']
+          if @options['is_primary_content_type']
             Validator::SubtitleMarkAtBeginningOfEveryParagraph.new(
               File.open(path), @logger, @reporter, @options.merge(:content_type => :content)
             ).run
@@ -46,10 +46,10 @@ class Repositext
         stm_csv_file_name_proc = lambda { |input_filename, file_specs|
           Repositext::Utils::CorrespondingPrimaryFileFinder.find(
             filename: input_filename,
-            language_code_3_chars: @options['primary_repo_transform_params'][:language_code_3_chars],
-            rtfile_dir: @options['primary_repo_transform_params'][:rtfile_dir],
-            relative_path_to_primary_repo: @options['primary_repo_transform_params'][:relative_path_to_primary_repo],
-            primary_repo_lang_code: @options['primary_repo_transform_params'][:primary_repo_lang_code]
+            language_code_3_chars: @options['primary_content_type_transform_params'][:language_code_3_chars],
+            content_type_dir: @options['primary_content_type_transform_params'][:content_type_dir],
+            relative_path_to_primary_content_type: @options['primary_content_type_transform_params'][:relative_path_to_primary_content_type],
+            primary_repo_lang_code: @options['primary_content_type_transform_params'][:primary_repo_lang_code]
           ).gsub( # update file extension
             /\.at\z/,
             '.subtitle_markers.csv'

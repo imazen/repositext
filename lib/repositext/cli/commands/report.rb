@@ -418,7 +418,7 @@ class Repositext
 
         Repositext::Cli::Utils.read_files(
           config.compute_glob_pattern(
-            options['base-dir'] || :rtfile_dir,
+            options['base-dir'] || :content_type_dir,
             options['file-selector'] || :all_files,
             options['file-extension'] || :html_extension
           ),
@@ -555,7 +555,7 @@ class Repositext
       def report_invalid_typographic_quotes(options)
         # For primary repo we want limited context, and for foreign we want
         # all text from paragraph number
-        context_size = config.setting(:is_primary_repo) ? 5 : 0
+        context_size = config.setting(:is_primary_content_type) ? 5 : 0
         report = Repositext::Report::InvalidTypographicQuotes.new(context_size)
 
         Repositext::Cli::Utils.read_files(

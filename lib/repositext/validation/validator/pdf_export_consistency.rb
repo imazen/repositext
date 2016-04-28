@@ -23,8 +23,8 @@ class Repositext
         # @param pdf_file_name [String] absolute path to the PDF file
         # @return [Outcome]
         def pdf_export_consistent?(pdf_file_name)
-          repository = @options['repository']
-          language = repository.language
+          content_type = @options['content_type']
+          language = content_type.language
 
           if language_codes_to_skip.include?(language.code_3_chars)
             # Skip certain languages
@@ -35,7 +35,7 @@ class Repositext
           end
 
           pdf_file_stub = Repositext::RFile::Binary.new(
-            '_', language, pdf_file_name, repository
+            '_', language, pdf_file_name, content_type
           )
           corresponding_content_at_file = pdf_file_stub.corresponding_content_at_file
 

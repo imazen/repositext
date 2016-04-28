@@ -32,11 +32,11 @@ class Repositext
         # @param docx_file_name [String] absolute path to the docx file
         # @return [Outcome]
         def valid_docx_workflow?(docx_file_name)
-          repository = @options['repository']
-          language = repository.language
+          content_type = @options['content_type']
+          language = content_type.language
           contents = File.binread(docx_file_name).freeze
           docx_file = Repositext::RFile::Binary.new(
-            contents, language, docx_file_name, repository
+            contents, language, docx_file_name, content_type
           )
 
           errors = []

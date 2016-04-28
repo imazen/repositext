@@ -267,8 +267,9 @@ class Repositext
 
   private
 
+    # Lazily compute effective settings in config object
     def config
-      @config ||= Cli::Config.new(options['rtfile']).tap { |e| e.eval }
+      @config ||= Cli::Config.new(options['rtfile']).tap { |e| e.compute }
     end
     # This writer is used for testing to inject a mock config
     def config=(a_config)
