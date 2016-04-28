@@ -1,1 +1,3 @@
 0000000000000000000000000000000000000000 68b33f530c17e55149567f0fcae96398c1e0b8f4 Jo Hund <jhund@clearcove.ca> 1445733999 -0700	commit: Initial commit
+68b33f530c17e55149567f0fcae96398c1e0b8f4 75090877cf4dbd50625a08c7a71df372bccdf90e Jo Hund <jhund@clearcove.ca> 1461637093 -0700	commit: Added path for content type ct-general
+75090877cf4dbd50625a08c7a71df372bccdf90e 6bc334ea291787f7f49ce80e11a561050004b9de Jo Hund <jhund@clearcove.ca> 1461855649 -0700	commit: Converted repo => content_type, renamed rtfile_dir to content_type_dir
