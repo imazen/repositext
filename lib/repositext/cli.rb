@@ -33,11 +33,11 @@ class Repositext
     # working directory and traversing up the directory hierarchy until it finds
     # an Rtfile or reaches the file system root.
     # NOTE: This code is inspired by Bundler's find_gemfile
-    # @param content_type [String] a valid content type
+    # @param content_type_name [String] a valid content type
     # @return [String, nil] path to closest Rtfile or nil if none found.
-    def self.find_rtfile(content_type)
+    def self.find_rtfile(content_type_name)
       previous = nil
-      current  = File.join(Dir.getwd, "ct-#{ content_type }")
+      current  = File.join(Dir.getwd, "ct-#{ content_type_name }")
 
       until !File.directory?(current) || current == previous
         filename = File.join(current, 'Rtfile')
@@ -47,17 +47,17 @@ class Repositext
       nil
     end
 
-    # Returns the names of all valid content types
+    # Returns the names of all valid content type names
     # @return [Array<String>]
-    def self.valid_content_types
+    def self.valid_content_type_names
       %w[general]
     end
 
-    # Verifies that content_type is given and valid
-    # @param content_type [String]
+    # Verifies that content_type_name is given and valid
+    # @param content_type_name [String]
     # @return [Boolean]
-    def self.valid_content_type?(content_type)
-      valid_content_types.include?(content_type)
+    def self.valid_content_type_name?(content_type_name)
+      valid_content_type_names.include?(content_type_name)
     end
 
     class_option :'base-dir',
@@ -67,7 +67,7 @@ class Repositext
                  :type => :boolean,
                  :default => false,
                  :desc => 'If true, only files that have been changed or added will be processed.'
-    class_option :'content-type',
+    class_option :'content-type-name',
                  :type => :string,
                  :required => true,
                  :desc => 'Specifies which content type to operate on.'

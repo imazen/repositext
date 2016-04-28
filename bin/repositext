@@ -1,10 +1,10 @@
 #!/usr/bin/env ruby
 require 'repositext'
 
-content_type = ARGV.shift
+content_type_name = ARGV.shift
 
-if !Repositext::Cli.valid_content_type?(content_type)
-  $stderr.puts "Invalid content type #{ content_type.inspect }. Please use one of #{ Repositext::Cli.valid_content_types.inspect }"
+if !Repositext::Cli.valid_content_type_name?(content_type_name)
+  $stderr.puts "Invalid content type name #{ content_type_name.inspect }. Please use one of #{ Repositext::Cli.valid_content_type_names.inspect }"
   exit 1
 end
 
@@ -13,10 +13,10 @@ rtfile_path = Repositext::Cli.find_rtfile(content_type)
 rt_command = ARGV.first # was second before we shifted content_type.
 if 'init' == rt_command
   # Ignore any exising rtfile as it may be invalid
-  Repositext::Cli.start(ARGV + ['--rtfile', nil, '--content-type', content_type])
+  Repositext::Cli.start(ARGV + ['--rtfile', nil, '--content-type-name', content_type_name])
 elsif rtfile_path
   # Execute command after loading rtfile
-  Repositext::Cli.start(ARGV + ['--rtfile', rtfile_path, '--content-type', content_type])
+  Repositext::Cli.start(ARGV + ['--rtfile', rtfile_path, '--content-type-name', content_type_name])
 else
   $stderr.puts "No Rtfile found! Please use `rt init` to create an Rtfile in the current working directory."
   exit 1

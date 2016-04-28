@@ -352,7 +352,7 @@ class Repositext
           Repositext::Cli.start([
             "export",
             "subtitle",
-            "--content-type", options['content-type'], # use same content_type
+            "--content-type-name", options['content-type-name'], # use same content_type
             "--file-selector", input_file_selector, # use same file-selector
             "--rtfile", primary_repo_rtfile_path, # use primary repo's Rtfile
             "--output", output_base_dir, # use this foreign repo's subtitle_export dir
