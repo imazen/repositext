@@ -14,7 +14,7 @@ class Repositext
           Validator::CorrectLineEndings.new(File.open(path), @logger, @reporter, @options).run
           Validator::EaglesConnectedToParagraph.new(File.open(path), @logger, @reporter, @options).run
           Validator::KramdownSyntaxAt.new(File.open(path), @logger, @reporter, @options).run
-          if @options['is_primary_content_type']
+          if @options['is_primary_repo']
             Validator::SubtitleMarkSpacing.new(
               File.open(path), @logger, @reporter, @options
             ).run
@@ -50,7 +50,7 @@ class Repositext
           Validator::SubtitleMarkCountsMatch.new(
             [File.open(ca), File.open(stm_csv)], @logger, @reporter, @options
           ).run
-          if @options['is_primary_content_type']
+          if @options['is_primary_repo']
             Validator::SubtitleMarkNoSignificantChanges.new(
               [File.open(ca), File.open(stm_csv)], @logger, @reporter, @options
             ).run

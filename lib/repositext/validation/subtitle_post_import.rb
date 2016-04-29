@@ -10,7 +10,7 @@ class Repositext
         validate_files(:content_at_files) do |path|
           Validator::KramdownSyntaxAt.new(File.open(path), @logger, @reporter, @options).run
           Validator::Utf8Encoding.new(File.open(path), @logger, @reporter, @options).run
-          if @options['is_primary_content_type']
+          if @options['is_primary_repo']
             Validator::SubtitleMarkAtBeginningOfEveryParagraph.new(
               File.open(path), @logger, @reporter, @options.merge(:content_type => :content)
             ).run

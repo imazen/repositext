@@ -7,7 +7,7 @@ class Repositext
 
     delegate :corresponding_primary_content_type_base_dir,
              :corresponding_primary_content_type,
-             :is_primary_content_type,
+             :is_primary_repo,
              :repository,
              to: :content_type,
              prefix: false

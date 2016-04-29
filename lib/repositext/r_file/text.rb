@@ -25,7 +25,7 @@ class Repositext
       end
 
       def corresponding_primary_file
-        return self  if is_primary_content_type
+        return self  if is_primary_repo
 
         cpct = corresponding_primary_content_type
         self.class.new(
@@ -37,7 +37,7 @@ class Repositext
       end
 
       def corresponding_primary_filename
-        return filename  if is_primary_content_type
+        return filename  if is_primary_repo
 
         primary_filename = filename.sub(
           content_type.base_dir,

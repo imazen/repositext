@@ -71,7 +71,7 @@ class Repositext
       end
 
       def export_pdf_book_bound(options)
-        if config.setting(:is_primary_content_type)
+        if config.setting(:is_primary_repo)
           export_pdf_base(
             'pdf_book_bound',
             options.merge(
@@ -91,7 +91,7 @@ class Repositext
       end
 
       def export_pdf_book_regular(options)
-        if config.setting(:is_primary_content_type)
+        if config.setting(:is_primary_repo)
           export_pdf_base(
             'pdf_book_regular',
             options.merge(
@@ -169,7 +169,7 @@ class Repositext
 
       def export_pdf_web(options)
         case
-        when config.setting(:is_primary_content_type)
+        when config.setting(:is_primary_repo)
           export_pdf_base(
             'pdf_web',
             options.merge(
@@ -204,7 +204,7 @@ class Repositext
           font_name_override: config.setting(:font_name_override, false),
           font_size_override: config.setting(:font_size_override, false),
           header_text: config.setting(:pdf_export_header_text),
-          is_primary_content_type: config.setting(:is_primary_content_type),
+          is_primary_repo: config.setting(:is_primary_repo),
           language_code_3_chars: config.setting(:language_code_3_chars),
           version_control_page: options['include-version-control-info'],
         })
@@ -339,7 +339,7 @@ class Repositext
           subtitle = doc.send(config.kramdown_converter_method(:to_subtitle))
           [Outcome.new(true, { contents: subtitle, extension: 'txt' })]
         end
-        if config.setting(:is_primary_content_type)
+        if config.setting(:is_primary_repo)
           # We're in primary repo, copy subtitle_marker_csv_files to foreign repo
           # This works because options['output'] points to foreign repo.
           copy_subtitle_marker_csv_files_to_subtitle_export(options)

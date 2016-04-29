@@ -8,7 +8,7 @@ class Repositext
       # Run this from inside primary repo.
       # @param [Hash] options
       def git_repo_clone_missing_repos(options)
-        if !config.setting(:is_primary_content_type)
+        if !config.setting(:is_primary_repo)
           raise "Please run this command from inside the primary repository"
         end
         repos_parent_path = File.expand_path('..', Dir.pwd)
@@ -19,7 +19,7 @@ class Repositext
       # Run this from inside primary repo.
       # @param [Hash] options
       def git_repo_initialize_empty_content_repos(options)
-        if !config.setting(:is_primary_content_type)
+        if !config.setting(:is_primary_repo)
           raise "Please run this command from inside the primary repository"
         end
         repos_parent_path = File.expand_path('..', Dir.pwd)

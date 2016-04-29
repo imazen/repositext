@@ -82,7 +82,7 @@
 \fancypagestyle{RtPageStyle}{
   \fancyhf{}
   \fancyhfoffset[LE]{0mm}
-  <% if @is_primary_content_type %>
+  <% if @is_primary_repo %>
     % single line in header (default)
     % double line in footer
     \renewcommand{\footrule}{\RtDoubleHRule\par}
@@ -102,7 +102,7 @@
 \fancypagestyle{RtFirstPageStyle}{
   \fancyhf{}
   \renewcommand{\headrulewidth}{0mm} % no line in header
-  <% if @is_primary_content_type %>
+  <% if @is_primary_repo %>
     % double line in footer
     \renewcommand{\footrule}{\RtDoubleHRule\par}
   <% else %>

@@ -20,7 +20,7 @@ class Repositext
           repositext_files: [input_base_dir, input_file_selector, :repositext_extensions],
         )
         validation_options = {
-          'is_primary_content_type' => config.setting(:is_primary_content_type),
+          'is_primary_repo' => config.setting(:is_primary_repo),
           'kramdown_validation_parser_class' => config.kramdown_parser(:kramdown_validation),
           'primary_content_type_transform_params' => primary_content_type_transform_params,
         }.merge(options)
@@ -202,7 +202,7 @@ class Repositext
           content_at_files: [input_base_dir, input_file_selector, :at_extension],
         )
         validation_options = {
-          'is_primary_content_type' => config.setting(:is_primary_content_type),
+          'is_primary_repo' => config.setting(:is_primary_repo),
           'kramdown_parser_class' => config.kramdown_parser(:kramdown),
           'primary_content_type_transform_params' => primary_content_type_transform_params,
         }.merge(options)
@@ -297,7 +297,7 @@ class Repositext
           subtitle_export_files: [:subtitle_export_dir, input_file_selector, subtitle_files_extension],
         )
         validation_options = {
-          'is_primary_content_type' => config.setting(:is_primary_content_type),
+          'is_primary_repo' => config.setting(:is_primary_repo),
           'kramdown_parser_class' => config.kramdown_parser(:kramdown),
           'kramdown_validation_parser_class' => config.kramdown_parser(:kramdown_validation),
           'primary_content_type_transform_params' => primary_content_type_transform_params,
@@ -333,7 +333,7 @@ class Repositext
           subtitle_export_files: [:subtitle_tagging_export_dir, input_file_selector, subtitle_tagging_files_extension],
         )
         validation_options = {
-          'is_primary_content_type' => config.setting(:is_primary_content_type),
+          'is_primary_repo' => config.setting(:is_primary_repo),
           'kramdown_parser_class' => config.kramdown_parser(:kramdown),
           'kramdown_validation_parser_class' => config.kramdown_parser(:kramdown_validation),
           'primary_content_type_transform_params' => primary_content_type_transform_params,

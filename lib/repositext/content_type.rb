@@ -77,8 +77,8 @@ class Repositext
       ) + '/'
     end
 
-    def is_primary_content_type
-      config_setting(:is_primary_content_type)
+    def is_primary_repo
+      config_setting(:is_primary_repo)
     end
 
   end

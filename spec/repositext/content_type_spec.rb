@@ -72,13 +72,13 @@ class Repositext
       end
     end
 
-    describe '#is_primary_content_type' do
+    describe '#is_primary_repo' do
       it 'handles default primary data' do
-        primary_content_type.is_primary_content_type.must_equal(true)
+        primary_content_type.is_primary_repo.must_equal(true)
       end
 
       it 'handles default foreign data' do
-        foreign_content_type.is_primary_content_type.must_equal(false)
+        foreign_content_type.is_primary_repo.must_equal(false)
       end
     end
 

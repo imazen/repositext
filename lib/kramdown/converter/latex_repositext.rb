@@ -147,7 +147,7 @@ module Kramdown
             after << "\n\\end{RtIdTitle1}"
             inner_text = inner(el, opts)
             # differentiate between primary and non-primary content_types
-            if !@options[:is_primary_content_type]
+            if !@options[:is_primary_repo]
               # add space between title and date code
               inner_text.gsub!(/ [[:alpha:]]{3}\d{2}\-\d{4}/, '\\hspace{2 mm}\0')
               # make date code smaller
