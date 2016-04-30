@@ -29,7 +29,7 @@ class Repositext
       File.dirname(__FILE__)
     end
 
-    # Tries to find Rtfile, starting in content_type child directory of current
+    # Tries to find Rtfile, starting in content_type_name child directory of current
     # working directory and traversing up the directory hierarchy until it finds
     # an Rtfile or reaches the file system root.
     # NOTE: This code is inspired by Bundler's find_gemfile
@@ -269,15 +269,19 @@ class Repositext
 
     # Lazily compute effective settings in config object
     def config
-      @config ||= Cli::Config.new(options['rtfile']).tap { |e| e.compute }
+      @config ||= content_type.config
     end
     # This writer is used for testing to inject a mock config
     def config=(a_config)
       @config = a_config
     end
 
+    def content_type
+      @content_type ||= ContentType.new(options['rtfile'].sub('/Rtfile', ''))
+    end
+
     def repository
-      @repository ||= Repository::Content.new(config)
+      content_type.repository
     end
 
     # Invokes the command derived from main_command and command_spec

@@ -225,11 +225,11 @@ class Repositext
       # Specifies all shared steps that need to run after each Folio/IDML import
       def import_shared_steps(options)
         case config.setting(:folio_import_strategy)
-        when :merge_record_ids_into_idml
+        when 'merge_record_ids_into_idml'
           merge_record_marks_from_folio_xml_at_into_idml_at(options)
           # validate that all kramdown elements are nested inside record_mark
           validation_run_options = %w[kramdown_syntax_at-all_elements_are_inside_record_mark]
-        when :only_use_if_idml_not_present
+        when 'only_use_if_idml_not_present'
           merge_use_idml_or_folio(options)
           # skip validation that all kramdown elements are nested inside record_mark
           validation_run_options = []

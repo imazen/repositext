@@ -95,10 +95,17 @@ class Repositext
           oec
         end
 
-        # Computes paths for all possible required setting files
+        # Computes paths for all possible required setting files.
+        # Evaluates Rtfiles after required JSON files to give them override powers.
         # @param rtfile_path [String] absolute path to content_type level Rtfile
         # @return [Array<Hash>]
         def compute_required_setting_file_candidates(rtfile_path)
+          # Make sure rtfile_path is what we expect it to be:
+          # * Must end with "/Rtfile"
+          # * Must contain Rtfile only once!
+          if rtfile_path !~ /\/Rtfile\z/ || 1 != rtfile_path.scan('Rtfile').count
+            raise ArgumentError.new("Invalid rtfile_path: #{ rtfile_path.inspect }")
+          end
           path_segments = rtfile_path.split('/')
           repositext_root = path_segments[0..-4]
           repository_root = path_segments[0..-3]
@@ -108,14 +115,16 @@ class Repositext
               'level' => 'repositext',
               'identifier' => 'repositext',
               'files' => [
-                File.join(repositext_root, 'data.json')
+                File.join(repositext_root, 'data.json'),
+                File.join(repositext_root, 'Rtfile'),
               ]
             },
             {
               'level' => 'repository',
               'identifier' => repository_root.last,
               'files' => [
-                File.join(repository_root, 'data.json')
+                File.join(repository_root, 'data.json'),
+                File.join(repository_root, 'Rtfile'),
               ]
             },
             {
@@ -123,7 +132,7 @@ class Repositext
               'identifier' => content_type_root.last,
               'files' => [
                 File.join(content_type_root, 'data.json'),
-                File.join(content_type_root, 'Rtfile'), # evaluate Rtfile after required JSON file
+                File.join(content_type_root, 'Rtfile'),
               ]
             },
           ]
