@@ -41,6 +41,19 @@ class Repositext
       ]
     end
 
+    def content_type_names
+      %w[
+        general
+      ]
+    end
+
+    # Returns an array of paths to all repos in repo_set
+    # @param repo_set [Symbol, Array<String>] A symbol describing a predefined
+    #     group of repos, or an Array with specific repo names as strings.
+    def all_repo_paths(repo_set)
+      compute_repo_paths(repo_set)
+    end
+
     # Clones all git repos that don't exist on local filesystem yet.
     # @param repo_set [Symbol, Array<String>] A symbol describing a predefined
     #     group of repos, or an Array with specific repo names as strings.
@@ -125,9 +138,8 @@ class Repositext
     # @param primary_language_repo_path [String]
     def initialize_empty_content_repos(primary_language_repo_path)
       compute_repo_paths(:all_content_repos).each { |repo_path|
-        repo_name = repo_path.split('/').last
-        if File.exists?(File.join(repo_path, 'Rtfile'))
-          puts " -   Skipping #{ repo_name } (Rtfile already exists)"
+        if File.directory?(File.join(repo_path, 'data'))
+          puts " -   Skipping #{ repo_name } (`data` directory already exists)"
           next
         end
         puts " - Initializing #{ repo_name }"
@@ -162,16 +174,37 @@ class Repositext
     end
 
     # Allows running of any command (e.g., export, fix, report, validate) on
-    # all content repositories.
-    def run_repositext_command(command, args)
+    # a repository set.
+    # @param repo_set [Symbol, Array<String>] A symbol describing a predefined
+    #     group of repos, or an Array with specific repo names as strings.
+    # @param command_string [String] the command to run on the command line,
+    #     e.g., "repositext general fix update_rtfiles_to_settings_hierarchy -g"
+    def run_repositext_command(repo_set, command_string)
+      puts " - Running command `#{ command_string }`"
+      compute_repo_paths(repo_set).each { |repo_path|
+        puts "   - in #{ repo_name }"
+        cmd = %(cd #{ repo_path } && #{ command_string })
+        Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
+          exit_status = wait_thr.value
+          if exit_status.success?
+            puts "   - completed"
+          else
+            msg = %(Could not run command in #{ repo_name }:\n\n)
+            puts(msg + stderr.read)
+          end
+        end
+      }
     end
 
-    # Synchronizes gems in all foreign repos with those of primary repo
-    def synchronize_gems_with_primary_repo
+    # Updates all gems in language repos.
+    def update_rubygems_in_all_language_repos
+      # Pull code repos (to get Gemfile updates)
+      # go into primary repo
+          # bundle install
+          # commit gem related changes to Gemfile.lock
       # iterate over all foreign repos
+        # make sure there are no uncommitted git changes
         # Copy Gemfile and Gemfile.lock from primary repo
-        # call `bundle install`
-        # make sure git index is empty
         # add Gemfile and Gemfile.lock to git index
         # `git commit`
         # `git push`
@@ -206,45 +239,66 @@ class Repositext
 
     # @param repo_root_path [String] absolute path to root of repo
     def create_default_content_directory_structure(repo_root_path)
-      %w[
-        content
-        data
-        lucene_table_export
-        lucene_table_export/json_export
-        lucene_table_export/L232
-        lucene_table_export/L232/full
-        lucene_table_export/L232/full/lucene_index
-        lucene_table_export/L232/short
-        lucene_table_export/L232/short/lucene_index
-        lucene_table_export/L472
-        lucene_table_export/L472/full
-        lucene_table_export/L472/full/lucene_index
-        lucene_table_export/L472/short
-        lucene_table_export/L472/short/lucene_index
-        pdf_export
-        reports
-        staging
-      ].each do |rel_path|
+      # root level directories
+      (%w[data] + content_type_names).each do |rel_path|
         FileUtils.mkdir(File.join(repo_root_path, rel_path))
+      end
+      # per content_type directories
+      content_type_names.each do |content_type|
+        %w[
+          content
+          lucene_table_export
+          lucene_table_export/json_export
+          lucene_table_export/L232
+          lucene_table_export/L232/full
+          lucene_table_export/L232/full/lucene_index
+          lucene_table_export/L232/short
+          lucene_table_export/L232/short/lucene_index
+          lucene_table_export/L472
+          lucene_table_export/L472/full
+          lucene_table_export/L472/full/lucene_index
+          lucene_table_export/L472/short
+          lucene_table_export/L472/short/lucene_index
+          pdf_export
+          reports
+          staging
+        ].each do |rel_path|
+          FileUtils.mkdir(
+            File.join(repo_root_path, content_type, rel_path)
+          )
+        end
       end
     end
 
     # @param repo_root_path [String] absolute path to root of new repo
     # @param primary_language_repo_path [String] absolute path
     def copy_default_content_repo_files(repo_root_path, primary_language_repo_path)
+      # Copy files that are the same between primary and foreign repos
       [
         '.gitignore',
         '.ruby-gemset',
         '.ruby-version',
         'Gemfile',
+        'Gemfile.lock',
         'readme.md',
-        'Rtfile',
       ].each do |filename|
         FileUtils.cp(
           File.join(primary_language_repo_path, filename),
           repo_root_path
         )
       end
+      # Copy Rtfile from code template
+      content_type_names.each do |content_type|
+        FileUtils.cp(
+          rtfile_template_path,
+          File.join(repo_root_path, content_type)
+        )
+      end
+    end
+
+    # Returns the absolute path to the Rtfile template to use for new language repos.
+    def rtfile_template_path
+      File.expand_path("../../../../repositext/templates/Rtfile", __FILE__)
     end
 
   end
