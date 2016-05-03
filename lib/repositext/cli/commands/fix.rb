@@ -298,10 +298,6 @@ class Repositext
         end
       end
 
-      def fix_update_rtfiles_to_settings_hierarchy(options)
-        Repositext::Process::Fix::UpdateRtfilesToSettingsHierarchy.fix(config)
-      end
-
       def fix_test(options)
         # dummy method for testing
         puts 'fix_test'
