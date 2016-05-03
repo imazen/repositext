@@ -19,10 +19,13 @@ class Repositext
       end
 
       # Checks from repositext level down to content_type level for JSON data
-      # files and Rtfiles to collect settings.
+      # files and Rtfiles to collect settings hierarchy and computes effective
+      # settings.
+      # @return self
       def compute
         @settings_hierarchy = compute_required_settings_hierarchy(@rtfile_path)
         @effective_settings = compute_effective_settings
+        self
       end
 
       # Retrieve a base dir
