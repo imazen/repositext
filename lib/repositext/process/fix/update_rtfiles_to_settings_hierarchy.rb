@@ -3,13 +3,16 @@ class Repositext
     class Fix
       class UpdateRtfilesToSettingsHierarchy
 
-TODO: tie this into git_repository_set so that we can run it on all foreign repos
-
         # Updates Rtfiles for settings hierarchy:
         # * Renames some setting names in Rtfile
         # * Moves some settings to repositext and repository data.json files
-        # @param config [Repositext::Config] based on Rtfile to be updated
+        # @param config [Repositext::Cli::Config] based on Rtfile to be updated
         def self.fix(old_config)
+          if old_config.base_dir(:content_type_dir)
+            puts "     - has already been updated. Skipping."
+            return true
+          end
+
           rtfile_path = File.join(
             old_config.compute_base_dir(:rtfile_dir),
             'Rtfile'
@@ -46,8 +49,7 @@ TODO: tie this into git_repository_set so that we can run it on all foreign repo
           new_rtfile_contents = remove_rtfile_entries(old_rtfile_contents)
           new_rtfile_contents = update_data_base_dir(new_rtfile_contents)
           write_rtfile_contents(rtfile_path, new_rtfile_contents)
-
-          Outcome.new(true, { contents: nil }, [])
+          true
         end
 
         # @param data_file_path [String] path to where data.json file is expected to be
@@ -65,9 +67,7 @@ TODO: tie this into git_repository_set so that we can run it on all foreign repo
         end
 
         def self.write_rtx_lvl_settings(new_settings, data_file_path)
-          puts 'rtx level'
           new_settings_json = JSON.generate(new_settings, json_opts)
-          puts new_settings_json
           File.write(data_file_path, new_settings_json)
         end
 
@@ -86,9 +86,7 @@ TODO: tie this into git_repository_set so that we can run it on all foreign repo
         end
 
         def self.write_rpy_lvl_settings(new_settings, data_file_path)
-          puts 'rpy level'
           new_settings_json = JSON.generate(new_settings, json_opts)
-          puts new_settings_json
           File.write(data_file_path, new_settings_json)
         end
 
@@ -101,8 +99,6 @@ TODO: tie this into git_repository_set so that we can run it on all foreign repo
         end
 
         def self.write_rtfile_contents(rtfile_path, new_rtfile_contents)
-          puts 'rtfile'
-          puts new_rtfile_contents
           File.write(rtfile_path, new_rtfile_contents)
         end
 
