@@ -3,6 +3,8 @@ class Repositext
     class Fix
       class UpdateRtfilesToSettingsHierarchy
 
+TODO: tie this into git_repository_set so that we can run it on all foreign repos
+
         # Updates Rtfiles for settings hierarchy:
         # * Renames some setting names in Rtfile
         # * Moves some settings to repositext and repository data.json files
@@ -19,7 +21,6 @@ class Repositext
           medium_rtfile_contents = rename_settings_in_rtfile(old_rtfile_contents)
           write_rtfile_contents(rtfile_path, medium_rtfile_contents)
 
-p rtfile_path
           # Reload config with renamed settings
           new_config = Repositext::Cli::Config.new(rtfile_path)
           new_config.compute
@@ -43,6 +44,7 @@ p rtfile_path
           # Rtfile
           old_rtfile_contents = File.read(rtfile_path)
           new_rtfile_contents = remove_rtfile_entries(old_rtfile_contents)
+          new_rtfile_contents = update_data_base_dir(new_rtfile_contents)
           write_rtfile_contents(rtfile_path, new_rtfile_contents)
 
           Outcome.new(true, { contents: nil }, [])
@@ -173,7 +175,6 @@ p rtfile_path
             font_leading_override
             font_name_override
             font_size_override
-            pdf_export_header_text
             pdf_export_version_control_page
             relative_path_to_primary_content_type
           ]
@@ -197,9 +198,7 @@ p rtfile_path
                 settings[setting_name] = v
               end
             when /^kramdown_converter_method_/
-p setting_name
               kramdown_converter_method_name = setting_name.sub('kramdown_converter_method_', '')
-p kramdown_converter_method_name
               if !(v = config.kramdown_converter_method(kramdown_converter_method_name)).nil?
                 settings[setting_name] = v
               end
@@ -250,6 +249,13 @@ p kramdown_converter_method_name
               original_string.sub!(/^setting :#{ setting_name }[^\n]+\n/, '')
             end
           end
+        end
+
+        def self.update_data_base_dir(rtfile_contents)
+          rtfile_contents.gsub(
+            %(base_dir :data_dir, File.expand_path("data/", File.dirname(__FILE__))\n),
+            %(base_dir :data_dir, File.expand_path("../data/", File.dirname(__FILE__))\n),
+          )
         end
 
       end
