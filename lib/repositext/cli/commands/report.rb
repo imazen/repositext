@@ -4,6 +4,13 @@ class Repositext
 
     private
 
+      # Runs all reports that pertain to content at.
+      def report_all_content_at_reports(options)
+        report_variants.each do |variant|
+          self.send("report_#{ variant }", options)
+        end
+      end
+
       # Compares the files present in the repository with the list of titles from
       # ERP. Lists any files that are missing/added in the repository
       def report_compare_file_inventory_with_erp(options)
@@ -418,7 +425,7 @@ class Repositext
 
         Repositext::Cli::Utils.read_files(
           config.compute_glob_pattern(
-            options['base-dir'] || :content_type_dir,
+            options['base-dir'] || :rtfile_dir,
             options['file-selector'] || :all_files,
             options['file-extension'] || :html_extension
           ),
@@ -1138,6 +1145,24 @@ class Repositext
           }
         end
         h
+      end
+
+      def report_variants
+        %w[
+          compare_file_inventory_with_erp
+          content_sources
+          count_files_with_gap_marks_and_subtitle_marks
+          count_subtitle_marks
+          files_with_multi_para_editors_notes
+          files_with_subtitles
+          gap_mark_count
+          invalid_eagles
+          invalid_typographic_quotes
+          kramdown_element_classes_inventory
+          long_editor_notes
+          quotes_details
+          quotes_summary
+        ]
       end
 
     end
