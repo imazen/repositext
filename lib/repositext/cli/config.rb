@@ -35,8 +35,10 @@ class Repositext
         if name !~ BASE_DIR_NAME_REGEX
           raise ArgumentError.new("A base dir name must match this regex: #{ BASE_DIR_NAME_REGEX.inspect }")
         end
+        # Return nil if key doesn't exist
+        return nil  if (val = @effective_settings["base_dir_#{ name }"]).nil?
         # Guarantee trailing slash
-        File.join(@effective_settings["base_dir_#{ name }"], '')
+        File.join(val, '')
       end
 
       # Retrieve a file extension
