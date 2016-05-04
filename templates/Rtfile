@@ -23,24 +23,9 @@ production there will be an exception.
 # -------------
 
 # Provide a key and value for each setting. You can retrieve them in the app
-# via config.setting(:language_code_3_chars)
+# via config.setting(:pdf_export_header_text)
 
-# Folio import strategy
-# Options:
-# * :merge_record_ids_into_idml: imports all folio files and merges record ids where idml exists
-# * :only_use_if_idml_not_present: imports all folio files, only uses folio where idml does not exist
-setting :first_eagle_override, nil # This is an optional setting if a repo requires differnt settings for the first eagle.
-setting :folio_import_strategy, :only_use_if_idml_not_present
-setting :font_leading_override, nil # This is an optional setting if a repo requires a different leading, e.g., 11.8 (float number)
-setting :font_name_override, nil # This is an optional setting if a repo requires a different font, e.g., 'Times New Roman'
-setting :font_size_override, nil # This is an optional setting if a repo requires a different font size. Valid settings: 10,11,12 (integer)
-setting :is_primary_repo, false
-setting :language_code_2_chars, 'en' # See iso 639-1 for a list of all two character language codes
-setting :language_code_3_chars, 'eng'
 setting :pdf_export_header_text, 'PDF header text'
-setting :pdf_export_version_control_page, false
-setting :primary_repo_lang_code, 'eng'
-setting :relative_path_to_primary_content_type, '../../primary_repo_name/content_type'
 
 # Base directories
 # ----------------
@@ -56,6 +41,7 @@ setting :relative_path_to_primary_content_type, '../../primary_repo_name/content
 base_dir :accepted_corrections_dir, File.expand_path("accepted_corrections/", File.dirname(__FILE__))
 base_dir :compare_dir, File.expand_path("compare/", File.dirname(__FILE__))
 base_dir :content_dir, File.expand_path("content/", File.dirname(__FILE__))
+base_dir :content_type_dir, File.dirname(__FILE__)
 base_dir :data_dir, File.expand_path("../data/", File.dirname(__FILE__))
 base_dir :docx_import_dir, File.expand_path("docx_import/", File.dirname(__FILE__))
 base_dir :folio_import_dir, File.expand_path("folio_import/", File.dirname(__FILE__))
@@ -68,7 +54,6 @@ base_dir :pdf_export_dir, File.expand_path("pdf_export/", File.dirname(__FILE__)
 base_dir :plain_kramdown_export_dir, File.expand_path("plain_kramdown_export/", File.dirname(__FILE__))
 base_dir :plain_text_export_dir, File.expand_path("plain_text_export/", File.dirname(__FILE__))
 base_dir :reports_dir, File.expand_path("reports/", File.dirname(__FILE__))
-base_dir :content_type_dir, File.dirname(__FILE__)
 base_dir :staging_dir, File.expand_path("staging/", File.dirname(__FILE__))
 base_dir :subtitle_export_dir, File.expand_path("subtitle_export/", File.dirname(__FILE__))
 base_dir :subtitle_import_dir, File.expand_path("subtitle_import/", File.dirname(__FILE__))
@@ -93,9 +78,6 @@ base_dir :subtitle_tagging_import_dir, File.expand_path("subtitle_tagging_import
 # * --file-selector=validation_report.txt
 # * --file-selector=all_files
 
-file_selector :all_files, '**/*'
-file_selector :validation_report_file, 'validation_report.txt' # use with blank file_extension!
-
 # File extensions
 # ---------------
 
@@ -113,41 +95,12 @@ file_selector :validation_report_file, 'validation_report.txt' # use with blank 
 # * --file-extension=.{at,csv,json,md,txt}
 # * --file-extension=repositext_extensions
 
-file_extension :at_extension, '.at'
-file_extension :csv_extension, '.csv'
-file_extension :docx_extension, '.docx'
-file_extension :html_extension, '.html'
-file_extension :icml_extension, '.icml'
-file_extension :idml_extension, '.idml'
-file_extension :json_extension, '.json'
-file_extension :pdf_extension, '.pdf'
-file_extension :pt_extension, '.md'
-file_extension :repositext_extensions, '.{at,csv,html,json,md,txt}'
-file_extension :txt_extension, '.txt'
-file_extension :xml_extension, '.xml'
-
 # Kramdown Parsers
 # ----------------
 
 # Provide a name and a Parser's class name as string.
 
-kramdown_parser :docx, 'Kramdown::Parser::Docx'
-kramdown_parser :docx_validation, 'Kramdown::Parser::DocxValidation'
-kramdown_parser :folio_xml, 'Kramdown::Parser::Folio'
-kramdown_parser :idml, 'Kramdown::Parser::Idml'
-kramdown_parser :idml_validation, 'Kramdown::Parser::IdmlValidation'
-kramdown_parser :kramdown, 'Kramdown::Parser::KramdownRepositext'
-kramdown_parser :kramdown_validation, 'Kramdown::Parser::KramdownValidation'
-
 # Kramdown Converter Methods
 # --------------------------
 
 # Provide a name and a method name to be used for conversion.
-
-kramdown_converter_method :to_at, :to_kramdown
-kramdown_converter_method :to_docx, :to_docx
-kramdown_converter_method :to_html_doc, :to_html_doc
-kramdown_converter_method :to_icml, :to_icml
-kramdown_converter_method :to_plain_text, :to_plain_text
-kramdown_converter_method :to_subtitle, :to_subtitle
-kramdown_converter_method :to_subtitle_tagging, :to_subtitle_tagging
