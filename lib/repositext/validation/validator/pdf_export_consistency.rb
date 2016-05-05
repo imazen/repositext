@@ -71,11 +71,13 @@ class Repositext
           pdf_plain_text = sanitize_pdf_raw_text(pdf_raw_text)
           c_at_pt = sanitize_content_at_plain_text(content_at_plain_text)
 
+          excerpt_window = 80 # to check if we're within 80 characters of an eagle
           all_diffs_with_context = Suspension::StringComparer.compare(
             c_at_pt,
             pdf_plain_text,
             true, # include context
-            false # include all diffs
+            false, # include all diffs
+            { excerpt_window: excerpt_window }
           )
 
           # find insert [1], delete [-1], and change [-1,1] groups
@@ -138,7 +140,7 @@ class Repositext
               # With drop cap first eagle, pdf extractor gets confused and
               # doesn't insert a space between the first and second line.
               # It's safe to ignore.
-              next  if (' ' == txt_diff) && ('line 2' == location) && (content_at_plain_text.index(""))
+              next  if((' ' == txt_diff) && (context[0,excerpt_window].index("\n")))
 
               # Prepare error reporting data
               description = "Missing "
@@ -152,7 +154,7 @@ class Repositext
 
               # Ignore any mismatches caused by PDF line wrapping.
               # Space is changed to a newline.
-              next  if ' ' == del[1] && "\n" == ins[1]
+              next  if(' ' == del[1] && "\n" == ins[1])
 
               # Prepare error reporting data
               description = "Changed "
@@ -163,11 +165,12 @@ class Repositext
 
               # Ignore any mismatches caused by PDF line wrapping.
               # Newline is inserted after elipsis, emdash, or hyphen.
-              next  if "\n" == txt_diff && context =~ /[…—-]\n/
+              next  if("\n" == txt_diff && context =~ /[…—-]\n/)
 
               # Ignore extra spaces inserted before punctuation [!?’”]
-              # We look at the 21st and 22nd char in context
-              next  if ' ' == txt_diff && context[20,2] =~ /\s[\!\?\’\”]/
+              # We look at the 1st and 2nd char in trailing context, or the
+              # entire context if it is too short
+              next  if(' ' == txt_diff && (context[excerpt_window,2] || context) =~ /\s[\!\?\’\”]/)
 
               # Prepare error reporting data
               description = "Extra "

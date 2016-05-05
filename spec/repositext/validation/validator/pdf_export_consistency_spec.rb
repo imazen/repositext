@@ -48,6 +48,10 @@ class Repositext
               %(insertion of space before closing double quote ” word1 word2\n),
             ],
             [
+              %(Missing space character\nWithin 80 characters of preceding eagle at beginning of line\n),
+              %(Missing space character\nWithin 80 characters of precedingeagle at beginning of line\n),
+            ],
+            [
               %(NO-BREAK SPACE\u00A0word1 word2\n),
               %(NO-BREAK SPACE word1 word2\n),
             ],
@@ -87,6 +91,10 @@ class Repositext
             [
               %(text changed word1\n),
               %(text changed word2\n),
+            ],
+            [
+              %(Missing space character\nMore than 80 characters of preceding eagle at beginning of line. word1 word2 word3 word4 word5 word6\n),
+              %(Missing space character\nMore than 80 characters of preceding eagle at beginning of line. word1 word2 word3 word4 word5word6\n),
             ],
           ].each do |content_at_plain_text, pdf_raw_text|
             it "handles #{ pdf_raw_text.inspect }" do
