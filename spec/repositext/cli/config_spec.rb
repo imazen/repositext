@@ -263,13 +263,13 @@ class Repositext
       #   end
       # end
 
-      # describe '#primary_repo_base_dir' do
+      # describe '#primary_content_type_base_dir' do
       #   before do
       #     config.add_base_dir(:content_type_dir, '/some/path/to/rtfile')
       #     config.add_setting(:relative_path_to_primary_content_type, '../../rtfile_in_primary_repo')
       #   end
-      #   it "returns an absolute path to primary_repo" do
-      #     config.primary_repo_base_dir.must_equal('/some/path/to/rtfile_in_primary_repo/')
+      #   it "returns an absolute path to primary_content_type" do
+      #     config.primary_content_type_base_dir.must_equal('/some/path/to/rtfile_in_primary_repo/')
       #   end
       # end
 

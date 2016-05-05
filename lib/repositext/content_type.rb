@@ -18,7 +18,7 @@ class Repositext
              :initialize,
              :kramdown_converter_method,
              :kramdown_parser,
-             :primary_repo_base_dir,
+             :primary_content_type_base_dir,
              :setting,
              to: :config,
              prefix: :config

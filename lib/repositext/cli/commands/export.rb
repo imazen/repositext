@@ -348,7 +348,7 @@ class Repositext
           # repo and copy them to this foreign repo's subtitle_export dir.
           # Recursively call this method with some options modified:
           # We call it via `Cli.start` so that we can use a different Rtfile.
-          primary_repo_rtfile_path = File.join(config.primary_repo_base_dir, 'Rtfile')
+          primary_repo_rtfile_path = File.join(config.primary_content_type_base_dir, 'Rtfile')
           Repositext::Cli.start([
             "export",
             "subtitle",
