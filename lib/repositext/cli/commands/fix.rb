@@ -298,6 +298,28 @@ class Repositext
         end
       end
 
+      # Renumbers all paragraphs that contain a `*...*{: .pn}` span.
+      def fix_renumber_paragraphs(options)
+        Repositext::Cli::Utils.change_files_in_place(
+          config.compute_glob_pattern(
+            options['base-dir'] || :content_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :at_extension
+          ),
+          options['file_filter'],
+          "Renumbering paragraphs",
+          options.merge(
+            use_new_repositext_file_api: true,
+            content_type: content_type,
+          )
+        ) do |content_at_file|
+          outcome = Repositext::Process::Fix::RenumberParagraphs.fix(
+            content_at_file.contents
+          )
+          [outcome]
+        end
+      end
+
       def fix_test(options)
         # dummy method for testing
         puts 'fix_test'
