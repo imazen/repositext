@@ -27,7 +27,7 @@ class Repositext
           "Adding initial persistent subtitle ids",
           options.merge(
             use_new_repositext_file_api: true,
-            repository: repository,
+            content_type: content_type,
           )
         ) do |stm_csv_file|
           ccafn = stm_csv_file.filename.sub('.subtitle_markers.csv', '.at')

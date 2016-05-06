@@ -58,7 +58,7 @@ class Repositext
           "Reading content AT files",
           options.merge(
             use_new_repositext_file_api: true,
-            repository: repository,
+            content_type: content_type,
           )
         ) do |content_at_file|
           file_count += 1
