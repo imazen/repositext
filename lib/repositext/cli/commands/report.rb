@@ -871,7 +871,7 @@ class Repositext
           "Reading content AT files",
           options.merge(
             use_new_repositext_file_api: true,
-            repository: repository,
+            content_type: content_type,
           )
         ) do |repositext_file|
           outcome = Repositext::Process::Report::RecordBoundaryLocations.new(
@@ -918,7 +918,7 @@ class Repositext
           "Reading content AT files",
           options.merge(
             use_new_repositext_file_api: true,
-            repository: repository,
+            content_type: content_type,
           )
         ) do |repositext_file|
           outcome = Repositext::Process::Report::StanzaWithoutSongParagraphs.new(

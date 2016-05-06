@@ -16,7 +16,7 @@ class Repositext
           "Converting DOCX files to AT kramdown",
           options.merge(
             input_is_binary: true,
-            repository: repository,
+            content_type: content_type,
             use_new_repositext_file_api: true,
           )
         ) do |zip_binary_r_file|
