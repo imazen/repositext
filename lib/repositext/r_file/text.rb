@@ -7,6 +7,7 @@ class Repositext
       include ContentMixin
       # Specificity boundary
       include ContentAtMixin
+      include DataJsonMixin
 
       # Returns the corresponding primary content AT file for foreign text files
       # that are not content AT. E.g., DOCX imported at files.

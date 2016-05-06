@@ -4,6 +4,31 @@ class Repositext
 
     private
 
+      # Given file specifications for content AT files, this command updates
+      # key value pairs under each corresponding `data.json` file's 'data' key.
+      # This command will create any missing `data.json` files.
+      # @param options [Hash] with file specifications for content AT files.
+      # @param key_val_pairs [Hash] will be merged under the 'data' key
+      def sync_file_level_data(options, key_val_pairs)
+        Repositext::Cli::Utils.read_files(
+          config.compute_glob_pattern(
+            options['base-dir'] || :content_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :at_extension
+          ),
+          options['file_filter'],
+          nil,
+          "syncing file level data",
+          options.merge(
+            use_new_repositext_file_api: true,
+            content_type: content_type,
+          )
+        ) do |content_at_file|
+          content_at_file.sync_file_level_data(key_val_pairs)
+        end
+
+      end
+
       # Updates the subtitle_mark character positions in *.subtitle_markers.csv
       # in /content
       def sync_subtitle_mark_character_positions(options)
