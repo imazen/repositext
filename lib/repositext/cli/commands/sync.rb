@@ -24,7 +24,7 @@ class Repositext
             content_type: content_type,
           )
         ) do |content_at_file|
-          content_at_file.sync_file_level_data(key_val_pairs)
+          content_at_file.update_file_level_data(key_val_pairs)
         end
 
       end

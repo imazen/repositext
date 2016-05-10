@@ -18,6 +18,12 @@ class Repositext
         end
       end
 
+      describe '.default_data' do
+        it 'handles default case' do
+          DataJson.default_data['data'].must_equal({})
+        end
+      end
+
       describe '.json_formatting_options' do
         it 'handles default case' do
           DataJson.json_formatting_options[:indent].must_equal('  ')
@@ -26,11 +32,19 @@ class Repositext
 
       describe '#get_file_level_data' do
         it 'handles default case' do
-          default_rfile.get_file_level_data.must_equal({})
+          default_rfile.get_file_level_data.must_equal(
+            {"data"=>{}, "settings"=>{}, "subtitles"=>{}}
+          )
         end
       end
 
-      describe '#sync_file_level_data' do
+      describe '#json_formatting_options' do
+        it 'handles default case' do
+          DataJson.json_formatting_options[:indent].must_equal('  ')
+        end
+      end
+
+      describe '#update_file_level_data' do
         # TODO
       end
     end

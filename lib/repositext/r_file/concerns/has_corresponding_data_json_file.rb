@@ -10,7 +10,7 @@ class Repositext
       def corresponding_data_json_file(create_if_it_doesnt_exist=false)
         if !File.exist?(corresponding_data_json_filename)
           if create_if_it_doesnt_exist
-            create_empty_data_json_file!(corresponding_data_json_filename)
+            DataJson.create_empty_data_json_file!(corresponding_data_json_filename)
           else
             return nil
           end
