@@ -8,10 +8,10 @@ class Repositext
       class SubtitleMarkerCsvFileSymlinks
 
         # Initialize a new file sync process
-        # @param foreign_content_at_file [RFile]
+        # @param foreign_content_at_file [RFile::ContentAt]
         # @param requires_symlink [Boolean]
         def initialize(foreign_content_at_file, requires_symlink)
-          raise(ArgumentError.new("Invalid foreign_content_at_file: #{ foreign_content_at_file.inspect }"))  unless foreign_content_at_file.is_a?(RFile)
+          raise(ArgumentError.new("Invalid foreign_content_at_file: #{ foreign_content_at_file.inspect }"))  unless foreign_content_at_file.is_a?(RFile::ContentAt)
           @foreign_content_at_file = foreign_content_at_file
           @requires_symlink = requires_symlink
         end
@@ -30,7 +30,7 @@ class Repositext
               # Doesn't exist, create it
               FileUtils.cd(@foreign_content_at_file.dir)
               FileUtils.ln_s(
-                RFile::Text.relative_path_to_corresponding_primary_file(
+                RFile::Content.relative_path_to_corresponding_primary_file(
                   foreign_subtitle_markers_csv_filename,
                   @foreign_content_at_file.repository
                 ),

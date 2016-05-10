@@ -31,7 +31,7 @@ class Repositext
           )
         ) do |stm_csv_file|
           ccafn = stm_csv_file.filename.sub('.subtitle_markers.csv', '.at')
-          corresponding_content_at_file = RFile.new(
+          corresponding_content_at_file = RFile::ContentAt.new(
             File.read(ccafn),
             stm_csv_file.language,
             ccafn

@@ -43,7 +43,7 @@ class Repositext
             print "\033[K"
             puts "   - processing #{ file_name }"
             file_path = File.join(@repository.base_dir, file_name)
-            content_at_file = Repositext::RFile::Text.new(
+            content_at_file = Repositext::RFile::ContentAt.new(
               File.read(file_path),
               @content_type.language,
               file_path,

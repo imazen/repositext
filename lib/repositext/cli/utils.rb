@@ -205,8 +205,8 @@ class Repositext
                 content_type = options[:content_type]
                 language = content_type.language
                 block.call(
-                  Repositext::RFile.get_class_for_binary_or_not(
-                    options[:input_is_binary]
+                  Repositext::RFile.get_class_for_filename(
+                    filename
                   ).new(
                     contents, language, filename, content_type
                   )
@@ -404,13 +404,13 @@ class Repositext
                     repository = options[:repository]
                     language = content_type.language
                     block.call(
-                      Repositext::RFile.get_class_for_binary_or_not(
-                        options[:input_is_binary]
+                      Repositext::RFile.get_class_for_filename(
+                        filename_1
                       ).new(
                         contents_1, language, filename_1, repository
                       ),
-                      Repositext::RFile.get_class_for_binary_or_not(
-                        options[:input_is_binary]
+                      Repositext::RFile.get_class_for_filename(
+                        filename_2
                       ).new(
                         contents_2, language, filename_2, repository
                       ),
@@ -430,8 +430,8 @@ class Repositext
                   content_type = options[:content_type]
                   language = content_type.language
                   block.call(
-                    Repositext::RFile.get_class_for_binary_or_not(
-                      options[:input_is_binary]
+                    Repositext::RFile.get_class_for_filename(
+                      filename_1
                     ).new(
                       contents_1, language, filename_1, content_type
                     )

@@ -27,8 +27,8 @@ class Repositext
           ].join("\n")
         }
         let(:language) { Language::English.new }
-        let(:stm_csv_file) { RFile.new(stm_csv_contents, language, 'filename') }
-        let(:content_at_file) { RFile.new(content_at_contents, language, 'filename') }
+        let(:stm_csv_file) { RFile::SubtitleMarkersCsv.new(stm_csv_contents, language, 'filename') }
+        let(:content_at_file) { RFile::ContentAt.new(content_at_contents, language, 'filename') }
         let(:spids_inventory_file) {
           FileLikeStringIO.new('_path', "abcd\nefgh\n", 'r+')
         }

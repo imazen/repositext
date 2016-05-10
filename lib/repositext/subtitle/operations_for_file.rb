@@ -28,7 +28,7 @@ class Repositext
         new(attrs, ops)
       end
 
-      # @param content_at_file [Repositext::RFile] at :fromGitCommit
+      # @param content_at_file [Repositext::RFile::ContentAt] at :fromGitCommit
       # @param attrs [Hash] with keys
       # @option attrs [String] :fromGitCommit
       # @option attrs [String] :toGitCommit

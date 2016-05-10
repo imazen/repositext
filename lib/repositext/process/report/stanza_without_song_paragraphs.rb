@@ -8,11 +8,11 @@ class Repositext
       class StanzaWithoutSongParagraphs
 
         # Initialize a new report
-        # @param repositext_file [RFile]
-        # @param kramdown_parser [Kramdown::Parser] to parse repositext_file contents
-        def initialize(repositext_file, kramdown_parser)
-          raise(ArgumentError.new("Invalid repositext_file: #{ repositext_file.inspect }"))  unless repositext_file.is_a?(RFile)
-          @repositext_file = repositext_file
+        # @param content_file [RFile::Content]
+        # @param kramdown_parser [Kramdown::Parser] to parse content_file contents
+        def initialize(content_file, kramdown_parser)
+          raise(ArgumentError.new("Invalid content_file: #{ content_file.inspect }"))  unless content_file.is_a?(RFile::Content)
+          @content_file = content_file
           @kramdown_parser = kramdown_parser
         end
 
@@ -38,7 +38,7 @@ class Repositext
           # Matches {: .stanza}
           paragraph_classes = []
           para_ial_regex = /^([^\n]+)\n\{: \.(\w+)/
-          str_sc = Kramdown::Utils::StringScanner.new(@repositext_file.contents)
+          str_sc = Kramdown::Utils::StringScanner.new(@content_file.contents)
           while !str_sc.eos? do
             if str_sc.skip_until(para_ial_regex)
               paragraph_classes << {
@@ -66,7 +66,7 @@ class Repositext
           Outcome.new(
             true,
             {
-              filename: @repositext_file.filename,
+              filename: @content_file.filename,
               stanzas_without_song: stanzas_without_song,
             }
           )

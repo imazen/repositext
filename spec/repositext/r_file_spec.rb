@@ -2,11 +2,7 @@
 require_relative '../helper'
 
 class Repositext
-
   describe RFile do
-
-    # TODO: Test all the methods which depend on repository being a real repository
-
     let(:contents) { 'contents' }
     let(:language) { Language::English.new }
     let(:filename) { '/path/to/r_file.at' }
@@ -34,8 +30,44 @@ class Repositext
       end
     end
 
-    describe '#initialize' do
+    describe '.get_class_for_filename' do
+      [
+        [
+          '/repositext/rt-english/ct-general/content/57/eng57-0103_1234.subtitle_markers.csv',
+          RFile::SubtitleMarkersCsv
+        ],
+        [
+          '/repositext/rt-english/ct-general/content/57/eng57-0103_1234.data.json',
+          RFile::DataJson
+        ],
+        [
+          '/repositext/rt-english/ct-general/docx_import/57/eng57-0103_1234.docx',
+          RFile::Docx
+        ],
+        [
+          '/repositext/rt-english/ct-general/pdf_export/57/eng57-0103_1234.translator.pdf',
+          RFile::Pdf
+        ],
+        [
+          '/repositext/rt-english/ct-general/content/57/eng57-0103_1234.at',
+          RFile::ContentAt
+        ],
+        [
+          '/repositext/rt-english/ct-general/html_export/57/eng57-0103_1234.html',
+          RFile::Content
+        ],
+        [
+          '/repositext/rt-english/ct-general/reports/some_report.txt',
+          RFile::Text
+        ],
+      ].each do |filename, xpect|
+        it "handles #{ filename.inspect }" do
+          RFile.get_class_for_filename(filename).must_equal(xpect)
+        end
+      end
+    end
 
+    describe '#initialize' do
       it 'initializes contents' do
         default_rfile.contents.must_equal(contents)
       end
@@ -47,95 +79,30 @@ class Repositext
       it 'initializes filename' do
         default_rfile.filename.must_equal(filename)
       end
-
     end
 
     describe '#basename' do
-
       it 'handles default data' do
         default_rfile.basename.must_equal('r_file.at')
       end
-
     end
 
     describe '#dir' do
-
       it 'handles default data' do
         default_rfile.dir.must_equal('/path/to')
       end
-
     end
 
-    describe '#extract_date_code' do
-      [
-        ['segment1/segment2/segment3', ''],
-        ['segment1/segment2/eng71-0614_1234', '71-0614'],
-        ['segment1/segment2/eng71-0614a_1234', '71-0614a'],
-        ['segment1/segment2/eng71-0614_1234.at', '71-0614'],
-        ['segment1/segment2/eng71-0614a_1234.at', '71-0614a'],
-        ['71-0614a.at', '71-0614a'],
-        ['1-0614a.at', ''],
-        ['71-014a.at', ''],
-      ].each do |filename, xpect|
-        it "handles #{ filename.inspect }" do
-          r = RFile.new(contents, language, filename)
-          r.extract_date_code.must_equal(xpect)
-        end
+    describe 'is_binary' do
+      it 'returns false' do
+        default_rfile.is_binary.must_equal(false)
       end
     end
 
-    describe '#extract_product_identity_id' do
-      [
-        ['segment1/segment2/segment3', ''],
-        ['segment1/segment2/eng71-0614_1234', ''],
-        ['segment1/segment2/eng71-0614a_1234', ''],
-        ['segment1/segment2/eng71-0614_1234.at', '1234'],
-        ['segment1/segment2/eng71-0614a_1234.at', '1234'],
-        ['71-0614a_1234.at', '1234'],
-        ['1-0614a-1234.at', ''],
-        ['71-014a_123.at', ''],
-      ].each do |filename, xpect|
-        it "handles #{ filename.inspect }" do
-          r = RFile.new(contents, language, filename)
-          r.extract_product_identity_id.must_equal(xpect)
-        end
+    describe 'lang_code_3' do
+      it 'returns correct value' do
+        default_rfile.lang_code_3.must_equal(:eng)
       end
     end
-
-    describe '#extract_year' do
-      [
-        ['segment1/segment2/segment3', ''],
-        ['segment1/segment2/eng71-0614_1234', '71'],
-        ['segment1/segment2/eng71-0614a_1234', '71'],
-        ['segment1/segment2/eng71-0614_1234.at', '71'],
-        ['segment1/segment2/eng71-0614a_1234.at', '71'],
-        ['71-0614a_1234.at', '71'],
-        ['1-0614a_1234.at', ''],
-        ['71-014a_1234.at', ''],
-      ].each do |filename, xpect|
-        it "handles #{ filename.inspect }" do
-          r = RFile.new(contents, language, filename)
-          r.extract_year.must_equal(xpect)
-        end
-      end
-    end
-
-    describe '#corresponding_content_at_filename' do
-
-      it 'computes default filename' do
-        filename = '/docx_import/62/eng62-0101e_1234.docx'
-        path_to_repo = Repository::Test.create!('rt-english').first
-        content_type = ContentType.new(
-          File.join(path_to_repo, 'ct-general')
-        )
-        rfile = RFile::Binary.new(contents, language, filename, content_type)
-        rfile.corresponding_content_at_filename.must_match(
-          /rt\-english\/ct\-general\/content\/62\/eng62\-0101e_1234\.at\z/
-        )
-      end
-
-    end
-
   end
-
 end

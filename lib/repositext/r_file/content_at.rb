@@ -1,8 +1,12 @@
 class Repositext
   class RFile
+    # Represents a content AT file in repositext.
+    class ContentAt < RFile
 
-    # Contains code that is specific to Content AT files
-    module ContentAtMixin
+      include FollowsStandardFilenameConvention
+      include HasCorrespondingDataJsonFile
+      include HasCorrespondingPrimaryFile
+
       def compute_similarity_with_corresponding_primary_file
         Kramdown::TreeStructuralSimilarity.new(
           corresponding_primary_file.kramdown_doc,
@@ -34,10 +38,14 @@ class Repositext
       def kramdown_doc(options = {})
         options = {
           is_primary_repositext_file: is_primary_repo,
-          input: 'KramdownVgr',
+          input: kramdown_parser,
           line_width: 100000, # set to very large value so that each para is on a single line
         }.merge(options)
         Kramdown::Document.new(contents, options)
+      end
+
+      def kramdown_parser
+        'Kramdown'
       end
 
       def plain_text_contents(options)

@@ -1,8 +1,13 @@
 class Repositext
   class RFile
+    # Represents a DOCX file in repositext.
+    class Docx < RFile
 
-    # Provides behavior related to ZIP archives
-    module ZipArchiveMixin
+      include FollowsStandardFilenameConvention
+      include HasCorrespondingContentAtFile
+      include HasCorrespondingPrimaryContentAtFile
+      include HasCorrespondingPrimaryFile
+      include IsBinary
 
       # Extracts 'word/document.xml' from docx file
       # @return [String] the contents of the file
@@ -25,7 +30,6 @@ class Repositext
         end
         addressed_file_contents
       end
-
     end
   end
 end

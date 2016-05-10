@@ -1,13 +1,10 @@
 class Repositext
   class RFile
-
-    # Contains code that is specific to Content files (AT + subtitle markers)
-    module ContentMixin
+    module HasCorrespondingPrimaryFile
 
       extend ActiveSupport::Concern
 
       module ClassMethods
-
         # Returns a relative path to the corresponding primary file for foreign_filename
         # NOTE: This is a class method since foreign_file doesn't exist when we
         # compute this. We often only have the filename with an existing file.
@@ -16,7 +13,7 @@ class Repositext
         # @return [String]
         def relative_path_to_corresponding_primary_file(foreign_filename, foreign_content_type)
           # Create a dummy foreign_file for easy access to its dir and corresponding primary filename
-          dummy_foreign_file = RFile::Text.new(
+          dummy_foreign_file = RFile::Content.new(
             '_',
             foreign_content_type.language,
             foreign_filename,
@@ -27,9 +24,35 @@ class Repositext
             dummy_foreign_file.corresponding_primary_filename
           )
         end
-
       end
 
+      def corresponding_primary_contents
+        corresponding_primary_file.contents
+      end
+
+      def corresponding_primary_file
+        return self  if is_primary_repo
+
+        cpct = corresponding_primary_content_type
+        self.class.new(
+          File.read(corresponding_primary_filename),
+          cpct.language,
+          corresponding_primary_filename,
+          cpct
+        )
+      end
+
+      def corresponding_primary_filename
+        return filename  if is_primary_repo
+
+        primary_filename = filename.sub(
+          content_type.base_dir,
+          corresponding_primary_content_type.base_dir
+        ).sub(
+          /\/#{ content_type.config_setting(:language_code_3_chars) }/,
+          "/#{ content_type.config_setting(:primary_repo_lang_code) }"
+        )
+      end
     end
   end
 end

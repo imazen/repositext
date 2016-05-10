@@ -20,7 +20,7 @@ class Repositext
           content_type = @options['content_type']
           language = content_type.language
           contents = File.binread(docx_file_name).freeze
-          docx_file = Repositext::RFile::Binary.new(
+          docx_file = Repositext::RFile::Docx.new(
             contents, language, docx_file_name, content_type
           )
 

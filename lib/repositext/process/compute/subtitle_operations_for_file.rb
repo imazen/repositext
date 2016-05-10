@@ -58,7 +58,7 @@ class Repositext
         end
 
         # Initializes a new instance from high level objects.
-        # @param content_at_file [Repositext::RFile]
+        # @param content_at_file [Repositext::RFile::ContentAt]
         # @param patch [Rugged::Diff::Patch]
         def self.new_from_content_at_file_and_patch(content_at_file, patch)
           new(
@@ -72,7 +72,7 @@ class Repositext
 
         # Returns a data structure for all text lines in content_at_file
         # with their subtitles.
-        # @param content_at_file [Repositext::RFile]
+        # @param content_at_file [Repositext::RFile::ContentAt]
         # @return [Array<Hash>] with keys :content, :line_no, :subtitles
         def self.compute_content_at_lines_with_subtitles(content_at_file)
           r = []
@@ -91,7 +91,7 @@ class Repositext
 
         # @param content_at_lines_with_subtitles [Array<Hash>]
         # @param hunks [Array<SubtitleOperationsForFile::Hunk>]
-        # @param content_at_file [Repositext::RFile]
+        # @param content_at_file [Repositext::RFile::ContentAt]
         def initialize(content_at_lines_with_subtitles, hunks, content_at_file)
           @content_at_lines_with_subtitles = content_at_lines_with_subtitles
           @hunks = hunks

@@ -1,6 +1,6 @@
 class Repositext
 
-  # Represents an abstract RFile. Use concrete classes `Text` and `Binary`.
+  # Represents an abstract RFile. Use concrete sub class instances!
   class RFile
 
     attr_reader :content_type, :contents, :filename, :language
@@ -10,7 +10,8 @@ class Repositext
              :is_primary_repo,
              :repository,
              to: :content_type,
-             prefix: false
+             prefix: false,
+             allow_nil: true
 
     # Returns a relative path from source_path to target_path.
     # @param source_path [String] absolute path
@@ -22,11 +23,30 @@ class Repositext
       target_pathname.relative_path_from(source_pathname).to_s
     end
 
-    # Returns the class to use for RFiles. Either text or binary.
-    # @param is_binary [Boolean]
+    # Returns the class to use for RFiles based on filename's extension.
+    # @param filename [String]
     # @return [Class]
-    def self.get_class_for_binary_or_not(is_binary)
-      is_binary ? RFile::Binary : RFile::Text
+    def self.get_class_for_filename(filename)
+      # Go from most specific to most general
+      case filename
+      when /\.subtitle_markers\.csv\z/
+        RFile::SubtitleMarkersCsv
+      when /\.data\.json\z/
+        RFile::DataJson
+      when /\.docx\z/
+        RFile::Docx
+      when /\.pdf\z/
+        RFile::Pdf
+      when /\.at\z/
+        RFile::ContentAt
+      when /\-\d{4}.?_\d{4}\./
+        # Date code followed by product identity id
+        RFile::Content
+      when /\.txt\z/
+        RFile::Text
+      else
+        raise "Handle this: #{ filename.inspect }"
+      end
     end
 
     # @param contents [String] the file's contents as string
@@ -57,21 +77,6 @@ class Repositext
       File.dirname(filename)
     end
 
-    # Returns self's date_code
-    def extract_date_code
-      basename.match(/\d{2}-\d{4}[[:alpha:]]?/).to_s
-    end
-
-    # Extracts a 4-digit product identity id from filename
-    def extract_product_identity_id
-      basename.match(/(?<=_)\d{4}(?=\.)/).to_s
-    end
-
-    # Extracts a 2-digit year from filename
-    def extract_year
-      extract_date_code.match(/\A\d{2}/).to_s
-    end
-
     def inspect
       [
         %(#<#{ self.class.name }:#{ object_id }),
@@ -83,42 +88,11 @@ class Repositext
     end
 
     def is_binary
-      raise "Implement #is_binary in subclass!"
+      false
     end
 
     def lang_code_3
       language.code_3_chars
     end
-
-    def corresponding_content_at_contents
-      corresponding_content_at_file.contents
-    end
-
-    def corresponding_content_at_file
-      ccat_filename = corresponding_content_at_filename
-      return nil  if !File.exists?(ccat_filename)
-      RFile::Text.new(
-        File.read(corresponding_content_at_filename),
-        content_type.language,
-        ccat_filename,
-        content_type
-      )
-    end
-
-    def corresponding_content_at_filename
-      File.join(
-        content_type.base_dir,
-        'content',
-        extract_year,
-        [
-          content_type.config_setting(:language_code_3_chars),
-          extract_date_code,
-          '_',
-          extract_product_identity_id,
-          '.at'
-        ].join
-      )
-    end
-
   end
 end
