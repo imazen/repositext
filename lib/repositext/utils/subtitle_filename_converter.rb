@@ -24,6 +24,7 @@ class Repositext
         %w[lin ln],
         %w[loz loz],
         %w[mag mg],
+        %w[nde nd],
         %w[nor no],
         %w[nst nst],
         %w[pol pl],
