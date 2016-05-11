@@ -7,7 +7,10 @@ class Repositext
       # Maps from 3 to 2 character language codes
       LANGUAGE_CODE_MAP = [
         %w[afr af],
+        %w[bem bem],
         %w[eng en],
+        %w[ceb ceb],
+        %w[cha ny],
         %w[chn zh],
         %w[ctk ctk],
         %w[dut nl],
@@ -23,13 +26,16 @@ class Repositext
         %w[mag mg],
         %w[nor no],
         %w[nst nst],
+        %w[pol pl],
         %w[por pt],
+        %w[rom ro],
         %w[rus ru],
         %w[sho sn],
         %w[spn es],
         %w[swa sw],
         %w[swd sv],
         %w[tso ts],
+        %w[zul zu],
       ].freeze
 
       # Converts a repositext filename to the corresponding subtitle_export one
