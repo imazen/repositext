@@ -1138,6 +1138,9 @@ class Repositext
         filename = File.expand_path('data/titles_from_erp.csv', Dir.pwd)
         h = {}
         CSV.foreach(filename, { col_sep: "\t", headers: :first_row }) do |row|
+          if row['ProductID'].nil?
+            raise "Please remove space from ProductID column header in csv file #{filename}"
+          end
           h[row['ProductID'].downcase] = {
             date_code: row['ProductID'].downcase,
             product_identity_id: row['ProductIdentityID'],

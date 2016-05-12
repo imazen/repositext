@@ -25,6 +25,14 @@ class Repositext
       Object.const_get("Repositext::Language::#{ lang_attrs[:name] }").new
     end
 
+    # @param repo_dir_name [String] e.g., "english" or "haitian-creole"
+    # @return [Language]
+    def self.find_by_repo_dir_name(repo_dir_name)
+      # Convert 'haitian-creole' => 'HaitianCreole'
+      lang_class_name = repo_dir_name.split('-').map { |e| e.capitalize }.join
+      Object.const_get("Repositext::Language::#{ lang_class_name }").new
+    end
+
     # @return [Symbol] 2 character language code
     def code_2_chars
       self.class.find_by(:name, self.class.name.split('::').last)[:code2]

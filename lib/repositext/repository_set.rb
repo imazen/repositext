@@ -12,6 +12,12 @@ class Repositext
 
     attr_reader :repo_set_parent_path
 
+    def self.content_type_names
+      %w[
+        general
+      ]
+    end
+
     # @param repo_set_parent_path [String] path to the folder that contains all repos.
     def initialize(repo_set_parent_path)
       @repo_set_parent_path = repo_set_parent_path
@@ -32,18 +38,16 @@ class Repositext
       ]
     end
 
+    def content_type_names
+      self.class.content_type_names
+    end
+
     def foreign_content_repo_names
       %w[
         french
         german
         italian
         spanish
-      ]
-    end
-
-    def content_type_names
-      %w[
-        general
       ]
     end
 
@@ -178,8 +182,9 @@ class Repositext
     # @param primary_language_repo_path [String]
     def initialize_empty_content_repos(primary_language_repo_path)
       compute_repo_paths(:all_content_repos).each { |repo_path|
-        if File.directory?(File.join(repo_path, 'data'))
-          puts " -   Skipping #{ repo_name } (`data` directory already exists)"
+        repo_name = repo_path.split('/').last
+        if File.exists?(File.join(repo_path, 'data.json'))
+          puts " -   Skipping #{ repo_name } (`data.json` file already exists)"
           next
         end
         puts " - Initializing #{ repo_name }"
@@ -269,6 +274,8 @@ class Repositext
         foreign_content_repo_names
       when :primary_repo
         [primary_repo_name]
+      when :test_content_repos
+        all_content_repo_names.first(2)
       else
         raise ArgumentError.new("Invalid repo_set: #{ repo_set.inspect }")
       end
@@ -280,11 +287,14 @@ class Repositext
     # @param repo_root_path [String] absolute path to root of repo
     def create_default_content_directory_structure(repo_root_path)
       # root level directories
-      (%w[data] + content_type_names).each do |rel_path|
-        FileUtils.mkdir(File.join(repo_root_path, rel_path))
+      (
+        %w[data] +
+        content_type_names.map{ |e| "ct-#{ e }" }
+      ).each do |rel_path|
+        FileUtils.mkdir_p(File.join(repo_root_path, rel_path))
       end
       # per content_type directories
-      content_type_names.each do |content_type|
+      content_type_names.each do |content_type_name|
         %w[
           content
           lucene_table_export
@@ -304,7 +314,7 @@ class Repositext
           staging
         ].each do |rel_path|
           FileUtils.mkdir(
-            File.join(repo_root_path, content_type, rel_path)
+            File.join(repo_root_path, "ct-#{ content_type_name }", rel_path)
           )
         end
       end
@@ -327,18 +337,35 @@ class Repositext
           repo_root_path
         )
       end
-      # Copy Rtfile from code template
-      content_type_names.each do |content_type|
-        FileUtils.cp(
-          rtfile_template_path,
-          File.join(repo_root_path, content_type)
-        )
+
+      # Copy repository level data.json file from code template
+      repo_dir_name = repo_root_path.split('/').last.sub(/\Avgr\-/, '')
+      language = Language.find_by_repo_dir_name(repo_dir_name)
+      @langcode_2 = language.code_2_chars
+      @langcode_3 = language.code_3_chars
+      erb_template = ERB.new(File.read(repository_level_data_json_file_template_path))
+      dj_output_path = File.join(repo_root_path, 'data.json')
+      File.write(dj_output_path, erb_template.result(binding))
+
+      # Copy content_type level Rtfiles from code template
+      content_type_names.each do |content_type_name|
+        @content_type_name = content_type_name
+        erb_template = ERB.new(File.read(rtfile_template_path))
+        rtfile_output_path = File.join(repo_root_path, "ct-#{ content_type_name }", 'Rtfile')
+        File.write(rtfile_output_path, erb_template.result(binding))
       end
     end
 
-    # Returns the absolute path to the Rtfile template to use for new language repos.
+    # Returns the absolute path to the repository level data.json template to
+    # use for new language repos.
+    def repository_level_data_json_file_template_path
+      File.expand_path("../../../../repositext/templates/repository-level-data.json.erb", __FILE__)
+    end
+
+    # Returns the absolute path to the content_type level Rtfile templates to
+    # use for new language repos.
     def rtfile_template_path
-      File.expand_path("../../../../repositext/templates/Rtfile", __FILE__)
+      File.expand_path("../../../../repositext/templates/Rtfile.erb", __FILE__)
     end
 
   end
