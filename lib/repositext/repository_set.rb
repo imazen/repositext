@@ -296,9 +296,16 @@ class Repositext
       end
     end
 
-    # Returns the absolute path to the Rtfile template to use for new language repos.
+    # Returns the absolute path to the repository level data.json template to
+    # use for new language repos.
+    def repository_level_data_json_file_template_path
+      File.expand_path("../../../../repositext/templates/repository-level-data.json.erb", __FILE__)
+    end
+
+    # Returns the absolute path to the content_type level Rtfile templates to
+    # use for new language repos.
     def rtfile_template_path
-      File.expand_path("../../../../repositext/templates/Rtfile", __FILE__)
+      File.expand_path("../../../../repositext/templates/Rtfile.erb", __FILE__)
     end
 
   end
