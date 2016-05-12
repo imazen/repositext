@@ -50,7 +50,7 @@ class Repositext
     # Returns the names of all valid content type names
     # @return [Array<String>]
     def self.valid_content_type_names
-      %w[general]
+      RepositorySet.content_type_names
     end
 
     # Verifies that content_type_name is given and valid
