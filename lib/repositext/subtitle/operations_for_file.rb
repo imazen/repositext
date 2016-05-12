@@ -24,6 +24,7 @@ class Repositext
       # Instantiates a new instance of self from a Hash
       # @param attrs [Hash]
       def self.from_hash(attrs)
+        content_at_file = ''
         ops = attrs.delete(:operations)
         new(attrs, ops)
       end
