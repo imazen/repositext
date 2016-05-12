@@ -54,7 +54,7 @@ class Repositext
     # https://github.com/rails/rails/blob/932655a4ef61083da98724bb612d00f89e153c46/activesupport/lib/active_support/cache/file_store.rb#L103
     # OPTMIZE: We could use Rails Cache's File.atomic_write method for even better concurrency:
     # https://github.com/rails/rails/blob/932655a4ef61083da98724bb612d00f89e153c46/activesupport/lib/active_support/core_ext/file/atomic.rb
-    def lock_self(&block)
+    def lock_self_exclusively(&block)
       if File.exist?(filename)
         File.open(filename, 'r+') do |f|
           begin

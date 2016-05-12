@@ -118,6 +118,10 @@ class Repositext
         lines.each { |l| $stderr.puts l }
       end
 
+      def sync_subtitles(options)
+        Process::Sync::Subtitles.new(options).sync
+      end
+
       def sync_test(options)
         # dummy method for testing
         puts 'sync_test'

@@ -84,6 +84,46 @@ class Repositext
       }
     end
 
+    # Makes sure that all content repos are ready for git operations:
+    # * They are on master branch
+    # * They have no uncommitted changes
+    # * They pulled latest from origin
+    # @param repo_set [Symbol, Array<String>] A symbol describing a predefined
+    #     group of repos, or an Array with specific repo names as strings.
+    # @param block [Proc, optional] will be called for each repo.
+    # @return [Hash] with repos that are not ready. Keys are repo paths, values
+    #     are arrays with issue messages if any exist.
+    def git_ensure_repos_are_ready(repo_set)
+      repos_with_issues = {}
+      compute_repo_paths(repo_set).each { |repo_path|
+        if block_given?
+          yield
+        end
+        repo_issues = []
+        cmd = %(cd #{ repo_path } && git pull && git status)
+        Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
+          exit_status = wait_thr.value
+          r = stdout.read
+          if !r.index('On branch master')
+            repo_issues << "Is not on master branch."
+          end
+          if !r.index(%(Your branch is up-to-date with 'origin/master'))
+            repo_issues << "Is not up-to-date with origin"
+          end
+          if !r.index(%(nothing to commit, working directory clean))
+            repo_issues << "Has uncommitted changes"
+          end
+          if !exit_status.success?
+            repo_issues << "Error: could not check repo (#{ stderr.read })"
+          end
+        end
+        if repo_issues.any?
+          repos_with_issues[repo_path] = repo_issues
+        end
+      }
+      repos_with_issues
+    end
+
     # Pulls all repos
     # @param repo_set [Symbol, Array<String>] A symbol describing a predefined
     #     group of repos, or an Array with specific repo names as strings.
