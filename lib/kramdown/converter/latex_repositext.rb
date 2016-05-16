@@ -388,9 +388,10 @@ module Kramdown
         no_break_following_chars = Regexp.escape(
           [Repositext::S_QUOTE_CLOSE, Repositext::D_QUOTE_CLOSE, ')'].join
         )
+        # We only want to allow linebreak after line_breakable_chars so we insert \nolinebreak before.
         lb.gsub!(
-          /(?<=[#{ line_breakable_chars }])(?![#{ no_break_following_chars }])/,
-          "\\hspace{0pt}"
+          /([#{ line_breakable_chars }])(?![#{ no_break_following_chars }])/,
+          "\\nolinebreak[4]"+'\1'+"\\hspace{0pt}"
         )
         # Convert any zero-width spaces to latex equivelant
         lb.gsub!(/\u200B/, "\\hspace{0pt}")
