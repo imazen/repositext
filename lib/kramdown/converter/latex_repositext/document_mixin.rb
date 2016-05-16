@@ -114,6 +114,7 @@ module Kramdown
           @include_meta_info = include_meta_info
           @is_primary_repo = @options[:is_primary_repo]
           @latest_commit_hash = latest_commit.oid[0,8]
+          @linebreaklocale = @options[:language_code_2_chars]
           @page_number_command = compute_page_number_command(
             @options[:is_primary_repo],
             @options[:language_code_3_chars]
