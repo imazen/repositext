@@ -96,7 +96,7 @@ module Kramdown
           @additional_footer_text = escape_latex_text(@options[:additional_footer_text])
           @body = latex_body
           @date_code = date_code.capitalize
-          @first_eagle = @options[:first_eagle_override] || "{\\lettrine[lines=2,lraise=0.355,findent=8.3,nindent=0]{\\textscale{0.465}}}"
+          @first_eagle = @options[:first_eagle_override] || "{\\lettrine[lines=2,lraise=0.355,findent=8.3,nindent=0]{\\textscale{0.465}}\\rtmainfont}"
           @font_leading = @options[:font_leading_override] || 11.8
           @font_name = @options[:font_name_override] || (@options[:is_primary_repo] ? 'V-Calisto-St' : 'V-Excelsior LT Std')
           @font_size = @options[:font_size_override] || 11
