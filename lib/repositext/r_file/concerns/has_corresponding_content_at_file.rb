@@ -11,7 +11,7 @@ class Repositext
       def corresponding_content_at_file
         ccat_filename = corresponding_content_at_filename
         return nil  if !File.exists?(ccat_filename)
-        RFile::Text.new(
+        RFile::ContentAt.new(
           File.read(corresponding_content_at_filename),
           content_type.language,
           ccat_filename,
