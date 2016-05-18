@@ -76,7 +76,7 @@ module Kramdown
         r = entity_to_latex(entity)
         if '' == r
           # kramdown couldn't handle it
-          r = if %w[2011 2028 202F FEFF].include?(sprintf("%04X", entity.code_point))
+          r = if %w[200B 2011 2028 202F FEFF].include?(sprintf("%04X", entity.code_point))
             # decode valid characters
             Repositext::Utils::EntityEncoder.decode(el.options[:original])
           else
@@ -386,12 +386,15 @@ module Kramdown
         )
         # Exceptions: Don't insert zero-width space if followed by no-break characters:
         no_break_following_chars = Regexp.escape(
-          [Repositext::S_QUOTE_CLOSE, Repositext::D_QUOTE_CLOSE, ')'].join
+          [Repositext::S_QUOTE_CLOSE, Repositext::D_QUOTE_CLOSE, ')?,!'].join
         )
+        # We only want to allow linebreak after line_breakable_chars so we insert \nolinebreak before.
         lb.gsub!(
-          /(?<=[#{ line_breakable_chars }])(?![#{ no_break_following_chars }])/,
-          "\\hspace{0pt}"
+          /([#{ line_breakable_chars }])(?![#{ no_break_following_chars }])/,
+          "\\nolinebreak[4]"+'\1'+"\\hspace{0pt}"
         )
+        # Convert any zero-width spaces to latex equivelant
+        lb.gsub!(/\u200B/, "\\hspace{0pt}")
         lb
       end
 

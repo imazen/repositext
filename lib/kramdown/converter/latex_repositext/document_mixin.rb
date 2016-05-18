@@ -96,7 +96,7 @@ module Kramdown
           @additional_footer_text = escape_latex_text(@options[:additional_footer_text])
           @body = latex_body
           @date_code = date_code.capitalize
-          @first_eagle = @options[:first_eagle_override] || "{\\lettrine[lines=2,lraise=0.355,findent=8.3,nindent=0]{\\textscale{0.465}}}"
+          @first_eagle = @options[:first_eagle_override] || "{\\lettrine[lines=2,lraise=0.355,findent=8.3,nindent=0]{\\textscale{0.465}}\\rtmainfont}"
           @font_leading = @options[:font_leading_override] || 11.8
           @font_name = @options[:font_name_override] || (@options[:is_primary_repo] ? 'V-Calisto-St' : 'V-Excelsior LT Std')
           @font_size = @options[:font_size_override] || 11
@@ -114,6 +114,7 @@ module Kramdown
           @include_meta_info = include_meta_info
           @is_primary_repo = @options[:is_primary_repo]
           @latest_commit_hash = latest_commit.oid[0,8]
+          @linebreaklocale = @options[:language_code_2_chars]
           @page_number_command = compute_page_number_command(
             @options[:is_primary_repo],
             @options[:language_code_3_chars]
