@@ -306,8 +306,22 @@ class Repositext
       end
 
 
-      # Export Subtitle files
+      # Export Subtitle files. Behavior depends on whether we are in
+      # * English:
+      #     * Export subtitle_export/61/61-0723e_0794.en.txt
+      #     * Copy 61/eng61-0723e_0794.subtitle_markers.csv
+      # * Foreign calls itself recursively to obtain the following:
+      #     * Export subtitle_export/61/61-0723e_0794.es.txt
+      #     * Export subtitle_export/61/61-0723e_0794.en.txt
+      #     * Copy 61/eng61-0723e_0794.subtitle_markers.csv
       def export_subtitle(options)
+        if options['file-selector'] =~ /[a-z]{3}\d{2}-\d{4}/i
+          # File selector contains language code (e.g., "*spn57-0123*"). This
+          # prevents foreign subtitle exports from working as we also need to
+          # export the corresponding primary files, however they will never
+          # be processed as they don't match the file selector.
+          raise ArgumentError.new("\nPlease don't add language codes to the file selector since export may have to run on primary and foreign languages: #{ options['file-selector'].inspect }")
+        end
         input_base_dir = config.compute_base_dir(options['base-dir'] || :content_dir)
         input_file_selector = config.compute_file_selector(options['file-selector'] || :all_files)
         input_file_extension = config.compute_file_extension(options['file-extension'] || :at_extension)
@@ -339,6 +353,11 @@ class Repositext
           subtitle = doc.send(config.kramdown_converter_method(:to_subtitle))
           [Outcome.new(true, { contents: subtitle, extension: 'txt' })]
         end
+        # Fork depending on whether we're in primary or foreign repo.
+        # If command is initially run on primary, it will reach the primary
+        # brach only. If this command was called on foreign initially, it will
+        # first execute the foreign branch, then call itself recursively on
+        # the primary repo and execute the primary branch.
         if config.setting(:is_primary_repo)
           # We're in primary repo, copy subtitle_marker_csv_files to foreign repo
           # This works because options['output'] points to foreign repo.
@@ -349,14 +368,16 @@ class Repositext
           # Recursively call this method with some options modified:
           # We call it via `Cli.start` so that we can use a different Rtfile.
           primary_repo_rtfile_path = File.join(config.primary_content_type_base_dir, 'Rtfile')
-          Repositext::Cli.start([
+          args = [
             "export",
             "subtitle",
             "--content-type-name", options['content-type-name'], # use same content_type
             "--file-selector", input_file_selector, # use same file-selector
             "--rtfile", primary_repo_rtfile_path, # use primary repo's Rtfile
             "--output", output_base_dir, # use this foreign repo's subtitle_export dir
-          ])
+          ]
+          args << '--skip-git-up-to-date-check'  if options['skip-git-up-to-date-check']
+          Repositext::Cli.start(args)
         end
       end
 
