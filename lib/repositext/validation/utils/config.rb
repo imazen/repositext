@@ -88,7 +88,8 @@ class Repositext
         0x2008, # punctuation space
         0x2009, # thin space
         0x200A, # hair space
-        0x200B, # discretionary line break (zero width space)
+      # TODO: Change the code point 200B to be configurable so it is only accpetable for Khmer.
+      # 0x200B, # discretionary line break (zero width space)
         0x200C, # zero width nonjoiner
       # 0x200D, # zero width joiner (used in some indian languages)
         0x200E, # left-to-right mark

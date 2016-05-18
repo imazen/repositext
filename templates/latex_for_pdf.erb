@@ -22,6 +22,9 @@
 
 \usepackage{lettrine}
 
+% sets the language specific linebreaking
+\XeTeXlinebreaklocale "<%= @linebreaklocale %>"
+
 % fontspec to use custom fonts
 \usepackage{fontspec}
 % turn off ligatures
@@ -48,6 +51,7 @@
 \usepackage{relsize}
   % forces relsize to scale by the set percentage
   \renewcommand\RSpercentTolerance{0}
+  \renewcommand\RSlargest{50pt}
 
 % setspace to ensure single line spacing is used
 \usepackage[singlespacing]{setspace}
