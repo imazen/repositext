@@ -52,6 +52,10 @@ class Repositext
         false
       end
 
+      def plain_text_contents
+        contents
+      end
+
     end
   end
 end
