@@ -4,6 +4,10 @@ class Repositext
     # specific classes before using this one!
     class Text < RFile
 
+      def plain_text_contents
+        contents
+      end
+
     end
   end
 end
