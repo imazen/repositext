@@ -9,7 +9,7 @@ class Repositext
         let(:docx_kramdown_parser){ Kramdown::Parser::Docx }
         let(:document_xml){ File.read(File.expand_path('../docx_to_at/document.xml', __FILE__)) }
         let(:at_kramdown_converter_method){ :to_kramdown }
-        let(:docx_file){ RFile::Binary.new('', Language::English.new, 'filename') }
+        let(:docx_file){ RFile::Docx.new('', Language::English.new, 'filename') }
         let(:default_converter){
           DocxToAt.new(document_xml, docx_file, docx_kramdown_parser, at_kramdown_converter_method)
         }

@@ -27,8 +27,8 @@ class Repositext
         let(:primary_contents) { (primary_lines.map { |e| "#{ e }\n{: .normal}" }.join("\n\n")) + "\n" }
         let(:foreign_filename) { 'path/to/foreign_file' }
         let(:primary_filename) { 'path/to/primary_file' }
-        let(:foreign_file) { RFile.new(foreign_contents, foreign_language, foreign_filename) }
-        let(:primary_file) { RFile.new(primary_contents, primary_language, primary_filename) }
+        let(:foreign_file) { RFile::ContentAt.new(foreign_contents, foreign_language, foreign_filename) }
+        let(:primary_file) { RFile::ContentAt.new(primary_contents, primary_language, primary_filename) }
         let(:subtitle_splitter) { Subtitles.new(foreign_file, primary_file) }
 
         describe '#split' do
@@ -74,8 +74,8 @@ class Repositext
               ],
             ].each do |desc, foreign_contents, primary_contents, xpect|
               it "handles #{ desc.inspect }" do
-                foreign_file = RFile.new(foreign_contents, specific_foreign_language, foreign_filename)
-                primary_file = RFile.new(primary_contents, primary_language, primary_filename)
+                foreign_file = RFile::ContentAt.new(foreign_contents, specific_foreign_language, foreign_filename)
+                primary_file = RFile::ContentAt.new(primary_contents, primary_language, primary_filename)
                 subtitle_splitter = Subtitles.new(foreign_file, primary_file)
                 subtitle_splitter.split.result.must_equal(xpect)
               end

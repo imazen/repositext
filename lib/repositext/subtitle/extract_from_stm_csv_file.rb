@@ -2,7 +2,7 @@ class Repositext
   class Subtitle
     class ExtractFromStmCsvFile
 
-      # @param stm_csv_file [RFile, nil]
+      # @param stm_csv_file [RFile::SubtitleMarkersCsv, nil]
       def initialize(stm_csv_file)
         @stm_csv_file = stm_csv_file
       end

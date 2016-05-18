@@ -30,7 +30,7 @@ class Repositext
         def spot_sheet_valid?(submitted_corrections_file_name)
           content_type = @options['content_type']
           language = content_type.language
-          submitted_corrections_file = Repositext::RFile::Text.new(
+          submitted_corrections_file = Repositext::RFile::Content.new(
             File.read(submitted_corrections_file_name),
             language,
             submitted_corrections_file_name,

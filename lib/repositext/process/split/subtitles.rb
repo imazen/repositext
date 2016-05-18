@@ -3,10 +3,11 @@ class Repositext
     class Split
       class Subtitles
 
-        # @param foreign_file [Repositext::RFile]
+        # @param foreign_file [Repositext::RFile::ContentAt]
+        # @param primary_file [Repositext::RFile::ContentAt]
         def initialize(foreign_file, primary_file)
-          raise ArgumentError.new("Invalid foreign_file: #{ foreign_file.inspect }")  unless foreign_file.is_a?(RFile)
-          raise ArgumentError.new("Invalid primary_file: #{ primary_file.inspect }")  unless primary_file.is_a?(RFile)
+          raise ArgumentError.new("Invalid foreign_file: #{ foreign_file.inspect }")  unless foreign_file.is_a?(RFile::ContentAt)
+          raise ArgumentError.new("Invalid primary_file: #{ primary_file.inspect }")  unless primary_file.is_a?(RFile::ContentAt)
           @foreign_file = foreign_file
           @primary_file = primary_file
         end

@@ -6,15 +6,15 @@ class Repositext
       # marker files.
       class AddInitialPersistentSubtitleIds
 
-        # @param stm_csv_file [Repositext::RFile]
-        # @param content_at_file [Repositext::RFile]
+        # @param stm_csv_file [Repositext::RFile::SubtitleMarkersCsv]
+        # @param content_at_file [Repositext::RFile::ContentAt]
         # @param spids_inventory_file [IO] file that contains the inventory of
         #          existing SPIDs.
         #          Typically located at /data/subtitle_ids.txt
         #          Must exist and be opened with mode "r+"
         def initialize(stm_csv_file, content_at_file, spids_inventory_file)
-          raise ArgumentError.new("Invalid stm_csv_file: #{ stm_csv_file.inspect }")  unless stm_csv_file.is_a?(RFile)
-          raise ArgumentError.new("Invalid content_at_file: #{ content_at_file.inspect }")  unless content_at_file.is_a?(RFile)
+          raise ArgumentError.new("Invalid stm_csv_file: #{ stm_csv_file.inspect }")  unless stm_csv_file.is_a?(RFile::SubtitleMarkersCsv)
+          raise ArgumentError.new("Invalid content_at_file: #{ content_at_file.inspect }")  unless content_at_file.is_a?(RFile::ContentAt)
           @stm_csv_file = stm_csv_file
           @content_at_file = content_at_file
           @spids_inventory_file = spids_inventory_file

@@ -5,7 +5,6 @@ class Repositext
 
   describe ContentType do
     let(:content_type_name) { 'general' }
-
     let(:primary_repo_name) { 'rt-english' }
     let(:path_to_primary_repo) {
       File.join(Repository::Test.repos_folder, primary_repo_name, '')
@@ -20,7 +19,6 @@ class Repositext
     let(:primary_content_type) {
       ContentType.new(path_to_primary_content_type)
     }
-
     let(:foreign_repo_name) { 'rt-spanish' }
     let(:path_to_foreign_repo) {
       File.join(Repository::Test.repos_folder, foreign_repo_name, '')

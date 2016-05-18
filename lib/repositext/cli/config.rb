@@ -178,6 +178,17 @@ class Repositext
         }
       end
 
+      # Prints a pretty version of self
+      def pretty_print
+        puts
+        puts "settings_hierarchy"
+        pp @settings_hierarchy
+        puts
+        puts "effective_settings"
+        pp @effective_settings
+        puts
+      end
+
       # Returns the absolute path of primary_content_type with a guaranteed
       # trailing slash at the end
       def primary_content_type_base_dir

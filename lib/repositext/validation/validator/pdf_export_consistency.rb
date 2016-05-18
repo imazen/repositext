@@ -34,7 +34,7 @@ class Repositext
             return Outcome.new(true, nil, [], [], [])
           end
 
-          pdf_file_stub = Repositext::RFile::Binary.new(
+          pdf_file_stub = Repositext::RFile::Pdf.new(
             '_', language, pdf_file_name, content_type
           )
           corresponding_content_at_file = pdf_file_stub.corresponding_content_at_file

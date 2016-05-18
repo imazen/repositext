@@ -27,7 +27,7 @@ next nil  unless file_name =~ /\/eng64-0212/
             # Skip non content_at files
             next nil  unless file_name =~ /\Acontent\/.+\d{4}\.at\z/
             file_path = File.join(@repository.base_dir, file_name)
-            content_at_file = Repositext::RFile::Text.new(
+            content_at_file = Repositext::RFile::ContentAt.new(
               File.read(file_path),
               Repositext::Language.find_by_code(:eng), # TODO: Get this from repo!
               file_path,

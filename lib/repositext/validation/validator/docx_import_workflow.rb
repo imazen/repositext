@@ -35,7 +35,7 @@ class Repositext
           content_type = @options['content_type']
           language = content_type.language
           contents = File.binread(docx_file_name).freeze
-          docx_file = Repositext::RFile::Binary.new(
+          docx_file = Repositext::RFile::Docx.new(
             contents, language, docx_file_name, content_type
           )
 
@@ -74,7 +74,7 @@ class Repositext
 
         # Check if corresponding content AT file exists and has subtitles.
         # Abort import if this is the case.
-        # @param docx_file [Repositext::RFile]
+        # @param docx_file [Repositext::RFile::Docx]
         # @param errors [Array] collector for errors
         # @param warnings [Array] collector for warnings
         def validate_corresponding_content_at_with_subtitles_does_not_exist(docx_file, errors, warnings)
@@ -99,7 +99,7 @@ class Repositext
 
         # Make sure file name is valid as confirmation that translator used the
         # corrected template.
-        # @param docx_file [Repositext::RFile]
+        # @param docx_file [Repositext::RFile::Docx]
         # @param errors [Array] collector for errors
         # @param warnings [Array] collector for warnings
         def validate_correct_template_file_used(docx_file, errors, warnings)
