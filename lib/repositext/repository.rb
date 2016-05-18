@@ -123,7 +123,7 @@ class Repositext
     def lookup(oid)
       @repo.lookup(oid)
     rescue Rugged::InvalidError => e
-      puts "Lookup of oid in remote didn't work. If this is a new repository, at least one commit needs to be at the remote."
+      puts "Lookup of oid in remote didn't work. If this is a new repository, at least two commits need to be at the remote."
       raise
     end
 
