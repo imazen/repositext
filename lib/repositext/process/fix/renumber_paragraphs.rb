@@ -14,7 +14,7 @@ class Repositext
           error_messages = []
           res.gsub!(
             /
-              (?<=^\*) # asterisk at beginning of line
+              ((?<=^\*)|(?<=^@\*)) # asterisk or subtitle mark and asterisk at beginning of line
               ([^\*]*) # inside asterisks
               (?=\*\{:\s*\.pn\}) # trailing asterisk and IAL
             /x,

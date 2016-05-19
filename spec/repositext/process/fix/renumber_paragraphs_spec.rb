@@ -16,6 +16,11 @@ class Repositext
               %(*3*{: .pn}),
               %(*2*{: .pn}),
             ],
+            [
+              "Default case with leading subtitle_mark",
+              %(@*3*{: .pn}),
+              %(@*2*{: .pn}),
+            ],
           ].each do |description, test_string, xpect|
             it "handles #{ description }" do
               RenumberParagraphs.fix(test_string).result[:contents].must_equal(xpect)
