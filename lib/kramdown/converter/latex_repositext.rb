@@ -389,8 +389,9 @@ module Kramdown
           [Repositext::S_QUOTE_CLOSE, Repositext::D_QUOTE_CLOSE, ')?,!'].join
         )
         # We only want to allow linebreak after line_breakable_chars so we insert \nolinebreak before.
+        # TODO: Move the Editor and Translator abbreviation exceptions to the langauge class.
         lb.gsub!(
-          /([#{ line_breakable_chars }])(?![#{ no_break_following_chars }])/,
+          /([#{ line_breakable_chars }])(?!([#{ no_break_following_chars }]|(ed\.|n\.d\.t\.)))/i,
           "\\nolinebreak[4]"+'\1'+"\\hspace{0pt}"
         )
         # Convert any zero-width spaces to latex equivelant
