@@ -40,6 +40,7 @@ PATH
       outcome
       parallel
       pragmatic_segmenter (~> 0.3.7)
+      rainbow
       ruby-graphviz
       rubyzip
       rugged (~> 0.24)
@@ -77,15 +78,16 @@ GEM
     minitest (5.8.3)
     minitest-spec-expect (2.0.0)
       minitest (~> 5.0)
-    multi_json (1.11.2)
+    multi_json (1.12.1)
     multi_ruby_runner (1.0.2)
     needleman_wunsch_aligner (1.0.4)
     nokogiri (1.6.7.2)
       mini_portile2 (~> 2.0.0.rc2)
     outcome (1.0.1)
-    parallel (1.6.2)
+    parallel (1.8.0)
     pragmatic_segmenter (0.3.7)
       unicode
+    rainbow (2.1.0)
     rake (10.4.2)
     rice (2.0.0)
     ruby-graphviz (1.2.2)
@@ -94,7 +96,7 @@ GEM
     rugged (0.24.0)
     thor (0.19.1)
     thread_safe (0.3.5)
-    tilt (2.0.2)
+    tilt (2.0.4)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
     unicode (0.4.4.2)
