@@ -74,6 +74,7 @@ module Kramdown
           {
             'mal' => 'malayalam',
             'kan' => 'kannada',
+            'frs' => 'farsi',
           }[language_code_3_chars]
         end
 
