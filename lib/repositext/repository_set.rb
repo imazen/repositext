@@ -276,7 +276,7 @@ class Repositext
       compute_repo_paths(:foreign_content_repos).each { |foreign_repo_path|
         foreign_repo_name = foreign_repo_path.split('/').last
         puts " - #{ foreign_repo_name }"
-        FileUtils.cp(primary_gemfile_lock_path, foreign_repo_path, force: true)
+        FileUtils.cp(primary_gemfile_lock_path, foreign_repo_path)
       }
       puts
       puts "=> commit changes to 'Gemfile.lock' in all repos and push them to origin, then press <Enter>."

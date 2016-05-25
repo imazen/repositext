@@ -4,12 +4,6 @@ class Repositext
 
     private
 
-      # Updates RubyGems in all code and content repos
-      def git_repo_update_all_rubygems(options)
-        repos_parent_path = File.expand_path('..', Dir.pwd)
-        RepositorySet.new(repos_parent_path).update_all_rubygems
-      end
-
       # Clones all git repos that don't exist on local filesystem yet.
       # Run this from inside primary repo.
       # @param [Hash] options
@@ -58,6 +52,12 @@ class Repositext
       def git_repo_status_all_content(options)
         repos_parent_path = File.expand_path('..', Dir.pwd)
         RepositorySet.new(repos_parent_path).git_status(:all_content_repos)
+      end
+
+      # Updates RubyGems in all code and content repos
+      def git_repo_update_all_rubygems(options)
+        repos_parent_path = File.expand_path('..', Dir.pwd)
+        RepositorySet.new(repos_parent_path).update_all_rubygems
       end
 
     end
