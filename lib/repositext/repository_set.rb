@@ -242,17 +242,49 @@ class Repositext
     end
 
     # Updates all gems in language repos.
-    def update_rubygems_in_all_language_repos
+    def update_all_rubygems
+      puts
+      puts "This command assists in updating Rubygems in all content repos."
+      puts
+      puts "Please follow the onscreen instructions (=>) and hit enter after each completed step."
+      puts "No problem if you make a mistake, just re-run the command."
       # Pull code repos (to get Gemfile updates)
-      # go into primary repo
-          # bundle install
-          # commit gem related changes to Gemfile.lock
-      # iterate over all foreign repos
-        # make sure there are no uncommitted git changes
-        # Copy Gemfile and Gemfile.lock from primary repo
-        # add Gemfile and Gemfile.lock to git index
-        # `git commit`
-        # `git push`
+      puts
+      puts "Pulling updates for code repos"
+      compute_repo_paths(:code_repos).each { |repo_path|
+        repo_name = repo_path.split('/').last
+        puts " - #{ repo_name }"
+        cmd = %(cd #{ repo_path } && git pull)
+        Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
+          exit_status = wait_thr.value
+          if !exit_status.success?
+            msg = %(Could not pull #{ repo_name }:\n\n)
+            puts(msg + stderr.read)
+          end
+        end
+      }
+      puts
+      # Bundle install code + content repos
+      puts "=> run `bundle install` in primary content repo to update 'Gemfile.lock', then press <Enter>."
+      $stdout.flush
+      $stdin.gets
+      puts "Copying 'Gemfile.lock' to all foreign repos"
+      primary_gemfile_lock_path = File.join(
+        compute_repo_paths(:primary_repo).first,
+        'Gemfile.lock'
+      )
+      compute_repo_paths(:foreign_content_repos).each { |foreign_repo_path|
+        foreign_repo_name = foreign_repo_path.split('/').last
+        puts " - #{ foreign_repo_name }"
+        FileUtils.cp(primary_gemfile_lock_path, foreign_repo_path, force: true)
+      }
+      puts
+      puts "=> commit changes to 'Gemfile.lock' in all repos and push them to origin, then press <Enter>."
+      $stdout.flush
+      $stdin.gets
+      # Wrap up message
+      puts
+      puts "Command completed."
     end
 
   protected
