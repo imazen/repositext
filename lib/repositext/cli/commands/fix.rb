@@ -320,6 +320,28 @@ class Repositext
         end
       end
 
+      # Replaces invalid unicode locations according to unicode_replacement_mappings
+      def fix_replace_invalid_unicode_locations(options)
+        Repositext::Cli::Utils.change_files_in_place(
+          config.compute_glob_pattern(
+            options['base-dir'] || :content_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :at_extension
+          ),
+          options['file_filter'],
+          "Replacing invalid unicode locations",
+          options.merge(
+            use_new_repositext_file_api: true,
+            content_type: content_type,
+          )
+        ) do |content_at_file|
+          outcome = Repositext::Process::Fix::ReplaceInvalidUnicodeLocations.fix(
+            content_at_file.contents
+          )
+          [outcome]
+        end
+      end
+
       def fix_test(options)
         # dummy method for testing
         puts 'fix_test'
