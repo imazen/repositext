@@ -18,7 +18,7 @@ class Repositext
       # doesn't exist
       def corresponding_subtitle_markers_csv_file
         return nil  if !File.exist?(corresponding_subtitle_markers_csv_filename)
-        self.class.new(
+        RFile::SubtitleMarkersCsv.new(
           File.read(corresponding_subtitle_markers_csv_filename),
           language,
           corresponding_subtitle_markers_csv_filename,
@@ -56,7 +56,7 @@ class Repositext
       # @return [Array<Subtitle>]
       def subtitles
         return []  if (csmcf = corresponding_subtitle_markers_csv_file).nil?
-        Repositext::Subtitle::ExtractFromStmCsvFile.new(csmcf).extract
+        csmcf.subtitles
       end
     end
   end

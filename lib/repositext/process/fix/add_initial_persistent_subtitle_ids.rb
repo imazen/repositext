@@ -33,7 +33,7 @@ class Repositext
         # @return [Outcome] with updated stm_csv_file contents as result
         def fix
           record_id_mappings = compute_record_id_mappings(@content_at_file.contents)
-          subtitles = Subtitle::ExtractFromStmCsvFile.new(@stm_csv_file).extract
+          subtitles = @stm_csv_file.subtitles
           num_subtitles = subtitles.length
 
           if record_id_mappings.length != num_subtitles
