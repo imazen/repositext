@@ -37,6 +37,7 @@ require 'parallel'
 require 'pathname' # for #relative_path_from
 require 'pp'
 require 'pragmatic_segmenter'
+require 'rainbow/ext/string' # to monkey patch Rainbow String extensions
 require 'rugged'
 require 'socket' # For PDF text extraction server
 require 'suspension'
