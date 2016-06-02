@@ -130,7 +130,7 @@ module Kramdown
           @truncated_title_footer = compute_truncated_title(
             document_title_plain_text, document_title_latex, 45, 3
           )
-          @use_cjk_package = ['chn'].include?(@options[:language_code_3_chars])
+          @use_cjk_package = ['chn','cnt'].include?(@options[:language_code_3_chars])
           @version_control_page = if @options[:version_control_page]
             compute_version_control_page(git_repo, @options[:source_filename])
           else
