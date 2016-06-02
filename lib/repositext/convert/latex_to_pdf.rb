@@ -59,6 +59,10 @@ class Repositext
             # puts log_file_contents
             # puts '-' * 80
 
+            # Uncomment this to write the tex_file_contents to your Desktop
+            # folder for inspection.
+            # File.write(File.join(Dir.home, "Desktop/tex_file_contents.txt"), tex_file_contents)
+
             ohbs = find_overfull_hboxes(log_file_contents)
             ohbs.each { |e| puts "     #{ e.inspect }" }
             if ohbs.any?
