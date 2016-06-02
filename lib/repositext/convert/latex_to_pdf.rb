@@ -122,7 +122,7 @@ class Repositext
         #                    {\EMPH {எபிரெயர், ஏழாம் அத�...
         # l.1021
 
-        matching_log_entries = log_file_contents.scrub.scan(
+        all_ohbs = log_file_contents.scrub.scan(
           /
             (?:^Overfull\s\\hbox\s\() # Start of line
             (\d+) # overhang in pt
@@ -139,10 +139,20 @@ class Repositext
             line: line.to_i,
             offensive_string: offensive_string.gsub("\n", '').strip # remove newlines inserted by xelatex logger and surrounding spaces
           }
-        }.find_all { |e|
-          # We fix all overfull hboxes with overhang > 5pt.
-          e[:overhang_in_pt] > 5
         }
+        ohbs_to_fix = []
+        all_ohbs.each { |e|
+          # We fix all overfull hboxes with overhang > 5pt.
+          # We only fix the first overfull hbox in each paragraph since inserting
+          # a manual line break will affect all following line breaks, and the
+          # previously reported ohbs won't be valid any more. This approach will
+          # result in more iterations, however it will prevent orphaned words on
+          # a line where a line break was inserted in the wrong spot.
+          if e[:overhang_in_pt] > 5 && ohbs_to_fix.none? { |f| f[:line] == e[:line] }
+            ohbs_to_fix << e
+          end
+        }
+        ohbs_to_fix
       end
 
       # Inserts a latex linebreak into lines with overfull hboxes.
