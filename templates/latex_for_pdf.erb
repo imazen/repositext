@@ -14,7 +14,7 @@
 % conditionally apply CJK package for chinese
 <% if @use_cjk_package %>
   \usepackage[AutoFakeBold=true]{xeCJK}[2011/05/20]
-  \setCJKmainfont{FZShuSong-Z01S}
+  \setCJKmainfont{<%= @font_name %>}
 <% end %>
 
 % fixltx2e to support \textsubscript command
