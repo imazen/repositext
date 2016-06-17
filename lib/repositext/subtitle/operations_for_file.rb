@@ -68,6 +68,13 @@ class Repositext
         operations.any? { |st_op| st_op.adds_or_removes_subtitle? }
       end
 
+      # Returns all insert and split operations for self
+      def insert_and_split_ops
+        operations.find_all{ |op|
+          %w[insert split].include?(op.operationType)
+        }
+      end
+
       def invert!
         # NOTE: We're not reverting `from` and `to` git commit as they are not
         # used in this context at all.

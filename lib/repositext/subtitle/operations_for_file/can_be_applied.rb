@@ -23,10 +23,6 @@ class Repositext
         # Applies insert operations to new_subtitles (in place)
         # @param new_subtitles [Array<Hash>]
         def insert_new_subtitles!(new_subtitles)
-          insert_and_split_ops = operations.find_all{ |op|
-            %w[insert split].include?(op.operationType)
-          }
-
           insert_and_split_ops.each do |op|
             insert_at_index = compute_insert_at_index(op, new_subtitles)
             # I assume that the inserted persistent id is always the last affectedStid.
