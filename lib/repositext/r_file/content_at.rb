@@ -7,11 +7,41 @@ class Repositext
       include HasCorrespondingDataJsonFile
       include HasCorrespondingPrimaryFile
 
+      # Returns an array of ContentAt files under repo_root_dir/content_type dir.
+      # @param repo_root_dir [String]
+      # @param content_type [Repositext::ContentType]
+      def self.find_all(repo_root_dir, content_type)
+        Dir.glob(File.join(repo_root_dir, '**/content/**/*.at')).map { |path|
+          RFile::ContentAt.new(
+            File.read(path),
+            content_type.language,
+            path,
+            content_type
+          )
+        }
+      end
+
       def compute_similarity_with_corresponding_primary_file
         Kramdown::TreeStructuralSimilarity.new(
           corresponding_primary_file.kramdown_doc,
           kramdown_doc
         ).compute
+      end
+
+      def corresponding_subtitle_import_markers_file
+        return nil  if !File.exist?(corresponding_subtitle_import_markers_filename)
+        RFile::SubtitleMarkersCsv.new(
+          File.read(corresponding_subtitle_import_markers_filename),
+          language,
+          corresponding_subtitle_import_markers_filename,
+          content_type
+        )
+      end
+
+      def corresponding_subtitle_import_markers_filename
+        filename.sub(/(?<=\/)[a-z]{3}(?=[\d]{2}-[\d]{4})/, '') # remove lang code
+                .sub(/\/content\//, '/subtitle_import/') # update path
+                .sub(/\.at\z/, '.markers.txt') # update extension
       end
 
       # Returns the corresponding subtitle markers csv file or nil if it
