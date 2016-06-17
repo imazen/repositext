@@ -208,6 +208,8 @@ class Repositext
     method_option :'auto-insert-missing-subtitle-marks',
                   :type => :boolean,
                   :desc => 'Automatically inserts missing subtitle marks into subtitle_marker files based on subtitles in /content AT'
+    method_option :'to-commit',
+                  :desc => "For commands that require from and to commit information (e.g., sync subtitle)"
     # @param [String] command_spec Specification of the operation
     def sync(command_spec)
       invoke_repositext_command('sync', command_spec, options)
