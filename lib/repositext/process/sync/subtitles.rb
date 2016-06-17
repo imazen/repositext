@@ -8,49 +8,62 @@ class Repositext
       class Subtitles
 
         class ReposNotReadyError < StandardError; end
+        class InvalidInputDataError < StandardError; end
+
+        include EnsureAllContentReposAreReady
+        include ExtractOrLoadPrimarySubtitleOperations
+        include TransferSubtitleOperationsToForeignRepos
+        include UpdatePrimarySubtitleMarkerCsvFiles
 
         # Initialize a new subtitle sync process
+        # @option [IO] 'stids_inventory_file'
         def initialize(options)
-          @options = options
+          @config = options['config']
+          @content_type = options['content_type']
+          @file_list = options['file_list']
+          @from_git_commit = options['from-commit']
+          @repository = options['repository']
+          @stids_inventory_file = options['stids_inventory_file']
+          @to_git_commit = options['to-commit']
         end
 
         def sync
           ensure_all_content_repos_are_ready
-          extract_and_store_primary_subtitle_operations
-          # update_primary_subtitle_marker_csv_files(options)
-          # transfer_subtitle_operations_to_foreign_repos(options)
+          @from_git_commit = compute_from_commit(@from_git_commit, @config)
+          @to_git_commit = compute_to_commit(@to_git_commit, @content_type.repository)
+          st_ops_for_repo = extract_or_load_primary_subtitle_operations
+          update_primary_subtitle_marker_csv_files(
+            @repository.base_dir,
+            @content_type,
+            st_ops_for_repo
+          )
+          # transfer_subtitle_operations_to_foreign_repos
         end
 
       private
 
-        # Makes sure that no content repo has uncommitted changes and pulls
-        # newest from origin.
-        def ensure_all_content_repos_are_ready
-          repos_parent_path = File.expand_path('../../../../../..', __FILE__)
-          puts
-          puts "Ensuring that all content repos are ready"
-          puts
-          repos_with_issues = RepositorySet.new(
-            repos_parent_path
-          ).git_ensure_repos_are_ready(
-            :test_content_repos,
-            ->(repo_path){ puts " * #{ repo_path }" }
-          )
-          if repos_with_issues.any?
-            puts
-            puts "Could not proceed because the following git repositories are not ready:"
-            puts
-            repos_with_issues.each { |repo_path, issues|
-              puts repo_path
-              puts '-' * 40
-              issues.each { |e| puts " - #{ e }" }
-            }
-            puts
-            raise ReposNotReadyError.new
+        # Computes the `from` commit
+        # @param commit_sha1_override [String, Nil]
+        # @param config [Repositext::Cli::Config]
+        def compute_from_commit(commit_sha1_override, config)
+          # Use override if given
+          if '' != (o = commit_sha1_override.to_s)
+            return o
           end
+          # load from repository's data.json file, will raise if not present.
+          config.setting(:subtitles_last_synched_at_git_commit)
         end
 
-        def extract_and_store_primary_subtitle_operations
+        # Computes the `to` commit
+        # @param commit_sha1_override [String, Nil]
+        # @param repository [Repositext::Repository]
+        def compute_to_commit(commit_sha1_override, repository)
+          # Use override if given
+          if '' != (o = commit_sha1_override.to_s)
+            return o
+          end
+          # Use latest commit from repository
+          repository.latest_commit_sha_local
         end
 
       end

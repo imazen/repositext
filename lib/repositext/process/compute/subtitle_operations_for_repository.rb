@@ -84,6 +84,19 @@ class Repositext
             },
             operations_for_all_files
           )
+
+          ofr
+        end
+
+        # In addition to computing operations, this method also replaces
+        # temporary with persistent STIDs.
+        # Note that this method modifies the stid inventory file.
+        # @param stids_inventory_file [IO]
+        # @return [Repositext::Subtitle::OperationsForRepository]
+        def compute_and_assign_persistent_stids(stids_inventory_file)
+          ofr = compute
+          ofr.replace_temp_with_persistent_ids!(stids_inventory_file)
+          ofr
         end
 
       end
