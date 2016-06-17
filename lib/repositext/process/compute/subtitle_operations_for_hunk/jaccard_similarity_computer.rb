@@ -3,22 +3,26 @@ class Repositext
     class Compute
       class SubtitleOperationsForHunk
 
-        # Computes Jaccard similarity of two strings
+        # Computes Jaccard similarity of two strings.
+        # Has added behavior where it reduces similarity if a and b have different
+        # numbers of identical tokens. Example: [a b c] and [a b c c].
+        # In standard jaccard, similarity would be 1.0, however in this variant
+        # it's 0.99.
         class JaccardSimilarityComputer
 
           # Computes JaccardSimilarity of strings a and b plus a confidence indicator.
           #
           # @param a [String]
           # @param b [String]
-          # @param truncate_to_shortes [Boolean, optional]
+          # @param truncate_to_shortest [Integer, optional] if given, will truncate to num chars
           # @param alignment [Symbol, optional] :left or :right
           # @return [Array<Float>] Array with two elements:
           #   First for similarity: 1.0 for identical, 0.0 for entirely dissimilar
           #   Second for confidence: 1.0 is highest confidence, 0.0 is lowest confidence
-          def self.compute(a, b, truncate_to_shortest = true, alignment = :left)
+          def self.compute(a, b, truncate_to_shortest = 100_000, alignment = :left)
             # Prepare strings
             if truncate_to_shortest
-              max_len = [a.length, b.length].min
+              max_len = [a.length, b.length, truncate_to_shortest].min
               case alignment
               when :left
                 string_a = a[0, max_len]
@@ -46,6 +50,13 @@ class Repositext
 
             # Compute similarity
             similarity = intersection.length / union.length.to_f
+
+            # Handle case where a and b have different numbers of duplicate tokens.
+            # Example: [a b c] and [a b c c].
+            # We just return 0.99 instead of 1.0
+            if 1.0 == similarity && string_a != string_b
+              similarity = 0.99
+            end
 
             # Compute confidence
             min_set_length = [set_a.length, set_b.length].min

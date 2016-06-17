@@ -531,19 +531,19 @@ class Repositext
             asp[:sim_left] = JaccardSimilarityComputer.compute(
               deleted_sim_text,
               added_sim_text,
-              true,
+              30, # look at first 30 chars. This number may require tweaking
               :left
             )
             asp[:sim_right] = JaccardSimilarityComputer.compute(
               deleted_sim_text,
               added_sim_text,
-              true,
+              30, # look at last 30 chars. This number may require tweaking
               :right
             )
             asp[:sim_abs] = JaccardSimilarityComputer.compute(
               deleted_sim_text,
               added_sim_text,
-              false
+              false # look at all chars, don't truncate
             )
             asp[:content_length_change] = added_sim_text.length - deleted_sim_text.length # neg means text removal
             asp[:subtitle_count_change] = compute_subtitle_count_change(asp)
