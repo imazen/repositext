@@ -8,11 +8,11 @@ class Repositext
       # subtitle_marker.csv files.
       # This should only be run once on the primary repo.
       def fix_add_initial_persistent_subtitle_ids(options)
-        spids_inventory_file = File.open(
+        stids_inventory_file = File.open(
           File.join(config.base_dir(:data_dir), 'subtitle_ids.txt'),
           'r+'
         )
-        if spids_inventory_file.read.present?
+        if stids_inventory_file.read.present?
           # We expect inventory file to be empty when we run this command
           raise ArgumentError.new("SPID inventory file is not empty!")
         end
@@ -39,7 +39,7 @@ class Repositext
           outcome = Repositext::Process::Fix::AddInitialPersistentSubtitleIds.new(
             stm_csv_file,
             corresponding_content_at_file,
-            spids_inventory_file
+            stids_inventory_file
           ).fix
           [Outcome.new(outcome.success, { contents: outcome.result })]
         end

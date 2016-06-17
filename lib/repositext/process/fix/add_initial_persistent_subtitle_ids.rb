@@ -8,16 +8,16 @@ class Repositext
 
         # @param stm_csv_file [Repositext::RFile::SubtitleMarkersCsv]
         # @param content_at_file [Repositext::RFile::ContentAt]
-        # @param spids_inventory_file [IO] file that contains the inventory of
+        # @param stids_inventory_file [IO] file that contains the inventory of
         #          existing SPIDs.
         #          Typically located at /data/subtitle_ids.txt
         #          Must exist and be opened with mode "r+"
-        def initialize(stm_csv_file, content_at_file, spids_inventory_file)
+        def initialize(stm_csv_file, content_at_file, stids_inventory_file)
           raise ArgumentError.new("Invalid stm_csv_file: #{ stm_csv_file.inspect }")  unless stm_csv_file.is_a?(RFile::SubtitleMarkersCsv)
           raise ArgumentError.new("Invalid content_at_file: #{ content_at_file.inspect }")  unless content_at_file.is_a?(RFile::ContentAt)
           @stm_csv_file = stm_csv_file
           @content_at_file = content_at_file
-          @spids_inventory_file = spids_inventory_file
+          @stids_inventory_file = stids_inventory_file
         end
 
         # Inserts/updates two  columns into subtitle markers CSV file:
@@ -41,7 +41,7 @@ class Repositext
           end
 
           spids = Repositext::Subtitle::IdGenerator.new(
-            @spids_inventory_file
+            @stids_inventory_file
           ).generate(
             num_subtitles
           ).shuffle

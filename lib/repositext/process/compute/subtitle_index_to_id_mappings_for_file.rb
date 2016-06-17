@@ -122,14 +122,14 @@ puts
             missing_stid_count += 1  if 'new' == mapping[:stid]
           }
 
-# TODO: This is a shortcut. Handle spid_inventory file properly!
-          spids_inventory_file = File.open(
+# TODO: This is a shortcut. Handle stids_inventory file properly!
+          stids_inventory_file = File.open(
             '/Users/johund/development/vgr-english/data/subtitle_ids.txt',
             'r+'
           )
 
           new_stids = Repositext::Subtitle::IdGenerator.new(
-            spids_inventory_file
+            stids_inventory_file
           ).generate(
             missing_stid_count
           ).shuffle

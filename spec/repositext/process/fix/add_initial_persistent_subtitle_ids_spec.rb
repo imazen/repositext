@@ -29,14 +29,14 @@ class Repositext
         let(:language) { Language::English.new }
         let(:stm_csv_file) { RFile::SubtitleMarkersCsv.new(stm_csv_contents, language, 'filename') }
         let(:content_at_file) { RFile::ContentAt.new(content_at_contents, language, 'filename') }
-        let(:spids_inventory_file) {
+        let(:stids_inventory_file) {
           FileLikeStringIO.new('_path', "abcd\nefgh\n", 'r+')
         }
         let(:fixer) {
           AddInitialPersistentSubtitleIds.new(
             stm_csv_file,
             content_at_file,
-            spids_inventory_file
+            stids_inventory_file
           )
         }
 
