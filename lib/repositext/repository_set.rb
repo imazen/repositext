@@ -101,7 +101,7 @@ class Repositext
       repos_with_issues = {}
       compute_repo_paths(repo_set).each { |repo_path|
         if block_given?
-          yield
+          yield(repo_path)
         end
         repo_issues = []
         cmd = %(cd #{ repo_path } && git pull && git status)
@@ -114,7 +114,10 @@ class Repositext
           if !r.index(%(Your branch is up-to-date with 'origin/master'))
             repo_issues << "Is not up-to-date with origin"
           end
-          if !r.index(%(nothing to commit, working directory clean))
+          if !(
+            r.index(%(nothing to commit, working directory clean)) ||
+            r.index(%(nothing added to commit but untracked files present))
+          )
             repo_issues << "Has uncommitted changes"
           end
           if !exit_status.success?
