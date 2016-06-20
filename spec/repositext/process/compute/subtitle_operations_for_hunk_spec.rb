@@ -1283,11 +1283,8 @@ class Repositext
             end
 
           end
-
         end
-
       end
-
     end
   end
 end
