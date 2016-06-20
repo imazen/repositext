@@ -22,7 +22,7 @@ class Repositext
       end
 
       # Initializes self from operations persisted to file in `subtitle_operations` dir
-      # @param hash [Hash]
+      # @param hash [Hash] for repo
       # @param language [Repositext::Language]
       # @param repo_base_dir [String]
       def self.from_hash(hash, language, repo_base_dir)

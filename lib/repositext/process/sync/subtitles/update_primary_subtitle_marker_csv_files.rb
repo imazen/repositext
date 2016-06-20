@@ -153,10 +153,6 @@ ap st_ops_for_file
           #         ]
           def compute_new_subtitle_data(old_stids, new_time_slices, new_char_lengths, st_ops_for_file)
             new_sts = st_ops_for_file.apply_to(old_stids)
-# TODO: We need to replace the tmp-stids in st_ops with the newly generated persistent ids, write them back to file.
-            # what about record ids? Do we need to re-detect them?
-                # if previous and following record_id are identical use that.
-                # may need to detect at boundaries.
             # Merge new time slices and char_lengths
             new_sts.each_with_index { |new_st, idx|
               new_st.merge!(new_time_slices[idx])
@@ -165,7 +161,7 @@ ap st_ops_for_file
             # Assign record ids to inserted subtitles
             # Since every paragraph has to start with a subtitle, we can assume
             # that any added subtitles are after an existing subtitle.
-# TODO: move this out of this method, pass new_record_ids as argument to method.
+            # TODO: move this out of this method, pass new_record_ids as argument to method.
             if new_sts.first[:record_id].nil?
               raise "Handle this: #{ new_sts.inspect }"
             end
