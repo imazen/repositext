@@ -13,8 +13,12 @@ class Repositext
             st_ops_dir = File.join(@repository.base_dir, 'subtitle_operations')
             existing_st_ops_file_path = Dir.glob(File.join(st_ops_dir, "st-ops-*-#{ from_to_git_commit_marker }.json")).first
             st_ops_path = existing_st_ops_file_path || extract_and_store_primary_subtitle_operations
-            Subtitle::OperationsForRepository.from_json(
+            json_with_temp_stids_replaced = replace_temp_with_persistent_stids!(
               File.read(st_ops_path),
+              @stids_inventory_file
+            )
+            Subtitle::OperationsForRepository.from_json(
+              json_with_temp_stids_replaced,
               @content_type.language,
               @repository.base_dir
             )
@@ -46,7 +50,7 @@ class Repositext
               @from_git_commit,
               @to_git_commit,
               @file_list
-            ).compute_and_assign_persistent_stids(@stids_inventory_file)
+            ).compute
             st_ops_path = File.join(
               @config.base_dir(:subtitle_operations_dir),
               [
@@ -72,6 +76,30 @@ class Repositext
               '-to-',
               @to_git_commit.first(6),
             ].join
+          end
+
+          # Replaces all temp stids with persistent ones in json string
+          # @param json_string [String] the original json string with temp stids
+          # @param stids_inventory_file [IO]
+          # @return [String] a copy of json_string with all temp stids replaced
+          def replace_temp_with_persistent_stids!(json_string, stids_inventory_file)
+            new_json_string = json_string.dup
+            # Find all temp stids: "stid": "tmp-1867814+1"
+            all_temp_stids = new_json_string.scan(/(?<="stid": ")tmp-[\d\+]+(?=",\n)/).uniq
+            # Generate new stids
+            new_stids = Repositext::Subtitle::IdGenerator.new(
+              stids_inventory_file
+            ).generate(
+              all_temp_stids.length
+            ).shuffle
+
+            # Replace temp stids
+            all_temp_stids.each { |temp_stid|
+              new_stid = new_stids.shift
+              raise "Handle this: #{ new_subtitles.inspect }"  if new_stid.nil?
+              new_json_string.gsub!(temp_stid, new_stid)
+            }
+            new_json_string
           end
 
         end

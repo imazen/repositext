@@ -83,12 +83,6 @@ class Repositext
         JSON.pretty_generate(to_hash)
       end
 
-      # Replaces temp with persistent ids and adds them to stid inventory file
-      # @param stids_inventory_file [IO]
-      def replace_temp_with_persistent_ids!(stids_inventory_file)
-
-      end
-
     end
 
   end

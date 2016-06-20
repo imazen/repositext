@@ -17,7 +17,7 @@ class Repositext
           # Next we handle deletions of subtitles (after inserts have been made
           # that may refer to deleted afterStids)
           delete_subtitles!(new_subtitles)
-          [new_subtitles, tmp_stid_mappings]
+          new_subtitles
         end
 
         # Applies insert operations to new_subtitles (in place)
@@ -76,16 +76,14 @@ class Repositext
               # Insert new subtitle after original subtitle
               compute_insert_at_index_given_after_stid(
                 op.affectedStids.first.persistent_id,
-                new_subtitles,
-                tmp_stid_mappings
+                new_subtitles
               )
             when [:blank, :blank]
               # This is two subsequent splits/insertions.
               # Insert new subtitle after first subtitle (using mapping)
               compute_insert_at_index_given_after_stid(
                 op.affectedStids.first.persistent_id,
-                new_subtitles,
-                tmp_stid_mappings
+                new_subtitles
               )
             else
               # This is an odd case, kind of unexpected. I should write a test case for this...
@@ -112,11 +110,7 @@ raise
           insert_after_index = new_subtitles.index { |new_st|
             new_st[:persistent_id] == after_stid
           }
-if insert_after_index.nil?
-puts @content_at_file.filename
-p after_stid
-p tmp_stid_mappings
-end
+
           # Ruby's Array#insert method inserts before the given index, so we
           # need to use the index of the next element or -1 if we're at the end.
           insert_at_index = insert_after_index + 1
