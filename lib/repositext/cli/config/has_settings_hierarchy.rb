@@ -40,6 +40,18 @@ class Repositext
           }
         end
 
+        # Updates the settings hierarchy's file level for the given data.json file
+        # @param data_json_file_path [String] path to a file level data.json file
+        def update_for_file(data_json_file_path)
+          return false  if !File.exists?(data_json_file_path)
+          file_level_settings = load_settings(data_json_file_path)
+          @file_level_identifier = data_json_file_path
+          @settings_hierarchy['file'] = {}
+          @settings_hierarchy['file'][@file_level_identifier] = { 'settings' => file_level_settings }
+          @effective_settings = compute_effective_settings
+          return true
+        end
+
         # Returns a list of hierarchy levels from general to specific
         def hierarchy_levels
           required_hierarchy_levels + optional_hierarchy_levels
