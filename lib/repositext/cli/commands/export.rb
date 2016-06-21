@@ -203,7 +203,6 @@ class Repositext
           font_leading_override: config.setting(:font_leading_override, false),
           font_name_override: config.setting(:font_name_override, false),
           font_size_override: config.setting(:font_size_override, false),
-          header_text: config.setting(:pdf_export_header_text),
           is_primary_repo: config.setting(:is_primary_repo),
           language_code_2_chars: config.setting(:language_code_2_chars),
           language_code_3_chars: config.setting(:language_code_3_chars),
@@ -218,7 +217,9 @@ class Repositext
           "Exporting AT files to #{ variant }",
           options
         ) do |contents, filename|
+          config.update_for_file(filename.gsub(/\.at\z/, '.data.json'))
           options[:source_filename] = filename
+          options[:header_text] = config.setting(:pdf_export_header_text)
           if options[:skip_file_proc] && options[:skip_file_proc].call(contents, filename)
             $stderr.puts " - Skipping #{ filename } - matches options[:skip_file_proc]"
             next([Outcome.new(true, { contents: nil })])
