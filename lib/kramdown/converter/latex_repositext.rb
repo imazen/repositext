@@ -37,6 +37,10 @@ module Kramdown
           before << '\\emph{'
           after << '}'
         else
+          if el.has_class?('bold')
+            before << '\\textbf{'
+            after << '}'
+          end
           if el.has_class?('italic')
             # em with classes, including .italic => convert to \emph{}. Other
             # places in this method will add environments for the additional
