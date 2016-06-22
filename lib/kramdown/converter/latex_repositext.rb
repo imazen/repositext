@@ -52,13 +52,18 @@ module Kramdown
             before << '\\emph{'
             after << '}'
           end
-          if el.has_class?('smcaps')
-            inner_text = self.class.emulate_small_caps(inner(el, opts))
+          if el.has_class?('line_break')
+            # Insert a line break, ignore anything inside the em
+            before << '\\linebreak\n'
+            inner_text = ''
           end
           if el.has_class?('pn')
             # render as paragraph number
             before << '\\RtParagraphNumber{'
             after << '}'
+          end
+          if el.has_class?('smcaps')
+            inner_text = self.class.emulate_small_caps(inner(el, opts))
           end
           if el.has_class?('subscript')
             before << '\\textsubscript{'
