@@ -166,22 +166,22 @@
   {}
 % environment to render idparagraph paragraphs
 \newenvironment{RtIdParagraph}
-  {\setlength{\parindent}{0pt}\relscale{0.73}}
+  {\setlength{\parindent}{0pt}\fontsize{8\RtRelPt}{10.5\RtRelPt}}
   {\par}
 % environment to render idtitle1 paragraphs
 \newenvironment{RtIdTitle1}
 <% if @polyglossia_default_language %>
-  {\needspace{350\RtRelPt}\vspace*{\fill}\begin{center}\relscale{0.91}}
+  {\needspace{350\RtRelPt}\vspace*{\fill}\begin{center}\fontsize{10\RtRelPt}{12\RtRelPt}}
 <% else %>
-  {\needspace{350\RtRelPt}\vspace*{\fill}\begin{center}\titlefont\relscale{0.91}}
+  {\needspace{350\RtRelPt}\vspace*{\fill}\begin{center}\titlefont\fontsize{10\RtRelPt}{12\RtRelPt}}
 <% end %>
   {\end{center}}
 % environment to render idtitle1 paragraphs
 \newenvironment{RtIdTitle2}
 <% if @polyglossia_default_language %>
-  {\par\begin{center}\relscale{0.73}}
+  {\par\begin{center}\fontsize{8\RtRelPt}{9.6\RtRelPt}}
 <% else %>
-  {\par\begin{center}\titlefont\relscale{0.73}}
+  {\par\begin{center}\titlefont\fontsize{8\RtRelPt}{9.6\RtRelPt}}
 <% end %>
   {\par\end{center}}
 % environment to render meta info
@@ -235,17 +235,17 @@
 % environment to render # header
 \newenvironment{RtTitle}
 <% if @polyglossia_default_language %>
-  {\begin{center}\relscale{2}}
+  {\begin{center}\fontsize{22\RtRelPt}{26.4\RtRelPt}}
 <% else %>
-  {\begin{center}\titlefont\relscale{2}}
+  {\begin{center}\titlefont\fontsize{22\RtRelPt}{26.4\RtRelPt}}
 <% end %>
   {\vspace{24\RtRelPt}\end{center}}
 % RtTitle2 font size is 16 (down from 22 of RtTitle)
 \newenvironment{RtTitle2}
 <% if @polyglossia_default_language %>
-  {\begin{center}\relscale{1.45}}
+  {\begin{center}\fontsize{16\RtRelPt}{19.2\RtRelPt}}
 <% else %>
-  {\begin{center}\titlefont\relscale{1.45}}
+  {\begin{center}\titlefont\fontsize{16\RtRelPt}{19.2\RtRelPt}}
 <% end %>
   {\vspace{24\RtRelPt}\end{center}}
 
