@@ -222,11 +222,20 @@
   {\end{center}}
 % environment to render # header
 \newenvironment{RtTitle}
-  {\begin{center}<%= @polyglossia_default_language ? '' : '\titlefont' %>\fontsize{22\RtRelPt}{26.4\RtRelPt}}
-  {\vspace{24\RtRelPt}\end{center}}
+  {
+    \begin{center}
+    <%= @polyglossia_default_language ? '' : '\titlefont' %>
+    \begin{spacing}{3} % spacing has to come before fontsize
+    \fontsize{22\RtRelPt}{0\RtRelPt}  % line spacing is ignored
+  }
+  {
+    \end{spacing}
+    \vspace{24\RtRelPt}
+    \end{center}
+  }
 % RtTitle2 font size is 16 (down from 22 of RtTitle)
 \newenvironment{RtTitle2}
-  {\begin{center}<%= @polyglossia_default_language ? '' : '\titlefont' %>\fontsize{16\RtRelPt}{19.2\RtRelPt}}
+  {\begin{center}<%= @polyglossia_default_language ? '' : '\titlefont' %>\fontsize{16\RtRelPt}{0\RtRelPt}} % line spacing is ignored
   {\vspace{24\RtRelPt}\end{center}}
 
 % avoid widows and orphans
