@@ -225,8 +225,8 @@
   {
     \begin{center}
     <%= @polyglossia_default_language ? '' : '\titlefont' %>
-    \begin{spacing}{3} % spacing has to come before fontsize
-    \fontsize{22\RtRelPt}{0\RtRelPt}  % line spacing is ignored
+    \begin{spacing}{3}
+    \relscale{2}
   }
   {
     \end{spacing}
@@ -235,9 +235,15 @@
   }
 % RtTitle2 font size is 16 (down from 22 of RtTitle)
 \newenvironment{RtTitle2}
-  {\begin{center}<%= @polyglossia_default_language ? '' : '\titlefont' %>\fontsize{16\RtRelPt}{0\RtRelPt}} % line spacing is ignored
-  {\vspace{24\RtRelPt}\end{center}}
-
+  {
+    \begin{center}
+    <%= @polyglossia_default_language ? '' : '\titlefont' %>
+    \relscale{2}
+  }
+  {
+    \vspace{24\RtRelPt}
+    \end{center}
+  }
 % avoid widows and orphans
 \widowpenalty=5000
 \clubpenalty=5000
