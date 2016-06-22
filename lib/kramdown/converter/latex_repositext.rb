@@ -12,12 +12,13 @@ module Kramdown
       # for latex.
       # This is a class method so that we can easily use it from other places.
       def self.emulate_small_caps(txt)
-        # wrap all groups of lower case characters (not latex commands!) in RtSmCapsEmulation command
+        # wrap all groups of lower case characters and some punctuation
+        # (not latex commands!) in RtSmCapsEmulation command
         r = txt.gsub(
           /
             ( # wrap in capture group so that we can access it for replacement
               (?<![\\[:lower:]]) # negative lookbehind for latex commands like emph
-              [[:lower:]]+ # capture all lower case letters
+              [[:lower:]\.]+ # capture all lower case letters and periods
             )
           /x,
         ) { |e| %(\\RtSmCapsEmulation{#{ e.unicode_upcase }}) }
