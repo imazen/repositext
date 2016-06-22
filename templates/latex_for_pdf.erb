@@ -235,17 +235,17 @@
 % environment to render # header
 \newenvironment{RtTitle}
 <% if @polyglossia_default_language %>
-  {\begin{center}\relscale{2}}
+  {\begin{center}\fontsize{22\RtRelPt}{26.4\RtRelPt}}
 <% else %>
-  {\begin{center}\titlefont\relscale{2}}
+  {\begin{center}\titlefont\fontsize{22\RtRelPt}{26.4\RtRelPt}}
 <% end %>
   {\vspace{24\RtRelPt}\end{center}}
 % RtTitle2 font size is 16 (down from 22 of RtTitle)
 \newenvironment{RtTitle2}
 <% if @polyglossia_default_language %>
-  {\begin{center}\relscale{1.45}}
+  {\begin{center}{16\RtRelPt}{19.2\RtRelPt}}
 <% else %>
-  {\begin{center}\titlefont\relscale{1.45}}
+  {\begin{center}\titlefont{16\RtRelPt}{19.2\RtRelPt}}
 <% end %>
   {\vspace{24\RtRelPt}\end{center}}
 
