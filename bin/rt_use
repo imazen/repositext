@@ -1,0 +1,28 @@
+#!/usr/bin/env ruby
+require 'fileutils'
+
+# Use like so:
+# cd into repositext, repositext-dev, or repositext-master
+#     ./bin/rt_use dev
+# or
+#     ./bin/rt_use master
+
+repositext_parent_folder_path = File.expand_path('../../..', __FILE__)
+
+dev_or_master = ARGV.shift
+if !%w[dev master].include?(dev_or_master)
+  raise "Invalid dev_or_master: #{ dev_or_master.inspect }. Must be one of 'dev' or 'master'"
+end
+
+puts "Updating symlinks in #{ repositext_parent_folder_path }"
+FileUtils.cd(repositext_parent_folder_path)
+
+%w[repositext vgr-repositext].each { |repo_name|
+  repo_path = File.join(repositext_parent_folder_path, repo_name)
+  # Remove existing symlink
+  FileUtils.rm(repo_path)  if File.exist?(repo_path)
+  # Create updated symlink
+  rel_path = [repo_name, dev_or_master].join('-')
+  puts " - linking #{ repo_name.inspect } -> #{ rel_path }"
+  FileUtils.ln_s(rel_path, repo_name)
+}
