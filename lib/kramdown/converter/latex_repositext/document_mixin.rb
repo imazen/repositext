@@ -166,8 +166,9 @@ module Kramdown
           end
         end
 
-        # Truncates and wraps title in latex markup so it can be used in
-        # page header.
+        # Truncates and formats title so it can be used in page header.
+        # Removes all formatting and line breaks except superscript on trailing
+        # digits.
         # @param document_title_plain_text [String]
         # @param document_title_latex [String]
         # @param is_primary_repo [Boolean]
@@ -179,16 +180,19 @@ module Kramdown
             # NOTE: All titles are wrapped in <em> and .smcaps, so that will
             # take care of the italics and smallcaps.
             truncated = compute_truncated_title(document_title_plain_text, document_title_latex, 63, 3)
+            # re-apply superscript to any trailing digits
+            if truncated =~ /\d+\}\z/
+              truncated.gsub!(/\d+\}\z/, "\\textsuperscript{" + '\0' + "}")
+            end
             "\\textscale{#{ 0.909091 * size_scale_factor }}{\\textbf{#{ truncated }}}"
           else
             # regular, all caps and small font
-            truncated = compute_truncated_title(document_title_plain_text, document_title_latex, 54, 3)
-            # NOTE: This is really screwed up, but it works:
-            # For foreign we don't want italic. However the title is wrapped in <em>.
-            # The italic is neutralized because the upcase command converts
-            # "\emph" => "\EMPH" which is not recognized by latex, so no italics is applied.
-            # So for the time being I'll leave it as is.
+            truncated = truncate_plain_text_title(document_title_plain_text, 54, 3)
             r = "\\textscale{#{ 0.7 * size_scale_factor }}{#{ truncated.unicode_upcase }}"
+            # re-apply superscript to any trailing digits
+            if r =~ /\d+\}\z/
+              r.gsub!(/\d+\}\z/, "\\textsuperscript{" + '\0' + "}")
+            end
             if 'chn' == language_code_3_chars
               r = "\\textbf{#{ r }}"
             end
@@ -238,7 +242,7 @@ module Kramdown
 
         # Returns a version of title that is guaranteed to be no longer than
         # max_len (after removing all latex markup) while maintaining valid
-        # latex markup.
+        # latex markup. Also any linebreaks are being removed
         #
         # This is how it works:
         # title_latex:     \emph{word} \emph{and some really long text to get truncation word \textscale{0.7}{word word word} word}
@@ -269,14 +273,16 @@ module Kramdown
         # @param min_length_of_last_word [Integer] minimum length of last word in returned string
         # @return [String]
         def compute_truncated_title(title_plain_text, title_latex, max_len, min_length_of_last_word)
+          # Remove any line breaks
+          l_title_latex = title_latex.gsub("\\linebreak\\n", '')
 
           # Nothing to do if title_plain_text is already short enough
-          return title_latex  if title_plain_text.length <= max_len
+          return l_title_latex  if title_plain_text.length <= max_len
 
-          truncated_title_plain_text = title_plain_text.truncate(
+          truncated_title_plain_text = truncate_plain_text_title(
+            title_plain_text,
             max_len,
-            separator: /(?<=[[:alpha:]]{#{ min_length_of_last_word }})\s/,
-            omission: '…',
+            min_length_of_last_word
           )
 
           brace_nesting_level = 0 # to keep track whether we're inside latex braces
@@ -289,7 +295,7 @@ module Kramdown
           closing_brace_regex = /\}/
           latex_command_regex = /\\[a-z]+/i
 
-          s = StringScanner.new(title_latex)
+          s = StringScanner.new(l_title_latex)
           while !s.eos? do
             # check for various character types in descending specificity
             if (latex_cmd = s.scan(latex_command_regex))
@@ -304,7 +310,7 @@ module Kramdown
               brace_nesting_level += 1
             elsif (closing_brace = s.scan(closing_brace_regex))
               # closing brace, capture, decrease nesting level
-              raise "Invalid latex braces: #{ title_latex.inspect }"  if brace_nesting_level <= 0
+              raise "Invalid latex braces: #{ l_title_latex.inspect }"  if brace_nesting_level <= 0
               new_title_latex << closing_brace
               brace_nesting_level -= 1
             elsif (
@@ -352,6 +358,18 @@ module Kramdown
             end
           end
           new_title_latex
+        end
+
+        # @param plain_text_title [String]
+        # @param max_len [Integer] maximum length of returned string.
+        # @param min_length_of_last_word [Integer] minimum length of last word in returned string
+        # @return [String]
+        def truncate_plain_text_title(plain_text_title, max_len, min_length_of_last_word)
+          plain_text_title.truncate(
+            max_len,
+            separator: /(?<=[[:alpha:]]{#{ min_length_of_last_word }})\s/,
+            omission: '…',
+          )
         end
 
         # Returns a list of commits and commit messages for the exported file.
