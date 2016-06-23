@@ -81,6 +81,9 @@ class Repositext
     class_option :'file-selector',
                  :type => :string,
                  :desc => 'Specifies the input file selector. Expects a named file_selector from Rtfile or a Glob pattern that can be used with Dir.glob.'
+    class_option :'from-commit',
+                 :type => :string,
+                 :desc => "For commands that require from and to commit information (e.g., subtitle operations)"
     class_option :output,
                  :type => :string,
                  :desc => 'Overrides the output base directory.'
@@ -93,6 +96,9 @@ class Repositext
                  :type => :boolean,
                  :default => false,
                  :desc => 'If true, skips the check to make sure that the local repo is up-to-date with origin/master.'
+    class_option :'to-commit',
+                 :type => :string,
+                 :desc => "For commands that require from and to commit information (e.g., subtitle operations)"
     # Override original initialize so that the options hash is not frozen. We
     # need to modify it.
     def initialize(args=[], options={}, config={})
@@ -185,10 +191,6 @@ class Repositext
 
     desc 'report SPEC', 'Generates a report'
     long_desc long_description_for_report
-    method_option :'from-commit',
-                  :desc => "For commands that require from and to commit information (e.g., subtitle operations)"
-    method_option :'to-commit',
-                  :desc => "For commands that require from and to commit information (e.g., subtitle operations)"
     # @param [String] command_spec Specification of the operation
     def report(command_spec)
       check_that_current_branch_is_up_to_date_with_origin_master
@@ -208,8 +210,6 @@ class Repositext
     method_option :'auto-insert-missing-subtitle-marks',
                   :type => :boolean,
                   :desc => 'Automatically inserts missing subtitle marks into subtitle_marker files based on subtitles in /content AT'
-    method_option :'to-commit',
-                  :desc => "For commands that require from and to commit information (e.g., sync subtitle)"
     # @param [String] command_spec Specification of the operation
     def sync(command_spec)
       invoke_repositext_command('sync', command_spec, options)
