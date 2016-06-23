@@ -171,11 +171,22 @@
   {\par}
 % environment to render idtitle1 paragraphs
 \newenvironment{RtIdTitle1}
-  {\needspace{350\RtRelPt}\vspace*{\fill}\begin{center}<%= @polyglossia_default_language ? '' : '\titlefont' %>\fontsize{10\RtRelPt}{12\RtRelPt}}
+  {
+    \needspace{350\RtRelPt}
+    \vspace*{\fill}
+    \begin{center}
+    <%= @polyglossia_default_language ? '' : '\titlefont' %>
+    \fontsize{10\RtRelPt}{12\RtRelPt}
+  }
   {\end{center}}
-% environment to render idtitle1 paragraphs
+% environment to render idtitle2 paragraphs
 \newenvironment{RtIdTitle2}
-  {\par\begin{center}<%= @polyglossia_default_language ? '' : '\titlefont' %>\fontsize{8\RtRelPt}{9.6\RtRelPt}}
+  {
+    \par
+    \begin{center}
+    <%= @polyglossia_default_language ? '' : '\titlefont' %>
+    \fontsize{8\RtRelPt}{9.6\RtRelPt}
+  }
   {\par\end{center}}
 % environment to render meta info
 \newenvironment{RtMetaInfo}
