@@ -66,8 +66,8 @@ loop {
           crop_width: 5.5, # crop area width
           crop_height: 6.6, # crop area height
         }
-      when /^eng.*\.book_regular\.pdf$/
-        # English regular book
+      when /^eng.*\.book_stitched\.pdf$/
+        # English stitched book
         {
           crop_x: 0, # crop area top left corner x-coordinate
           crop_y: 0.7, # crop area top left corner y-coordinate
@@ -82,8 +82,8 @@ loop {
           crop_width: 5.5, # crop area width
           crop_height: 6.6, # crop area height
         }
-      when /\.book_regular\.pdf$/
-        # Foreign regular book
+      when /\.book_stitched\.pdf$/
+        # Foreign stitched book
         {
           crop_x: 0, # crop area top left corner x-coordinate
           crop_y: 0.7, # crop area top left corner y-coordinate

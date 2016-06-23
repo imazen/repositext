@@ -11,11 +11,12 @@ class Repositext
           editor_initials = %w[JSR NCH RMM]
           correction_number_regex = /^\d+[a-z]?/
           segment_start_regexes = [
-            { key: :first_line, regex: /(?=#{ correction_number_regex }\.)/ }, # first line, starting with correction number
-            { key: :reads, regex: /^Reads:/ }, # `Reads:` segment
             { key: :becomes, regex: /^Becomes:/ }, # `Becomes:` segment
-            { key: :submitted, regex: /^Submitted:/ }, # `Submitted:` segment
+            { key: :first_line, regex: /(?=#{ correction_number_regex }\.)/ }, # first line, starting with correction number
             { key: :no_change, regex: /^ASREADS/ }, # `ASREADS:` segment
+            { key: :no_change, regex: /^IGNORE/ }, # `IGNORE:` segment
+            { key: :reads, regex: /^Reads:/ }, # `Reads:` segment
+            { key: :submitted, regex: /^Submitted:/ }, # `Submitted:` segment
             { key: :translator_note, regex: /^TRN:/ }, # Translator notes
           ] + editor_initials.map { |e| { key: "#{ e }_note".unicode_downcase.to_sym, regex: /^#{ e }:/ } } # editor notes
           # Each segment ends at beginning of next segment, or at end of string

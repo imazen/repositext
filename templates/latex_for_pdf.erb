@@ -52,6 +52,7 @@
   % forces relsize to scale by the set percentage
   \renewcommand\RSpercentTolerance{0}
   \renewcommand\RSlargest{50pt}
+  \renewcommand\RSsmallest{6pt}
 
 % setspace to ensure single line spacing is used
 \usepackage[singlespacing]{setspace}
@@ -77,7 +78,7 @@
 \newcommand{\RtFooterContent}{
   <% if @include_meta_info %>
     \fancyfoot[L]{<%= @date_code %>} % outside
-    \fancyfoot[C]{\textbf{<%= @truncated_title_footer %>}} % center
+    \fancyfoot[C]{<%= @truncated_title_footer %>} % center
     \fancyfoot[R]{\textscale{0.67}{<%= @additional_footer_text %> Rev. <%= @latest_commit_hash %>}} % inside
   <% end %>
 }
@@ -166,23 +167,26 @@
   {}
 % environment to render idparagraph paragraphs
 \newenvironment{RtIdParagraph}
-  {\setlength{\parindent}{0pt}\relscale{0.73}}
+  {\setlength{\parindent}{0pt}\fontsize{8\RtRelPt}{10.5\RtRelPt}}
   {\par}
 % environment to render idtitle1 paragraphs
 \newenvironment{RtIdTitle1}
-<% if @polyglossia_default_language %>
-  {\needspace{350\RtRelPt}\vspace*{\fill}\begin{center}\relscale{0.91}}
-<% else %>
-  {\needspace{350\RtRelPt}\vspace*{\fill}\begin{center}\titlefont\relscale{0.91}}
-<% end %>
+  {
+    \needspace{350\RtRelPt}
+    \vspace*{\fill}
+    \begin{center}
+    <%= @polyglossia_default_language ? '' : '\titlefont' %>
+    \fontsize{10\RtRelPt}{12\RtRelPt}
+  }
   {\end{center}}
-% environment to render idtitle1 paragraphs
+% environment to render idtitle2 paragraphs
 \newenvironment{RtIdTitle2}
-<% if @polyglossia_default_language %>
-  {\par\begin{center}\relscale{0.73}}
-<% else %>
-  {\par\begin{center}\titlefont\relscale{0.73}}
-<% end %>
+  {
+    \par
+    \begin{center}
+    <%= @polyglossia_default_language ? '' : '\titlefont' %>
+    \fontsize{8\RtRelPt}{9.6\RtRelPt}
+  }
   {\par\end{center}}
 % environment to render meta info
 \newenvironment{RtMetaInfo}
@@ -226,29 +230,34 @@
  {\par}
 % environment to render ### header
 \newenvironment{RtSubTitle}
-<% if @polyglossia_default_language %>
-  {\begin{center}\relscale{1.5}}
-<% else %>
-  {\begin{center}\titlefont\relscale{1.5}}
-<% end %>
+  {\begin{center}<%= @polyglossia_default_language ? '' : '\titlefont' %>\relscale{1.5}}
   {\end{center}}
 % environment to render # header
 \newenvironment{RtTitle}
-<% if @polyglossia_default_language %>
-  {\begin{center}\relscale{2}}
-<% else %>
-  {\begin{center}\titlefont\relscale{2}}
-<% end %>
-  {\vspace{24\RtRelPt}\end{center}}
+  {
+    \begin{center}
+    <%= @polyglossia_default_language ? '' : '\titlefont' %>
+    \relscale{2}
+    \begin{spacing}{3}
+  }
+  {
+    \end{spacing}
+    \vspace{24\RtRelPt}
+    \end{center}
+  }
 % RtTitle2 font size is 16 (down from 22 of RtTitle)
 \newenvironment{RtTitle2}
-<% if @polyglossia_default_language %>
-  {\begin{center}\relscale{1.45}}
-<% else %>
-  {\begin{center}\titlefont\relscale{1.45}}
-<% end %>
-  {\vspace{24\RtRelPt}\end{center}}
-
+  {
+    \begin{center}
+    <%= @polyglossia_default_language ? '' : '\titlefont' %>
+    \relscale{2}
+    \begin{spacing}{3}
+  }
+  {
+    \end{spacing}
+    \vspace{24\RtRelPt}
+    \end{center}
+  }
 % avoid widows and orphans
 \widowpenalty=5000
 \clubpenalty=5000

@@ -12,12 +12,13 @@ module Kramdown
       # for latex.
       # This is a class method so that we can easily use it from other places.
       def self.emulate_small_caps(txt)
-        # wrap all groups of lower case characters (not latex commands!) in RtSmCapsEmulation command
+        # wrap all groups of lower case characters and some punctuation
+        # (not latex commands!) in RtSmCapsEmulation command
         r = txt.gsub(
           /
             ( # wrap in capture group so that we can access it for replacement
               (?<![\\[:lower:]]) # negative lookbehind for latex commands like emph
-              [[:lower:]]+ # capture all lower case letters
+              [[:lower:]\.]+ # capture all lower case letters and periods
             )
           /x,
         ) { |e| %(\\RtSmCapsEmulation{#{ e.unicode_upcase }}) }
@@ -37,6 +38,10 @@ module Kramdown
           before << '\\emph{'
           after << '}'
         else
+          if el.has_class?('bold')
+            before << '\\textbf{'
+            after << '}'
+          end
           if el.has_class?('italic')
             # em with classes, including .italic => convert to \emph{}. Other
             # places in this method will add environments for the additional
@@ -47,13 +52,18 @@ module Kramdown
             before << '\\emph{'
             after << '}'
           end
-          if el.has_class?('smcaps')
-            inner_text = self.class.emulate_small_caps(inner(el, opts))
+          if el.has_class?('line_break')
+            # Insert a line break, ignore anything inside the em
+            before << '\\linebreak\n'
+            inner_text = ''
           end
           if el.has_class?('pn')
             # render as paragraph number
             before << '\\RtParagraphNumber{'
             after << '}'
+          end
+          if el.has_class?('smcaps')
+            inner_text = self.class.emulate_small_caps(inner(el, opts))
           end
           if el.has_class?('subscript')
             before << '\\textsubscript{'

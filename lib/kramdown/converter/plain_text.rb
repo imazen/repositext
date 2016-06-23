@@ -27,7 +27,13 @@ module Kramdown
         when :blank
           # nothing to do
         when :em
-          # nothing to do
+          if el.has_class?('line_break')
+            # line_break, capture newline, ignore all children
+            el.children = []
+            ["\n", nil]
+          else
+            # nothing to do
+          end
         when :entity
           # Decode whitelisted entities
           [Repositext::Utils::EntityEncoder.decode(el.options[:original]), nil]
