@@ -1,6 +1,6 @@
 module Kramdown
   module Converter
-    class LatexRepositextBookRegular < LatexRepositext
+    class LatexRepositextBookStitched < LatexRepositext
 
       include DocumentMixin
 
