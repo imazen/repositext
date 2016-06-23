@@ -87,11 +87,10 @@ class Repositext
               )
             else
               # This is an odd case, kind of unexpected. I should write a test case for this...
-puts 'odd split'
-puts @content_at_file.filename
-p op
-p op.affectedStids
-raise
+              puts @content_at_file.filename
+              p op
+              p op.affectedStids
+              raise "Handle odd split!"
             end
           else
             raise "Handle this: #{ op.inspect }"
