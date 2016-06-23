@@ -5,8 +5,8 @@ module Kramdown
       include DocumentMixin
 
       # Configure page settings. All values are in inches
-      # @param [Symbol, optional] key
-      def page_settings(key = nil)
+      # @param key [Symbol]
+      def page_settings(key)
         ps = {
           english_bound: {
             paperwidth: 5.375,
@@ -27,7 +27,7 @@ module Kramdown
             headsep: 0.1,
           },
         }
-        ps = ps[key]  if key
+        ps = ps[key]
         ps
       end
 

@@ -71,53 +71,43 @@ class Repositext
       end
 
       def export_pdf_book_bound(options)
-        if config.setting(:is_primary_repo)
-          export_pdf_base(
-            'pdf_book_bound',
-            options.merge(
-              'include-version-control-info' => false,
-              'page_settings_key' => :english_bound,
-            )
+        export_pdf_base(
+          'pdf_book_bound',
+          options.merge(
+            'include-version-control-info' => false,
+            'page_settings_key' => config.setting(:is_primary_repo) ? :english_bound : :foreign_bound,
           )
-        else
-          export_pdf_base(
-            'pdf_book_bound',
-            options.merge(
-              'include-version-control-info' => false,
-              'page_settings_key' => :foreign_bound,
-            )
-          )
-        end
+        )
       end
 
-      def export_pdf_book_regular(options)
-        if config.setting(:is_primary_repo)
-          export_pdf_base(
-            'pdf_book_regular',
-            options.merge(
-              'include-version-control-info' => false,
-              'page_settings_key' => :english_regular,
-            )
+      def export_pdf_book_stitched(options)
+        export_pdf_base(
+          'pdf_book_stitched',
+          options.merge(
+            'include-version-control-info' => false,
+            'page_settings_key' => config.setting(:is_primary_repo) ? :english_stitched : :foreign_stitched,
           )
-        else
-          export_pdf_base(
-            'pdf_book_regular',
-            options.merge(
-              'include-version-control-info' => false,
-              'page_settings_key' => :foreign_regular,
-            )
-          )
-        end
+        )
       end
 
       def export_pdf_comprehensive(options)
         # Contains everything
-        export_pdf_base('pdf_comprehensive', options)
+        export_pdf_base(
+          'pdf_comprehensive',
+          options.merge(
+            'page_settings_key' => config.setting(:is_primary_repo) ? :english_stitched : :foreign_stitched,
+          )
+        )
       end
 
       def export_pdf_plain(options)
         # contains all formatting, no AT specific tokens
-        export_pdf_base('pdf_plain', options)
+        export_pdf_base(
+          'pdf_plain',
+          options.merge(
+            'page_settings_key' => config.setting(:is_primary_repo) ? :english_stitched : :foreign_stitched,
+          )
+        )
       end
 
       def export_pdf_recording(options)
@@ -125,7 +115,10 @@ class Repositext
         skip_file_proc = Proc.new { |contents, filename| !contents.index('%') }
         export_pdf_base(
           'pdf_recording',
-          options.merge(:skip_file_proc => skip_file_proc)
+          options.merge(
+            :skip_file_proc => skip_file_proc,
+            'page_settings_key' => config.setting(:is_primary_repo) ? :english_stitched : :foreign_stitched,
+          )
         )
       end
 
@@ -159,33 +152,28 @@ class Repositext
             skip_file_proc: skip_file_proc,
             pre_process_content_proc: pre_process_content_proc,
             post_process_latex_proc: post_process_latex_proc,
+            'page_settings_key' => config.setting(:is_primary_repo) ? :english_stitched : :foreign_stitched,
           )
         )
       end
 
       def export_pdf_translator(options)
-        export_pdf_base('pdf_translator', options)
+        export_pdf_base(
+          'pdf_translator',
+          options.merge(
+            'page_settings_key' => config.setting(:is_primary_repo) ? :english_stitched : :foreign_stitched,
+          )
+        )
       end
 
       def export_pdf_web(options)
-        case
-        when config.setting(:is_primary_repo)
-          export_pdf_base(
-            'pdf_web',
-            options.merge(
-              'include-version-control-info' => false,
-              'page_settings_key' => :english_regular,
-            )
+        export_pdf_base(
+          'pdf_web',
+          options.merge(
+            'include-version-control-info' => false,
+            'page_settings_key' => config.setting(:is_primary_repo) ? :english_stitched : :foreign_stitched,
           )
-        else
-          export_pdf_base(
-            'pdf_web',
-            options.merge(
-              'include-version-control-info' => false,
-              'page_settings_key' => :foreign_regular,
-            )
-          )
-        end
+        )
       end
 
       # @param [String] variant one of 'pdf_plain', 'pdf_recording', 'pdf_translator'
@@ -440,7 +428,7 @@ class Repositext
       def export_pdf_variants
         %w[
           pdf_book_bound
-          pdf_book_regular
+          pdf_book_stitched
           pdf_comprehensive
           pdf_plain
           pdf_recording
