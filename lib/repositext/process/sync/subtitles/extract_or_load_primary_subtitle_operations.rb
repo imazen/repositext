@@ -13,12 +13,9 @@ class Repositext
             st_ops_dir = File.join(@repository.base_dir, 'subtitle_operations')
             existing_st_ops_file_path = Dir.glob(File.join(st_ops_dir, "st-ops-*-#{ from_to_git_commit_marker }.json")).first
             st_ops_path = existing_st_ops_file_path || extract_and_store_primary_subtitle_operations
-            json_with_temp_stids_replaced = replace_temp_with_persistent_stids!(
-              File.read(st_ops_path),
-              @stids_inventory_file
-            )
+            json_with_persistent_stids = File.read(st_ops_path)
             Subtitle::OperationsForRepository.from_json(
-              json_with_temp_stids_replaced,
+              json_with_persistent_stids,
               @content_type.language,
               @repository.base_dir
             )
@@ -62,9 +59,12 @@ class Repositext
               ].join
             )
             puts " - Writing JSON file to #{ st_ops_path }"
-            File.open(st_ops_path, 'w') { |f|
-              f.write(subtitle_ops.to_json.to_s)
-            }
+            json_with_temp_stids = subtitle_ops.to_json.to_s
+            json_with_persistent_stids = replace_temp_with_persistent_stids!(
+              json_with_temp_stids,
+              @stids_inventory_file
+            )
+            File.open(st_ops_path, 'w') { |f| f.write(json_with_persistent_stids) }
             st_ops_path
           end
 
