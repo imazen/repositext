@@ -12,6 +12,7 @@ class Repositext
 
         include EnsureAllContentReposAreReady
         include ExtractOrLoadPrimarySubtitleOperations
+        include FinalizeSyncOperation
         include TransferSubtitleOperationsToForeignRepos
         include UpdatePrimarySubtitleMarkerCsvFiles
 
@@ -38,6 +39,7 @@ class Repositext
             st_ops_for_repo
           )
           # transfer_subtitle_operations_to_foreign_repos
+          finalize_sync_operation(@repository, @to_git_commit)
         end
 
       private
