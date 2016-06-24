@@ -51,7 +51,7 @@ class Repositext
       end
 
       # @param key_val_pairs [Hash] with string keys
-      def update_file_level_data(key_val_pairs)
+      def update_data!(key_val_pairs)
         lock_self_exclusively do
           # merge key_val_pairs under 'data' key
           new_data = get_file_level_data

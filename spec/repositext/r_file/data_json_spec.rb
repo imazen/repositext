@@ -44,7 +44,7 @@ class Repositext
         end
       end
 
-      describe '#update_file_level_data' do
+      describe '#update_data!' do
         # TODO
       end
     end

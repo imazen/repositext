@@ -42,7 +42,7 @@ class Repositext
       def update_file_level_data(key_val_pairs)
         # Create corresponding data.json file if it doesn't exist yet
         cdjf = corresponding_data_json_file(true)
-        cdjf.update_file_level_data(key_val_pairs)
+        cdjf.update_data!(key_val_pairs)
       end
     end
   end
