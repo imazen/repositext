@@ -4,6 +4,8 @@ class Repositext
     # Represents a git content repository
     class Content < Repositext::Repository
 
+      include Repository::HasDataJsonFile
+
     end
   end
 end
