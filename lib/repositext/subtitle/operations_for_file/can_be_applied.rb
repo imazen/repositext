@@ -5,11 +5,11 @@ class Repositext
       # Implements methods to apply self to subtitles
       module CanBeApplied
 
-        # Applies operations to existing_stids: Adds or removes subtitles as needed.
-        # @param existing_stids [Array<Hash>]. Each subtitle must have the
+        # Applies operations to existing_subtitles: Adds or removes subtitles as needed.
+        # @param existing_subtitles [Array<Hash>]. Each subtitle must have the
         #     `persistent_id` key. All other keys will be preserved.
         # @return Array<Hash> a copy of the original one with operations applied.
-        def apply_to(existing_subtitles)
+        def apply_to_subtitles(existing_subtitles)
           new_subtitles = existing_subtitles.dup
           # First we insert any new subtitles (so that their afterStids are still
           # all there as some may get deleted.)
