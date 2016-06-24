@@ -27,10 +27,11 @@ class Repositext
                 content_at_file,
                 st_ops_for_repo
               )
-              new_char_lengths = compute_new_char_lengths(content_at_file)
 
               # Only process files that have salient operations
               next  if st_ops_for_file.nil?
+
+              new_char_lengths = compute_new_char_lengths(content_at_file)
 
               validate_subtitle_sync_input_data(
                 content_at_file,
@@ -119,11 +120,6 @@ class Repositext
             # Validate that old and new subtitle counts are consistent with operations
             st_ops_count_delta = st_ops_for_file.subtitles_count_delta
             if old_stids.length + st_ops_count_delta != new_time_slices.length
-puts "added stids:"
-ap st_ops_for_file.instance_variable_get('@added_stids')
-puts "deleted stids:"
-ap st_ops_for_file.instance_variable_get('@deleted_stids')
-ap st_ops_for_file
               raise InvalidInputDataError.new(
                 [
                   "Subtitle count mismatch:",
@@ -137,7 +133,7 @@ ap st_ops_for_file
           end
 
           # Returns updated subtitles data
-          # @param old_stids [Array<Hash>]
+          # @param old_sts [Array<Hash>]
           # @param new_time_slices [Array<Hash>]
           # @param new_char_lengths [Array<Integer>] mapped to new_time_slices
           # @param st_ops_for_file [Subtitle::OperationsForFile]
@@ -151,8 +147,8 @@ ap st_ops_for_file
           #             record_id: 123,
           #           }
           #         ]
-          def compute_new_subtitle_data(old_stids, new_time_slices, new_char_lengths, st_ops_for_file)
-            new_sts = st_ops_for_file.apply_to(old_stids)
+          def compute_new_subtitle_data(old_sts, new_time_slices, new_char_lengths, st_ops_for_file)
+            new_sts = st_ops_for_file.apply_to_subtitles(old_sts)
             # Merge new time slices and char_lengths
             new_sts.each_with_index { |new_st, idx|
               new_st.merge!(new_time_slices[idx])

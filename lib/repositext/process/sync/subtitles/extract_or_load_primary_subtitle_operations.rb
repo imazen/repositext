@@ -11,9 +11,12 @@ class Repositext
           # extracted already, if so uses them. Otherwise extracts them.
           def extract_or_load_primary_subtitle_operations
             st_ops_dir = File.join(@repository.base_dir, 'subtitle_operations')
-            existing_st_ops_file_path = Dir.glob(File.join(st_ops_dir, "st-ops-*-#{ from_to_git_commit_marker }.json")).first
-            st_ops_path = existing_st_ops_file_path || extract_and_store_primary_subtitle_operations
-            json_with_persistent_stids = File.read(st_ops_path)
+            existing_st_ops_file_path = detect_expected_st_ops_file_path(
+              st_ops_dir,
+              from_to_git_commit_marker
+            )
+            st_ops_file_path = existing_st_ops_file_path || extract_and_store_primary_subtitle_operations
+            json_with_persistent_stids = File.read(st_ops_file_path)
             Subtitle::OperationsForRepository.from_json(
               json_with_persistent_stids,
               @content_type.language,
@@ -22,6 +25,15 @@ class Repositext
           end
 
         private
+
+          # Detects if the st-ops file with the expected filename exists and
+          # returns its complete path, or Nil otherwise.
+          # @param st_ops_dir [String] path to directory that contains all st-ops files
+          # @param from_to_commit_id [String] the unique marker based on from_commit and to_commit
+          # @return [String, Nil] path to expected st-ops file if it exists, Nil otherwise.
+          def detect_expected_st_ops_file_path(st_ops_dir, from_to_commit_id)
+            Dir.glob(File.join(st_ops_dir, "st-ops-*-#{ from_to_commit_id }.json")).first
+          end
 
           # Computes the next sequence number for subtitle_operations files
           # based on the highest number present in subtitle_operations_dir
@@ -48,25 +60,45 @@ class Repositext
               @to_git_commit,
               @file_list
             ).compute
-            st_ops_path = File.join(
+            st_ops_file_path = compute_next_st_ops_file_path(
               @config.base_dir(:subtitle_operations_dir),
-              [
-                'st-ops-',
-                compute_next_st_ops_file_sequence_number(@config.base_dir(:subtitle_operations_dir)),
-                '-',
-                from_to_git_commit_marker,
-                '.json'
-              ].join
+              compute_next_st_ops_file_sequence_number(@config.base_dir(:subtitle_operations_dir)),
+              from_to_git_commit_marker
             )
-            puts " - Writing JSON file to #{ st_ops_path }"
+            puts " - Writing JSON file to #{ st_ops_file_path }"
             json_with_temp_stids = subtitle_ops.to_json.to_s
             json_with_persistent_stids = replace_temp_with_persistent_stids!(
               json_with_temp_stids,
               @stids_inventory_file
             )
-            File.open(st_ops_path, 'w') { |f| f.write(json_with_persistent_stids) }
-            st_ops_path
+            persist_st_ops!(st_ops_file_path, json_with_persistent_stids)
+            st_ops_file_path
           end
+
+          # Computes the path for the next st-ops file
+          # @param st_ops_dir [String] path to directory that contains all st-ops files
+          # @param next_sequence_number [String]
+          # @param from_to_commit_id [String] the unique marker based on from_commit and to_commit
+          def compute_next_st_ops_file_path(st_ops_dir, next_sequence_number, from_to_commit_id)
+            File.join(
+              st_ops_dir,
+              [
+                'st-ops-',
+                next_sequence_number,
+                '-',
+                from_to_commit_id,
+                '.json'
+              ].join
+            )
+          end
+
+          # Persists st-ops to file
+          # @param st_ops_file_path [String]
+          # @param st_ops_json [String]
+          def persist_st_ops!(st_ops_file_path, st_ops_json)
+            File.open(st_ops_path, 'w') { |f| f.write(st_ops_json) }
+          end
+
 
           # Returns the marker to be used in the file name for fromGitCommit
           # and toGitCommit
