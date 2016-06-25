@@ -58,12 +58,12 @@ module Kramdown
             foreign_stitched: {
               paperwidth: 8.5,
               paperheight: 11,
-              inner: 1.304655,
-              outer: 1.345345,
-              top: 0.65065,
-              bottom: 0.27981,
-              headsep: 0.1621,
-              footskip: 0.38965,
+              inner: 1.528125,
+              outer: 1.555165,
+              top: 1.04425,
+              bottom: 0.70715,
+              headsep: 0.22992,
+              footskip: 0.25,
             },
           }
           ps = ps[key]
