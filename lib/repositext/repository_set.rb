@@ -51,6 +51,11 @@ class Repositext
       ]
     end
 
+    # Returns an array of all repos in repo_set
+    def all_repos(repo_set)
+      all_repo_paths(repo_set).map{ |e| Repository.new(e) }
+    end
+
     # Returns an array of paths to all repos in repo_set
     # @param repo_set [Symbol, Array<String>] A symbol describing a predefined
     #     group of repos, or an Array with specific repo names as strings.
