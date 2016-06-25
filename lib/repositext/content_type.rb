@@ -39,19 +39,6 @@ class Repositext
       @repository = repository  if repository
     end
 
-    # Lazily determines the containing git repo. Can also be set via initializer
-    def repository
-      @repository ||= Repository::Content.new(@base_dir)
-    end
-
-    def language
-      @language ||= Repositext::Language.find_by_code(config_setting(:language_code_3_chars))
-    end
-
-    def name
-      @name ||= @base_dir.split('/').last.sub(/\Act-/, '')
-    end
-
     def config
       @config ||= (
         content_type_rtfile_path = File.join(
@@ -79,6 +66,19 @@ class Repositext
 
     def is_primary_repo
       config_setting(:is_primary_repo)
+    end
+
+    def language
+      @language ||= Repositext::Language.find_by_code(config_setting(:language_code_3_chars))
+    end
+
+    def name
+      @name ||= @base_dir.split('/').last.sub(/\Act-/, '')
+    end
+
+    # Lazily determines the containing git repo. Can also be set via initializer
+    def repository
+      @repository ||= Repository::Content.new(@base_dir)
     end
 
   end
