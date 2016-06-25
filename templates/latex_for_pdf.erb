@@ -236,6 +236,7 @@
 \newenvironment{RtTitle}
   {
     \begin{center}
+    %\begin{spacing}{2.7}
     <%= @polyglossia_default_language ? '' : '\titlefont' %>
     \fontsize{22\RtRelPt}{26.4\RtRelPt}
   }
@@ -249,7 +250,7 @@
   {
     \begin{center}
     <%= @polyglossia_default_language ? '' : '\titlefont' %>
-    \relscale{2}
+    \begin{spacing}{2.7}
     \begin{spacing}{3}
   }
   {
