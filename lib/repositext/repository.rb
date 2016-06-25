@@ -132,6 +132,11 @@ class Repositext
       @repo.workdir.split('/').last
     end
 
+    # Returns the repo's parent directory
+    def parent_dir
+      File.expand_path('..', base_dir)
+    end
+
     def repo_path
       @repo.path
     end
