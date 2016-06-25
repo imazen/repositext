@@ -11,7 +11,7 @@ class Repositext
       # @param repo_root_dir [String]
       # @param content_type [Repositext::ContentType]
       def self.find_all(repo_root_dir, content_type)
-        Dir.glob(File.join(repo_root_dir, '**/content/**/*.at')).map { |path|
+        Dir.glob(File.join(repo_root_dir, "**/ct-#{ content_type.name }/content/**/*.at")).map { |path|
           RFile::ContentAt.new(
             File.read(path),
             content_type.language,
