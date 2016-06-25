@@ -62,7 +62,7 @@ class Repositext
         # @param repo [Repository]
         # @return [Array<String>] the `from` and `to` git commit sha1 strings
         def compute_bounding_git_commits(from_g_c_override, to_g_c_override, config, repo)
-          from_git_commit = compute_from_commit(from_g_c_override, config)
+          from_git_commit = compute_from_commit(from_g_c_override, config, repo)
           to_git_commit = compute_to_commit(to_g_c_override, repo)
           [from_git_commit, to_git_commit]
         end
@@ -70,19 +70,21 @@ class Repositext
         # Computes the `from` commit
         # @param commit_sha1_override [String, Nil]
         # @param config [Repositext::Cli::Config]
-        def compute_from_commit(commit_sha1_override, config)
+        # @param repository [Repository]
+        def compute_from_commit(commit_sha1_override, config, repository)
           # Use override if given
           if '' != (o = commit_sha1_override.to_s)
             return o
           end
-          # Load from repository's data.json file, will raise if not present.
-          from_setting = config.setting(:subtitles_last_synched_at_git_commit)
+          # Load from repository's data.json file
+          from_setting = repository.read_repo_level_data['subtitles_last_synched_at_git_commit']
+          raise "Missing subtitles_last_synched_at_git_commit datum"  if from_setting.nil?
           # Load from latest st-ops file
           from_latest_st_ops_file = compute_from_commit_from_latest_st_ops_file(
             find_latest_st_ops_file_path(config.base_dir(:subtitle_operations_dir))
           )
           # Verify that setting and file name are consistent
-          if from_latest_st_ops_file && from_setting != from_latest_st_ops_file
+          if from_latest_st_ops_file && from_setting.first(6) != from_latest_st_ops_file
             raise "Inconsistent from_git_commit: Setting is #{ from_setting.inspect } and latest st-ops file is #{ from_latest_st_ops_file }"
           end
           # Return consistent value from setting
