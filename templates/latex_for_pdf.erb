@@ -187,15 +187,15 @@
   {\par\end{center}}
 % environment to render meta info
 \newenvironment{RtMetaInfo}
-  {\par\relscale{0.73}}
+  {\par\fontsize{8\RtRelPt}{9.6\RtRelPt}}
   {\par}
 % environment to render .normal
 \newenvironment{RtNormal}
-  {}
+  {\fontsize{<%= @font_size %>\RtRelPt}{<%= @font_leading %>\RtRelPt}}
   {}
 % environment to render .normal_pn
 \newenvironment{RtNormalPn}
-  {}
+  {\fontsize{<%= @font_size %>\RtRelPt}{<%= @font_leading %>\RtRelPt}}
   {}
 % environment to render translator omit in green
 \newenvironment{RtOmit}
@@ -207,15 +207,15 @@
   {}
 % environment to render questions
 \newenvironment{RtQuestion}
-  {\par\noindent\hangindent=25\RtRelPt\hangafter=1}
+  {\par\noindent\hangindent=25\RtRelPt\hangafter=1\fontsize{<%= @font_size %>\RtRelPt}{<%= @font_leading %>\RtRelPt}}
   {\par}
 % environment to render scr paragraphs
 \newenvironment{RtScr}
- {\par\leftskip=20\RtRelPt \rightskip=20\RtRelPt \setlength{\parindent}{8\RtRelPt}}
+ {\par\leftskip=20\RtRelPt \rightskip=20\RtRelPt \setlength{\parindent}{8\RtRelPt}\fontsize{<%= @font_size %>\RtRelPt}{<%= @font_leading %>\RtRelPt}}
  {\par}
 % environment to render song paragraphs.
 \newenvironment{RtSong}
- {\par\leftskip=60\RtRelPt \rightskip=30\RtRelPt \setlength{\parindent}{-8\RtRelPt} \nopagebreak \setlength{\parskip}{0pt plus 0pt minus 0pt}}
+ {\par\leftskip=60\RtRelPt \rightskip=30\RtRelPt \setlength{\parindent}{-8\RtRelPt} \nopagebreak \setlength{\parskip}{0pt plus 0pt minus 0pt}\fontsize{<%= @font_size %>\RtRelPt}{<%= @font_leading %>\RtRelPt}}
  {\par}
 % environment to render split pairs in pdf_recording_merged
 \newenvironment{RtSplitPair}
@@ -223,19 +223,19 @@
   {\end{minipage}}
 % environment to render stanza paragraphs.
 \newenvironment{RtStanza}
- {\par\leftskip=60\RtRelPt \rightskip=30\RtRelPt \setlength{\parindent}{-8\RtRelPt}}
+ {\par\leftskip=60\RtRelPt \rightskip=30\RtRelPt \setlength{\parindent}{-8\RtRelPt}\fontsize{<%= @font_size %>\RtRelPt}{<%= @font_leading %>\RtRelPt}}
  {\par}
 % environment to render ### header
 \newenvironment{RtSubTitle}
-  {\begin{center}<%= @polyglossia_default_language ? '' : '\titlefont' %>\relscale{1.5}}
+  {\begin{center}<%= @polyglossia_default_language ? '' : '\titlefont' %>\fontsize{10\RtRelPt}{10.5\RtRelPt}}
   {\end{center}}
 % environment to render # header
 \newenvironment{RtTitle}
   {
     \begin{center}
+    \begin{spacing}{2.7}
     <%= @polyglossia_default_language ? '' : '\titlefont' %>
-    \relscale{2}
-    \begin{spacing}{3}
+    \fontsize{22\RtRelPt}{26.4\RtRelPt}
   }
   {
     \end{spacing}
@@ -247,8 +247,8 @@
   {
     \begin{center}
     <%= @polyglossia_default_language ? '' : '\titlefont' %>
-    \relscale{2}
-    \begin{spacing}{3}
+    \begin{spacing}{2.7}
+    \fontsize{16\RtRelPt}{19.2\RtRelPt}
   }
   {
     \end{spacing}
@@ -263,6 +263,7 @@
 \setlength{\parskip}{3\RtRelPt plus 2\RtRelPt minus 0.1\RtRelPt}
 \setlength{\parindent}{18\RtRelPt}
 \setlength{\emergencystretch}{15\RtRelPt} % to prevent lines from sticking out on the right
+\setlength{\topskip}{0pt}
 
 % single spaces between sentences
 \frenchspacing
