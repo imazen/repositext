@@ -58,16 +58,25 @@ class Repositext
             print "\033[1A"
             print "\033[K"
             puts "   - processing #{ file_name }"
-            # We use the version of content AT file at `fromGitCommit` so that
-            # it is consistent with the STM CSV file.
-            content_at_file = Repositext::RFile::ContentAt.new(
+            # We use the versions of content AT file and STM CSV file as they
+            # existed at `fromGitCommit`.
+            content_at_file_at_from_commit = Repositext::RFile::ContentAt.new(
               `git --no-pager show #{ @fromGitCommit }:#{ file_name }`,
               @language,
               File.join(@repository.base_dir, file_name),
               @content_type
             )
+
+            stm_csv_filename = content_at_file_at_from_commit.corresponding_subtitle_markers_csv_file.repo_relative_path
+            stm_csv_file_at_from_commit = Repositext::RFile::SubtitleMarkersCsv.new(
+              `git --no-pager show #{ @fromGitCommit }:#{ stm_csv_filename }`,
+              @language,
+              stm_csv_filename,
+              @content_type
+            )
             soff = SubtitleOperationsForFile.new_from_content_at_file_and_patch(
-              content_at_file,
+              content_at_file_at_from_commit,
+              stm_csv_file_at_from_commit,
               patch,
               @repository.base_dir
             ).compute

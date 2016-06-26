@@ -59,11 +59,12 @@ class Repositext
 
         # Initializes a new instance from high level objects.
         # @param content_at_file [Repositext::RFile::ContentAt]
+        # @param content_at_file [Repositext::RFile::SubtitleMarkersCsv]
         # @param patch [Rugged::Diff::Patch]
         # @param repo_base_dir [String]
-        def self.new_from_content_at_file_and_patch(content_at_file, patch, repo_base_dir)
+        def self.new_from_content_at_file_and_patch(content_at_file, stm_csv_file, patch, repo_base_dir)
           new(
-            compute_content_at_lines_with_subtitles(content_at_file),
+            compute_content_at_lines_with_subtitles(content_at_file, stm_csv_file),
             patch.hunks.map { |e|
               SubtitleOperationsForFile::Hunk.new_from_rugged_hunk(e)
             },
@@ -75,10 +76,11 @@ class Repositext
         # Returns a data structure for all text lines in content_at_file
         # with their subtitles.
         # @param content_at_file [Repositext::RFile::ContentAt]
+        # @param content_at_file [Repositext::RFile::SubtitleMarkersCsv]
         # @return [Array<Hash>] with keys :content, :line_no, :subtitles
-        def self.compute_content_at_lines_with_subtitles(content_at_file)
+        def self.compute_content_at_lines_with_subtitles(content_at_file, stm_csv_file)
           r = []
-          subtitles = content_at_file.subtitles
+          subtitles = stm_csv_file.subtitles
           content_at_file.contents
                          .split("\n")
                          .each_with_index { |content_at_line, idx|
