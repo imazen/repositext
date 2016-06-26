@@ -16,7 +16,7 @@ class Repositext
 
       # Yields each row as hash with stringified keys to block
       def each_row
-        CSV.foreach(filename, self.class.csv_options) do |row|
+        csv.each do |row|
           # row: #<CSV::Row "relativeMS":"6223" "samples":"151367170" "charLength":"34" "persistentId":"4498439" "recordId":"55020559">
           yield(row)
         end
