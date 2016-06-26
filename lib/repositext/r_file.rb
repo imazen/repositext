@@ -86,6 +86,21 @@ class Repositext
       @content_type = content_type
     end
 
+    # Returns copy of self with contents as of git_commit_sha1
+    # @param git_commit_sha1 [String]
+    def as_of_git_commit(git_commit_sha1)
+      if '' == git_commit_sha1.to_s
+        raise ArgumentError.new("Invalid git_commit_sha1: #{ git_commit_sha1.inspect }")
+      end
+      # Instantiate copy of self with contents as of the requested version
+      self.class.new(
+        `git --no-pager show #{ git_commit_sha1 }:#{ repo_relative_path }`,
+        language,
+        filename,
+        content_type
+      )
+    end
+
     # Returns just the name without path
     def basename
       File.basename(filename)

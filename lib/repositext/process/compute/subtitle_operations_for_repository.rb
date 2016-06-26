@@ -61,19 +61,14 @@ class Repositext
             # We use the versions of content AT file and STM CSV file as they
             # existed at `fromGitCommit`.
             content_at_file_at_from_commit = Repositext::RFile::ContentAt.new(
-              `git --no-pager show #{ @fromGitCommit }:#{ file_name }`,
+              '_',
               @language,
               File.join(@repository.base_dir, file_name),
               @content_type
-            )
-
-            stm_csv_filename = content_at_file_at_from_commit.corresponding_subtitle_markers_csv_file.repo_relative_path
-            stm_csv_file_at_from_commit = Repositext::RFile::SubtitleMarkersCsv.new(
-              `git --no-pager show #{ @fromGitCommit }:#{ stm_csv_filename }`,
-              @language,
-              stm_csv_filename,
-              @content_type
-            )
+            ).as_of_git_commit(@fromGitCommit)
+            stm_csv_file_at_from_commit = content_at_file_at_from_commit
+                                            .corresponding_subtitle_markers_csv_file
+                                            .as_of_git_commit(@fromGitCommit)
             soff = SubtitleOperationsForFile.new_from_content_at_file_and_patch(
               content_at_file_at_from_commit,
               stm_csv_file_at_from_commit,

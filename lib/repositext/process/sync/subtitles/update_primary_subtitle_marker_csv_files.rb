@@ -22,7 +22,9 @@ class Repositext
               repo_root_dir,
               content_type
             )
-            synced_content_at_files.each do |content_at_file|
+            synced_content_at_files.each do |content_at_file_current|
+              # Get content_at_file as of from_git_commit
+              content_at_file = content_at_file_current.as_of_git_commit(@from_git_commit)
               old_stids, new_time_slices, st_ops_for_file = extract_subtitle_sync_input_data(
                 content_at_file,
                 st_ops_for_repo
@@ -83,7 +85,9 @@ class Repositext
 
             # old_stids: extract STIDs and record_ids from corresponding STM CSV file
             old_stids = []
-            corr_stm_csv_file = content_at_file.corresponding_subtitle_markers_csv_file
+            corr_stm_csv_file = content_at_file
+                                  .corresponding_subtitle_markers_csv_file
+                                  .as_of_git_commit(@from_git_commit)
             corr_stm_csv_file.each_row { |e|
               old_stids << { persistent_id: e['persistentId'], record_id: e['recordId'] }
             }
