@@ -43,6 +43,9 @@ class Repositext
             @config,
             @repository
           )
+          if @from_git_commit == @to_git_commit
+            raise "Subtitles are up-to-date, nothing to sync!"
+          end
           st_ops_for_repo = extract_or_load_primary_subtitle_operations
           update_primary_subtitle_marker_csv_files(
             @repository.base_dir,
@@ -80,7 +83,7 @@ class Repositext
           from_setting = repository.read_repo_level_data['subtitles_last_synched_at_git_commit']
           raise "Missing subtitles_last_synched_at_git_commit datum"  if from_setting.nil?
           # Load from latest st-ops file
-          from_latest_st_ops_file = compute_from_commit_from_latest_st_ops_file(
+          from_latest_st_ops_file = compute_to_commit_from_latest_st_ops_file(
             find_latest_st_ops_file_path(config.base_dir(:subtitle_operations_dir))
           )
           # Verify that setting and file name are consistent
@@ -100,14 +103,14 @@ class Repositext
           ).last
         end
 
-        # Returns the `from` git commit from the latest st-ops file if any exist.
+        # Returns the `to` git commit from the latest st-ops file if any exist.
         # @param latest_st_ops_file_name [String, Nil]
         # @return [String, Nil]
-        def compute_from_commit_from_latest_st_ops_file(latest_st_ops_file_name)
+        def compute_to_commit_from_latest_st_ops_file(latest_st_ops_file_name)
           return nil  if latest_st_ops_file_name.nil?
           # Extract `from` commit from file name (e.g., st-ops-00001-791a1d-to-eea8b4.json)
           from_commit = latest_st_ops_file_name.match(
-            /st-ops-\d+-([^\-]+)-to-[^\.]+.json\z/
+            /st-ops-\d+-[^\-]+-to-([^\.]+).json\z/
           )[1]
         end
 
