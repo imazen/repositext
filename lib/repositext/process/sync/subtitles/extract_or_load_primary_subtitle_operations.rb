@@ -96,9 +96,8 @@ class Repositext
           # @param st_ops_file_path [String]
           # @param st_ops_json [String]
           def persist_st_ops!(st_ops_file_path, st_ops_json)
-            File.open(st_ops_path, 'w') { |f| f.write(st_ops_json) }
+            File.open(st_ops_file_path, 'w') { |f| f.write(st_ops_json) }
           end
-
 
           # Returns the marker to be used in the file name for fromGitCommit
           # and toGitCommit
