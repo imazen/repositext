@@ -60,6 +60,12 @@ class Repositext
         filename.sub(/\.at\z/, '.subtitle_markers.csv')
       end
 
+      # Returns true if contents contain subtitle_marks ('@')
+      def has_subtitle_marks?
+        !!contents.index('@')
+      end
+
+      # Returns true if corresponding_subtitle_markers_csv_file exists and has entries.
       def has_subtitles?
         subtitles.any?
       end

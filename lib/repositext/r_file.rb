@@ -114,5 +114,10 @@ class Repositext
     def lang_code_3
       language.code_3_chars
     end
+
+    # Returns relative path from repo root to self
+    def repo_relative_path
+      filename.sub(repository.base_dir, '')
+    end
   end
 end
