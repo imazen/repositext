@@ -8,7 +8,7 @@ class Repositext
     #
     class OperationsForFile
 
-      include CanBeApplied
+      include CanBeAppliedToSubtitles
 
       ATTR_NAMES = [:file_path]
 

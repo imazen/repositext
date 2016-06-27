@@ -3,7 +3,7 @@ class Repositext
     class OperationsForFile
 
       # Implements methods to apply self to subtitles
-      module CanBeApplied
+      module CanBeAppliedToSubtitles
 
         # Applies operations to existing_subtitles: Adds or removes subtitles as needed.
         # @param existing_subtitles [Array<Hash>]. Each subtitle must have the
@@ -37,9 +37,7 @@ class Repositext
         # Applies delete operations to new_subtitles (in place)
         # @param new_subtitles [Array<Hash>]
         def delete_subtitles!(new_subtitles)
-          operations.find_all{ |op|
-            %w[delete merge].include?(op.operationType)
-          }.each do |op|
+          delete_and_merge_ops.each do |op|
             # Remove subtitle
             op.affectedStids.each { |aff_st|
               next  unless '' == aff_st.tmp_attrs[:after]
