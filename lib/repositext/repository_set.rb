@@ -12,12 +12,6 @@ class Repositext
 
     attr_reader :repo_set_parent_path
 
-    def self.content_type_names
-      %w[
-        general
-      ]
-    end
-
     # @param repo_set_parent_path [String] path to the folder that contains all repos.
     def initialize(repo_set_parent_path)
       @repo_set_parent_path = repo_set_parent_path
@@ -36,10 +30,6 @@ class Repositext
         repositext
         suspension
       ]
-    end
-
-    def content_type_names
-      self.class.content_type_names
     end
 
     def foreign_content_repo_names
@@ -329,12 +319,12 @@ class Repositext
       # root level directories
       (
         %w[data] +
-        content_type_names.map{ |e| "ct-#{ e }" }
+        ContentType.all_names.map{ |e| "ct-#{ e }" }
       ).each do |rel_path|
         FileUtils.mkdir_p(File.join(repo_root_path, rel_path))
       end
       # per content_type directories
-      content_type_names.each do |content_type_name|
+      ContentType.all_names.each do |content_type_name|
         %w[
           content
           lucene_table_export
@@ -388,7 +378,7 @@ class Repositext
       File.write(dj_output_path, erb_template.result(binding))
 
       # Copy content_type level Rtfiles from code template
-      content_type_names.each do |content_type_name|
+      ContentType.all_names.each do |content_type_name|
         @content_type_name = content_type_name
         erb_template = ERB.new(File.read(rtfile_template_path))
         rtfile_output_path = File.join(repo_root_path, "ct-#{ content_type_name }", 'Rtfile')

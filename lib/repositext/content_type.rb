@@ -23,6 +23,26 @@ class Repositext
              to: :config,
              prefix: :config
 
+    # Returns an array with all available content_types for repo
+    # @param repo [Repository]
+    # @return [Array<ContentType>]
+    def self.all(repo)
+      all_names.map { |content_type_name|
+        content_type_base_dir = File.join(
+          repo.base_dir,
+          "ct-#{ content_type_name }"
+        )
+        new(content_type_base_dir, repo)
+      }
+    end
+
+    # Returns array of all available names
+    def self.all_names
+      %w[
+        general
+      ]
+    end
+
     def self.new_from_config(config)
       ct = new('_')
       ct.config = config
