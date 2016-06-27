@@ -233,21 +233,21 @@
 \newenvironment{RtTitle}
   {
     \begin{center}
-    \begin{spacing}{2.7}
+    \begin{spacing}{2.715}
     <%= @polyglossia_default_language ? '' : '\titlefont' %>
     \fontsize{22\RtRelPt}{26.4\RtRelPt}
   }
   {
     \end{spacing}
-    \vspace{24\RtRelPt}
+    \vspace{-9.7\RtRelPt}
     \end{center}
   }
 % RtTitle2 font size is 16 (down from 22 of RtTitle)
 \newenvironment{RtTitle2}
   {
     \begin{center}
+    \begin{spacing}{2.715}
     <%= @polyglossia_default_language ? '' : '\titlefont' %>
-    \begin{spacing}{2.7}
     \fontsize{16\RtRelPt}{19.2\RtRelPt}
   }
   {
