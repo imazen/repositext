@@ -1,5 +1,18 @@
 class String
 
+  # Returns contents of self as two separate strings based on self being split
+  # at word boundary near the middle.
+  def split_into_two
+    middle = length / 2
+    # In order to split at a word beginning, we use rindex starting at the
+    # middle of the string. This gives us trailing whitespace instead of leading:
+    # ["word2 ", "word3"] instead of ["word2", " word3"].
+    word_boundary_after_middle_pos = rindex(/\b/, middle)
+    first = slice(0, word_boundary_after_middle_pos)
+    second = slice(word_boundary_after_middle_pos, length)
+    [first, second]
+  end
+
   # Truncates self, removing the middle portion so that the beginning and
   # end are preserved.
   # @param [Integer] max_len
