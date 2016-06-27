@@ -25,7 +25,7 @@ module Kramdown
             outer: 0.6458,
             top: 0.76,
             bottom: 0.5,
-            headsep: 0.1336,
+            headsep: 0.172,
             footskip: 0.3515,
           },
         }
