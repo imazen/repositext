@@ -15,26 +15,33 @@ class Repositext
 
       # Initializes self from operations serialized to JSON
       # @param json [String]
-      # @param language [Repositext::Language]
       # @param repo_base_dir [String]
-      def self.from_json(json, language, repo_base_dir)
-        from_hash(JSON.parse(json, symbolize_names: true), language, repo_base_dir)
+      def self.from_json(json, repo_base_dir)
+        from_hash(JSON.parse(json, symbolize_names: true), repo_base_dir)
       end
 
       # Initializes self from operations persisted to file in `subtitle_operations` dir
       # @param hash [Hash] for repo
-      # @param language [Repositext::Language]
       # @param repo_base_dir [String]
-      def self.from_hash(hash, language, repo_base_dir)
+      def self.from_hash(hash, repo_base_dir)
         files = hash.delete(:files)
         new(
           hash,
           files.map { |file_attrs|
             file_path = File.join(repo_base_dir, file_attrs[:file_path])
+            repository = Repository.new(repo_base_dir)
+            content_type_base_dir = File.join(
+              repo_base_dir, file_attrs[:file_path].split('/').first
+            )
+            content_type = ContentType.new(
+              content_type_base_dir,
+              repository
+            )
             content_at_file = RFile::ContentAt.new(
               File.read(file_path),
-              language,
-              file_path
+              content_type.language,
+              file_path,
+              content_type
             )
             OperationsForFile.from_hash(content_at_file, file_attrs.merge(hash))
           }

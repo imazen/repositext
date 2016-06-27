@@ -19,7 +19,6 @@ class Repositext
             json_with_persistent_stids = File.read(st_ops_file_path)
             Subtitle::OperationsForRepository.from_json(
               json_with_persistent_stids,
-              @content_type.language,
               @repository.base_dir
             )
           end

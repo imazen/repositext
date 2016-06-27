@@ -139,7 +139,6 @@ class Repositext
         Process::Sync::Subtitles.new(
           options.merge(
             'config' => config,
-            'content_type' => content_type,
             'file_list' => file_list,
             'repository' => content_type.repository,
             'stids_inventory_file' => stids_inventory_file,

@@ -19,7 +19,6 @@ class Repositext
         # Initialize a new subtitle sync process
         # @param options [Hash] with stringified keys
         # @option options [Config] 'config'
-        # @option options [ContentType] 'content_type'
         # @option options [Array<String>] 'file_list'
         # @option options [String, Nil] 'from-commit', optional, defaults to previous `to-commit`
         # @option options [Repository] 'repository' the primary repo
@@ -27,7 +26,6 @@ class Repositext
         # @option options [String, Nil] 'to-commit', optional, defaults to most recent local git commit
         def initialize(options)
           @config = options['config']
-          @content_type = options['content_type']
           @file_list = options['file_list']
           @from_git_commit = options['from-commit']
           @repository = options['repository']
@@ -49,7 +47,6 @@ class Repositext
           st_ops_for_repo = extract_or_load_primary_subtitle_operations
           update_primary_subtitle_marker_csv_files(
             @repository.base_dir,
-            @content_type,
             st_ops_for_repo
           )
           # transfer_subtitle_operations_to_foreign_repos
