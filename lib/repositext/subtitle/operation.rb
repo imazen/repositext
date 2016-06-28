@@ -77,6 +77,11 @@ class Repositext
         }
       end
 
+      # Returns true if self is an insert or delete
+      def adds_or_removes_subtitle?
+        %w[insert split delete merge].include?(operationType)
+      end
+
       # Returns persistent ids of deleted subtitles
       # @return [Array<String>]
       def deleted_subtitle_ids
@@ -93,9 +98,14 @@ class Repositext
         raise "Implement me in sub class"
       end
 
-      # Returns true if self is an insert or delete
-      def adds_or_removes_subtitle?
-        %w[insert split delete merge].include?(operationType)
+      # Returns the subtitle to be reviewed after self has been applied
+      # @return [Subtitle]
+      def salient_subtitle
+        if 'merge' == operationType
+          affectedStids.first
+        else
+          affectedStids.last
+        end
       end
 
       # Converts self to Hash
