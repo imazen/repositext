@@ -134,5 +134,15 @@ class Repositext
     def repo_relative_path
       filename.sub(repository.base_dir, '')
     end
+
+    # Updates contents and persists them
+    def update_contents!(new_contents)
+      if is_binary
+        File.binwrite(filename, new_contents)
+      else
+        File.write(filename, new_contents)
+      end
+    end
+
   end
 end

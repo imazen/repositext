@@ -88,11 +88,39 @@ class Repositext
         kramdown_doc(options).to_plain_text
       end
 
-      # Returns subtitles
-      # @return [Array<Subtitle>]
-      def subtitles
-        return []  if (csmcf = corresponding_subtitle_markers_csv_file).nil?
-        csmcf.subtitles
+      # Returns subtitles based on content in self and attrs in corresponding
+      # subtitle markers csv file, or subtitle_attrs_overrides if given.
+      # @param with_content [Boolean, optional] defaults to false. If true,
+      #     returned subtitles will have their content attribute populated.
+      # @param subtitle_attrs_override [Array<Subtitle>, optional]
+      # @return [Array<Subtitle>] with attrs and content
+      def subtitles(with_content=false, subtitle_attrs_override=nil)
+        subtitle_attrs = if subtitle_attrs_override
+          subtitle_attrs_override
+        elsif (csmcf = corresponding_subtitle_markers_csv_file)
+          csmcf.subtitles
+        else
+          []
+        end
+        return []  if subtitle_attrs.empty?
+        if with_content
+          # merge content and attrs
+          subtitle_attrs_pool = subtitle_attrs.dup
+          contents.split(/(?<=\n\n)|(?=@)/).map { |e|
+            if e =~ /\A@/
+              # starts with subtitle_mark, merge content with next attrs
+              s = subtitle_attrs_pool.shift
+              s.content = e
+              s
+            else
+              # Not inside a subtitle, add blank attrs
+              Subtitle.new(content: e)
+            end
+          }
+        else
+          # return just attrs
+          subtitle_attrs
+        end
       end
     end
   end
