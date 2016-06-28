@@ -4,6 +4,10 @@ module Kramdown
 
       include DocumentMixin
 
+      def include_meta_info
+        false
+      end
+
       # Configure page settings. All values are in inches
       # @param key [Symbol]
       def page_settings(key)
@@ -35,10 +39,6 @@ module Kramdown
 
       def size_scale_factor
         1.0
-      end
-
-      def include_meta_info
-        false
       end
 
     end

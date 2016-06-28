@@ -34,6 +34,10 @@ module Kramdown
           @options = options
         end
 
+        def include_meta_info
+          true
+        end
+
         # Returns latex_template as ERB string
         def latex_template
           @latex_template ||= File.new(
@@ -70,16 +74,6 @@ module Kramdown
           ps
         end
 
-        # This factor will be applied to all font-metrics to enable enlarged
-        # PDFs.
-        def size_scale_factor
-          1.3
-        end
-
-        def include_meta_info
-          true
-        end
-
         # Returns the default language to use with polyglossia or nil if we don't
         # need to use polyglossia for the given language.
         # @param language_code_3_chars [String]
@@ -90,6 +84,12 @@ module Kramdown
             'kan' => 'kannada',
             'frs' => 'farsi',
           }[language_code_3_chars]
+        end
+
+        # This factor will be applied to all font-metrics to enable enlarged
+        # PDFs.
+        def size_scale_factor
+          1.3
         end
 
       protected
