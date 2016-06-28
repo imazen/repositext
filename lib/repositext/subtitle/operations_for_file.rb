@@ -8,6 +8,7 @@ class Repositext
     #
     class OperationsForFile
 
+      include CanBeAppliedToForeignContentAt
       include CanBeAppliedToSubtitles
 
       ATTR_NAMES = [:file_path]
@@ -66,6 +67,13 @@ class Repositext
       # Returns true if self contains any inserts or deletes
       def adds_or_removes_subtitles?
         operations.any? { |st_op| st_op.adds_or_removes_subtitle? }
+      end
+
+      # Returns all delete and merge operations for self
+      def delete_and_merge_ops
+        operations.find_all{ |op|
+          %w[delete merge].include?(op.operationType)
+        }
       end
 
       # Returns all insert and split operations for self
