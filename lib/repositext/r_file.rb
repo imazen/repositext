@@ -49,26 +49,6 @@ class Repositext
       end
     end
 
-    # Lock self for a block so only one process can modify it at a time.
-    # NOTE: This is from Rails' File Cache:
-    # https://github.com/rails/rails/blob/932655a4ef61083da98724bb612d00f89e153c46/activesupport/lib/active_support/cache/file_store.rb#L103
-    # OPTMIZE: We could use Rails Cache's File.atomic_write method for even better concurrency:
-    # https://github.com/rails/rails/blob/932655a4ef61083da98724bb612d00f89e153c46/activesupport/lib/active_support/core_ext/file/atomic.rb
-    def lock_self_exclusively(&block)
-      if File.exist?(filename)
-        File.open(filename, 'r+') do |f|
-          begin
-            f.flock File::LOCK_EX
-            yield
-          ensure
-            f.flock File::LOCK_UN
-          end
-        end
-      else
-        yield
-      end
-    end
-
     # @param contents [String] the file's contents as string
     # @param language [Language] the file's language
     # @param filename [String] the file's absolute path
@@ -128,6 +108,26 @@ class Repositext
 
     def lang_code_3
       language.code_3_chars
+    end
+
+    # Lock self for a block so only one process can modify it at a time.
+    # NOTE: This is from Rails' File Cache:
+    # https://github.com/rails/rails/blob/932655a4ef61083da98724bb612d00f89e153c46/activesupport/lib/active_support/cache/file_store.rb#L103
+    # OPTMIZE: We could use Rails Cache's File.atomic_write method for even better concurrency:
+    # https://github.com/rails/rails/blob/932655a4ef61083da98724bb612d00f89e153c46/activesupport/lib/active_support/core_ext/file/atomic.rb
+    def lock_self_exclusively(&block)
+      if File.exist?(filename)
+        File.open(filename, 'r+') do |f|
+          begin
+            f.flock File::LOCK_EX
+            yield
+          ensure
+            f.flock File::LOCK_UN
+          end
+        end
+      else
+        yield
+      end
     end
 
     # Returns relative path from repo root to self

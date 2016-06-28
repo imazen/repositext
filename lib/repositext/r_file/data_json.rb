@@ -26,7 +26,7 @@ class Repositext
 
       # Returns default data as Hash
       def self.default_data
-        { 'data' => {}, 'settings' => {}, 'subtitles' => {} }
+        { 'data' => {}, 'settings' => {} }
       end
 
       def self.json_formatting_options

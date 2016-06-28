@@ -42,6 +42,7 @@ class Repositext
 
           operations_for_all_files = diff.patches.map { |patch|
             file_name = patch.delta.old_file[:path]
+
             if !@file_list.include?(file_name)
               # print "\r - skipping #{ file_name }                                      "
               print "\033[1A"
