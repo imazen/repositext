@@ -92,6 +92,14 @@ module Kramdown
           1.3
         end
 
+        def title_line_spacing
+          3.022 # default for enlarged PDFs
+        end
+
+        def title_vspace
+          -7.325 # default for enlarged PDFs in \RtRelPt
+        end
+
       protected
 
         # Returns a complete latex document as string.
@@ -141,6 +149,8 @@ module Kramdown
           @primary_font_name = 'V-Calisto-St'
           @scale_factor = size_scale_factor
           @title_font_name = @options[:font_name_override] || 'V-Calisto-St'
+          @title_line_spacing = @options[:title_line_spacing] || title_line_spacing # leading for title text
+          @title_vspace = @options[:title_vspace] || title_vspace # space to be inserted above title to align with body text
           @truncated_title_footer = compute_truncated_title(
             document_title_plain_text, document_title_latex, 45, 3
           )

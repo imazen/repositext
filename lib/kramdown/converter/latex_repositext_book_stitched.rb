@@ -41,6 +41,16 @@ module Kramdown
         1.0
       end
 
+      # Override for book sizes
+      def title_line_spacing
+        2.715
+      end
+
+      # Override for book sizes
+      def title_vspace
+        -9.7
+      end
+
     end
   end
 end
