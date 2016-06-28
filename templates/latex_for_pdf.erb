@@ -164,7 +164,10 @@
   {}
 % environment to render idparagraph paragraphs
 \newenvironment{RtIdParagraph}
-  {\setlength{\parindent}{0pt}\fontsize{8\RtRelPt}{10.5\RtRelPt}}
+  {
+    \setlength{\parindent}{0pt}
+    \fontsize{8\RtRelPt}{10.5\RtRelPt}\selectfont
+  }
   {\par}
 % environment to render idtitle1 paragraphs
 \newenvironment{RtIdTitle1}
@@ -173,7 +176,7 @@
     \vspace*{\fill}
     \begin{center}
     <%= @polyglossia_default_language ? '' : '\titlefont' %>
-    \fontsize{10\RtRelPt}{12\RtRelPt}
+    \fontsize{10\RtRelPt}{12\RtRelPt}\selectfont
   }
   {\end{center}}
 % environment to render idtitle2 paragraphs
@@ -182,20 +185,27 @@
     \par
     \begin{center}
     <%= @polyglossia_default_language ? '' : '\titlefont' %>
-    \fontsize{8\RtRelPt}{9.6\RtRelPt}
+    \fontsize{8\RtRelPt}{9.6\RtRelPt}\selectfont
   }
   {\par\end{center}}
 % environment to render meta info
 \newenvironment{RtMetaInfo}
-  {\par\fontsize{8\RtRelPt}{9.6\RtRelPt}}
+  {
+    \par
+    \fontsize{8\RtRelPt}{9.6\RtRelPt}\selectfont
+  }
   {\par}
 % environment to render .normal
 \newenvironment{RtNormal}
-  {\fontsize{<%= @font_size %>\RtRelPt}{<%= @font_leading %>\RtRelPt}}
+  {
+    \fontsize{<%= @font_size %>\RtRelPt}{<%= @font_leading %>\RtRelPt}\selectfont
+  }
   {}
 % environment to render .normal_pn
 \newenvironment{RtNormalPn}
-  {\fontsize{<%= @font_size %>\RtRelPt}{<%= @font_leading %>\RtRelPt}}
+  {
+    \fontsize{<%= @font_size %>\RtRelPt}{<%= @font_leading %>\RtRelPt}\selectfont
+  }
   {}
 % environment to render translator omit in green
 \newenvironment{RtOmit}
@@ -207,27 +217,61 @@
   {}
 % environment to render questions
 \newenvironment{RtQuestion}
-  {\par\noindent\hangindent=25\RtRelPt\hangafter=1\fontsize{<%= @font_size %>\RtRelPt}{<%= @font_leading %>\RtRelPt}}
+  {
+    \par
+    \noindent
+    \hangindent=25\RtRelPt
+    \hangafter=1
+    \fontsize{<%= @font_size %>\RtRelPt}{<%= @font_leading %>\RtRelPt}\selectfont
+  }
   {\par}
 % environment to render scr paragraphs
 \newenvironment{RtScr}
- {\par\leftskip=20\RtRelPt \rightskip=20\RtRelPt \setlength{\parindent}{8\RtRelPt}\fontsize{<%= @font_size %>\RtRelPt}{<%= @font_leading %>\RtRelPt}}
+ {
+   \par
+   \leftskip=20\RtRelPt
+   \rightskip=20\RtRelPt
+   \setlength{\parindent}{8\RtRelPt}
+   \fontsize{<%= @font_size %>\RtRelPt}{<%= @font_leading %>\RtRelPt}\selectfont
+ }
  {\par}
 % environment to render song paragraphs.
 \newenvironment{RtSong}
- {\par\leftskip=60\RtRelPt \rightskip=30\RtRelPt \setlength{\parindent}{-8\RtRelPt} \nopagebreak \setlength{\parskip}{0pt plus 0pt minus 0pt}\fontsize{<%= @font_size %>\RtRelPt}{<%= @font_leading %>\RtRelPt}}
+ {
+   \par
+   \leftskip=60\RtRelPt
+   \rightskip=30\RtRelPt
+   \setlength{\parindent}{-8\RtRelPt}
+   \nopagebreak
+   \setlength{\parskip}{0pt plus 0pt minus 0pt}
+   \fontsize{<%= @font_size %>\RtRelPt}{<%= @font_leading %>\RtRelPt}\selectfont
+ }
  {\par}
 % environment to render split pairs in pdf_recording_merged
 \newenvironment{RtSplitPair}
-  {\begin{minipage}{\textwidth}\setlength{\parskip}{3\RtRelPt}\setlength{\parindent}{18\RtRelPt}}
+  {
+    \begin{minipage}
+    {\textwidth}
+    \setlength{\parskip}{3\RtRelPt}
+    \setlength{\parindent}{18\RtRelPt}
+  }
   {\end{minipage}}
 % environment to render stanza paragraphs.
 \newenvironment{RtStanza}
- {\par\leftskip=60\RtRelPt \rightskip=30\RtRelPt \setlength{\parindent}{-8\RtRelPt}\fontsize{<%= @font_size %>\RtRelPt}{<%= @font_leading %>\RtRelPt}}
+ {
+   \par
+   \leftskip=60\RtRelPt
+   \rightskip=30\RtRelPt
+   \setlength{\parindent}{-8\RtRelPt}
+   \fontsize{<%= @font_size %>\RtRelPt}{<%= @font_leading %>\RtRelPt}\selectfont}
  {\par}
 % environment to render ### header
 \newenvironment{RtSubTitle}
-  {\begin{center}<%= @polyglossia_default_language ? '' : '\titlefont' %>\fontsize{10\RtRelPt}{10.5\RtRelPt}}
+  {
+    \begin{center}
+    <%= @polyglossia_default_language ? '' : '\titlefont' %>
+    \fontsize{10\RtRelPt}{10.5\RtRelPt}\selectfont
+  }
   {\end{center}}
 % environment to render # header
 \newenvironment{RtTitle}
@@ -235,7 +279,7 @@
     \begin{center}
     \begin{spacing}{<%= @title_line_spacing %>}
     <%= @polyglossia_default_language ? '' : '\titlefont' %>
-    \fontsize{22\RtRelPt}{26.4\RtRelPt}
+    \fontsize{22\RtRelPt}{26.4\RtRelPt}\selectfont
   }
   {
     \end{spacing}
@@ -248,7 +292,7 @@
     \begin{center}
     \begin{spacing}{<%= @title_line_spacing %>}
     <%= @polyglossia_default_language ? '' : '\titlefont' %>
-    \fontsize{16\RtRelPt}{19.2\RtRelPt}
+    \fontsize{16\RtRelPt}{19.2\RtRelPt}\selectfont
   }
   {
     \end{spacing}
