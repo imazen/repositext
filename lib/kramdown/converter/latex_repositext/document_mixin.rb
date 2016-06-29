@@ -293,7 +293,7 @@ module Kramdown
         # @return [String]
         def compute_truncated_title(title_plain_text, title_latex, max_len, min_length_of_last_word)
           # Remove any line breaks
-          l_title_latex = title_latex.gsub("\\linebreak\\n", '')
+          l_title_latex = title_latex.gsub("\\linebreak\n", '')
 
           # Nothing to do if title_plain_text is already short enough
           return l_title_latex  if title_plain_text.length <= max_len

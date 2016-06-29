@@ -54,7 +54,7 @@ module Kramdown
           end
           if el.has_class?('line_break')
             # Insert a line break, ignore anything inside the em
-            before << '\\linebreak\n'
+            before << "\\linebreak\n"
             inner_text = ''
           end
           if el.has_class?('pn')
@@ -118,7 +118,9 @@ module Kramdown
           l_title = l_title.gsub(
             /(?<=\\textsuperscript\{)([^\}]+)(?=\})/, "\\textscale{0.7}{" + '\1}'
           )
-          "\\begin{RtTitle}\n#{ l_title }\n\\end{RtTitle}"
+          # NOTE: We insert a percent sign immediately after l_title to prevent trailing whitespace
+          # which would break the centering of the text.
+          "\\begin{RtTitle}\n#{ l_title }%\n\\end{RtTitle}"
         when 2
           # render in RtTitle2 environment
           l_title = inner(el, opts)
