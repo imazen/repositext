@@ -67,9 +67,9 @@
 \setlength{\headheight}{14\RtRelPt}
 \newcommand{\RtDoubleHRule}{
   \begin{minipage}{\textwidth}
-  \hrule width \hsize height 0.2\RtRelPt
+  \hrule width \hsize height 0.19\RtRelPt
   \kern 1.6\RtRelPt
-  \hrule width \hsize height 0.2\RtRelPt
+  \hrule width \hsize height 0.19\RtRelPt
   \end{minipage}
 }
 \newcommand{\RtFooterContent}{
@@ -80,12 +80,18 @@
   <% end %>
 }
 
+\makeatletter
+\renewcommand{\headrule}{{\if@fancyplain\let\headrulewidth\plainheadrulewidth\fi
+    \vspace*{-0.125\RtRelPt}\hrule\@height\headrulewidth\@width\headwidth \vskip-\headrulewidth}}
+\makeatother
+
 % specify pagestyle
 \fancypagestyle{RtPageStyle}{
   \fancyhf{}
   \fancyhfoffset[LE]{0mm}
   <% if @is_primary_repo %>
     % single line in header (default)
+    \renewcommand{\headrulewidth}{0.19\RtRelPt}
     % double line in footer
     \renewcommand{\footrule}{\RtDoubleHRule\par}
   <% else %>
@@ -93,7 +99,7 @@
     \renewcommand{\headrulewidth}{0mm}
     % no line in footer (default)
   <% end %>
-  \fancyhead[EL,OR]{<%= @page_number_command %>} % outside
+  \fancyhead[EL,OR]{<%= "\\hrule height 0.19\\RtRelPt \\kern 0.33\\RtRelPt"  if @is_primary_repo %><%= @page_number_command %>} % outside
   \fancyhead[ER]{<%= @header_text %>} % inside even
   \fancyhead[OL]{<%= @header_title %>} % inside odd
   \RtFooterContent
@@ -296,7 +302,7 @@
   }
   {
     \end{spacing}
-    \vspace{<%= @title_vspace %>\RtRelPt}
+    \vspace*{<%= @title_vspace %>\RtRelPt}
     \end{center}
   }
 % avoid widows and orphans
@@ -304,7 +310,7 @@
 \clubpenalty=5000
 
 % set rubber value between paras for flushbottom
-\setlength{\parskip}{3\RtRelPt plus 2\RtRelPt minus 0.1\RtRelPt}
+\setlength{\parskip}{3\RtRelPt plus 3\RtRelPt minus 0.2\RtRelPt}
 \setlength{\parindent}{18\RtRelPt}
 \setlength{\emergencystretch}{15\RtRelPt} % to prevent lines from sticking out on the right
 \setlength{\topskip}{0pt}
