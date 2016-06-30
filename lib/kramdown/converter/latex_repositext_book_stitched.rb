@@ -19,7 +19,7 @@ module Kramdown
             outer: 0.4844,
             top: 0.7733,
             bottom: 0.471,
-            headsep: 0.1087,
+            headsep: 0.1106,
             footskip: 0.351,
           },
           foreign_stitched: {
