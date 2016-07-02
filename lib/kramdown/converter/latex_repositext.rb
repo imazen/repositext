@@ -148,7 +148,7 @@ module Kramdown
           after = ''
           inner_text = nil
 
-          if el.has_class?('first_paragraph')
+          if el.has_class?('first_par')
             # render in RTFirstParaEnviroment
             before << "\\begin{RtFirstPara}\n"
             after << "\n\\end{RtFirstPara}"
