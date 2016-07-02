@@ -201,6 +201,13 @@
     \fontsize{8\RtRelPt}{9.6\RtRelPt}\selectfont
   }
   {\par}
+% environment to render .normal .first
+\newenvironment{RtFirstPara}
+  {
+    \par
+    \setlength{\parskip}{0pt plus 0pt minus 0pt}
+  }
+  {\par}
 % environment to render .normal
 \newenvironment{RtNormal}
   {

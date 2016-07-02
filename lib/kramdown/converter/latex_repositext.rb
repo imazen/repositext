@@ -148,6 +148,11 @@ module Kramdown
           after = ''
           inner_text = nil
 
+          if el.has_class?('first_paragraph')
+            # render in RTFirstParaEnviroment
+            before << "\\begin{RtFirstPara}\n"
+            after << "\n\\end{RtFirstPara}"
+          end
           if el.has_class?('id_paragraph')
             # render in RtIdParagraph environment
             before << "\\begin{RtIdParagraph}\n"
