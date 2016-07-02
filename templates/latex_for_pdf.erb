@@ -289,15 +289,29 @@
 % environment to render # header
 \newenvironment{RtTitle}
   {
+    \setlength{\parindent}{0\RtRelPt}
+    \begin{minipage}{\textwidth}
+    \par
+    \begingroup
+    \color{red}
+    <%= "\\vspace*{-4.625\\RtRelPt}"  if @is_primary_repo %>
+    <%= "\\hrule width \\hsize height 0.19\\RtRelPt"  if @is_primary_repo %>
+    <%= "\\vspace*{4.45\\RtRelPt}"  if @is_primary_repo %>
     \begin{center}
-    \begin{spacing}{1.234}
+    \begin{spacing}{1.2311}
     <%= @polyglossia_default_language ? '' : '\titlefont' %>
     \fontsize{22\RtRelPt}{26.4\RtRelPt}\selectfont
   }
   {
+    \par
+    <%= "\\vspace*{6.86\\RtRelPt}"  if @is_primary_repo %>
+    <%= "\\hrule width \\hsize height 0.19\\RtRelPt"  if @is_primary_repo %>
+    \setstretch{0}
     \end{spacing}
-    \vspace{<%= @title_vspace %>\RtRelPt}
     \end{center}
+    \vspace*{<%= @title_vspace %>pt}
+    \endgroup
+    \end{minipage}
   }
 % RtTitle2 font size is 16 (down from 22 of RtTitle)
 \newenvironment{RtTitle2}
@@ -309,7 +323,7 @@
   }
   {
     \end{spacing}
-    \vspace*{<%= @title_vspace %>\RtRelPt}
+    \vspace*{<%= @title_vspace %>pt}
     \end{center}
   }
 % avoid widows and orphans

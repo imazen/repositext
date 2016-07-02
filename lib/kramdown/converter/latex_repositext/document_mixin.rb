@@ -93,7 +93,7 @@ module Kramdown
         end
 
         def title_vspace
-          @options[:is_primary_repo] ? 1 : -7.325 # default for enlarged PDFs in \RtRelPt
+          @options[:is_primary_repo] ? 11.84425 : 23.56 # default for enlarged PDFs in \RtRelPt
         end
 
       protected
