@@ -67,7 +67,7 @@ module Kramdown
               top: 1.04425,
               bottom: 0.70715,
               headsep: 0.23942,
-              footskip: 0.25,
+              footskip: 0.375,
             },
           }
           ps = ps[key]
