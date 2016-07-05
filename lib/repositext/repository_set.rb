@@ -227,14 +227,14 @@ class Repositext
     def run_repositext_command(repo_set_spec, command_string)
       puts " - Running command `#{ command_string }`"
       compute_repo_paths(repo_set_spec).each { |repo_path|
-        puts "   - in #{ repo_name }"
+        puts "   - in #{ repo_path }"
         cmd = %(cd #{ repo_path } && #{ command_string })
         Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
           exit_status = wait_thr.value
           if exit_status.success?
             puts "   - completed"
           else
-            msg = %(Could not run command in #{ repo_name }:\n\n)
+            msg = %(Could not run command in #{ repo_path }:\n\n)
             puts(msg + stderr.read)
           end
         end
