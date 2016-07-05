@@ -229,13 +229,16 @@ class Repositext
       compute_repo_paths(repo_set_spec).each { |repo_path|
         puts "   - in #{ repo_path }"
         cmd = %(cd #{ repo_path } && #{ command_string })
-        Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
+        Open3.popen2e(cmd) do |stdin, stdout_err, wait_thr|
+          while line = stdout_err.gets
+            puts line
+          end
+
           exit_status = wait_thr.value
           if exit_status.success?
             puts "   - completed"
           else
-            msg = %(Could not run command in #{ repo_path }:\n\n)
-            puts(msg + stderr.read)
+            msg = %(Could not run command in #{ repo_path }!)
           end
         end
       }
