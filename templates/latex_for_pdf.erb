@@ -7,7 +7,7 @@
 \usepackage{nag}
 
 % set rt specific relative point, to be used for all point based lengths that
-% should be relative to font size.
+% should be relative to font size. We use this to scale from book size to enlarged.
 \newlength{\RtRelPt}
 \setlength{\RtRelPt}{<%= @scale_factor %>pt}
 
@@ -17,6 +17,7 @@
   \setCJKmainfont{<%= @font_name %>}
 <% end %>
 
+% so we can render first eagle as drop cap
 \usepackage{lettrine}
 
 % sets the language specific linebreaking
@@ -33,43 +34,44 @@
 \newfontfamily\rtmainfont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @font_name %>}
 
 <% if @polyglossia_default_language %>
-  % Some languages require this package for correct font rendering
+  % This language requires polyglossia for correct font rendering
   \usepackage{polyglossia}
   \setdefaultlanguage{<%= @polyglossia_default_language %>}
 <% end %>
 
-% leading to set leading for document
+% set leading for document
 \usepackage{leading}
 
-% needspace to make sure there is no page break in id paragraphs at the end
+% make sure there is no page break in id paragraphs at the end
 \usepackage{needspace}
 
-% relsize to set font size relative to base font size
+% set font size relative to base font size
 \usepackage{relsize}
   % forces relsize to scale by the set percentage
   \renewcommand\RSpercentTolerance{0}
   \renewcommand\RSlargest{50pt}
   \renewcommand\RSsmallest{6pt}
 
-% setspace to ensure single line spacing is used
+% ensure single line spacing is used
 \usepackage[singlespacing]{setspace}
 
-% xcolor to color text
+% for coloring text
 \usepackage[svgnames]{xcolor}
 
 % package and command dependency boundary
 
-% changepage to indent paragraphs via adjustwidth
-\usepackage{changepage}
+% NOTE: JH jul 5, 2016 I didn't find any references to adjustwidth. Delete after Aug 2016
+% indent paragraphs via adjustwidth
+% \usepackage{changepage}
 
-% fancyhdr for custom headers and footers
+% for custom headers and footers
 \usepackage{fancyhdr}
 \setlength{\headheight}{14\RtRelPt}
 \newcommand{\RtDoubleHRule}{
   \begin{minipage}{\textwidth}
-  \hrule width \hsize height 0.19\RtRelPt
-  \kern 1.6\RtRelPt
-  \hrule width \hsize height 0.19\RtRelPt
+    \hrule width \hsize height 0.19\RtRelPt
+    \kern 1.6\RtRelPt
+    \hrule width \hsize height 0.19\RtRelPt
   \end{minipage}
 }
 \newcommand{\RtFooterContent}{
@@ -80,12 +82,14 @@
   <% end %>
 }
 
+% redefine fancyhdr's headrule command to insert negative \vspace before \hrule
+% to bring lower hrule closer to header text.
 \makeatletter
 \renewcommand{\headrule}{{\if@fancyplain\let\headrulewidth\plainheadrulewidth\fi
     \vspace*{-0.125\RtRelPt}\hrule\@height\headrulewidth\@width\headwidth \vskip-\headrulewidth}}
 \makeatother
 
-% specify pagestyle
+% specify regular pagestyle
 \fancypagestyle{RtPageStyle}{
   \fancyhf{}
   \fancyhfoffset[LE]{0mm}
@@ -119,7 +123,7 @@
   \RtFooterContent
 }
 
-% geometry for custom page layout
+% for custom page layout
 \usepackage[<%= @page_settings %>]{geometry}
 \setlength{\marginparwidth}{0pt}
 
@@ -129,15 +133,17 @@
 \usepackage[none]{hyphenat}
 \sloppy
 
-% layout for showing layout parameters in document (using \layout{} command)
-\usepackage{layout}
+% for showing layout parameters on separate page in document
+% (uncomment next line and the \layout{} command inside document)
+% \usepackage{layout}
 
-% showframe to display layout boundaries in the document on every page.
-%\usepackage{showframe}
+% uncomment this to display layout boundaries in the document on every page.
+% \usepackage{showframe}
 
 % command to render gap mark. Pass the text to be highlighted as argument.
 \newcommand{\RtGapMarkText}[1]
   {\textcolor{red}{#1}}
+
 % command to render auto gap mark number.
 \newcounter{RtGapMarkCounter}
 \setcounter{RtGapMarkCounter}{3}
@@ -147,6 +153,7 @@
       \textnormal{%
         \textsuperscript{\{\theRtGapMarkCounter\}}}}%
     \stepcounter{RtGapMarkCounter}}
+
 % command to render paragraph number. Pass the para number as argument.
 \newcommand{\RtParagraphNumber}[1]
 <% if @polyglossia_default_language %>
@@ -154,12 +161,15 @@
 <% else %>
   {\paragraphnumberfont\noindent\makebox[\parindent][l]{\raisebox{0.45ex}{{\textscale{0.67}{#1}}}}\rtmainfont}
 <% end %>
+
 % command to render record_mark. Pass rid as param
 \newcommand{\RtRecordMark}[1]
   {\noindent\colorbox{LightGrey}{Record#1}\par}
+
 % command to emulate lower-case small-caps chars
 \newcommand{\RtSmCapsEmulation}[1]
   {\textscale{0.7}{#1}}
+
 % command to render last eagle
 \newcommand{\RtLastEagle}
   {\hspace*{\fill}~\mbox{\raisebox{-0.5ex}}\penalty -9999}
@@ -168,6 +178,7 @@
 \newenvironment{RtFirstEagle}
   <%= @first_eagle %>
   {}
+
 % environment to render idparagraph paragraphs
 \newenvironment{RtIdParagraph}
   {
@@ -175,59 +186,77 @@
     \fontsize{8\RtRelPt}{10.5\RtRelPt}\selectfont
   }
   {\par}
+
 % environment to render idtitle1 paragraphs
 \newenvironment{RtIdTitle1}
   {
     \needspace{350\RtRelPt}
     \vspace*{\fill}
     \begin{center}
-    <%= @polyglossia_default_language ? '' : '\titlefont' %>
-    \fontsize{10\RtRelPt}{12\RtRelPt}\selectfont
+      <%= @polyglossia_default_language ? '' : '\titlefont' %>
+      \fontsize{10\RtRelPt}{12\RtRelPt}\selectfont
   }
-  {\end{center}}
+  {
+    \end{center}
+  }
+
 % environment to render idtitle2 paragraphs
 \newenvironment{RtIdTitle2}
   {
     \par
     \begin{center}
-    <%= @polyglossia_default_language ? '' : '\titlefont' %>
-    \fontsize{8\RtRelPt}{9.6\RtRelPt}\selectfont
+      <%= @polyglossia_default_language ? '' : '\titlefont' %>
+      \fontsize{8\RtRelPt}{9.6\RtRelPt}\selectfont
   }
-  {\par\end{center}}
+  {
+      \par
+    \end{center}
+  }
+
 % environment to render meta info
 \newenvironment{RtMetaInfo}
   {
     \par
     \fontsize{8\RtRelPt}{9.6\RtRelPt}\selectfont
   }
-  {\par}
-% environment to render .normal .first
-\newenvironment{RtFirstPara}
   {
     \par
-    \setlength{\parskip}{0pt plus 0pt minus 0pt}
   }
-  {\par}
+
+% environment to render .first_par
+\newenvironment{RtFirstPar}
+  {
+    \par
+    \setlength{\parskip}{0pt plus 0pt minus 0pt} % to reduce vert space between title and first paragraph
+  }
+  {
+    \par
+  }
+
 % environment to render .normal
 \newenvironment{RtNormal}
   {
     \fontsize{<%= @font_size %>\RtRelPt}{<%= @font_leading %>\RtRelPt}\selectfont
   }
   {}
+
 % environment to render .normal_pn
 \newenvironment{RtNormalPn}
   {
     \fontsize{<%= @font_size %>\RtRelPt}{<%= @font_leading %>\RtRelPt}\selectfont
   }
   {}
+
 % environment to render translator omit in green
 \newenvironment{RtOmit}
   {\par\color{Green}}
   {\par}
+
 % environment to render text in the primary font
 \newenvironment{RtPrimaryFont}
   {\primaryfont}
   {}
+
 % environment to render questions
 \newenvironment{RtQuestion}
   {
@@ -237,94 +266,118 @@
     \hangafter=1
     \fontsize{<%= @font_size %>\RtRelPt}{<%= @font_leading %>\RtRelPt}\selectfont
   }
-  {\par}
+  {
+    \par
+  }
+
 % environment to render scr paragraphs
 \newenvironment{RtScr}
- {
-   \par
-   \leftskip=20\RtRelPt
-   \rightskip=20\RtRelPt
-   \setlength{\parindent}{8\RtRelPt}
-   \fontsize{<%= @font_size %>\RtRelPt}{<%= @font_leading %>\RtRelPt}\selectfont
- }
- {\par}
+  {
+    \par
+    \leftskip=20\RtRelPt
+    \rightskip=20\RtRelPt
+    \setlength{\parindent}{8\RtRelPt}
+    \fontsize{<%= @font_size %>\RtRelPt}{<%= @font_leading %>\RtRelPt}\selectfont
+  }
+  {
+    \par
+  }
+
 % environment to render song paragraphs.
 \newenvironment{RtSong}
- {
-   \par
-   \leftskip=60\RtRelPt
-   \rightskip=30\RtRelPt
-   \setlength{\parindent}{-8\RtRelPt}
-   \nopagebreak
-   \setlength{\parskip}{0pt plus 0pt minus 0pt}
-   \fontsize{<%= @font_size %>\RtRelPt}{<%= @font_leading %>\RtRelPt}\selectfont
- }
- {\par}
+  {
+    \par
+    \leftskip=60\RtRelPt
+    \rightskip=30\RtRelPt
+    \setlength{\parindent}{-8\RtRelPt}
+    \nopagebreak
+    \setlength{\parskip}{0pt plus 0pt minus 0pt}
+    \fontsize{<%= @font_size %>\RtRelPt}{<%= @font_leading %>\RtRelPt}\selectfont
+  }
+  {
+    \par
+  }
+
 % environment to render split pairs in pdf_recording_merged
 \newenvironment{RtSplitPair}
   {
-    \begin{minipage}
-    {\textwidth}
-    \setlength{\parskip}{3\RtRelPt}
-    \setlength{\parindent}{18\RtRelPt}
+    \begin{minipage}{\textwidth}
+      \setlength{\parskip}{3\RtRelPt}
+      \setlength{\parindent}{18\RtRelPt}
   }
-  {\end{minipage}}
+  {
+    \end{minipage}
+  }
+
 % environment to render stanza paragraphs.
 \newenvironment{RtStanza}
- {
-   \par
-   \leftskip=60\RtRelPt
-   \rightskip=30\RtRelPt
-   \setlength{\parindent}{-8\RtRelPt}
-   \fontsize{<%= @font_size %>\RtRelPt}{<%= @font_leading %>\RtRelPt}\selectfont}
- {\par}
-% environment to render ### header
+  {
+    \par
+    \leftskip=60\RtRelPt
+    \rightskip=30\RtRelPt
+    \setlength{\parindent}{-8\RtRelPt}
+    \fontsize{<%= @font_size %>\RtRelPt}{<%= @font_leading %>\RtRelPt}\selectfont
+  }
+  {
+    \par
+  }
+
+% environment to render level3 header
 \newenvironment{RtSubTitle}
   {
     \begin{center}
-    <%= @polyglossia_default_language ? '' : '\titlefont' %>
-    \fontsize{10\RtRelPt}{10.5\RtRelPt}\selectfont
+      <%= @polyglossia_default_language ? '' : '\titlefont' %>
+      \fontsize{10\RtRelPt}{10.5\RtRelPt}\selectfont
   }
-  {\end{center}}
-% environment to render # header
+  {
+    \end{center}
+  }
+
+% environment to render level1 header
 \newenvironment{RtTitle}
   {
     \setlength{\parindent}{0\RtRelPt}
     \begin{minipage}{\textwidth}
-    \par
-    \begingroup
-    <%= "\\vspace*{-4.625\\RtRelPt}"  if @is_primary_repo %>
-    <%= "\\hrule width \\hsize height 0.19\\RtRelPt"  if @is_primary_repo %>
-    <%= "\\vspace*{4.45\\RtRelPt}"  if @is_primary_repo %>
-    \begin{center}
-    \begin{spacing}{1.2311}
-    <%= @polyglossia_default_language ? '' : '\titlefont' %>
-    \fontsize{22\RtRelPt}{26.4\RtRelPt}\selectfont
+      \par
+      \begingroup
+        <% if @is_primary_repo %>
+          \vspace*{-4.625\RtRelPt}
+          \hrule width \hsize height 0.19\RtRelPt
+          \vspace*{4.45\RtRelPt}
+        <% end %>
+        \begin{center}
+          \begin{spacing}{1.2311}
+            <%= @polyglossia_default_language ? '' : '\titlefont' %>
+            \fontsize{22\RtRelPt}{26.4\RtRelPt}\selectfont
   }
   {
-    \par
-    <%= "\\vspace*{6.86\\RtRelPt}"  if @is_primary_repo %>
-    <%= "\\hrule width \\hsize height 0.19\\RtRelPt"  if @is_primary_repo %>
-    \setstretch{0}
-    \end{spacing}
-    \end{center}
-    \vspace*{<%= @title_vspace %>pt}
-    \endgroup
+            \par
+            <% if @is_primary_repo %>
+              \vspace*{6.86\RtRelPt}
+              \hrule width \hsize height 0.19\RtRelPt
+            <% end %>
+            \setstretch{0}
+          \end{spacing}
+        \end{center}
+        \vspace*{<%= @title_vspace %>pt}
+      \endgroup
     \end{minipage}
   }
-% RtTitle2 font size is 16 (down from 22 of RtTitle)
+
+% environment to render level2 header
 \newenvironment{RtTitle2}
   {
     \begin{center}
-    \begin{spacing}{1.234}
-    <%= @polyglossia_default_language ? '' : '\titlefont' %>
-    \fontsize{16\RtRelPt}{19.2\RtRelPt}\selectfont
+      \begin{spacing}{1.2311}
+        <%= @polyglossia_default_language ? '' : '\titlefont' %>
+        \fontsize{16\RtRelPt}{19.2\RtRelPt}\selectfont
   }
   {
-    \end{spacing}
-    \vspace*{<%= @title_vspace %>pt}
+      \end{spacing}
+      \vspace*{<%= @title_vspace %>pt}
     \end{center}
   }
+
 % avoid widows and orphans
 \widowpenalty=5000
 \clubpenalty=5000
@@ -338,21 +391,21 @@
 % single spaces between sentences
 \frenchspacing
 
-\leading{<%= @font_leading %>pt} % don't use \RtRelPt here since \rescale already scales all font metrics
+\leading{<%= @font_leading %>pt} % don't use \RtRelPt here since \relscale already scales all font metrics
 
 \begin{document}
 
-\relscale{<%= @scale_factor %>} % scale all fonts in document (to be able to use this template for both book and enlarged)
+  \relscale{<%= @scale_factor %>} % scale all fonts in document (to be able to use this template for both book and enlarged)
 
-\thispagestyle{RtFirstPageStyle} % to have same header and footer on title page
+  \thispagestyle{RtFirstPageStyle} % to have same header and footer on title page
 
-<%= @body %>
+  <%= @body %>
 
-<%= @meta_info %>
-<%= @version_control_page %>
+  <%= @meta_info %>
+  <%= @version_control_page %>
 
-% uncomment to display two pages with layout parameters
-%\newpage
-%\layout{}
+  % uncomment to display two pages with layout parameters
+  %\newpage
+  %\layout{}
 
 \end{document}
