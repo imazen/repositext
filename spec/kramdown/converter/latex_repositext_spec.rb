@@ -110,17 +110,17 @@ module Kramdown
           },
           ["<<<gap-mark>>>word1 word2", "\\RtGapMarkText{}\\RtGapMarkText{word1} word2"], # first word after gap_mark colored red
           ["<<<gap-mark>>>\\emph{word1 word2} word3", "\\RtGapMarkText{}\\emph{\\RtGapMarkText{word1} word2} word3"], # first word in \em after gap_mark colored red
-          ["<<<gap-mark>>>…\\emph{word1}", "\\RtGapMarkText{…\\hspace{0pt}}\\emph{\\RtGapMarkText{word1}}"], # elipsis and first word in \em after gap_mark colored red
+          ["<<<gap-mark>>>…\\emph{word1}", "\\RtGapMarkText{\\nolinebreak[4]…\\hspace{0pt}}\\emph{\\RtGapMarkText{word1}}"], # elipsis and first word in \em after gap_mark colored red
           ["<<<gap-mark>>> word1 word2", "\\RtGapMarkText{}\\RtFirstEagle \\RtGapMarkText{word1} word2"], # eagle followed by whitespace not red
-          ["<<<gap-mark>>>…word1 word2", "\\RtGapMarkText{…\\hspace{0pt}}\\RtGapMarkText{word1} word2"], # elipsis and first word after gap_mark colored red
-          ["<<<gap-mark>>>word1… word2", "\\RtGapMarkText{}\\RtGapMarkText{word1}…\\hspace{0pt} word2"], # elipsis after first word after gap_mark is not red
+          ["<<<gap-mark>>>…word1 word2", "\\RtGapMarkText{\\nolinebreak[4]…\\hspace{0pt}}\\RtGapMarkText{word1} word2"], # elipsis and first word after gap_mark colored red
+          ["<<<gap-mark>>>word1… word2", "\\RtGapMarkText{}\\RtGapMarkText{word1}\\nolinebreak[4]…\\hspace{0pt} word2"], # elipsis after first word after gap_mark is not red
           ["\n\n<<<gap-mark>>>\\textit{\\textbf{“word", "\n\n\\RtGapMarkText{}\\textit{\\textbf{“\\RtGapMarkText{word}"], # replace gap-marks before nested latex commands and skip chars
           ["<<<gap-mark>>>(\\emph{others}", "\\RtGapMarkText{}(\\emph{\\RtGapMarkText{others}}"], # replace gap-marks before nested latex commands and skip chars
-          ["<<<gap-mark>>>#{ Repositext::EM_DASH }word1 word2", "\\RtGapMarkText{}#{ Repositext::EM_DASH }\\hspace{0pt}\\RtGapMarkText{word1} word2"],
+          ["<<<gap-mark>>>#{ Repositext::EM_DASH }word1 word2", "\\RtGapMarkText{}\\nolinebreak[4]#{ Repositext::EM_DASH }\\hspace{0pt}\\RtGapMarkText{word1} word2"],
           # Insert zero width space after elipsis, em-dash, and hyphen
-          ["word1 word2#{ Repositext::ELIPSIS }word3 word4", "word1 word2#{ Repositext::ELIPSIS }\\hspace{0pt}word3 word4"],
-          ["word1 word2#{ Repositext::EM_DASH }word3 word4", "word1 word2#{ Repositext::EM_DASH }\\hspace{0pt}word3 word4"],
-          ["word1 word2-word3 word4", "word1 word2-\\hspace{0pt}word3 word4"],
+          ["word1 word2#{ Repositext::ELIPSIS }word3 word4", "word1 word2\\nolinebreak[4]#{ Repositext::ELIPSIS }\\hspace{0pt}word3 word4"],
+          ["word1 word2#{ Repositext::EM_DASH }word3 word4", "word1 word2\\nolinebreak[4]#{ Repositext::EM_DASH }\\hspace{0pt}word3 word4"],
+          ["word1 word2-word3 word4", "word1 word2\\nolinebreak[4]-\\hspace{0pt}word3 word4"],
           # Don't insert zero width space before certain punctuation
           ["word1 word2-#{ Repositext::S_QUOTE_CLOSE }word3 word4", "word1 word2-#{ Repositext::S_QUOTE_CLOSE }word3 word4"],
           ["word1 word2-#{ Repositext::D_QUOTE_CLOSE }word3 word4", "word1 word2-#{ Repositext::D_QUOTE_CLOSE }word3 word4"],
