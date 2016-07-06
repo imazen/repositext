@@ -294,12 +294,13 @@ module Kramdown
         def compute_truncated_title(title_plain_text, title_latex, max_len, min_length_of_last_word)
           # Remove any line breaks
           l_title_latex = title_latex.gsub("\\linebreak\n", '')
+          l_title_plain_text = title_plain_text.gsub("\n", '')
 
-          # Nothing to do if title_plain_text is already short enough
-          return l_title_latex  if title_plain_text.length <= max_len
+          # Nothing to do if l_title_plain_text is already short enough
+          return l_title_latex  if l_title_plain_text.length <= max_len
 
           truncated_title_plain_text = truncate_plain_text_title(
-            title_plain_text,
+            l_title_plain_text,
             max_len,
             min_length_of_last_word
           )
@@ -336,7 +337,7 @@ module Kramdown
               matching_plain_text_char = s.scan(
                 Regexp.new(
                   Regexp.escape(
-                    title_plain_text[plain_text_index]
+                    l_title_plain_text[plain_text_index]
                   ),
                   true # small caps emulation will capitalize letters in `s`
                 )
