@@ -6,6 +6,16 @@ class Repositext
 
       # Adds `.first_par` class to all first paragraphs in content AT files.
       # This script can be run multiple times on all repos.
+      # Use like so:
+      # > bundle console
+      # parent_path = "/Users/x/repositext_parent"
+      # %w[general].each do |content_type_name|
+      #   puts "Content type: #{ content_type_name }"
+      #   Repositext::RepositorySet.new(parent_path).run_repositext_command(
+      #     :primary_repo,
+      #     "rt #{ content_type_name } fix add_first_par_class"
+      #   )
+      # end
       def fix_add_first_par_class(options)
         first_block_level_ial_regex = /(?<=^\{: )[^\}]+(?=\s*\}\n)/
         Repositext::Cli::Utils.change_files_in_place(
