@@ -116,9 +116,9 @@ module Kramdown
           @body = latex_body
           @date_code = date_code.capitalize
           @first_eagle = @options[:first_eagle_override] || "{\\lettrine[lines=2,lraise=0.355,findent=8.3\\RtRelPt,nindent=0\\RtRelPt]{\\textscale{0.465}}\\rtmainfont}"
-          @font_leading = @options[:font_leading_override] || 11.8
-          @font_name = @options[:font_name_override] || (@options[:is_primary_repo] ? 'V-Calisto-St' : 'V-Excelsior LT Std')
-          @font_size = @options[:font_size_override] || 11
+          @font_leading = @options[:font_leading]
+          @font_name = @options[:font_name]
+          @font_size = @options[:font_size]
           @header_text = compute_header_text_latex(
             @options[:header_text],
             @options[:is_primary_repo],
@@ -140,11 +140,11 @@ module Kramdown
           )
           @page_settings = page_settings_for_latex_geometry_package
           # Force foreign languages to use Excelsior for paragraph numbers.
-          @paragraph_number_font_name = @options[:font_name_override] ? 'V-Excelsior LT Std' : @font_name
+          @paragraph_number_font_name = @options[:is_primary_repo] ? @font_name : 'V-Excelsior LT Std'
           @polyglossia_default_language = polyglossia_default_language(@options[:language_code_3_chars])
           @primary_font_name = 'V-Calisto-St'
           @scale_factor = size_scale_factor
-          @title_font_name = @options[:font_name_override] || 'V-Calisto-St'
+          @title_font_name = @options[:title_font_name]
           @title_vspace = title_vspace # space to be inserted above title to align with body text
           @truncated_title_footer = compute_truncated_title(
             document_title_plain_text, document_title_latex, 45, 3

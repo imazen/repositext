@@ -188,12 +188,13 @@ class Repositext
         options = options.merge({
           additional_footer_text: options['additional-footer-text'],
           first_eagle_override: config.setting(:first_eagle_override, false),
-          font_leading_override: config.setting(:font_leading_override, false),
-          font_name_override: config.setting(:font_name_override, false),
-          font_size_override: config.setting(:font_size_override, false),
+          font_leading: config.setting(:pdf_export_font_leading),
+          font_name: config.setting(:pdf_export_font_name),
+          font_size: config.setting(:pdf_export_font_size),
           is_primary_repo: config.setting(:is_primary_repo),
           language_code_2_chars: config.setting(:language_code_2_chars),
           language_code_3_chars: config.setting(:language_code_3_chars),
+          title_font_name: config.setting(:pdf_export_title_font_name),
           version_control_page: options['include-version-control-info'],
         })
         Repositext::Cli::Utils.export_files(
