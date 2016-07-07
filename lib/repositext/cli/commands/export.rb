@@ -70,22 +70,16 @@ class Repositext
         end
       end
 
-      def export_pdf_book_bound(options)
+      def export_pdf_book(options)
         export_pdf_base(
-          'pdf_book_bound',
+          'pdf_book',
           options.merge(
             'include-version-control-info' => false,
-            'page_settings_key' => config.setting(:is_primary_repo) ? :english_bound : :foreign_bound,
-          )
-        )
-      end
-
-      def export_pdf_book_stitched(options)
-        export_pdf_base(
-          'pdf_book_stitched',
-          options.merge(
-            'include-version-control-info' => false,
-            'page_settings_key' => config.setting(:is_primary_repo) ? :english_stitched : :foreign_stitched,
+            'page_settings_key' => compute_pdf_export_page_settings_key(
+              config.setting(:is_primary_repo),
+              config.setting(:pdf_export_binding),
+              'book'
+            ),
           )
         )
       end
@@ -95,7 +89,11 @@ class Repositext
         export_pdf_base(
           'pdf_comprehensive',
           options.merge(
-            'page_settings_key' => config.setting(:is_primary_repo) ? :english_stitched : :foreign_stitched,
+            'page_settings_key' => compute_pdf_export_page_settings_key(
+              config.setting(:is_primary_repo),
+              config.setting(:pdf_export_binding),
+              'enlarged'
+            ),
           )
         )
       end
@@ -105,7 +103,11 @@ class Repositext
         export_pdf_base(
           'pdf_plain',
           options.merge(
-            'page_settings_key' => config.setting(:is_primary_repo) ? :english_stitched : :foreign_stitched,
+            'page_settings_key' => compute_pdf_export_page_settings_key(
+              config.setting(:is_primary_repo),
+              config.setting(:pdf_export_binding),
+              'enlarged'
+            ),
           )
         )
       end
@@ -117,7 +119,11 @@ class Repositext
           'pdf_recording',
           options.merge(
             :skip_file_proc => skip_file_proc,
-            'page_settings_key' => config.setting(:is_primary_repo) ? :english_stitched : :foreign_stitched,
+            'page_settings_key' => compute_pdf_export_page_settings_key(
+              config.setting(:is_primary_repo),
+              config.setting(:pdf_export_binding),
+              'enlarged'
+            ),
           )
         )
       end
@@ -152,7 +158,11 @@ class Repositext
             skip_file_proc: skip_file_proc,
             pre_process_content_proc: pre_process_content_proc,
             post_process_latex_proc: post_process_latex_proc,
-            'page_settings_key' => config.setting(:is_primary_repo) ? :english_stitched : :foreign_stitched,
+            'page_settings_key' => compute_pdf_export_page_settings_key(
+              config.setting(:is_primary_repo),
+              config.setting(:pdf_export_binding),
+              'enlarged'
+            ),
           )
         )
       end
@@ -161,7 +171,11 @@ class Repositext
         export_pdf_base(
           'pdf_translator',
           options.merge(
-            'page_settings_key' => config.setting(:is_primary_repo) ? :english_stitched : :foreign_stitched,
+            'page_settings_key' => compute_pdf_export_page_settings_key(
+              config.setting(:is_primary_repo),
+              config.setting(:pdf_export_binding),
+              'enlarged'
+            ),
           )
         )
       end
@@ -171,7 +185,11 @@ class Repositext
           'pdf_web',
           options.merge(
             'include-version-control-info' => false,
-            'page_settings_key' => config.setting(:is_primary_repo) ? :english_stitched : :foreign_stitched,
+            'page_settings_key' => compute_pdf_export_page_settings_key(
+              config.setting(:is_primary_repo),
+              config.setting(:pdf_export_binding),
+              'enlarged'
+            ),
           )
         )
       end
@@ -428,8 +446,7 @@ class Repositext
 
       def export_pdf_variants
         %w[
-          pdf_book_bound
-          pdf_book_stitched
+          pdf_book
           pdf_comprehensive
           pdf_plain
           pdf_recording
@@ -437,6 +454,26 @@ class Repositext
           pdf_translator
           pdf_web
         ]
+      end
+
+      # Returns the page_settings_key to use
+      # @param is_primary_repo [Boolean]
+      # @param binding [String] 'stitched' or 'bound'
+      # @param size [String] 'book' or 'enlarged'
+      # @return [Symbol], e.g., :english_stitched, or :foreign_bound
+      def compute_pdf_export_page_settings_key(is_primary_repo, binding, size)
+        if !%w[bound stitched].include?(binding)
+          raise ArgumentError.new("Invalid binding: #{ binding.inspect }")
+        end
+        if !%w[book enlarged].include?(size)
+          raise ArgumentError.new("Invalid size: #{ size.inspect }")
+        end
+        [
+          (is_primary_repo ? 'english' : 'foreign'),
+          (
+            (!is_primary_repo && 'enlarged' == size) ? 'stitched' : binding
+          ), # always use stitched for foreign enlarged
+        ].join('_').to_sym
       end
 
     end
