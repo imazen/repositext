@@ -111,11 +111,12 @@ module Kramdown
                                                  .to_s
           git_repo = Repositext::Repository.new(@options[:source_filename])
           latest_commit = git_repo.latest_commit(@options[:source_filename])
-          # assign i_vars referenced in template file
+          # assign i_vars referenced in template file.
           @additional_footer_text = escape_latex_text(@options[:additional_footer_text])
           @body = latex_body
           @date_code = date_code.capitalize
-          @first_eagle = @options[:first_eagle_override] || "{\\lettrine[lines=2,lraise=0.355,findent=8.3\\RtRelPt,nindent=0\\RtRelPt]{\\textscale{0.465}}\\rtmainfont}"
+          # Applies the settings for the first eagle indent and drop cap.
+          @first_eagle = @options[:first_eagle]
           @font_leading = @options[:font_leading]
           @font_name = @options[:font_name]
           @font_size = @options[:font_size]
