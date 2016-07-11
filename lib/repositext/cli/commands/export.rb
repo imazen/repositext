@@ -205,7 +205,7 @@ class Repositext
         output_base_dir = options['output'] || config.base_dir(:pdf_export_dir)
         options = options.merge({
           additional_footer_text: options['additional-footer-text'],
-          first_eagle_override: config.setting(:first_eagle_override, false),
+          first_eagle: config.setting(:pdf_export_first_eagle),
           font_leading: config.setting(:pdf_export_font_leading),
           font_name: config.setting(:pdf_export_font_name),
           font_size: config.setting(:pdf_export_font_size),
