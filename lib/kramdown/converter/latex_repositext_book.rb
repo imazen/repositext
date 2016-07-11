@@ -1,6 +1,6 @@
 module Kramdown
   module Converter
-    class LatexRepositextBookBound < LatexRepositext
+    class LatexRepositextBook < LatexRepositext
 
       include DocumentMixin
 
@@ -21,6 +21,16 @@ module Kramdown
             bottom: 0.471,
             headsep: 0.1,
           },
+          english_stitched: {
+            paperwidth: 5.4375,
+            paperheight: 8.375,
+            inner: 0.4531,
+            outer: 0.4844,
+            top: 0.7733,
+            bottom: 0.471,
+            headsep: 0.1106,
+            footskip: 0.351,
+          },
           foreign_bound: {
             paperwidth: 5.375,
             paperheight: 8.375,
@@ -29,6 +39,16 @@ module Kramdown
             top: 0.76,
             bottom: 0.5,
             headsep: 0.1,
+          },
+          foreign_stitched: {
+            paperwidth: 5.4375,
+            paperheight: 8.375,
+            inner: 0.625,
+            outer: 0.6458,
+            top: 0.76,
+            bottom: 0.5,
+            headsep: 0.172,
+            footskip: 0.3515,
           },
         }
         ps = ps[key]
@@ -42,6 +62,8 @@ module Kramdown
       # Override for book sizes
       def title_vspace
         @options[:is_primary_repo] ? -11.5 : -9.7
+        # TODO: figure out how we handle stitched:
+        # @options[:is_primary_repo] ? 5.7125 : 15.727
       end
 
     end
