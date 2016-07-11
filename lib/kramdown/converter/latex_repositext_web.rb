@@ -12,7 +12,7 @@ module Kramdown
       # For web we use the regular finishing.
       # @param key [Symbol]
       def page_settings(key)
-        ps = {
+        {
           english_stitched: {
             paperwidth: 5.4375,
             paperheight: 8.375,
@@ -31,9 +31,7 @@ module Kramdown
             bottom: 0.5,
             headsep: 0.1,
           },
-        }
-        ps = ps[key]
-        ps
+        }.fetch(key)
       end
 
       def size_scale_factor

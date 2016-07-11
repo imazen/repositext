@@ -48,7 +48,9 @@ module Kramdown
 
         # Configure page settings. All values are in inches
         def page_settings(key)
-          ps = {
+          # We use #fetch instead of #[] so that an exception is raised on
+          # non-existing keys.
+          {
             english_stitched: {
               paperwidth: 8.5,
               paperheight: 11,
@@ -69,9 +71,7 @@ module Kramdown
               headsep: 0.23942,
               footskip: 0.375,
             },
-          }
-          ps = ps[key]
-          ps
+          }.fetch(key)
         end
 
         # Returns the default language to use with polyglossia or nil if we don't
