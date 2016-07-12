@@ -11,7 +11,7 @@ module Kramdown
       # Configure page settings. All values are in inches
       # @param key [Symbol]
       def page_settings(key)
-        ps = {
+        {
           english_bound: {
             paperwidth: 5.375,
             paperheight: 8.375,
@@ -50,9 +50,7 @@ module Kramdown
             headsep: 0.172,
             footskip: 0.3515,
           },
-        }
-        ps = ps[key]
-        ps
+        }.fetch(key)
       end
 
       def size_scale_factor

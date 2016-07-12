@@ -48,7 +48,9 @@ module Kramdown
 
         # Configure page settings. All values are in inches
         def page_settings(key)
-          ps = {
+          # We use #fetch instead of #[] so that an exception is raised on
+          # non-existing keys.
+          {
             english_stitched: {
               paperwidth: 8.5,
               paperheight: 11,
@@ -69,9 +71,7 @@ module Kramdown
               headsep: 0.23942,
               footskip: 0.375,
             },
-          }
-          ps = ps[key]
-          ps
+          }.fetch(key)
         end
 
         # Returns the default language to use with polyglossia or nil if we don't
@@ -120,6 +120,9 @@ module Kramdown
           @font_leading = @options[:font_leading]
           @font_name = @options[:font_name]
           @font_size = @options[:font_size]
+          @footer_title = truncate_plain_text_title(
+            @options[:footer_title_english], 43, 3
+          ).unicode_upcase
           @header_text = compute_header_text_latex(
             @options[:header_text],
             @options[:is_primary_repo],
@@ -147,9 +150,6 @@ module Kramdown
           @scale_factor = size_scale_factor
           @title_font_name = @options[:title_font_name]
           @title_vspace = title_vspace # space to be inserted above title to align with body text
-          @truncated_title_footer = compute_truncated_title(
-            document_title_plain_text, document_title_latex, 45, 3
-          )
           @use_cjk_package = ['chn','cnt'].include?(@options[:language_code_3_chars])
           @version_control_page = if @options[:version_control_page]
             compute_version_control_page(git_repo, @options[:source_filename])
