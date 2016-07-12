@@ -215,6 +215,7 @@ class Repositext
           title_font_name: config.setting(:pdf_export_title_font_name),
           version_control_page: options['include-version-control-info'],
         })
+        primary_footer_titles = compute_primary_footer_titles # hash with date codes as keys and primary titles as values
         Repositext::Cli::Utils.export_files(
           input_base_dir,
           input_file_selector,
@@ -222,18 +223,24 @@ class Repositext
           output_base_dir,
           options['file_filter'],
           "Exporting AT files to #{ variant }",
-          options
-        ) do |contents, filename|
+          options.merge(
+            use_new_repositext_file_api: true,
+            content_type: content_type,
+          )
+        ) do |content_at_file|
+          contents = content_at_file.contents
+          filename = content_at_file.filename
           config.update_for_file(filename.gsub(/\.at\z/, '.data.json'))
-          options[:source_filename] = filename
+          options[:footer_title_english] = primary_footer_titles[content_at_file.extract_product_identity_id(false)]
           options[:header_text] = config.setting(:pdf_export_header_text)
+          if options[:pre_process_content_proc]
+            contents = options[:pre_process_content_proc].call(contents, filename, options)
+          end
           if options[:skip_file_proc] && options[:skip_file_proc].call(contents, filename)
             $stderr.puts " - Skipping #{ filename } - matches options[:skip_file_proc]"
             next([Outcome.new(true, { contents: nil })])
           end
-          if options[:pre_process_content_proc]
-            contents = options[:pre_process_content_proc].call(contents, filename, options)
-          end
+          options[:source_filename] = filename
           # Since the kramdown parser is specified as module in Rtfile,
           # I can't use the standard kramdown API:
           # `doc = Kramdown::Document.new(contents, :input => 'kramdown_repositext')`
@@ -436,6 +443,26 @@ class Repositext
 
     private
 
+      # Returns the page_settings_key to use
+      # @param is_primary_repo [Boolean]
+      # @param binding [String] 'stitched' or 'bound'
+      # @param size [String] 'book' or 'enlarged'
+      # @return [Symbol], e.g., :english_stitched, or :foreign_bound
+      def compute_pdf_export_page_settings_key(is_primary_repo, binding, size)
+        if !%w[bound stitched].include?(binding)
+          raise ArgumentError.new("Invalid binding: #{ binding.inspect }")
+        end
+        if !%w[book enlarged].include?(size)
+          raise ArgumentError.new("Invalid size: #{ size.inspect }")
+        end
+        [
+          (is_primary_repo ? 'english' : 'foreign'),
+          (
+            (!is_primary_repo && 'enlarged' == size) ? 'stitched' : binding
+          ), # always use stitched for foreign enlarged
+        ].join('_').to_sym
+      end
+
       def convert_at_string_to_plain_markdown(txt)
         # Remove AT specific tokens
         Suspension::TokenRemover.new(
@@ -456,24 +483,9 @@ class Repositext
         ]
       end
 
-      # Returns the page_settings_key to use
-      # @param is_primary_repo [Boolean]
-      # @param binding [String] 'stitched' or 'bound'
-      # @param size [String] 'book' or 'enlarged'
-      # @return [Symbol], e.g., :english_stitched, or :foreign_bound
-      def compute_pdf_export_page_settings_key(is_primary_repo, binding, size)
-        if !%w[bound stitched].include?(binding)
-          raise ArgumentError.new("Invalid binding: #{ binding.inspect }")
-        end
-        if !%w[book enlarged].include?(size)
-          raise ArgumentError.new("Invalid size: #{ size.inspect }")
-        end
-        [
-          (is_primary_repo ? 'english' : 'foreign'),
-          (
-            (!is_primary_repo && 'enlarged' == size) ? 'stitched' : binding
-          ), # always use stitched for foreign enlarged
-        ].join('_').to_sym
+      # Returns a hash with English titles as values and date code as keys
+      def compute_primary_footer_titles
+        raise "Implement me in sub-class"
       end
 
     end
