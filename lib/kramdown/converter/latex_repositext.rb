@@ -182,8 +182,14 @@ module Kramdown
             after << "\n\\end{RtIdTitle2}"
           end
           if el.has_class?('normal')
+            # render in RtNormal environment
+            before << "\\begin{RtNormal}\n"
+            after << "\n\\end{RtNormal}"
           end
           if el.has_class?('normal_pn')
+            # render in RtNormal environment
+            before << "\\begin{RtNormal}\n"
+            after << "\n\\end{RtNormal}"
           end
           if el.has_class?('omit')
             # render in RtOmit environment
