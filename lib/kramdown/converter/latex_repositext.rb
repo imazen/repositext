@@ -153,6 +153,11 @@ module Kramdown
             before << "\\begin{RtFirstPar}\n"
             after << "\n\\end{RtFirstPar}"
           end
+          if el.has_class?('indent_for_eagle')
+            # render in RtIndentForEagle environment
+            before << "\\begin{RtIndentForEagle}\n"
+            after << "\n\\end{RtIndentForEagle}"
+          end
           if el.has_class?('id_paragraph')
             # render in RtIdParagraph environment
             before << "\\begin{RtIdParagraph}\n"

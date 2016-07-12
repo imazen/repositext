@@ -233,6 +233,18 @@
     \par
   }
 
+% environment to render .indent_for_eagle
+% used for increasing the indention of a .normal paragraph that follows a
+% single line paragrpah that starts the file and contians an eagle
+\newenvironment{RtIndentForEagle}
+  {
+    \par
+    \setlength{\parindent}{22\RtRelPt}
+  }
+  {
+    \par
+  }
+
 % environment to render .normal
 \newenvironment{RtNormal}
   {
