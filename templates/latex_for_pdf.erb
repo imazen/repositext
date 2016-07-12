@@ -283,13 +283,26 @@
     \par
   }
 
+% environment to render scr paragraphs with they start with an eagle
+\newenvironment{RtScrWithEagle}
+  {
+    \par
+    \leftskip=20.236\RtRelPt
+    \rightskip=20.236\RtRelPt
+    \setlength{\parindent}{0\RtRelPt}
+    \fontsize{<%= @font_size %>\RtRelPt}{<%= @font_leading %>\RtRelPt}\selectfont
+  }
+  {
+    \par
+  }
+
 % environment to render scr paragraphs
 \newenvironment{RtScr}
   {
     \par
-    \leftskip=20\RtRelPt
-    \rightskip=20\RtRelPt
-    \setlength{\parindent}{8\RtRelPt}
+    \leftskip=20.236\RtRelPt
+    \rightskip=20.236\RtRelPt
+    \setlength{\parindent}{7.95\RtRelPt}
     \fontsize{<%= @font_size %>\RtRelPt}{<%= @font_leading %>\RtRelPt}\selectfont
   }
   {
