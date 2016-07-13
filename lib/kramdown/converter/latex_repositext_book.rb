@@ -59,7 +59,7 @@ module Kramdown
 
       # Override for book sizes
       def title_vspace
-        @options[:is_primary_repo] ? 5.7125 : 15.727
+        @options[:is_primary_repo] ? 4.818 : 7.7755
       end
 
     end

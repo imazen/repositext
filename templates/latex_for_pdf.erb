@@ -353,11 +353,12 @@
     \begin{minipage}{\textwidth}
       \par
       \begingroup
-        <% if @is_primary_repo %>
-          \vspace*{-4.625\RtRelPt}
+        \vspace*{-3.248\RtRelPt}
+        {
+          \color{<%= @is_primary_repo ? 'black' : 'white' %>}
           \hrule width \hsize height 0.19\RtRelPt
-          \vspace*{4.45\RtRelPt}
-        <% end %>
+        }
+        \vspace*{4.354\RtRelPt}
         \begin{center}
           \begin{spacing}{1.2311}
             <%= @polyglossia_default_language ? '' : '\titlefont' %>
@@ -365,10 +366,11 @@
   }
   {
             \par
-            <% if @is_primary_repo %>
-              \vspace*{6.86\RtRelPt}
+            \vspace*{6.733\RtRelPt}
+            {
+              \color{<%= @is_primary_repo ? 'black' : 'white' %>}
               \hrule width \hsize height 0.19\RtRelPt
-            <% end %>
+            }
             \setstretch{0}
           \end{spacing}
         \end{center}
