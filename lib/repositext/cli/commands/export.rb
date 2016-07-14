@@ -205,7 +205,6 @@ class Repositext
         output_base_dir = options['output'] || config.base_dir(:pdf_export_dir)
         options = options.merge({
           additional_footer_text: options['additional-footer-text'],
-          first_eagle: config.setting(:pdf_export_first_eagle),
           font_leading: config.setting(:pdf_export_font_leading),
           font_name: config.setting(:pdf_export_font_name),
           font_size: config.setting(:pdf_export_font_size),
@@ -233,6 +232,7 @@ class Repositext
           config.update_for_file(filename.gsub(/\.at\z/, '.data.json'))
           options[:footer_title_english] = primary_footer_titles[content_at_file.extract_product_identity_id(false)]
           options[:header_text] = config.setting(:pdf_export_header_text)
+          options[:first_eagle] = config.setting(:pdf_export_first_eagle)
           if options[:pre_process_content_proc]
             contents = options[:pre_process_content_proc].call(contents, filename, options)
           end
