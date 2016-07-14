@@ -207,11 +207,6 @@ module Kramdown
             before << "\\begin{RtScr}\n"
             after << "\n\\end{RtScr}"
           end
-          if el.has_class?('scr_with_eagle')
-            # render in RtScr environment
-            before << "\\begin{RtScrWithEagle}\n"
-            after << "\n\\end{RtScrWithEagle}"
-          end
           if el.has_class?('song')
            # render in RtSong environment
             before << "\\begin{RtSong}\n"
