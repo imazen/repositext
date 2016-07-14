@@ -205,13 +205,9 @@ class Repositext
         output_base_dir = options['output'] || config.base_dir(:pdf_export_dir)
         options = options.merge({
           additional_footer_text: options['additional-footer-text'],
-          font_leading: config.setting(:pdf_export_font_leading),
-          font_name: config.setting(:pdf_export_font_name),
-          font_size: config.setting(:pdf_export_font_size),
           is_primary_repo: config.setting(:is_primary_repo),
           language_code_2_chars: config.setting(:language_code_2_chars),
           language_code_3_chars: config.setting(:language_code_3_chars),
-          title_font_name: config.setting(:pdf_export_title_font_name),
           version_control_page: options['include-version-control-info'],
         })
         primary_footer_titles = compute_primary_footer_titles # hash with date codes as keys and primary titles as values
@@ -230,9 +226,13 @@ class Repositext
           contents = content_at_file.contents
           filename = content_at_file.filename
           config.update_for_file(filename.gsub(/\.at\z/, '.data.json'))
+          options[:first_eagle] = config.setting(:pdf_export_first_eagle)
+          options[:font_leading] = config.setting(:pdf_export_font_leading)
+          options[:font_name] = config.setting(:pdf_export_font_name)
+          options[:font_size] = config.setting(:pdf_export_font_size)
           options[:footer_title_english] = primary_footer_titles[content_at_file.extract_product_identity_id(false)]
           options[:header_text] = config.setting(:pdf_export_header_text)
-          options[:first_eagle] = config.setting(:pdf_export_first_eagle)
+          options[:title_font_name] = config.setting(:pdf_export_title_font_name)
           if options[:pre_process_content_proc]
             contents = options[:pre_process_content_proc].call(contents, filename, options)
           end
