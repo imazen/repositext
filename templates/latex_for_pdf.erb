@@ -344,28 +344,30 @@
     \begin{minipage}{\textwidth}
       \par
       \begingroup
-        \vspace*{-3.248\RtRelPt}
+        \vspace*{-3.262\RtRelPt}% sets the location of the top hrule.
         {
           \color{<%= @is_primary_repo ? 'black' : 'white' %>}
-          \hrule width \hsize height 0.19\RtRelPt
+          \hrule width \hsize height 0.201\RtRelPt
         }
-        \vspace*{4.354\RtRelPt}
+        \vspace*{-2.975\RtRelPt}% sets the spacing between the title and the top hrule.
         \begin{center}
           \begin{spacing}{1.2311}
             <%= @polyglossia_default_language ? '' : '\titlefont' %>
             \fontsize{22\RtRelPt}{26.4\RtRelPt}\selectfont
+            \rule[-.3\baselineskip]{0pt}{\baselineskip}% To avoid inconsistent vertical spacing caused by different height characters.
   }
-  {
+  {%
+            \rule[-.3\baselineskip]{0pt}{\baselineskip}% To avoid inconsistent vertical spacing caused by different height characters.
             \par
-            \vspace*{<%= @vspace_between_title_text_and_hrule %>\RtRelPt}
+            \vspace*{-2.73\RtRelPt}% sets the spacing between the title and the bottom hrule.
             {
               \color{<%= @is_primary_repo ? 'black' : 'white' %>}
-              \hrule width \hsize height 0.19\RtRelPt
+              \hrule width \hsize height 0.201\RtRelPt
             }
             \setstretch{0}
           \end{spacing}
         \end{center}
-        \vspace*{<%= @title_vspace %>pt}
+        \vspace*{<%= @title_vspace %>pt}% sets the spacing between the bottom hrule and start of the content.
       \endgroup
     \end{minipage}
   }
