@@ -159,7 +159,6 @@ module Kramdown
 
           # dependency boundary
           @meta_info = include_meta_info ? compute_meta_info(git_repo, latest_commit) : ''
-          @vspace_between_title_text_and_hrule = compute_vspace_between_title_text_and_hrule(document_title_latex)
 
           erb = ERB.new(latex_template, nil, '>')
           r = erb.result(binding)
@@ -435,18 +434,6 @@ module Kramdown
             "#{ escape_latex_text(source_file_name.inspect) }.}\n\n",
           ].join
           vcp
-        end
-
-        # Computes vspace between title text and hrule depending on whether title
-        # has descenders in its last line or not. Descender could e.g., be a comma.
-        # @param title_latex [String] in latex format
-        # @return [Float] vspace, reduced if necessary
-        def compute_vspace_between_title_text_and_hrule(title_latex)
-          last_line = title_latex.split("\\linebreak").last
-          last_line_has_descender = last_line.index(',')
-          r = 6.733
-          r -= 3.539 if last_line_has_descender
-          r
         end
 
         # Returns page settings as string that can be passed to latex
