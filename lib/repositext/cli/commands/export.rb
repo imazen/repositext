@@ -232,6 +232,7 @@ class Repositext
           options[:font_size] = config.setting(:pdf_export_font_size)
           options[:footer_title_english] = primary_footer_titles[content_at_file.extract_product_identity_id(false)]
           options[:header_text] = config.setting(:pdf_export_header_text)
+          options[:hrules_present] = config.setting(:pdf_export_hrules_present)
           options[:title_font_name] = config.setting(:pdf_export_title_font_name)
           if options[:pre_process_content_proc]
             contents = options[:pre_process_content_proc].call(contents, filename, options)

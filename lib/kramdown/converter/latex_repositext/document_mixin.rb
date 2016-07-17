@@ -125,21 +125,23 @@ module Kramdown
           ).unicode_upcase
           @header_text = compute_header_text_latex(
             @options[:header_text],
-            @options[:is_primary_repo],
+            @options[:hrules_present],
             @options[:language_code_3_chars]
           )
           @header_title = compute_header_title_latex(
             document_title_plain_text,
             document_title_latex,
-            @options[:is_primary_repo],
+            @options[:hrules_present],
             @options[:language_code_3_chars]
           )
+          # Turns on hrules in title, header and footer.
+          @hrules_present = @options[:hrules_present]
           @include_meta_info = include_meta_info
           @is_primary_repo = @options[:is_primary_repo]
           @latest_commit_hash = latest_commit.oid[0,8]
           @linebreaklocale = @options[:language_code_2_chars]
           @page_number_command = compute_page_number_command(
-            @options[:is_primary_repo],
+            @options[:hrules_present],
             @options[:language_code_3_chars]
           )
           @page_settings = page_settings_for_latex_geometry_package
@@ -167,11 +169,11 @@ module Kramdown
 
         # Wraps header_text in latex markup (this is the non-title header text)
         # @param header_text [String]
-        # @param is_primary_repo [Boolean]
+        # @param hrules_present [Boolean]
         # @param language_code_3_chars [String]
         # @return [String]
-        def compute_header_text_latex(header_text, is_primary_repo, language_code_3_chars)
-          if is_primary_repo
+        def compute_header_text_latex(header_text, hrules_present, language_code_3_chars)
+          if hrules_present
             # italic, small caps and large font
             t = ::Kramdown::Converter::LatexRepositext.emulate_small_caps(
               escape_latex_text(header_text)
@@ -192,11 +194,11 @@ module Kramdown
         # digits.
         # @param document_title_plain_text [String]
         # @param document_title_latex [String]
-        # @param is_primary_repo [Boolean]
+        # @param hrules_present [Boolean]
         # @param language_code_3_chars [String]
         # @return [String]
-        def compute_header_title_latex(document_title_plain_text, document_title_latex, is_primary_repo, language_code_3_chars)
-          if is_primary_repo
+        def compute_header_title_latex(document_title_plain_text, document_title_latex, hrules_present, language_code_3_chars)
+          if hrules_present
             # bold, italic, small caps and large font
             # NOTE: All titles are wrapped in <em> and .smcaps, so that will
             # take care of the italics and smallcaps.
@@ -247,8 +249,8 @@ module Kramdown
         # @param is_primary_repo [Boolean]
         # @param language_code_3_chars [String]
         # @return [String]
-        def compute_page_number_command(is_primary_repo, language_code_3_chars)
-          if is_primary_repo
+        def compute_page_number_command(hrules_present, language_code_3_chars)
+          if hrules_present
             # bold, italic, small caps and large font
             "\\textscale{#{ 0.909091 * size_scale_factor }}{\\textbf{\\textit{\\thepage}}}"
           else

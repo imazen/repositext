@@ -93,7 +93,7 @@
 \fancypagestyle{RtPageStyle}{
   \fancyhf{}
   \fancyhfoffset[LE]{0mm}
-  <% if @is_primary_repo %>
+  <% if @hrules_present %>
     % single line in header (default)
     \renewcommand{\headrulewidth}{0.19\RtRelPt}
     % double line in footer
@@ -103,7 +103,7 @@
     \renewcommand{\headrulewidth}{0mm}
     % no line in footer (default)
   <% end %>
-  \fancyhead[EL,OR]{<%= "\\hrule height 0.19\\RtRelPt \\kern 0.33\\RtRelPt"  if @is_primary_repo %><%= @page_number_command %>} % outside
+  \fancyhead[EL,OR]{<%= "\\hrule height 0.19\\RtRelPt \\kern 0.33\\RtRelPt"  if @hrules_present %><%= @page_number_command %>} % outside
   \fancyhead[ER]{<%= @header_text %>} % inside even
   \fancyhead[OL]{<%= @header_title %>} % inside odd
   \RtFooterContent
@@ -114,7 +114,7 @@
 \fancypagestyle{RtFirstPageStyle}{
   \fancyhf{}
   \renewcommand{\headrulewidth}{0mm} % no line in header
-  <% if @is_primary_repo %>
+  <% if @hrules_present %>
     % double line in footer
     \renewcommand{\footrule}{\RtDoubleHRule\par}
   <% else %>
@@ -346,7 +346,7 @@
       \begingroup
         \vspace*{-3.262\RtRelPt}% sets the location of the top hrule.
         {
-          \color{<%= @is_primary_repo ? 'black' : 'white' %>}
+          \color{<%= @hrules_present ? 'black' : 'white' %>}
           \hrule width \hsize height 0.201\RtRelPt
         }
         \vspace*{-2.975\RtRelPt}% sets the spacing between the title and the top hrule.
@@ -361,7 +361,7 @@
             \par
             \vspace*{-2.73\RtRelPt}% sets the spacing between the title and the bottom hrule.
             {
-              \color{<%= @is_primary_repo ? 'black' : 'white' %>}
+              \color{<%= @hrules_present ? 'black' : 'white' %>}
               \hrule width \hsize height 0.201\RtRelPt
             }
             \setstretch{0}
