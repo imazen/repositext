@@ -354,10 +354,10 @@
           \begin{spacing}{1.2311}
             <%= @polyglossia_default_language ? '' : '\titlefont' %>
             \fontsize{22\RtRelPt}{26.4\RtRelPt}\selectfont
-            \rule[-.3\baselineskip]{0pt}{\baselineskip}% To avoid inconsistent vertical spacing caused by different height characters.
+            \rule[-.3\baselineskip]{0pt}{\baselineskip}% Insert strut to avoid inconsistent vertical spacing caused by different height characters.
   }
   {%
-            \rule[-.3\baselineskip]{0pt}{\baselineskip}% To avoid inconsistent vertical spacing caused by different height characters.
+            \rule[-.3\baselineskip]{0pt}{\baselineskip}% Insert strut to avoid inconsistent vertical spacing caused by different height characters.
             \par
             \vspace*{-2.73\RtRelPt}% sets the spacing between the title and the bottom hrule.
             {
