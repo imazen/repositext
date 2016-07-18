@@ -2,3 +2,5 @@
 eaf47ead688f875368007063384dc55ce16dc5b4 fb805d84bfa917e4a02aff16252710381a2c929f Jo Hund <jhund@clearcove.ca> 1461637041 -0700	commit: Added path for content type ct-general
 fb805d84bfa917e4a02aff16252710381a2c929f 075dde829f6853339fde58965738a64e3e0299e5 Jo Hund <jhund@clearcove.ca> 1461855597 -0700	commit: Converted repo => content_type, renamed rtfile_dir to content_type_dir
 075dde829f6853339fde58965738a64e3e0299e5 f7ecdba45ebe3e036aedb6dedae4221dbb2d2d53 Jo Hund <jhund@clearcove.ca> 1461882136 -0700	commit: Updated Rtfile setting name
+f7ecdba45ebe3e036aedb6dedae4221dbb2d2d53 055e2456b49bbb17a3e43ef4a910819df14c3bd9 Jo Hund <jhund@clearcove.ca> 1468858490 -0700	commit: Updated settings with Rtfile and data.json
+055e2456b49bbb17a3e43ef4a910819df14c3bd9 3085ccf95da748c7e5a887919628c209e270d96c Jo Hund <jhund@clearcove.ca> 1468860254 -0700	commit: Updated data.json
