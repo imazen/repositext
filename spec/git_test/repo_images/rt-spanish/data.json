@@ -33,7 +33,7 @@
     "language_code_2_chars":"es",
     "language_code_3_chars":"spn",
     "pdf_export_binding":"stitched",
-    "pdf_export_first_eagle":"{\\lettrine[lines=2,lraise=0.355,findent=8.3\\RtRelPt,nindent=0\\RtRelPt]{\\textscale{0.465}}\\rtmainfont}",
+    "pdf_export_first_eagle":"{\\lettrine[lines=2,lraise=0.355,findent=8.3pt,nindent=0pt]{\\textscale{0.465}}\\rtmainfont}",
     "pdf_export_font_leading":10.5,
     "pdf_export_font_name":"V-Excelsior LT Std",
     "pdf_export_font_size":10,

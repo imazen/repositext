@@ -8,60 +8,55 @@ module Kramdown
         false
       end
 
+      def magnification
+        1000
+      end
+
       # Configure page settings. All values are in inches
       # @param key [Symbol]
       def page_settings(key)
         {
           english_bound: {
-            paperwidth: 5.375,
-            paperheight: 8.375,
-            inner: 0.6875,
-            outer: 0.5208,
-            top: 0.7733,
-            bottom: 0.471,
-            headsep: 0.1,
+            paperwidth: '5.375truein',
+            paperheight: '8.375truein',
+            inner: '0.6875truein',
+            outer: '0.5208truein',
+            top: '0.7733truein',
+            bottom: '0.471truein',
+            headsep: '0.1in', # We want this dimension to scale with geometry package \mag.
           },
           english_stitched: {
-            paperwidth: 5.4375,
-            paperheight: 8.375,
-            inner: 0.4531,
-            outer: 0.4844,
-            top: 0.7733,
-            bottom: 0.471,
-            headsep: 0.1106,
-            footskip: 0.351,
+            paperwidth: '5.4375truein',
+            paperheight: '8.375truein',
+            inner: '0.4531truein',
+            outer: '0.4844truein',
+            top: '0.7733truein',
+            bottom: '0.471truein',
+            headsep: '0.1106in', # We want this dimension to scale with geometry package \mag.
+            footskip: '0.351in', # We want this dimension to scale with geometry package \mag.
           },
           foreign_bound: {
-            paperwidth: 5.375,
-            paperheight: 8.375,
-            inner: 0.6875,
-            outer: 0.5208,
-            top: 0.76,
-            bottom: 0.5,
-            headsep: 0.1,
+            paperwidth: '5.375truein',
+            paperheight: '8.375truein',
+            inner: '0.6875truein',
+            outer: '0.5208truein',
+            top: '0.76truein',
+            bottom: '0.5truein',
+            headsep: '0.1in', # We want this dimension to scale with geometry package \mag.
           },
           foreign_stitched: {
-            paperwidth: 5.4375,
-            paperheight: 8.375,
-            inner: 0.625,
-            outer: 0.6458,
-            top: 0.76,
-            bottom: 0.5,
-            headsep: 0.172,
-            footskip: 0.3515,
+            paperwidth: '5.4375truein',
+            paperheight: '8.375truein',
+            inner: '0.625truein',
+            outer: '0.6458truein',
+            top: '0.76truein',
+            bottom: '0.5truein',
+            headsep: '0.172in', # We want this dimension to scale with geometry package \mag.
+            # TODO: Verify if footskip is needed for foreign_stitched.
+            footskip: '0.3515in', # We want this dimension to scale with geometry package \mag.
           },
         }.fetch(key)
       end
-
-      def size_scale_factor
-        1.0
-      end
-
-      # Override for book sizes
-      def title_vspace
-        @options[:is_primary_repo] ? 4.818 : 7.7755
-      end
-
     end
   end
 end

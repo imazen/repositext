@@ -234,6 +234,7 @@ class Repositext
           options[:header_text] = config.setting(:pdf_export_header_text)
           options[:hrules_present] = config.setting(:pdf_export_hrules_present)
           options[:title_font_name] = config.setting(:pdf_export_title_font_name)
+          options[:title_vspace] = config.setting(:pdf_export_title_vspace)
           if options[:pre_process_content_proc]
             contents = options[:pre_process_content_proc].call(contents, filename, options)
           end

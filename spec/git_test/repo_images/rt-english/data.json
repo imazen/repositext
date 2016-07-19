@@ -33,7 +33,7 @@
     "language_code_2_chars":"en",
     "language_code_3_chars":"eng",
     "pdf_export_binding":"stitched",
-    "pdf_export_first_eagle":"{\\lettrine[lines=2,lraise=0.418,findent=7.033\\RtRelPt,nindent=0\\RtRelPt]{\\textscale{0.461}}\\rtmainfont}",
+    "pdf_export_first_eagle":"{\\lettrine[lines=2,lraise=0.418,findent=7.033pt,nindent=0pt]{\\textscale{0.461}}\\rtmainfont}",
     "pdf_export_font_leading":11.8,
     "pdf_export_font_name":"V-Calisto-St",
     "pdf_export_font_size":11,
