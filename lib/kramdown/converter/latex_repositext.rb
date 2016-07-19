@@ -320,7 +320,7 @@ module Kramdown
             )
             ( #  This will be colored red
               #{ Repositext::ELIPSIS }? # optional elipsis
-              [[:alpha:][:digit:]’\-\?]+ # words
+              [[:alpha:][:digit:]’\-\?,]+ # words and some punctuation 
             )
           /x,
           # we move the tmp_gap_mark_number to the very beginning so that if we
@@ -332,6 +332,9 @@ module Kramdown
           # OPTIMIZATION: We could skip the first \RtGapMarkText if \1 is blank
           tmp_gap_mark_number + "\\RtGapMarkText" + '{\1}' + '\2' + "\\RtGapMarkText" + '{\3}'
         )
+        # If in the gap_mark processing above regex ref \1 is empty, we end up
+        # with empty `\RtGapMarkText{}` fragments. We remove them in this step:
+        lb.gsub!("\\RtGapMarkText{}", '')
         # Move tmp_gap_mark_number to outside of quotes, parentheses and brackets
         if !['', nil].include?(tmp_gap_mark_number)
           gap_mark_number_regex = Regexp.new(Regexp.escape(tmp_gap_mark_number))
@@ -367,13 +370,7 @@ module Kramdown
         # NOTE: Do this after processing gap_marks
         lb.gsub!(
           /
-            ( # first capture group
-              ^ # beginning of line
-              # NOTE we do not expect any subtitle marks in latex
-              (?: # non capture group
-                #{ Regexp.escape("\\RtGapMarkText{}") }
-              )? # optional
-            )
+            ^ # beginning of line
              # eagle
             \s* # zero or more whitespace chars
             ( # second capture group
@@ -381,7 +378,7 @@ module Kramdown
             )
             (?!$) # not followed by line end
           /x,
-          '\1' + "\\RtFirstEagle " + '\2' # we use an environment for first eagle
+          "\\RtFirstEagle " + '\1' # we use an environment for first eagle
         )
         lb.gsub!(
           /
