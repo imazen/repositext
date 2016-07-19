@@ -23,7 +23,8 @@ module Kramdown
             outer: '0.5208truein',
             top: '0.7733truein',
             bottom: '0.471truein',
-            headsep: '0.1in', # We want this dimension to scale with geometry package \mag.
+            headsep: '0.1106in', # We want this dimension to scale with geometry package \mag.
+            footskip: '0.351in', # We want this dimension to scale with geometry package \mag.
           },
           english_stitched: {
             paperwidth: '5.4375truein',
@@ -42,7 +43,7 @@ module Kramdown
             outer: '0.5208truein',
             top: '0.76truein',
             bottom: '0.5truein',
-            headsep: '0.1in', # We want this dimension to scale with geometry package \mag.
+            headsep: '0.172in', # We want this dimension to scale with geometry package \mag.
           },
           foreign_stitched: {
             paperwidth: '5.4375truein',
@@ -52,8 +53,6 @@ module Kramdown
             top: '0.76truein',
             bottom: '0.5truein',
             headsep: '0.172in', # We want this dimension to scale with geometry package \mag.
-            # TODO: Verify if footskip is needed for foreign_stitched.
-            footskip: '0.3515in', # We want this dimension to scale with geometry package \mag.
           },
         }.fetch(key)
       end

@@ -68,8 +68,8 @@ module Kramdown
               outer: '1.555165truein',
               top: '1.04425truein',
               bottom: '0.70715truein',
-              headsep: '0.23942in', # We want this dimension to scale with geometry package \mag.
-              footskip: '0.375in', # We want this dimension to scale with geometry package \mag.
+              headsep: '0.172in', # We want this dimension to scale with geometry package \mag.
+              footskip: '0.25in', # We want this dimension to scale with geometry package \mag.
             },
           }.fetch(key)
         end
