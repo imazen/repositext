@@ -338,6 +338,47 @@ class Repositext
             # Compound operations
             # ----------------------------------------------------------------
             [
+              'content change, moveLeft, moveLeft',
+              %w[@word1 word2 word3 word4 word5a  word6 word7 word8 word9 word10 word11 word12 word13 word14,  word15a word16a word17a word18a,                                                @word26 word27 word28 word29 word30 word31 word32 word33 word34 word35,  word36 word37 word39 word40 word41 word42 word43 word44 word45, @word46, word47 word48, word49 word50 word51 word52 word53 word54 word55 word56.],
+              %w[@word1 word2 word3 word4 other5b word6 word7 word8 word9 word10 word11 word12 word13 word14, @word15b word16b word17b word18b word19 word20 word21 word22 word23 word24 word25 word26 word27 word28 word29 word30 word31 word32 word33 word34 word35, @word36 word37 word39 word40 word41 word42 word43 word44 word45,  word46, word47 word48, word49 word50 word51 word52 word53 word54 word55 word56.],
+              [
+                {
+                  :operationId=>"hunk_index-1",
+                  :operationType=>:moveLeft,
+                  :afterStid=>nil,
+                  :affectedStids=>[
+                    {
+                      :stid=>"1000000",
+                      :before=>"word1 word2 word3 word4 word5a word6 word7 word8 word9 word10 word11 word12 word13 word14, word15a word16a word17a word18a, ",
+                      :after=>"word1 word2 word3 word4 other5b word6 word7 word8 word9 word10 word11 word12 word13 word14, "
+                    },
+                    {
+                      :stid=>"1000001",
+                      :before=>"word26 word27 word28 word29 word30 word31 word32 word33 word34 word35, word36 word37 word39 word40 word41 word42 word43 word44 word45, ",
+                      :after=>"word15b word16b word17b word18b word19 word20 word21 word22 word23 word24 word25 word26 word27 word28 word29 word30 word31 word32 word33 word34 word35, "
+                    }
+                  ]
+                },
+                {
+                  :operationId=>"hunk_index-2",
+                  :operationType=>:moveLeft,
+                  :afterStid=>nil,
+                  :affectedStids=>[
+                    {
+                      :stid=>"1000001",
+                      :before=>"word26 word27 word28 word29 word30 word31 word32 word33 word34 word35, word36 word37 word39 word40 word41 word42 word43 word44 word45, ",
+                      :after=>"word15b word16b word17b word18b word19 word20 word21 word22 word23 word24 word25 word26 word27 word28 word29 word30 word31 word32 word33 word34 word35, "
+                    },
+                    {
+                      :stid=>"1000002",
+                      :before=>"word46, word47 word48, word49 word50 word51 word52 word53 word54 word55 word56.\n",
+                      :after=>"word36 word37 word39 word40 word41 word42 word43 word44 word45, word46, word47 word48, word49 word50 word51 word52 word53 word54 word55 word56.\n"
+                    }
+                  ]
+                }
+              ]
+            ],
+            [
               'merge (fits more than 50%), moveLeft',
               %w[@0word1 word2 @1word3 word4 word5   word6 @2word7],
               %w[@0word1 word2   word3 word4 word5 @2word6   word7],

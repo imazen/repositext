@@ -742,13 +742,18 @@ class Repositext
               }
               remaining_subtitle_count_difference -= al_st_pair[:subtitle_count_change]
             when :unaligned
-              # A move?
-              op_type = cumulative_text_length_difference < 0 ? :moveLeft : :moveRight
-              collected_operations << {
-                affectedStids: [prev_al_st_pair, al_st_pair].compact.map { |e| e[:subtitle_object] },
-                operationId: [@hunk_index, al_st_pair[:index]].join('-'),
-                operationType: op_type,
-              }
+              # Either a content change if it's the first subtitle in a paragraph, or a move.
+              if 0 == al_st_pair[:index]
+                # This is the first subtitle in a paragraph, must be a content change
+                # Nothing to do
+              else
+                op_type = cumulative_text_length_difference < 0 ? :moveLeft : :moveRight
+                collected_operations << {
+                  affectedStids: [prev_al_st_pair, al_st_pair].compact.map { |e| e[:subtitle_object] },
+                  operationId: [@hunk_index, al_st_pair[:index]].join('-'),
+                  operationType: op_type,
+                }
+              end
             else
               raise "Handle this: #{ al_st_pair }"
             end
