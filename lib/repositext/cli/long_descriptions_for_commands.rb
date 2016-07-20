@@ -51,6 +51,18 @@ class Repositext
           )
         end
 
+        def long_description_for_distribute
+          %(
+            Distributes files to final destination.
+
+            Available SPECs:
+
+            Examples:
+
+            * bundle exec rt distribute add_title_to_filename
+          )
+        end
+
         def long_description_for_fix
           %(
             Modifies files in place. Updates contents of existing files.

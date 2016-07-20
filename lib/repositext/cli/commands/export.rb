@@ -118,6 +118,8 @@ class Repositext
         export_pdf_base(
           'pdf_recording',
           options.merge(
+            :add_title_to_filename => true,
+            :rename_file_extension => '.recording.pdf',
             :skip_file_proc => skip_file_proc,
             'page_settings_key' => compute_pdf_export_page_settings_key(
               config.setting(:is_primary_repo),
@@ -155,6 +157,8 @@ class Repositext
         export_pdf_base(
           'pdf_recording_merged',
           options.merge(
+            add_title_to_filename: true,
+            rename_file_extension: '.recording_merged.pdf',
             skip_file_proc: skip_file_proc,
             pre_process_content_proc: pre_process_content_proc,
             post_process_latex_proc: post_process_latex_proc,
@@ -210,7 +214,7 @@ class Repositext
           language_code_3_chars: config.setting(:language_code_3_chars),
           version_control_page: options['include-version-control-info'],
         })
-        primary_footer_titles = compute_primary_footer_titles # hash with date codes as keys and primary titles as values
+        primary_titles = compute_primary_titles # hash with date codes as keys and primary titles as values
         Repositext::Cli::Utils.export_files(
           input_base_dir,
           input_file_selector,
@@ -230,7 +234,7 @@ class Repositext
           options[:font_leading] = config.setting(:pdf_export_font_leading)
           options[:font_name] = config.setting(:pdf_export_font_name)
           options[:font_size] = config.setting(:pdf_export_font_size)
-          options[:footer_title_english] = primary_footer_titles[content_at_file.extract_product_identity_id(false)]
+          options[:footer_title_english] = primary_titles[content_at_file.extract_product_identity_id(false)]
           options[:header_text] = config.setting(:pdf_export_header_text)
           options[:hrules_present] = config.setting(:pdf_export_hrules_present)
           options[:title_font_name] = config.setting(:pdf_export_title_font_name)
@@ -270,6 +274,41 @@ class Repositext
         end
         # Run pdf export validation after PDFs have been exported
         validate_pdf_export(options)
+
+        # Add title to filename after validations have run (validations require
+        # conventional filenames)
+        if options[:add_title_to_filename]
+          sanitized_primary_titles = primary_titles.inject({}) { |m, (pid, title)|
+            # sanitize titles: remove anything other than letters or numbers,
+            # collapse whitespace and replace with underscore
+            m[pid] = title.downcase
+                          .strip
+                          .gsub(/[^a-z\d\s]/, '')
+                          .gsub(/\s+/, '_')
+            m
+          }
+          file_rename_proc = Proc.new { |input_filename|
+            r_file_stub = RFile::Content.new('_', Language.new, input_filename)
+            product_identity_id = r_file_stub.extract_product_identity_id
+            title = sanitized_primary_titles[product_identity_id]
+            # insert title into filename
+            # Regex contains negative lookahead to make sure product identity id
+            # is not followed by title already to avoid duplicate insertion of titles
+            input_filename.sub(
+              /_#{ product_identity_id }\.(?!\-\-)/,
+              "_#{ product_identity_id }.--#{ title }--.",
+            )
+          }
+          distribute_add_title_to_filename(
+            {
+              :input_base_dir => config.compute_base_dir(:pdf_export_dir),
+              :input_file_selector => config.compute_file_selector(options['file-selector']),
+              :input_file_extension => options[:rename_file_extension],
+              :file_rename_proc => file_rename_proc,
+              'file_filter' => options['file_filter'] || /\A((?!.--).)*\z/, # doesn't contain title already
+            }
+          )
+        end
       end
 
       # Export AT files in /content to plain kramdown (no record_marks,
@@ -485,7 +524,7 @@ class Repositext
       end
 
       # Returns a hash with English titles as values and date code as keys
-      def compute_primary_footer_titles
+      def compute_primary_titles
         raise "Implement me in sub-class"
       end
 

@@ -131,6 +131,23 @@ class Repositext
         )
       end
 
+      # Renames files
+      # @param input_base_dir [String] the base_dir path
+      # @param input_file_selector [String] the input file selector
+      # @param input_file_extension [String] the input file extension
+      # @param file_rename_proc [Proc] proc that takes the current file path and returns the new one
+      # @param file_filter [Trequal]
+      # @param description [String]
+      # @param options [Hash]
+      # @param: See #process_files_helper below for param description
+      def self.rename_files(input_base_dir, input_file_selector, input_file_extension, file_rename_proc, file_filter, description, options)
+        # Change output filename
+        file_pattern = [input_base_dir, input_file_selector, input_file_extension].join
+        move_files_helper(
+          file_pattern, file_filter, file_rename_proc, description, options
+        )
+      end
+
       # Does a dry-run of the process. Printing out all debug and logging info
       # but not saving any changes to disk.
       # @param: See #process_files_helper below for param description
