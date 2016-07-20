@@ -52,24 +52,24 @@ module Kramdown
           # non-existing keys.
           {
             english_stitched: {
-              paperwidth: 8.5,
-              paperheight: 11,
-              inner: 1.304655,
-              outer: 1.345345,
-              top: 1.06154,
-              bottom: 0.66855,
-              headsep: 0.1621,
-              footskip: 0.38855,
+              paperwidth: '8.5truein',
+              paperheight: '11truein',
+              inner: '1.304655truein',
+              outer: '1.345345truein',
+              top: '1.06154truein',
+              bottom: '0.66855truein',
+              headsep: '0.1106in', # We want this dimension to scale with geometry package \mag.
+              footskip: '0.351in', # We want this dimension to scale with geometry package \mag.
             },
             foreign_stitched: {
-              paperwidth: 8.5,
-              paperheight: 11,
-              inner: 1.528125,
-              outer: 1.555165,
-              top: 1.04425,
-              bottom: 0.70715,
-              headsep: 0.23942,
-              footskip: 0.375,
+              paperwidth: '8.5truein',
+              paperheight: '11truein',
+              inner: '1.528125truein',
+              outer: '1.555165truein',
+              top: '1.04425truein',
+              bottom: '0.70715truein',
+              headsep: '0.172in', # We want this dimension to scale with geometry package \mag.
+              footskip: '0.25in', # We want this dimension to scale with geometry package \mag.
             },
           }.fetch(key)
         end
@@ -86,17 +86,12 @@ module Kramdown
           }[language_code_3_chars]
         end
 
-        # This factor will be applied to all font-metrics to enable enlarged
-        # PDFs.
-        def size_scale_factor
-          1.3
-        end
-
-        def title_vspace
-          @options[:is_primary_repo] ? 11.84425 : 23.56 # default for enlarged PDFs in \RtRelPt
-        end
-
       protected
+
+        # Latex geometry magnifaction factor.
+        def magnification
+          1300
+        end
 
         # Returns a complete latex document as string.
         # @param latex_body [String]
@@ -140,6 +135,7 @@ module Kramdown
           @is_primary_repo = @options[:is_primary_repo]
           @latest_commit_hash = latest_commit.oid[0,8]
           @linebreaklocale = @options[:language_code_2_chars]
+          @magnification = magnification
           @page_number_command = compute_page_number_command(
             @options[:hrules_present],
             @options[:language_code_3_chars]
@@ -149,9 +145,8 @@ module Kramdown
           @paragraph_number_font_name = @options[:is_primary_repo] ? @font_name : 'V-Excelsior LT Std'
           @polyglossia_default_language = polyglossia_default_language(@options[:language_code_3_chars])
           @primary_font_name = 'V-Calisto-St'
-          @scale_factor = size_scale_factor
           @title_font_name = @options[:title_font_name]
-          @title_vspace = title_vspace # space to be inserted above title to align with body text
+          @title_vspace = @options[:title_vspace] # space to be inserted above title to align with body text
           @use_cjk_package = ['chn','cnt'].include?(@options[:language_code_3_chars])
           @version_control_page = if @options[:version_control_page]
             compute_version_control_page(git_repo, @options[:source_filename])
@@ -178,10 +173,10 @@ module Kramdown
             t = ::Kramdown::Converter::LatexRepositext.emulate_small_caps(
               escape_latex_text(header_text)
             )
-            "\\textscale{#{ 0.909091 * size_scale_factor }}{\\textbf{\\textit{#{ t }}}}"
+            "\\textscale{#{ 0.909091 }}{\\textbf{\\textit{#{ t }}}}"
           else
             # regular, all caps and small font
-            r = "\\textscale{#{ 0.7 * size_scale_factor }}{#{ escape_latex_text(header_text).unicode_upcase }}"
+            r = "\\textscale{#{ 0.7 }}{#{ escape_latex_text(header_text).unicode_upcase }}"
             if 'chn' == language_code_3_chars
               r = "\\textbf{#{ r }}"
             end
@@ -207,11 +202,11 @@ module Kramdown
             if truncated =~ /\d+\}\z/
               truncated.gsub!(/\d+\}\z/, "\\textsuperscript{" + '\0' + "}")
             end
-            "\\textscale{#{ 0.909091 * size_scale_factor }}{\\textbf{#{ truncated }}}"
+            "\\textscale{#{ 0.909091 }}{\\textbf{#{ truncated }}}"
           else
             # regular, all caps and small font
             truncated = truncate_plain_text_title(document_title_plain_text, 54, 3)
-            r = "\\textscale{#{ 0.7 * size_scale_factor }}{#{ truncated.unicode_upcase }}"
+            r = "\\textscale{#{ 0.7 }}{#{ truncated.unicode_upcase }}"
             # re-apply superscript to any trailing digits
             if r =~ /\d+\}\z/
               r.gsub!(/\d+\}\z/, "\\textsuperscript{" + '\0' + "}")
@@ -252,10 +247,10 @@ module Kramdown
         def compute_page_number_command(hrules_present, language_code_3_chars)
           if hrules_present
             # bold, italic, small caps and large font
-            "\\textscale{#{ 0.909091 * size_scale_factor }}{\\textbf{\\textit{\\thepage}}}"
+            "\\textscale{#{ 0.909091 }}{\\textbf{\\textit{\\thepage}}}"
           else
             # regular
-            r = "\\textscale{#{ size_scale_factor }}{\\thepage}"
+            r = "{\\thepage}"
             if 'chn' == language_code_3_chars
               r = "\\textbf{#{ r }}"
             end
@@ -446,7 +441,7 @@ module Kramdown
           if !ps.is_a?(Hash) || ps.first.last.is_a?(Hash)
             raise(ArgumentError.new("Invalid options[:page_settings_key]: #{ @options[:page_settings_key].inspect }, returns #{ ps.inspect }"))
           end
-          ps.map { |k,v| %(#{ k }=#{ v }in) }.join(', ')
+          ps.map { |k,v| %(#{ k }=#{ v }) }.join(', ')
         end
 
       end
