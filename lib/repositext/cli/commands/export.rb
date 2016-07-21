@@ -281,8 +281,9 @@ class Repositext
         if options[:add_title_to_filename]
           sanitized_primary_titles = primary_titles.inject({}) { |m, (pid, title)|
             # sanitize titles: remove anything other than letters or numbers,
-            # collapse whitespace and replace with underscore
-            m[pid] = title.downcase
+            # collapse whitespace and replace with underscore.
+            # We also zero pad product_identity_ids to 4 digits.
+            m[pid.rjust(4, '0')] = title.downcase
                           .strip
                           .gsub(/[^a-z\d\s]/, '')
                           .gsub(/\s+/, '_')
