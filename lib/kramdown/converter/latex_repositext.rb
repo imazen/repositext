@@ -320,7 +320,7 @@ module Kramdown
             )
             ( #  This will be colored red
               #{ Repositext::ELIPSIS }? # optional elipsis
-              [[:alpha:][:digit:]’\-\?,]+ # words and some punctuation 
+              [[:alpha:][:digit:]’\-\?,]+ # words and some punctuation
             )
           /x,
           # we move the tmp_gap_mark_number to the very beginning so that if we
@@ -352,8 +352,18 @@ module Kramdown
               )
               #{ gap_mark_number_regex } # find tmp gap mark number
             /x,
-            "\\RtGapMarkNumber" + '\1' # Reverse order
+            tmp_gap_mark_number + '\1' # Reverse order
           )
+          # Move tmp_gap_mark_number to after leading eagle
+          lb.gsub!(
+            /
+              (#{ gap_mark_number_regex }) # capture group for tmp gap mark number
+               # followed by eagle
+            /x,
+            '\1' # Reverse order
+          )
+          # Convert tmp_gap_mark_number to latex command
+          lb.gsub!(gap_mark_number_regex, "\\RtGapMarkNumber")
         end
         # Make sure no tmp_gap_marks are left
         if(ltgm = lb.match(/.{0,10}#{ Regexp.escape(tmp_gap_mark_text) }.{0,10}/))
