@@ -29,10 +29,10 @@ class Repositext
             /
               #{ dynamic_paragraph_number_regex(correction[:paragraph_number], txt) } # match paragraph number span
               .*? # match anything nongreedily
-              (?=(
-                #{ dynamic_paragraph_number_regex(stop_para_number, txt) } # stop before next paragraph number
-                #{ or_match_on_eagle_or_end_of_string }
-              ))
+              (
+                (?=#{ dynamic_paragraph_number_regex(stop_para_number, txt) }) # stop before next paragraph number
+                #{ or_match_on_eagle_or_end_of_string } # or stop after alternatives
+              )
             /xm # multiline
           ).to_s
           if '' == relevant_paragraphs
