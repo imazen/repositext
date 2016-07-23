@@ -212,6 +212,11 @@ module Kramdown
             before << "\\begin{RtSong}\n"
             after << "\n\\end{RtSong}"
           end
+          if el.has_class?('song_break')
+           # render in RtSong environment
+            before << "\\begin{RtSongBreak}\n"
+            after << "\n\\end{RtSongBreak}"
+          end
           if el.has_class?('stanza')
            # render in RtStanza environment
             before << "\\begin{RtStanza}\n"

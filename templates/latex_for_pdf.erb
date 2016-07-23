@@ -1,4 +1,4 @@
-\mag=<%= @magnification %> % geometery package magnification
+\mag=<%= @magnification %> % geometry package magnification
 \documentclass[<%= @font_size %>pt, twoside, openright]{book}
 
 % NOTE: in latex, bp is equivalent to PS points in other programs. A latex
@@ -293,6 +293,20 @@
     \rightskip=30.112pt
     \setlength{\parindent}{-8pt}
     \nopagebreak
+    \setlength{\parskip}{0pt plus 0pt minus 0pt}
+  }
+  {
+    \par
+  }
+
+% environment to render song paragraphs.
+\newenvironment{RtSongBreak}
+  {
+    \par
+    \leftskip=60.225pt
+    \rightskip=30.112pt
+    \setlength{\parindent}{-8pt}
+    \pagebreak
     \setlength{\parskip}{0pt plus 0pt minus 0pt}
   }
   {

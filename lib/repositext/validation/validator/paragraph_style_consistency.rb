@@ -60,9 +60,12 @@ class Repositext
           doc.strip.split(/\n/).map { |line|
             line =~ PARAGRAPH_STYLE_REGEX ? line : ''
           }.inject([]) { |m,e|
-            # Remove .omit classes. They are expected to be different between
+            # Remove .omit and .indent_for_eagle classes. They are expected to be different between
             # primary and foreign languages.
-            r = e.gsub(/\s*\.omit\s*/, ' ')
+            r = e.gsub(/\s*\.indent_for_eagle\s*/, ' ')
+            r.gsub!(/\s*\.omit\s*/, ' ')
+            # Normalize .song_break to .song because we expect them to be differnt between English and foreign
+            r.gsub!(/\s*\.song_break\s*/, ' .song ')
             # Remove everything but paragraph class names
             r = r.scan(/\.\w+/)
             m << r.join(' ')
