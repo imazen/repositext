@@ -299,6 +299,20 @@
     \par
   }
 
+% environment to render song paragraphs.
+\newenvironment{RtSongBreak}
+  {
+    \par
+    \leftskip=60.225pt
+    \rightskip=30.112pt
+    \setlength{\parindent}{-8pt}
+    \pagebreak
+    \setlength{\parskip}{0pt plus 0pt minus 0pt}
+  }
+  {
+    \par
+  }
+
 % environment to render split pairs in pdf_recording_merged
 \newenvironment{RtSplitPair}
   {
