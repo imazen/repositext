@@ -208,14 +208,15 @@ module Kramdown
             after << "\n\\end{RtScr}"
           end
           if el.has_class?('song')
-           # render in RtSong environment
+            # render in RtSong environment
             before << "\\begin{RtSong}\n"
             after << "\n\\end{RtSong}"
           end
           if el.has_class?('song_break')
-           # render in RtSong environment
-            before << "\\begin{RtSongBreak}\n"
-            after << "\n\\end{RtSongBreak}"
+            # render in RtSong(Break) environment
+            latex_env = apply_song_break_class ? 'RtSongBreak' : 'RtSong'
+            before << "\\begin{#{ latex_env }}\n"
+            after << "\n\\end{#{ latex_env }}"
           end
           if el.has_class?('stanza')
            # render in RtStanza environment
@@ -263,6 +264,10 @@ module Kramdown
       end
 
     protected
+
+      def apply_song_break_class
+        true
+      end
 
       # Temporary placeholder for gap_mark number and text
       def tmp_gap_mark_complete
