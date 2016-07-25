@@ -178,21 +178,33 @@
 % environment to render idparagraph paragraphs
 \newenvironment{RtIdParagraph}
   {
+    \par
+    \setlength\topsep{0pt}
+    \setlength\parskip{1.089pt}
     \setlength{\parindent}{0pt}
-    \fontsize{8pt}{10.5pt}\selectfont
+    \begin{spacing}{1}
+      \fontsize{8pt}{10.5pt}\selectfont
   }
-  {\par}
+  {%
+      \par
+    \end{spacing}
+  }
 
 % environment to render idtitle1 paragraphs
 \newenvironment{RtIdTitle1}
   {
-    \needspace{350pt}
+    \clearpage % TODO: Make this variable based off of is_primary_repo. English ids should always be on a page by themselves and foreign ids are allowed to be on the same page as content. We need to investigate how to get that to work properly in the foreign.
     \vspace*{\fill}
+    \par
+    \setlength\topsep{0pt}
+    \setlength\parskip{0pt}
+    \setlength{\parindent}{0pt}
     \begin{center}
-      <%= @polyglossia_default_language ? '' : '\titlefont' %>
-      \fontsize{10pt}{12pt}\selectfont
+      <%= @polyglossia_default_language ? '' : '\titlefont' %>%
+      \fontsize{10pt}{10.5pt}\selectfont
   }
-  {
+  {%
+      \par
     \end{center}
   }
 
@@ -200,11 +212,14 @@
 \newenvironment{RtIdTitle2}
   {
     \par
+    \setlength\topsep{0pt}
+    \setlength\parskip{-0.542pt}
+    \setlength{\parindent}{0pt}
     \begin{center}
-      <%= @polyglossia_default_language ? '' : '\titlefont' %>
-      \fontsize{8pt}{9.6pt}\selectfont
+      <%= @polyglossia_default_language ? '' : '\titlefont' %>%
+      \fontsize{8pt}{10.5pt}\selectfont
   }
-  {
+  {%
       \par
     \end{center}
   }
@@ -223,7 +238,7 @@
 \newenvironment{RtFirstPar}
   {
     \par
-    \setlength{\parskip}{0pt plus 0pt minus 0pt} % to reduce vert space between title and first paragraph
+    \setlength{\parskip}{0pt plus 0pt minus 0pt} % to stop the vert space between title and first paragraph from varying
   }
   {
     \par
