@@ -451,7 +451,21 @@ module Kramdown
           /ix,
           "\\nolinebreak[4]"+'\1'+"\\hspace{0pt}"
         )
-
+        # We don't allow linebreaks _before_ or _after_ an emdash when followed 
+        # by some abbreviations.
+        lb.gsub!(
+          /
+            (
+              [#{ Repositext::EM_DASH }]
+            )
+            (
+              ed\.
+              |
+              n\.d\.t\.
+            )
+          /ix,
+          "\\nolinebreak[4]"+'\1'+"\\nolinebreak[4]"+'\2'
+        )
         # Convert any zero-width spaces to latex equivelant
         lb.gsub!(/\u200B/, "\\hspace{0pt}")
         lb
