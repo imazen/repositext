@@ -435,7 +435,6 @@ module Kramdown
         )
         # We only want to allow linebreak _after_ line_breakable_chars so we
         # insert \nolinebreak _before_.
-        # TODO: Move the Editor and Translator abbreviation exceptions to data.json
         lb.gsub!(
           /
             (
@@ -445,7 +444,7 @@ module Kramdown
               (
                 [#{ no_break_following_chars }]
                 |
-                (ed\.|n\.d\.t\.)
+                #{ options[:ed_and_trn_abbreviations] }
               )
             )
           /ix,
@@ -456,12 +455,10 @@ module Kramdown
         lb.gsub!(
           /
             (
-              [#{ Repositext::EM_DASH }]
+              #{ Repositext::EM_DASH }
             )
             (
-              ed\.
-              |
-              n\.d\.t\.
+              #{ options[:ed_and_trn_abbreviations] }
             )
           /ix,
           "\\nolinebreak[4]"+'\1'+"\\nolinebreak[4]"+'\2'

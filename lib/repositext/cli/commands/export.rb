@@ -230,6 +230,7 @@ class Repositext
           contents = content_at_file.contents
           filename = content_at_file.filename
           config.update_for_file(filename.gsub(/\.at\z/, '.data.json'))
+          options[:ed_and_trn_abbreviations] = config.setting(:pdf_export_ed_and_trn_abbreviations)
           options[:first_eagle] = config.setting(:pdf_export_first_eagle)
           options[:font_leading] = config.setting(:pdf_export_font_leading)
           options[:font_name] = config.setting(:pdf_export_font_name)
