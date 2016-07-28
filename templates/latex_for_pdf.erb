@@ -119,6 +119,16 @@
   \RtFooterContent
 }
 
+% override pagestyle for id page
+% id pages do not have headers or footers
+\fancypagestyle{RtIdPageStyle}{
+  \fancyhf{}
+  % no line in header
+  \renewcommand{\headrulewidth}{0mm}
+  % no line in footer (default)
+  \renewcommand{\footrule}{}
+}
+
 % for custom page layout
 \usepackage[<%= @page_settings %>]{geometry}
 \setlength{\marginparwidth}{0pt}
@@ -194,6 +204,7 @@
 \newenvironment{RtIdTitle1}
   {
     \clearpage % TODO: Make this variable based off of is_primary_repo. English ids should always be on a page by themselves and foreign ids are allowed to be on the same page as content. We need to investigate how to get that to work properly in the foreign.
+    \thispagestyle{RtIdPageStyle}
     \vspace*{\fill}
     \par
     \setlength\topsep{0pt}
