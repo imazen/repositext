@@ -34,20 +34,21 @@ class Repositext
             Dir.glob(File.join(st_ops_dir, "st-ops-*-#{ from_to_commit_id }.json")).first
           end
 
-          # Computes the next sequence number for subtitle_operations files
-          # based on the highest number present in subtitle_operations_dir
+          # Computes the next sequence marker for subtitle_operations files.
+          # We use a UTC date/time stamp for sequencing.
           # @param subtitle_operations_dir [String]
-          # @return [String] with 5 digits
-          def compute_next_st_ops_file_sequence_number(subtitle_operations_dir)
+          # @return [String] with date/time stamp in the following format:
+          #     "2016_07_12-20_39_28" (UTC)
+          def compute_next_st_ops_file_sequence_marker(subtitle_operations_dir)
+            current_utc_time_stamp = Time.now.utc.strftime('%Y_%m_%d-%H_%M_%W')
             existing_st_ops_file_names = Dir.glob(
               File.join(subtitle_operations_dir, "st-ops-*.json")
             )
-            return '00001'  if existing_st_ops_file_names.empty?
-            highest = existing_st_ops_file_names.sort.last
-            # Extract serial number from st-ops-00010-5cbeee-to-75c444.json
-            number = highest.match(/st-ops-([\d]{5})-.*\.json/)[1]
-            raise "No matching filename found: #{ highest.inspect }"  if number.nil?
-            number.succ
+            if existing_st_ops_file_names.any? { |e| e.index(current_utc_time_stamp) }
+              raise "Duplicate timestamp #{ current_utc_time_stamp.inspect }. Please try again."
+            else
+              current_utc_time_stamp
+            end
           end
 
           # Extracts subtitle operations for entire repo between two git commits.
@@ -61,7 +62,7 @@ class Repositext
             ).compute
             st_ops_file_path = compute_next_st_ops_file_path(
               @config.base_dir(:subtitle_operations_dir),
-              compute_next_st_ops_file_sequence_number(@config.base_dir(:subtitle_operations_dir)),
+              compute_next_st_ops_file_sequence_marker(@config.base_dir(:subtitle_operations_dir)),
               from_to_git_commit_marker
             )
             puts " - Writing JSON file to #{ st_ops_file_path }"
