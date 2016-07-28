@@ -273,6 +273,10 @@
     \par
   }
   {
+    % Force a minimum length for the last line in a paragraph by limiting parfillskip
+    % to a range of 0pt to 260pt. We use `260pt _minus_ 260pt` since the shrink limit is a hard limit
+    % versus the stretch limit of `0pt _plus_ 260pt` which can be exceeded.
+    \setlength{\parfillskip}{260pt minus 260pt}
     \par
   }
 
