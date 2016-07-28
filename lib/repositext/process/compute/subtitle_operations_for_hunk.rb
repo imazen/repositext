@@ -742,9 +742,9 @@ class Repositext
               }
               remaining_subtitle_count_difference -= al_st_pair[:subtitle_count_change]
             when :unaligned
-              # Either a content change if it's the first subtitle in a paragraph, or a move.
-              if 0 == al_st_pair[:index]
-                # This is the first subtitle in a paragraph, must be a content change
+              # Either a content change if it's the first subtitle in an operations_group, or a move.
+              if 0 == idx
+                # This is the first subtitle in an operations_group, must be a content change.
                 # Nothing to do
               else
                 op_type = cumulative_text_length_difference < 0 ? :moveLeft : :moveRight
