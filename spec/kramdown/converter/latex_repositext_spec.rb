@@ -117,10 +117,14 @@ module Kramdown
           ["\n\n<<<gap-mark>>>\\textit{\\textbf{“word", "\n\n\\textit{\\textbf{“\\RtGapMarkText{word}"], # replace gap-marks before nested latex commands and skip chars
           ["<<<gap-mark>>>(\\emph{others}", "(\\emph{\\RtGapMarkText{others}}"], # replace gap-marks before nested latex commands and skip chars
           ["<<<gap-mark>>>#{ Repositext::EM_DASH }word1 word2", "\\nolinebreak[4]#{ Repositext::EM_DASH }\\hspace{0pt}\\RtGapMarkText{word1} word2"],
-          # Insert zero width space after elipsis, em-dash, and hyphen
+          # Insert zero width space after line_breakable_chars (elipsis, em-dash, and hyphen), except when followed by sertain characters
           ["word1 word2#{ Repositext::ELIPSIS }word3 word4", "word1 word2\\nolinebreak[4]#{ Repositext::ELIPSIS }\\hspace{0pt}word3 word4"],
           ["word1 word2#{ Repositext::EM_DASH }word3 word4", "word1 word2\\nolinebreak[4]#{ Repositext::EM_DASH }\\hspace{0pt}word3 word4"],
           ["word1 word2-word3 word4", "word1 word2\\nolinebreak[4]-\\hspace{0pt}word3 word4"],
+          ["word1 word2#{ Repositext::ELIPSIS }! word3 word4", "word1 word2#{ Repositext::ELIPSIS }! word3 word4"],
+          ["word1 word2#{ Repositext::EM_DASH }! word3 word4", "word1 word2#{ Repositext::EM_DASH }! word3 word4"],
+          ["word1 word2-! word3 word4", "word1 word2-! word3 word4"],
+          ["word1 word2-ed. word3 word4", "word1 word2-ed. word3 word4"],
           # Don't insert zero width space before certain punctuation
           ["word1 word2-#{ Repositext::S_QUOTE_CLOSE }word3 word4", "word1 word2-#{ Repositext::S_QUOTE_CLOSE }word3 word4"],
           ["word1 word2-#{ Repositext::D_QUOTE_CLOSE }word3 word4", "word1 word2-#{ Repositext::D_QUOTE_CLOSE }word3 word4"],
@@ -129,9 +133,11 @@ module Kramdown
           ["<<<gap-mark>>> First para word1 word2 word3", "\\RtFirstEagle \\RtGapMarkText{First} para word1 word2 word3"],
           # Replace trailing eagle with latex command
           ["Second to last para\nLast para word1 word2 word3\n{: .normal}", "Second to last para\nLast para word1 word2 word3 \\RtLastEagle{}\n{: .normal}"],
+          # No line breaks _before_ or _after_ em dash when followed by some abbreviations
+          ["word1 word2#{ Repositext::EM_DASH }ed. word3 word4", "word1 word2\\nolinebreak[4]#{ Repositext::EM_DASH }\\nolinebreak[4]ed. word3 word4"],
         ].each do |test_string, xpect|
           it "handles #{ test_string.inspect }" do
-            c = LatexRepositext.send(:new, '_', {})
+            c = LatexRepositext.send(:new, '_', { ed_and_trn_abbreviations: "ed\\." })
             c.send(:post_process_latex_body, test_string).must_equal(xpect)
           end
         end

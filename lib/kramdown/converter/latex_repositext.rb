@@ -433,8 +433,9 @@ module Kramdown
         no_break_following_chars = Regexp.escape(
           [Repositext::S_QUOTE_CLOSE, Repositext::D_QUOTE_CLOSE, ')?,!'].join
         )
-        # We only want to allow linebreak _after_ line_breakable_chars so we
-        # insert \nolinebreak _before_.
+        # We only want to allow linebreak _after_ line_breakable_chars but not _before_.
+        # We insert a \\nolinebreak to prevent linebreaks _before_.
+        # Excpetions: no_break_following_chars or ed_and_trn_abbreviations
         lb.gsub!(
           /
             (
