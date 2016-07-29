@@ -379,6 +379,23 @@ class Repositext
               ]
             ],
             [
+              'merge, merge (adjacent)',
+              %w[@word1 word2 @word3 word4 word5 @word6 word7],
+              %w[@word1 word2  word3 word4 word5  word6 word7],
+              [
+                {
+                  :operationId=>"hunk_index-1",
+                  :operationType=>:merge,
+                  :afterStid=>nil,
+                  :affectedStids=>[
+                    { :stid=>"1000000", :before=>"word1 word2 ", :after=>"word1 word2 word3 word4 word5 word6 word7\n" },
+                    { :stid=>"1000001", :before=>"word3 word4 word5 ", :after=>"" },
+                    { :stid=>"1000002", :before=>"word6 word7\n", :after=>"" }
+                  ]
+                }
+              ]
+            ],
+            [
               'merge (fits more than 50%), moveLeft',
               %w[@0word1 word2 @1word3 word4 word5   word6 @2word7],
               %w[@0word1 word2   word3 word4 word5 @2word6   word7],
@@ -1198,6 +1215,23 @@ class Repositext
                   :affectedStids=>[
                     { :stid=>"tmp-1000000+1", :before=>"", :after=>"1word4 word5 word6 word7 "},
                     { :stid=>"1000001", :before=>"2word5 word6 word7 word8 word9 word10 word11 word12 word13\n", :after=>"2word8 word9 word10 word11 word12 word13\n"}
+                  ]
+                }
+              ]
+            ],
+            [
+              'split, split (adjacent)',
+              %w[@word1 word2  word3 word4 word5  word6 word7],
+              %w[@word1 word2 @word3 word4 word5 @word6 word7],
+              [
+                {
+                  :operationId=>"hunk_index-1",
+                  :operationType=>:split,
+                  :afterStid=>nil,
+                  :affectedStids=>[
+                    { :stid=>"1000000", :before=>"word1 word2 word3 word4 word5 word6 word7\n", :after=>"word1 word2 " },
+                    { :stid=>"tmp-1000000+1", :before=>"", :after=>"word3 word4 word5 " },
+                    { :stid=>"tmp-1000000+2", :before=>"", :after=>"word6 word7\n" }
                   ]
                 }
               ]

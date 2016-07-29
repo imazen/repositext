@@ -763,7 +763,35 @@ class Repositext
             cumulative_text_length_difference += al_st_pair[:content_length_change]
           }
 
-          r = collected_operations.map { |operation_attrs|
+          # Consolidate adjacent merges and splits
+          consolidatable_operation_types = [:merge, :split]
+          consolidated_operations = collected_operations.inject([]) { |m,cur_op|
+            prev_op = m.last
+            if prev_op.nil? || prev_op[:operationType] != cur_op[:operationType]
+              # First operation, or current operation type is different from
+              # previous one. Use as is.
+              m << cur_op
+            elsif (
+              consolidatable_operation_types.include?(cur_op[:operationType]) &&
+              prev_op[:operationType] == cur_op[:operationType]
+            )
+              # This is an adjacent split or merge, consolidate with previous
+              # operation:
+              # * Use previous operation's operationId
+              # * Keep operationType
+              # * Append last affectedStid (first should already be in previous op)
+              first_a_stid, last_a_stid = cur_op[:affectedStids]
+              if 2 != cur_op[:affectedStids].length || first_a_stid != prev_op[:affectedStids].last
+                raise "Handle this: #{ [prev_op, cur_op].inspect }"
+              end
+              prev_op[:affectedStids] << last_a_stid
+            else
+              # Same operationType, however it's not consolidatable. Use as is.
+              m << cur_op
+            end
+            m
+          }
+          consolidated_operations.map { |operation_attrs|
             Subtitle::Operation.new_from_hash(operation_attrs)
           }
         end

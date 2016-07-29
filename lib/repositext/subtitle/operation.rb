@@ -9,7 +9,7 @@ class Repositext
     #
     class Operation
 
-      attr_accessor :affectedStids # [Repositext::Subtitle]
+      attr_accessor :affectedStids # [Array<Repositext::Subtitle>]
 
       ATTR_NAMES = [:operationId, :operationType, :afterStid]
       attr_accessor *ATTR_NAMES
