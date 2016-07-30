@@ -189,8 +189,7 @@
 \newenvironment{RtIdParagraph}
   {%
     \par
-    \setlength\topsep{0pt}
-    \setlength\parskip{1.089pt}
+    \setlength{\parskip}{1.089pt}
     \setlength{\parindent}{0pt}
     \begin{spacing}{1}
       \fontsize{8pt}{10.5pt}\selectfont
@@ -207,8 +206,8 @@
     \thispagestyle{RtIdPageStyle}
     \vspace*{\fill}
     \par
-    \setlength\topsep{0pt}
-    \setlength\parskip{0pt}
+    \setlength{\topsep}{0pt}
+    \setlength{\parskip}{0pt}
     \setlength{\parindent}{0pt}
     \begin{center}
       <%= @polyglossia_default_language ? '' : '\titlefont' %>%
@@ -223,8 +222,8 @@
 \newenvironment{RtIdTitle2}
   {%
     \par
-    \setlength\topsep{0pt}
-    \setlength\parskip{-0.542pt}
+    \setlength{\topsep}{0pt}
+    \setlength{\parskip}{-0.542pt}
     \setlength{\parindent}{0pt}
     \begin{center}
       <%= @polyglossia_default_language ? '' : '\titlefont' %>%
