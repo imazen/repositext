@@ -142,9 +142,9 @@ module Kramdown
           )
           @page_settings = page_settings_for_latex_geometry_package
           # Force foreign languages to use Excelsior for paragraph numbers.
-          @paragraph_number_font_name = @options[:is_primary_repo] ? @font_name : 'V-Excelsior LT Std'
+          @paragraph_number_font_name = @options[:paragraph_number_font_name]
           @polyglossia_default_language = polyglossia_default_language(@options[:language_code_3_chars])
-          @primary_font_name = 'V-Calisto-St'
+          @primary_font_name = @options[:primary_font_name]
           @title_font_name = @options[:title_font_name]
           @title_vspace = @options[:title_vspace] # space to be inserted above title to align with body text
           @use_cjk_package = ['chn','cnt'].include?(@options[:language_code_3_chars])

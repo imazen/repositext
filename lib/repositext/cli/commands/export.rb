@@ -207,11 +207,14 @@ class Repositext
         input_file_selector = config.compute_file_selector(options['file-selector'] || :all_files)
         input_file_extension = config.compute_file_extension(options['file-extension'] || :at_extension)
         output_base_dir = options['output'] || config.base_dir(:pdf_export_dir)
+        primary_config = content_type.corresponding_primary_content_type.config
         options = options.merge({
           additional_footer_text: options['additional-footer-text'],
           is_primary_repo: config.setting(:is_primary_repo),
           language_code_2_chars: config.setting(:language_code_2_chars),
           language_code_3_chars: config.setting(:language_code_3_chars),
+          paragraph_number_font_name: config.setting(:pdf_export_paragraph_number_font_name),
+          primary_font_name: primary_config.setting(:pdf_export_font_name),
           version_control_page: options['include-version-control-info'],
         })
         primary_titles = compute_primary_titles # hash with date codes as keys and primary titles as values
