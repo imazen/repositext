@@ -63,14 +63,14 @@
 % for custom headers and footers
 \usepackage{fancyhdr}
 \setlength{\headheight}{14pt}
-\newcommand{\RtDoubleHRule}{
+\newcommand{\RtDoubleHRule}{%
   \begin{minipage}{\textwidth}
     \hrule width \hsize height 0.19pt
     \kern 1.6pt
     \hrule width \hsize height 0.19pt
   \end{minipage}
 }
-\newcommand{\RtFooterContent}{
+\newcommand{\RtFooterContent}{%
   <% if @include_meta_info %>
     \fancyfoot[L]{\textscale{0.73}{<%= @date_code %>}} % outside
     \fancyfoot[C]{\textscale{0.73}{<%= @footer_title %>}} % center
@@ -86,7 +86,7 @@
 \makeatother
 
 % specify regular pagestyle
-\fancypagestyle{RtPageStyle}{
+\fancypagestyle{RtPageStyle}{%
   \fancyhf{}
   \fancyhfoffset[LE]{0mm}
   <% if @hrules_present %>
@@ -107,7 +107,7 @@
 \pagestyle{RtPageStyle} % apply custom pagestyle
 
 % override pagestyle for first page
-\fancypagestyle{RtFirstPageStyle}{
+\fancypagestyle{RtFirstPageStyle}{%
   \fancyhf{}
   \renewcommand{\headrulewidth}{0mm} % no line in header
   <% if @hrules_present %>
@@ -121,7 +121,7 @@
 
 % override pagestyle for id page
 % id pages do not have headers or footers
-\fancypagestyle{RtIdPageStyle}{
+\fancypagestyle{RtIdPageStyle}{%
   \fancyhf{}
   % no line in header
   \renewcommand{\headrulewidth}{0mm}
@@ -187,7 +187,7 @@
 
 % environment to render idparagraph paragraphs
 \newenvironment{RtIdParagraph}
-  {
+  {%
     \par
     \setlength\topsep{0pt}
     \setlength\parskip{1.089pt}
@@ -202,7 +202,7 @@
 
 % environment to render idtitle1 paragraphs
 \newenvironment{RtIdTitle1}
-  {
+  {%
     \clearpage % TODO: Make this variable based off of is_primary_repo. English ids should always be on a page by themselves and foreign ids are allowed to be on the same page as content. We need to investigate how to get that to work properly in the foreign.
     \thispagestyle{RtIdPageStyle}
     \vspace*{\fill}
@@ -221,7 +221,7 @@
 
 % environment to render idtitle2 paragraphs
 \newenvironment{RtIdTitle2}
-  {
+  {%
     \par
     \setlength\topsep{0pt}
     \setlength\parskip{-0.542pt}
@@ -237,21 +237,21 @@
 
 % environment to render meta info
 \newenvironment{RtMetaInfo}
-  {
+  {%
     \par
     \fontsize{8pt}{9.6pt}\selectfont
   }
-  {
+  {%
     \par
   }
 
 % environment to render .first_par
 \newenvironment{RtFirstPar}
-  {
+  {%
     \par
     \setlength{\parskip}{0pt plus 0pt minus 0pt} % to stop the vert space between title and first paragraph from varying
   }
-  {
+  {%
     \par
   }
 
@@ -259,20 +259,20 @@
 % used for increasing the indention of a .normal paragraph that follows a
 % single line paragrpah that starts the file and contians an eagle
 \newenvironment{RtIndentForEagle}
-  {
+  {%
     \par
     \setlength{\parindent}{22pt}
   }
-  {
+  {%
     \par
   }
 
 % environment to render .normal
 \newenvironment{RtNormal}
-  {
+  {%
     \par
   }
-  {
+  {%
     % Force a minimum length for the last line in a paragraph by limiting parfillskip
     % to a range of 0pt to 260pt. We use `260pt _minus_ 260pt` since the shrink limit is a hard limit
     % versus the stretch limit of `0pt _plus_ 260pt` which can be exceeded.
@@ -293,31 +293,31 @@
 
 % environment to render questions
 \newenvironment{RtQuestion}
-  {
+  {%
     \par
     \noindent
     \hangindent=25pt
     \hangafter=1
   }
-  {
+  {%
     \par
   }
 
 % environment to render scr paragraphs
 \newenvironment{RtScr}
-  {
+  {%
     \par
     \leftskip=20.236pt
     \rightskip=20.236pt
     \setlength{\parindent}{7.95pt}
   }
-  {
+  {%
     \par
   }
 
 % environment to render song paragraphs.
 \newenvironment{RtSong}
-  {
+  {%
     \par
     \leftskip=60.225pt
     \rightskip=30.112pt
@@ -325,13 +325,13 @@
     \nopagebreak
     \setlength{\parskip}{0pt plus 0pt minus 0pt}
   }
-  {
+  {%
     \par
   }
 
 % environment to render song paragraphs.
 \newenvironment{RtSongBreak}
-  {
+  {%
     \par
     \leftskip=60.225pt
     \rightskip=30.112pt
@@ -339,53 +339,53 @@
     \pagebreak
     \setlength{\parskip}{0pt plus 0pt minus 0pt}
   }
-  {
+  {%
     \par
   }
 
 % environment to render split pairs in pdf_recording_merged
 \newenvironment{RtSplitPair}
-  {
+  {%
     \begin{minipage}{\textwidth}
       \setlength{\parskip}{3pt}
       \setlength{\parindent}{18pt}
   }
-  {
+  {%
     \end{minipage}
   }
 
 % environment to render stanza paragraphs.
 \newenvironment{RtStanza}
-  {
+  {%
     \par
     \leftskip=60.225pt
     \rightskip=30.112pt
     \setlength{\parindent}{-8pt}
   }
-  {
+  {%
     \par
   }
 
 % environment to render level3 header
 \newenvironment{RtSubTitle}
-  {
+  {%
     \begin{center}
       <%= @polyglossia_default_language ? '' : '\titlefont' %>
       \fontsize{10pt}{10.5pt}\selectfont
   }
-  {
+  {%
     \end{center}
   }
 
 % environment to render level1 header
 \newenvironment{RtTitle}
-  {
+  {%
     \setlength{\parindent}{0pt}
     \begin{minipage}{\textwidth}
       \par
       \begingroup
         \vspace*{-3.262pt}% sets the location of the top hrule.
-        {
+        {%
           \color{<%= @hrules_present ? 'black' : 'white' %>}
           \hrule width \hsize height 0.201pt
         }
@@ -400,7 +400,7 @@
             \rule[-.3\baselineskip]{0pt}{\baselineskip}% Insert strut to avoid inconsistent vertical spacing caused by different height characters.
             \par
             \vspace*{-2.73pt}% sets the spacing between the title and the bottom hrule.
-            {
+            {%
               \color{<%= @hrules_present ? 'black' : 'white' %>}
               \hrule width \hsize height 0.201pt
             }
@@ -414,13 +414,13 @@
 
 % environment to render level2 header
 \newenvironment{RtTitle2}
-  {
+  {%
     \begin{center}
       \begin{spacing}{1.2311}
         <%= @polyglossia_default_language ? '' : '\titlefont' %>
         \fontsize{16pt}{19.2pt}\selectfont
   }
-  {
+  {%
       \end{spacing}
       \vspace*{<%= @title_vspace %>pt}
     \end{center}
