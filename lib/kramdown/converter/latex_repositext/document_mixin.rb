@@ -110,6 +110,8 @@ module Kramdown
           # assign i_vars referenced in template file.
           @additional_footer_text = escape_latex_text(@options[:additional_footer_text])
           @body = latex_body
+          @company_long_name = @options[:company_long_name]
+          @company_short_name = @options[:company_short_name]
           @date_code = date_code.capitalize
           # Applies the settings for the first eagle indent and drop cap.
           @first_eagle = @options[:first_eagle]

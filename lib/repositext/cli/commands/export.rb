@@ -210,6 +210,8 @@ class Repositext
         primary_config = content_type.corresponding_primary_content_type.config
         options = options.merge({
           additional_footer_text: options['additional-footer-text'],
+          company_long_name: config.setting(:company_long_name),
+          company_short_name: config.setting(:company_short_name),
           is_primary_repo: config.setting(:is_primary_repo),
           language_code_2_chars: config.setting(:language_code_2_chars),
           language_code_3_chars: config.setting(:language_code_3_chars),

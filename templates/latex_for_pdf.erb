@@ -146,6 +146,18 @@
 % uncomment this to display layout boundaries in the document on every page.
 % \usepackage{showframe}
 
+% environment to render id copyright line
+\newcommand{\RtIdCopyrightYear}
+  {%
+    \setlength{\parskip}{0pt}
+    \setlength{\parindent}{0pt}
+    \begin{center}
+      \fontsize{5.5pt}{10.5pt}\selectfont
+      ©<%= @id_copyright_year %> <%= @company_short_name %>, ALL RIGHTS RESERVED
+    \end{center}
+    \par
+  }
+
 % environment to render id language line
 \newcommand{\RtIdLanguage}
   {%
