@@ -78,6 +78,7 @@ module Kramdown
         # need to use polyglossia for the given language.
         # @param language_code_3_chars [String]
         # @return [String, Nil]
+        # TODO: Move this into `Language` classes
         def polyglossia_default_language(language_code_3_chars)
           {
             'mal' => 'malayalam',
@@ -131,8 +132,10 @@ module Kramdown
           )
           # Turns on hrules in title, header and footer.
           @hrules_present = @options[:hrules_present]
+          @id_copyright_year = @options[:id_copyright_year]
           @include_meta_info = include_meta_info
           @is_primary_repo = @options[:is_primary_repo]
+          @language_name = @options[:language_name]
           @latest_commit_hash = latest_commit.oid[0,8]
           @linebreaklocale = @options[:language_code_2_chars]
           @magnification = magnification

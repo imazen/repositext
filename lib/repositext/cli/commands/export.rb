@@ -213,6 +213,7 @@ class Repositext
           is_primary_repo: config.setting(:is_primary_repo),
           language_code_2_chars: config.setting(:language_code_2_chars),
           language_code_3_chars: config.setting(:language_code_3_chars),
+          language_name: content_type.language.name,
           paragraph_number_font_name: config.setting(:pdf_export_paragraph_number_font_name),
           primary_font_name: primary_config.setting(:pdf_export_font_name),
           version_control_page: options['include-version-control-info'],
@@ -241,6 +242,8 @@ class Repositext
           options[:footer_title_english] = primary_titles[content_at_file.extract_product_identity_id(false)]
           options[:header_text] = config.setting(:pdf_export_header_text)
           options[:hrules_present] = config.setting(:pdf_export_hrules_present)
+          options[:id_address_latex] = config.setting(:pdf_export_id_address_latex)
+          options[:id_copyright_year] = config.setting(:erp_id_copyright_year,false)
           options[:title_font_name] = config.setting(:pdf_export_title_font_name)
           options[:title_vspace] = config.setting(:pdf_export_title_vspace)
           if options[:pre_process_content_proc]
