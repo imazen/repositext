@@ -211,7 +211,16 @@ class Repositext
         options = options.merge({
           additional_footer_text: options['additional-footer-text'],
           company_long_name: config.setting(:company_long_name),
+          company_phone_number: config.setting(:company_phone_number),
           company_short_name: config.setting(:company_short_name),
+          company_web_address: config.setting(:company_web_address),
+          id_address_primary_latex_1: config.setting(:pdf_export_id_address_primary_latex_1,false),
+          id_address_primary_latex_2: config.setting(:pdf_export_id_address_primary_latex_2,false),
+          id_address_secondary_latex_1: config.setting(:pdf_export_id_address_secondary_latex_1,false),
+          id_address_secondary_latex_2: config.setting(:pdf_export_id_address_secondary_latex_2,false),
+          id_address_secondary_latex_3: config.setting(:pdf_export_id_address_secondary_latex_3,false),
+          id_write_to_primary: config.setting(:pdf_export_id_write_to_primary,false),
+          id_write_to_secondary: config.setting(:pdf_export_id_write_to_secondary,false),
           is_primary_repo: config.setting(:is_primary_repo),
           language_code_2_chars: config.setting(:language_code_2_chars),
           language_code_3_chars: config.setting(:language_code_3_chars),
@@ -244,7 +253,6 @@ class Repositext
           options[:footer_title_english] = primary_titles[content_at_file.extract_product_identity_id(false)]
           options[:header_text] = config.setting(:pdf_export_header_text)
           options[:hrules_present] = config.setting(:pdf_export_hrules_present)
-          options[:id_address_latex] = config.setting(:pdf_export_id_address_latex)
           options[:id_copyright_year] = config.setting(:erp_id_copyright_year,false)
           options[:title_font_name] = config.setting(:pdf_export_title_font_name)
           options[:title_vspace] = config.setting(:pdf_export_title_vspace)

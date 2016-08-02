@@ -111,7 +111,9 @@ module Kramdown
           @additional_footer_text = escape_latex_text(@options[:additional_footer_text])
           @body = latex_body
           @company_long_name = @options[:company_long_name]
+          @company_phone_number = @options[:company_phone_number]
           @company_short_name = @options[:company_short_name]
+          @company_web_address = @options[:company_web_address]
           @date_code = date_code.capitalize
           # Applies the settings for the first eagle indent and drop cap.
           @first_eagle = @options[:first_eagle]
@@ -135,6 +137,13 @@ module Kramdown
           # Turns on hrules in title, header and footer.
           @hrules_present = @options[:hrules_present]
           @id_copyright_year = @options[:id_copyright_year]
+          @id_address_primary_latex_1 = @options[:id_address_primary_latex_1]
+          @id_address_primary_latex_2 = @options[:id_address_primary_latex_2]
+          @id_address_secondary_latex_1 = @options[:id_address_secondary_latex_1]
+          @id_address_secondary_latex_2 = @options[:id_address_secondary_latex_2]
+          @id_address_secondary_latex_3 = @options[:id_address_secondary_latex_3]
+          @id_write_to_primary = @options[:id_write_to_primary]
+          @id_write_to_secondary = @options[:id_write_to_secondary]
           @include_meta_info = include_meta_info
           @is_primary_repo = @options[:is_primary_repo]
           @language_name = @options[:language_name]

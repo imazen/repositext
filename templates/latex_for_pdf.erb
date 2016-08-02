@@ -146,7 +146,86 @@
 % uncomment this to display layout boundaries in the document on every page.
 % \usepackage{showframe}
 
+% command to render primary address
+% TODO: Adjust vertical spacing
+\newcommand{\RtIdAddressPrimaryFirst}
+  {%
+    <% if @id_address_primary_latex_1 %>
+      \setlength{\parskip}{0pt}
+      \setlength{\parindent}{0pt}
+      \fontsize{12pt}{14.4pt}\selectfont
+      \begin{center}
+        <%= @id_address_primary_latex_1 %>
+      \end{center}
+      \par
+    <% end %>
+  }
+
+% command to render primary address
+% TODO: Adjust vertical spacing
+\newcommand{\RtIdAddressPrimarySecond}
+  {%
+    <% if @id_address_primary_latex_2 %>
+      \setlength{\parskip}{0pt}
+      \setlength{\parindent}{0pt}
+      \fontsize{10pt}{12pt}\selectfont
+      \begin{center}
+        <%= @id_address_primary_latex_2 %>
+      \end{center}
+      \par
+    <% end %>
+  }
+
+% command to render secondary address
+% TODO: Make font size for this command a setting
+% TODO: Adjust vertical spacing
+\newcommand{\RtIdAddressSecondaryFirst}
+  {%
+    <% if @id_address_secondary_latex_1 %>
+      \setlength{\parskip}{0pt}
+      \setlength{\parindent}{0pt}
+      \fontsize{12pt}{14.4pt}\selectfont
+      \begin{center}
+        <%= @id_address_secondary_latex_1 %>
+      \end{center}
+      \par
+    <% end %>
+  }
+
+% command to render secondary address
+% TODO: Make font size for this command a setting
+% TODO: Adjust vertical spacing
+\newcommand{\RtIdAddressSecondarySecond}
+  {%
+    <% if @id_address_secondary_latex_2 %>
+      \setlength{\parskip}{0pt}
+      \setlength{\parindent}{0pt}
+      \fontsize{10pt}{12pt}\selectfont
+      \begin{center}
+        <%= @id_address_secondary_latex_2 %>
+      \end{center}
+      \par
+    <% end %>
+  }
+
+% command to render secondary address
+% TODO: Make font size for this command a setting
+% TODO: Adjust vertical spacing
+\newcommand{\RtIdAddressSecondaryThird}
+  {%
+    <% if @id_address_secondary_latex_3 %>
+      \setlength{\parskip}{0pt}
+      \setlength{\parindent}{0pt}
+      \fontsize{10pt}{12pt}\selectfont
+      \begin{center}
+        <%= @id_address_secondary_latex_3 %>
+      \end{center}
+      \par
+    <% end %>
+  }
+
 % environment to render id copyright line
+% TODO: Adjust vertical spacing
 \newcommand{\RtIdCopyrightYear}
   {%
     \setlength{\parskip}{0pt}
@@ -158,7 +237,8 @@
     \par
   }
 
-% environment to render id language line
+% command to render id language line
+% TODO: Adjust vertical spacing
 \newcommand{\RtIdLanguage}
   {%
     \setlength{\parskip}{0pt}
@@ -170,16 +250,47 @@
     \par
   }
 
-% environment to render id copyright line
-\newcommand{\RtIdCopyrightYear}
+% command to render id web address and phone number line, the phone number is not always present
+% TODO: Adjust vertical spacing
+\newcommand{\RtIdWebMaybePhone}
   {%
     \setlength{\parskip}{0pt}
     \setlength{\parindent}{0pt}
+    \fontsize{7pt}{10pt}\selectfont
     \begin{center}
-      \fontsize{5.5pt}{10.5pt}\selectfont
-      ©<%= @id_copyright_year %> VGR, ALL RIGHTS RESERVED
+      <% if @is_primary_repo %>
+        <%= @company_phone_number %> . <%= @company_web_address %>
+      <% else %>
+        <%= @company_web_address %>
+      <% end %>
     \end{center}
     \par
+  }
+
+% command to render id write to primary line
+% TODO: Adjust vertical spacing
+\newcommand{\RtIdWriteToPrimary}
+  {%
+    <% if @id_write_to_primary %>
+      \setlength{\parskip}{0pt}
+      \setlength{\parindent}{0pt}
+      \fontsize{8pt}{10.5pt}\selectfont
+      <%= @id_write_to_primary %>
+      \par
+    <% end %>
+  }
+
+% command to render id write to secondary line
+% TODO: Adjust vertical spacing
+\newcommand{\RtIdWriteToSecondary}
+  {%
+    <% if @id_write_to_secondary %>
+      \setlength{\parskip}{0pt}
+      \setlength{\parindent}{0pt}
+      \fontsize{8pt}{10.5pt}\selectfont
+      <%= @id_write_to_secondary %>
+      \par
+    <% end %>
   }
 
 % command to render gap mark. Pass the text to be highlighted as argument.
@@ -482,10 +593,18 @@
   \thispagestyle{RtFirstPageStyle} % to have same header and footer on title page
 
   <%= @body %>
-  \RtIdCopyrightYear
   <% if !@is_primary_repo %> 
     \RtIdLanguage
   <% end %>
+  \RtIdCopyrightYear
+  \RtIdWriteToSecondary
+  \RtIdAddressSecondaryFirst
+  \RtIdAddressSecondarySecond
+  \RtIdAddressSecondaryThird
+  \RtIdWriteToPrimary
+  \RtIdAddressPrimaryFirst
+  \RtIdAddressPrimarySecond
+  \RtIdWebMaybePhone
   <%= @meta_info %>
   <%= @version_control_page %>
 
