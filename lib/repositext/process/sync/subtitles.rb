@@ -46,7 +46,7 @@ class Repositext
           end
           st_ops_for_repo = extract_or_load_primary_subtitle_operations
           update_primary_subtitle_marker_csv_files(
-            @repository.base_dir,
+            @repository,
             st_ops_for_repo
           )
           # transfer_subtitle_operations_to_foreign_repos

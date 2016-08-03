@@ -47,6 +47,7 @@ class Repositext
           ]
         }
         # Convert to CSV
+        # TODO: Use new RFile::SubtitleMarkerCsv class for this!
         csv_string = CSV.generate(col_sep: "\t") do |csv|
           csv << Repositext::Utils::SubtitleMarkTools.csv_headers
           merged_csv_array.each do |row|

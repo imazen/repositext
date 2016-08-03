@@ -12,6 +12,7 @@ class Repositext
       #     relative_path_to_primary_content_type: relative path from foreign to primary content_type, from config.setting('relative_path_to_primary_content_type')
       #     primary_repo_lang_code: primary repo's language_code_3_chars, from config.setting(:primary_repo_lang_code)
       # @return [String] the absolute path to the corresponding primary file
+      # TODO: Replace all places that use this with Rfile!!!
       def self.find(params)
         primary_content_type_base_dir = File.expand_path(
           params[:relative_path_to_primary_content_type],
