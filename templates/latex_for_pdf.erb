@@ -146,134 +146,140 @@
 % uncomment this to display layout boundaries in the document on every page.
 % \usepackage{showframe}
 
-% command to render primary address
-% TODO: Adjust vertical spacing
+% command to render the first line of the primary address
 \newcommand{\RtIdAddressPrimaryFirst}
   {%
     <% if @id_address_primary_latex_1 %>
-      \setlength{\parskip}{0pt}
+      <% if @is_primary_repo %>
+        \setlength{\parskip}{5.962pt}
+      <% else %>
+        \setlength{\parskip}{7.882pt}
+      <% end %>
       \setlength{\parindent}{0pt}
+      <%= @polyglossia_default_language ? '' : '\titlefont' %>%
       \fontsize{12pt}{14.4pt}\selectfont
-      \begin{center}
-        <%= @id_address_primary_latex_1 %>
-      \end{center}
+      \centering
+      <%= @id_address_primary_latex_1 %>
       \par
     <% end %>
   }
 
-% command to render primary address
-% TODO: Adjust vertical spacing
+% command to render the second line of the primary address
 \newcommand{\RtIdAddressPrimarySecond}
   {%
     <% if @id_address_primary_latex_2 %>
-      \setlength{\parskip}{0pt}
+      \setlength{\parskip}{1.635pt}
       \setlength{\parindent}{0pt}
+      <%= @polyglossia_default_language ? '' : '\titlefont' %>%
       \fontsize{10pt}{12pt}\selectfont
-      \begin{center}
-        <%= @id_address_primary_latex_2 %>
-      \end{center}
+      \centering
+      <%= @id_address_primary_latex_2 %>
       \par
     <% end %>
   }
 
-% command to render secondary address
-% TODO: Make font size for this command a setting
-% TODO: Adjust vertical spacing
+% command to render the first line of the secondary address
 \newcommand{\RtIdAddressSecondaryFirst}
   {%
     <% if @id_address_secondary_latex_1 %>
-      \setlength{\parskip}{0pt}
+      <% if @is_primary_repo %>
+        \setlength{\parskip}{5.962pt}
+      <% else %>
+        \setlength{\parskip}{7.882pt}
+      <% end %>
       \setlength{\parindent}{0pt}
+      <%= @polyglossia_default_language ? '' : '\titlefont' %>%
       \fontsize{12pt}{14.4pt}\selectfont
-      \begin{center}
-        <%= @id_address_secondary_latex_1 %>
-      \end{center}
+      \centering
+      <%= @id_address_secondary_latex_1 %>
       \par
     <% end %>
   }
 
-% command to render secondary address
-% TODO: Make font size for this command a setting
-% TODO: Adjust vertical spacing
+% command to render the second line of the secondary address
 \newcommand{\RtIdAddressSecondarySecond}
   {%
     <% if @id_address_secondary_latex_2 %>
-      \setlength{\parskip}{0pt}
+      \setlength{\parskip}{1.635pt}
       \setlength{\parindent}{0pt}
+      <%= @polyglossia_default_language ? '' : '\titlefont' %>%
       \fontsize{10pt}{12pt}\selectfont
-      \begin{center}
-        <%= @id_address_secondary_latex_2 %>
-      \end{center}
+      \centering
+      <%= @id_address_secondary_latex_2 %>
       \par
     <% end %>
   }
 
-% command to render secondary address
-% TODO: Make font size for this command a setting
-% TODO: Adjust vertical spacing
+% command to render the third line of the secondary address
 \newcommand{\RtIdAddressSecondaryThird}
   {%
     <% if @id_address_secondary_latex_3 %>
-      \setlength{\parskip}{0pt}
+      \setlength{\parskip}{1.635pt}
       \setlength{\parindent}{0pt}
+      <%= @polyglossia_default_language ? '' : '\titlefont' %>%
       \fontsize{10pt}{12pt}\selectfont
-      \begin{center}
-        <%= @id_address_secondary_latex_3 %>
-      \end{center}
+      \centering
+      <%= @id_address_secondary_latex_3 %>
       \par
     <% end %>
   }
 
 % environment to render id copyright line
-% TODO: Adjust vertical spacing
 \newcommand{\RtIdCopyrightYear}
   {%
-    \setlength{\parskip}{0pt}
+    <% if @is_primary_repo %>
+      \setlength{\parskip}{6.769pt}
+    <% else %>
+      \setlength{\parskip}{4.345pt}
+    <% end %>
     \setlength{\parindent}{0pt}
-    \begin{center}
-      \fontsize{5.5pt}{10.5pt}\selectfont
-      ©<%= @id_copyright_year %> <%= @company_short_name %>, ALL RIGHTS RESERVED
-    \end{center}
+    \centering
+    <%= @polyglossia_default_language ? '' : '\titlefont' %>%
+    \fontsize{5.5pt}{10.5pt}\selectfont
+    ©<%= @id_copyright_year %> <%= @company_short_name %>, ALL RIGHTS RESERVED
     \par
   }
 
 % command to render id language line
-% TODO: Adjust vertical spacing
 \newcommand{\RtIdLanguage}
   {%
-    \setlength{\parskip}{0pt}
+    \setlength{\parskip}{6.786pt}
     \setlength{\parindent}{0pt}
-    \begin{center}
-      \fontsize{5.5pt}{10.5pt}\selectfont
-      <%= @language_name.upcase %>
-    \end{center}
+    \centering
+    <%= @polyglossia_default_language ? '' : '\titlefont' %>%
+    \fontsize{5.5pt}{10.5pt}\selectfont
+    <%= @language_name.upcase %>
     \par
   }
 
 % command to render id web address and phone number line, the phone number is not always present
-% TODO: Adjust vertical spacing
 \newcommand{\RtIdWebMaybePhone}
   {%
-    \setlength{\parskip}{0pt}
+    <% if @is_primary_repo %>
+      \setlength{\parskip}{1.3935pt}
+    <% else %>
+      \setlength{\parskip}{1.3445pt}
+    <% end %>
     \setlength{\parindent}{0pt}
+    \centering
+    <%= @polyglossia_default_language ? '' : '\titlefont' %>%
     \fontsize{7pt}{10pt}\selectfont
-    \begin{center}
-      <% if @is_primary_repo %>
-        <%= @company_phone_number %> . <%= @company_web_address %>
-      <% else %>
-        <%= @company_web_address %>
-      <% end %>
-    \end{center}
-    \par
+    <% if @is_primary_repo %>
+      <%= @company_phone_number %> . <%= @company_web_address %>
+      \vspace*{-1.519pt}%
+    <% else %>
+      <%= @company_web_address %>
+      \vspace*{-1.47pt}%
+    <% end %>
   }
 
 % command to render id write to primary line
-% TODO: Adjust vertical spacing
 \newcommand{\RtIdWriteToPrimary}
   {%
     <% if @id_write_to_primary %>
       \setlength{\parskip}{0pt}
       \setlength{\parindent}{0pt}
+      <%= @polyglossia_default_language ? '' : '\titlefont' %>%
       \fontsize{8pt}{10.5pt}\selectfont
       <%= @id_write_to_primary %>
       \par
@@ -281,12 +287,12 @@
   }
 
 % command to render id write to secondary line
-% TODO: Adjust vertical spacing
 \newcommand{\RtIdWriteToSecondary}
   {%
     <% if @id_write_to_secondary %>
       \setlength{\parskip}{0pt}
       \setlength{\parindent}{0pt}
+      <%= @polyglossia_default_language ? '' : '\titlefont' %>%
       \fontsize{8pt}{10.5pt}\selectfont
       <%= @id_write_to_secondary %>
       \par
@@ -336,50 +342,51 @@
 % environment to render idparagraph paragraphs
 \newenvironment{RtIdParagraph}
   {%
-    \par
-    \setlength{\parskip}{1.089pt}
+    <% if @is_primary_repo %>
+      \setlength{\parskip}{4.022pt}
+    <% else %>
+      \setlength{\parskip}{2.991pt}
+    <% end %>
     \setlength{\parindent}{0pt}
-    \begin{spacing}{1}
+    \begin{spacing}{1.0027}
       \fontsize{8pt}{10.5pt}\selectfont
   }
   {%
-      \par
     \end{spacing}
+    \par
   }
 
 % environment to render idtitle1 paragraphs
 \newenvironment{RtIdTitle1}
   {%
-    \clearpage % TODO: Make this variable based off of is_primary_repo. English ids should always be on a page by themselves and foreign ids are allowed to be on the same page as content. We need to investigate how to get that to work properly in the foreign.
+    \clearpage % TODO: Make this variable based off of is_primary_repo. English ids should always be on a page by themselves and foreign ids are allowed to be on the same page as content. We need to investigate how to get that to work properly in the foreign. Also set margins to always be a left hand page for primary repo.
     \thispagestyle{RtIdPageStyle}
     \vspace*{\fill}
-    \par
-    \setlength{\topsep}{0pt}
     \setlength{\parskip}{0pt}
     \setlength{\parindent}{0pt}
-    \begin{center}
-      <%= @polyglossia_default_language ? '' : '\titlefont' %>%
-      \fontsize{10pt}{10.5pt}\selectfont
+    \centering
+    <%= @polyglossia_default_language ? '' : '\titlefont' %>%
+    \fontsize{10pt}{10.5pt}\selectfont
   }
   {%
-      \par
-    \end{center}
+    \par
   }
 
 % environment to render idtitle2 paragraphs
 \newenvironment{RtIdTitle2}
   {%
-    \par
-    \setlength{\topsep}{0pt}
-    \setlength{\parskip}{-0.542pt}
+    <% if @is_primary_repo %>
+      \setlength{\parskip}{2.487pt}
+    <% else %>
+      \setlength{\parskip}{1.467pt}
+    <% end %>
     \setlength{\parindent}{0pt}
-    \begin{center}
-      <%= @polyglossia_default_language ? '' : '\titlefont' %>%
-      \fontsize{8pt}{10.5pt}\selectfont
+    \centering
+    <%= @polyglossia_default_language ? '' : '\titlefont' %>%
+    \fontsize{8pt}{10.5pt}\selectfont
   }
   {%
-      \par
-    \end{center}
+    \par
   }
 
 % environment to render meta info
