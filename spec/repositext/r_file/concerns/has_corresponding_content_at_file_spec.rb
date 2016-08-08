@@ -26,6 +26,14 @@ class Repositext
             /rt\-english\/ct\-general\/content\/62\/eng62\-0101e_1234\.at\z/
           )
         end
+
+        it 'computes default filename with multiple extensions' do
+          filename = '/docx_import/62/eng62-0101e_1234.translator.pdf'
+          rfile = RFile::Docx.new(contents, language, filename, content_type)
+          rfile.corresponding_content_at_filename.must_match(
+            /rt\-english\/ct\-general\/content\/62\/eng62\-0101e_1234\.at\z/
+          )
+        end
       end
     end
   end

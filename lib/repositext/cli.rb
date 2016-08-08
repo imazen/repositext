@@ -11,6 +11,7 @@ class Repositext
     include Cli::Convert
     include Cli::Copy
     include Cli::Delete
+    include Cli::Distribute
     include Cli::Fix
     include Cli::GitRepo
     include Cli::Init
@@ -133,6 +134,12 @@ class Repositext
       invoke_repositext_command('copy', command_spec, options)
     end
 
+    desc 'distribute SPEC', 'Distributes files to destination location'
+    long_desc long_description_for_distribute
+    # @param [String] command_spec Specification of the operation
+    def distribute(command_spec)
+      invoke_repositext_command('distribute', command_spec, options)
+    end
 
     desc 'fix SPEC', 'Modifies files in place'
     long_desc long_description_for_fix

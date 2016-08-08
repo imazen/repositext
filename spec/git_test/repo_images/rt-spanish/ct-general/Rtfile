@@ -25,16 +25,7 @@ to which you can pass the identifiers used in this Rtfile. Example:
 # Options:
 # * :merge_record_ids_into_idml: imports all folio files and merges record ids where idml exists
 # * :only_use_if_idml_not_present: imports all folio files, only uses folio where idml does not exist
-setting :folio_import_strategy, :only_use_if_idml_not_present
-setting :font_leading_override, nil # This is an optional setting if a repo requires a different leading, e.g., 11.8 (float number)
-setting :font_name_override, nil # This is an optional setting if a repo requires a different font, e.g., 'Times New Roman'
-setting :font_size_override, nil # This is an optional setting if a repo requires a different font size. Valid settings: 10,11,12 (integer)
-setting :is_primary_repo, false
-setting :language_code_2_chars, 'es' # See iso 639-1 for a list of all two character language codes
-setting :language_code_3_chars, 'spn'
 setting :pdf_export_header_text, 'PDF header text'
-setting :pdf_export_version_control_page, false
-setting :primary_repo_lang_code, 'eng'
 setting :relative_path_to_primary_content_type, '../../rt-english/ct-general'
 
 # Base directories
@@ -87,9 +78,6 @@ base_dir :subtitle_tagging_import_dir, File.expand_path("subtitle_tagging_import
 # * --file-selector=validation_report.txt
 # * --file-selector=all_files
 
-file_selector :all_files, '**/*'
-file_selector :validation_report_file, 'validation_report.txt' # use with blank file_extension!
-
 # File extensions
 # ---------------
 
@@ -107,37 +95,12 @@ file_selector :validation_report_file, 'validation_report.txt' # use with blank 
 # * --file-extension=.{at,csv,json,md,txt}
 # * --file-extension=repositext_extensions
 
-file_extension :at_extension, '.at'
-file_extension :csv_extension, '.csv'
-file_extension :docx_extension, '.docx'
-file_extension :html_extension, '.html'
-file_extension :icml_extension, '.icml'
-file_extension :idml_extension, '.idml'
-file_extension :json_extension, '.json'
-file_extension :pt_extension, '.md'
-file_extension :repositext_extensions, '.{at,csv,html,json,md,txt}'
-file_extension :txt_extension, '.txt'
-file_extension :xml_extension, '.xml'
-
 # Kramdown Parsers
 # ----------------
 
 # Provide a name and a Parser's class name as string.
 
-kramdown_parser :folio_xml, 'Kramdown::Parser::Folio'
-kramdown_parser :idml, 'Kramdown::Parser::Idml'
-kramdown_parser :idml_validation, 'Kramdown::Parser::IdmlValidation'
-kramdown_parser :kramdown, 'Kramdown::Parser::KramdownRepositext'
-kramdown_parser :kramdown_validation, 'Kramdown::Parser::KramdownValidation'
-
 # Kramdown Converter Methods
 # --------------------------
 
 # Provide a name and a method name to be used for conversion.
-
-kramdown_converter_method :to_at, :to_kramdown
-kramdown_converter_method :to_html_doc, :to_html_doc
-kramdown_converter_method :to_icml, :to_icml
-kramdown_converter_method :to_plain_text, :to_plain_text
-kramdown_converter_method :to_subtitle, :to_subtitle
-kramdown_converter_method :to_subtitle_tagging, :to_subtitle_tagging

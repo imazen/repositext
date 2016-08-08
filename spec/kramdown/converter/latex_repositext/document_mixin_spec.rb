@@ -38,6 +38,11 @@ module Kramdown
               "\\emph{W\\RtSmCapsEmulation{ORD} W\\RtSmCapsEmulation{ORD} W\\RtSmCapsEmulation{ORD} W\\RtSmCapsEmulation{ORD}, W\\RtSmCapsEmulation{ORD} W\\RtSmCapsEmulation{ORD} W\\RtSmCapsEmulation{ORD} W\\RtSmCapsEmulation{ORD} W\\RtSmCapsEmulation{ORD} W\\RtSmCapsEmulation{ORD} W\\RtSmCapsEmulation{ORD} W\\RtSmCapsEmulation{ORD} W\\RtSmCapsEmulation{ORD} W\\RtSmCapsEmulation{ORD} W\\RtSmCapsEmulation{ORD} W\\RtSmCapsEmulation{ORD}}",
               "\\emph{W\\RtSmCapsEmulation{ORD} W\\RtSmCapsEmulation{ORD} W\\RtSmCapsEmulation{ORD}…\\RtSmCapsEmulation{}\\RtSmCapsEmulation{}\\RtSmCapsEmulation{}\\RtSmCapsEmulation{}\\RtSmCapsEmulation{}\\RtSmCapsEmulation{}\\RtSmCapsEmulation{}\\RtSmCapsEmulation{}\\RtSmCapsEmulation{}\\RtSmCapsEmulation{}\\RtSmCapsEmulation{}\\RtSmCapsEmulation{}\\RtSmCapsEmulation{}}"
             ],
+            [
+              "A Word Wording Word \nWord Word Word Word",
+              "\\emph{A W\\RtSmCapsEmulation{ORD} W\\RtSmCapsEmulation{ORDING} W\\RtSmCapsEmulation{ORD} \\linebreak\nW\\RtSmCapsEmulation{ORD} W\\RtSmCapsEmulation{ORD} W\\RtSmCapsEmulation{ORD} W\\RtSmCapsEmulation{ORD}}",
+              "\\emph{A W\\RtSmCapsEmulation{ORD} W\\RtSmCapsEmulation{ORDING} W\\RtSmCapsEmulation{ORD}…\\RtSmCapsEmulation{}\\RtSmCapsEmulation{}\\RtSmCapsEmulation{}\\RtSmCapsEmulation{}}"
+            ],
           ].each do |(title_plain_text, title_latex, xpect)|
             it "truncates #{ title_latex.inspect }" do
               converter = LatexRepositextPlain.send(:new, '_', {})
@@ -51,7 +56,6 @@ module Kramdown
             end
           end
         end
-
       end
     end
   end

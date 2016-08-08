@@ -152,42 +152,6 @@ class Repositext
         # set to 644
       end
 
-      # Insert a record_mark into each content AT file that doesn't contain one
-      # already
-      def fix_insert_record_mark_into_all_at_files(options)
-        # lambda that converts filename to corresponding filename in primary repo
-        # Default option works when working on content AT files.
-        filename_proc = (
-          options['filename_proc'] || lambda { |filename|
-            Repositext::Utils::CorrespondingPrimaryFileFinder.find(
-              filename: filename,
-              language_code_3_chars: config.setting(:language_code_3_chars),
-              content_type_dir: config.base_dir(:content_type_dir),
-              relative_path_to_primary_content_type: config.setting(:relative_path_to_primary_content_type),
-              primary_repo_lang_code: config.setting(:primary_repo_lang_code)
-            )
-          }
-        )
-        Repositext::Cli::Utils.change_files_in_place(
-          config.compute_glob_pattern(
-            options['base-dir'] || :content_dir,
-            options['file-selector'] || :all_files,
-            options['file-extension'] || :at_extension
-          ),
-          options['file_filter'],
-          "Inserting record_marks into AT files",
-          options
-        ) do |contents, filename|
-          corresponding_primary_filename = filename_proc.call(filename)
-          outcome = Repositext::Fix::InsertRecordMarkIntoAllAtFiles.fix(
-            contents,
-            filename,
-            corresponding_primary_filename
-          )
-          [outcome]
-        end
-      end
-
       def fix_normalize_editors_notes(options)
         Repositext::Cli::Utils.change_files_in_place(
           # Don't set default file_spec since this gets called both in folio

@@ -87,13 +87,13 @@ class Repositext
 
       describe '.images_folder' do
         it 'returns the correct value' do
-          Test.images_folder.must_match(/repositext\/spec\/git_test\/repo_images\z/)
+          Test.images_folder.must_match(/repositext(-(master|dev))?\/spec\/git_test\/repo_images\z/)
         end
       end
 
       describe '.repos_folder' do
         it 'returns the correct value' do
-          Test.repos_folder.must_match(/repositext\/spec\/git_test\/repos\z/)
+          Test.repos_folder.must_match(/repositext(-(master|dev))?\/spec\/git_test\/repos\z/)
         end
       end
 

@@ -54,7 +54,7 @@ module Kramdown
           end
           if el.has_class?('line_break')
             # Insert a line break, ignore anything inside the em
-            before << '\\linebreak\n'
+            before << "\\linebreak\n"
             inner_text = ''
           end
           if el.has_class?('pn')
@@ -118,7 +118,9 @@ module Kramdown
           l_title = l_title.gsub(
             /(?<=\\textsuperscript\{)([^\}]+)(?=\})/, "\\textscale{0.7}{" + '\1}'
           )
-          "\\begin{RtTitle}\n#{ l_title }\n\\end{RtTitle}"
+          # NOTE: We insert a percent sign immediately after l_title to prevent trailing whitespace
+          # which would break the centering of the text.
+          "\\begin{RtTitle}%\n#{ l_title }%\n\\end{RtTitle}"
         when 2
           # render in RtTitle2 environment
           l_title = inner(el, opts)
@@ -146,6 +148,16 @@ module Kramdown
           after = ''
           inner_text = nil
 
+          if el.has_class?('first_par')
+            # render in RtFirstPar environment
+            before << "\\begin{RtFirstPar}\n"
+            after << "\n\\end{RtFirstPar}"
+          end
+          if el.has_class?('indent_for_eagle')
+            # render in RtIndentForEagle environment
+            before << "\\begin{RtIndentForEagle}\n"
+            after << "\n\\end{RtIndentForEagle}"
+          end
           if el.has_class?('id_paragraph')
             # render in RtIdParagraph environment
             before << "\\begin{RtIdParagraph}\n"
@@ -159,9 +171,9 @@ module Kramdown
             # differentiate between primary and non-primary content_types
             if !@options[:is_primary_repo]
               # add space between title and date code
-              inner_text.gsub!(/ [[:alpha:]]{3}\d{2}\-\d{4}/, '\\hspace{2 mm}\0')
+              inner_text.gsub!(/ [[:alpha:]]{3}\d{2}\-\d{4}/, "\\" + 'hspace{2 mm}\0')
               # make date code smaller
-              inner_text.gsub!(/(?<= )[[:alpha:]]{3}\d{2}\-\d{4}.*/, '\textscale{0.8}{\0}')
+              inner_text.gsub!(/(?<= )[[:alpha:]]{3}\d{2}\-\d{4}.*/, "\\" + 'textscale{0.8}{\0}')
             end
           end
           if el.has_class?('id_title2')
@@ -170,8 +182,14 @@ module Kramdown
             after << "\n\\end{RtIdTitle2}"
           end
           if el.has_class?('normal')
+            # render in RtNormal environment
+            before << "\\begin{RtNormal}\n"
+            after << "\n\\end{RtNormal}"
           end
           if el.has_class?('normal_pn')
+            # render in RtNormal environment
+            before << "\\begin{RtNormal}\n"
+            after << "\n\\end{RtNormal}"
           end
           if el.has_class?('omit')
             # render in RtOmit environment
@@ -190,9 +208,15 @@ module Kramdown
             after << "\n\\end{RtScr}"
           end
           if el.has_class?('song')
-           # render in RtSong environment
+            # render in RtSong environment
             before << "\\begin{RtSong}\n"
             after << "\n\\end{RtSong}"
+          end
+          if el.has_class?('song_break')
+            # render in RtSong(Break) environment
+            latex_env = apply_song_break_class ? 'RtSongBreak' : 'RtSong'
+            before << "\\begin{#{ latex_env }}\n"
+            after << "\n\\end{#{ latex_env }}"
           end
           if el.has_class?('stanza')
            # render in RtStanza environment
@@ -240,6 +264,10 @@ module Kramdown
       end
 
     protected
+
+      def apply_song_break_class
+        true
+      end
 
       # Temporary placeholder for gap_mark number and text
       def tmp_gap_mark_complete
@@ -302,7 +330,7 @@ module Kramdown
             )
             ( #  This will be colored red
               #{ Repositext::ELIPSIS }? # optional elipsis
-              [[:alpha:][:digit:]’\-\?]+ # words
+              [[:alpha:][:digit:]’\-\?,]+ # words and some punctuation
             )
           /x,
           # we move the tmp_gap_mark_number to the very beginning so that if we
@@ -314,6 +342,9 @@ module Kramdown
           # OPTIMIZATION: We could skip the first \RtGapMarkText if \1 is blank
           tmp_gap_mark_number + "\\RtGapMarkText" + '{\1}' + '\2' + "\\RtGapMarkText" + '{\3}'
         )
+        # If in the gap_mark processing above regex ref \1 is empty, we end up
+        # with empty `\RtGapMarkText{}` fragments. We remove them in this step:
+        lb.gsub!("\\RtGapMarkText{}", '')
         # Move tmp_gap_mark_number to outside of quotes, parentheses and brackets
         if !['', nil].include?(tmp_gap_mark_number)
           gap_mark_number_regex = Regexp.new(Regexp.escape(tmp_gap_mark_number))
@@ -331,8 +362,18 @@ module Kramdown
               )
               #{ gap_mark_number_regex } # find tmp gap mark number
             /x,
-            "\\RtGapMarkNumber" + '\1' # Reverse order
+            tmp_gap_mark_number + '\1' # Reverse order
           )
+          # Move tmp_gap_mark_number to after leading eagle
+          lb.gsub!(
+            /
+              (#{ gap_mark_number_regex }) # capture group for tmp gap mark number
+               # followed by eagle
+            /x,
+            '\1' # Reverse order
+          )
+          # Convert tmp_gap_mark_number to latex command
+          lb.gsub!(gap_mark_number_regex, "\\RtGapMarkNumber")
         end
         # Make sure no tmp_gap_marks are left
         if(ltgm = lb.match(/.{0,10}#{ Regexp.escape(tmp_gap_mark_text) }.{0,10}/))
@@ -349,13 +390,7 @@ module Kramdown
         # NOTE: Do this after processing gap_marks
         lb.gsub!(
           /
-            ( # first capture group
-              ^ # beginning of line
-              # NOTE we do not expect any subtitle marks in latex
-              (?: # non capture group
-                #{ Regexp.escape("\\RtGapMarkText{}") }
-              )? # optional
-            )
+            ^ # beginning of line
              # eagle
             \s* # zero or more whitespace chars
             ( # second capture group
@@ -363,7 +398,7 @@ module Kramdown
             )
             (?!$) # not followed by line end
           /x,
-          '\1' + "\\RtFirstEagle " + '\2' # we use an environment for first eagle
+          "\\RtFirstEagle " + '\1' # we use an environment for first eagle
         )
         lb.gsub!(
           /
@@ -398,11 +433,34 @@ module Kramdown
         no_break_following_chars = Regexp.escape(
           [Repositext::S_QUOTE_CLOSE, Repositext::D_QUOTE_CLOSE, ')?,!'].join
         )
-        # We only want to allow linebreak after line_breakable_chars so we insert \nolinebreak before.
-        # TODO: Move the Editor and Translator abbreviation exceptions to the langauge class.
+        # We only want to allow linebreak _after_ line_breakable_chars but not _before_.
+        # We insert a \\nolinebreak to prevent linebreaks _before_.
+        # Excpetions: no_break_following_chars or ed_and_trn_abbreviations
         lb.gsub!(
-          /([#{ line_breakable_chars }])(?!([#{ no_break_following_chars }]|(ed\.|n\.d\.t\.)))/i,
-          "\\nolinebreak[4]"+'\1'+"\\hspace{0pt}"
+          /
+            (
+              [#{ line_breakable_chars }]
+            )
+            (?!
+              (
+                [#{ no_break_following_chars }]
+                |
+                #{ options[:ed_and_trn_abbreviations] }
+              )
+            )
+          /ix,
+          "\\nolinebreak[4]" + '\1' + "\\hspace{0pt}"
+        )
+        # We don't allow linebreaks _before_ or _after_ an emdash when followed 
+        # by some abbreviations.
+        lb.gsub!(
+          /
+            #{ Repositext::EM_DASH }
+            (
+              #{ options[:ed_and_trn_abbreviations] }
+            )
+          /ix,
+          "\\nolinebreak[4]" + Repositext::EM_DASH + "\\nolinebreak[4]" + '\1'
         )
         # Convert any zero-width spaces to latex equivelant
         lb.gsub!(/\u200B/, "\\hspace{0pt}")

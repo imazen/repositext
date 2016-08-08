@@ -35,8 +35,12 @@ class Repositext
       end
 
       # Extracts a 4-digit product identity id from filename
-      def extract_product_identity_id
-        basename.match(/(?<=_)\d{4}(?=\.)/).to_s
+      def extract_product_identity_id(include_leading_zeroes = true)
+        r = basename.match(/(?<=_)\d{4}(?=\.)/).to_s
+        if !include_leading_zeroes
+          r.sub!(/\A0+/, '')
+        end
+        r
       end
 
       # Extracts a 2-digit year from filename

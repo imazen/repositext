@@ -6,7 +6,7 @@ class Repositext
     #
     # 1. Repositext applies all corrections that can be done automatically
     #    (based on exact text matches).
-    # 2. A human editor applies manual corrections where no or multiple extact
+    # 2. A human editor applies manual corrections where no or multiple exact
     #    matches are found. The script opens each file in an editor to speed up
     #    the manual task.
     #

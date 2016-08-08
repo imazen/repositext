@@ -46,23 +46,23 @@ class Repositext
       all_repo_paths(repo_set).map{ |e| Repository.new(e) }
     end
 
-    # Returns an array of paths to all repos in repo_set
-    # @param repo_set [Symbol, Array<String>] A symbol describing a predefined
+    # Returns an array of paths to all repos in repo_set_spec
+    # @param repo_set_spec [Symbol, Array<String>] A symbol describing a predefined
     #     group of repos, or an Array with specific repo names as strings.
-    def all_repo_paths(repo_set)
-      compute_repo_paths(repo_set)
+    def all_repo_paths(repo_set_spec)
+      compute_repo_paths(repo_set_spec)
     end
 
     # Clones all git repos that don't exist on local filesystem yet.
-    # @param repo_set [Symbol, Array<String>] A symbol describing a predefined
+    # @param repo_set_spec [Symbol, Array<String>] A symbol describing a predefined
     #     group of repos, or an Array with specific repo names as strings.
     # @example Clone all language repos
     #   # cd into primary repo root folder
     #   # run `bundle console`
     #   repository_set = Repositext::RepositorySet.new('/path/to/repos/parent/folder')
     #   repository_set.git_clone_missing_repos(:all_content_repos)
-    def git_clone_missing_repos(repo_set)
-      compute_repo_paths(repo_set).each { |repo_path|
+    def git_clone_missing_repos(repo_set_spec)
+      compute_repo_paths(repo_set_spec).each { |repo_path|
         repo_name = repo_path.split('/').last
         if File.exists?(repo_path)
           puts " -   Skipping #{ repo_name }"
@@ -87,14 +87,14 @@ class Repositext
     # * They are on master branch
     # * They have no uncommitted changes
     # * They pulled latest from origin
-    # @param repo_set [Symbol, Array<String>] A symbol describing a predefined
+    # @param repo_set_spec [Symbol, Array<String>] A symbol describing a predefined
     #     group of repos, or an Array with specific repo names as strings.
     # @param block [Proc, optional] will be called for each repo.
     # @return [Hash] with repos that are not ready. Keys are repo paths, values
     #     are arrays with issue messages if any exist.
-    def git_ensure_repos_are_ready(repo_set)
+    def git_ensure_repos_are_ready(repo_set_spec)
       repos_with_issues = {}
-      compute_repo_paths(repo_set).each { |repo_path|
+      compute_repo_paths(repo_set_spec).each { |repo_path|
         if block_given?
           yield(repo_path)
         end
@@ -127,10 +127,10 @@ class Repositext
     end
 
     # Pulls all repos
-    # @param repo_set [Symbol, Array<String>] A symbol describing a predefined
+    # @param repo_set_spec [Symbol, Array<String>] A symbol describing a predefined
     #     group of repos, or an Array with specific repo names as strings.
-    def git_pull(repo_set)
-      compute_repo_paths(repo_set).each { |repo_path|
+    def git_pull(repo_set_spec)
+      compute_repo_paths(repo_set_spec).each { |repo_path|
         cmd = %(cd #{ repo_path } && git pull)
         Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
           exit_status = wait_thr.value
@@ -145,11 +145,11 @@ class Repositext
     end
 
     # Pushes all repos to remote_spec
-    # @param repo_set [Symbol, Array<String>] A symbol describing a predefined
+    # @param repo_set_spec [Symbol, Array<String>] A symbol describing a predefined
     #     group of repos, or an Array with specific repo names as strings.
     # @param remote_spec [String, optional] defaults to 'origin'
-    def git_push(repo_set, remote_spec = 'origin')
-      compute_repo_paths(repo_set).each { |repo_path|
+    def git_push(repo_set_spec, remote_spec = 'origin')
+      compute_repo_paths(repo_set_spec).each { |repo_path|
         cmd = %(cd #{ repo_path } && git push #{ remote_spec })
         Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
           exit_status = wait_thr.value
@@ -164,10 +164,10 @@ class Repositext
     end
 
     # Prints git_status for all repos
-    # @param repo_set [Symbol, Array<String>] A symbol describing a predefined
+    # @param repo_set_spec [Symbol, Array<String>] A symbol describing a predefined
     #     group of repos, or an Array with specific repo names as strings.
-    def git_status(repo_set)
-      compute_repo_paths(repo_set).each { |repo_path|
+    def git_status(repo_set_spec)
+      compute_repo_paths(repo_set_spec).each { |repo_path|
         puts '-' * 80
         puts "Git status for #{ repo_path }"
         FileUtils.cd(repo_path)
@@ -218,22 +218,25 @@ class Repositext
 
     # Allows running of any command (e.g., export, fix, report, validate) on
     # a repository set.
-    # @param repo_set [Symbol, Array<String>] A symbol describing a predefined
+    # @param repo_set_spec [Symbol, Array<String>] A symbol describing a predefined
     #     group of repos, or an Array with specific repo names as strings.
     # @param command_string [String] the command to run on the command line,
     #     e.g., "repositext general fix update_rtfiles_to_settings_hierarchy -g"
-    def run_repositext_command(repo_set, command_string)
+    def run_repositext_command(repo_set_spec, command_string)
       puts " - Running command `#{ command_string }`"
-      compute_repo_paths(repo_set).each { |repo_path|
-        puts "   - in #{ repo_name }"
+      compute_repo_paths(repo_set_spec).each { |repo_path|
+        puts "   - in #{ repo_path }"
         cmd = %(cd #{ repo_path } && #{ command_string })
-        Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
+        Open3.popen2e(cmd) do |stdin, stdout_err, wait_thr|
+          while line = stdout_err.gets
+            puts line
+          end
+
           exit_status = wait_thr.value
           if exit_status.success?
             puts "   - completed"
           else
-            msg = %(Could not run command in #{ repo_name }:\n\n)
-            puts(msg + stderr.read)
+            msg = %(Could not run command in #{ repo_path }!)
           end
         end
       }
@@ -287,13 +290,13 @@ class Repositext
 
   protected
 
-    # Returns collection of paths to all repos in repo_set
-    # @param repo_set [Symbol, Array<String>] A symbol describing a predefined
+    # Returns collection of paths to all repos in repo_set_spec
+    # @param repo_set_spec [Symbol, Array<String>] A symbol describing a predefined
     #     group of repos, or an Array with specific repo names as strings.
-    def compute_repo_paths(repo_set)
-      repo_names = case repo_set
+    def compute_repo_paths(repo_set_spec)
+      repo_names = case repo_set_spec
       when Array
-        repo_set
+        repo_set_spec
       when :all_content_repos
         all_content_repo_names
       when :all_repos
@@ -307,7 +310,7 @@ class Repositext
       when :test_content_repos
         all_content_repo_names.first(2)
       else
-        raise ArgumentError.new("Invalid repo_set: #{ repo_set.inspect }")
+        raise ArgumentError.new("Invalid repo_set_spec: #{ repo_set_spec.inspect }")
       end
       repo_names.map { |repo_name|
         File.join(repo_set_parent_path, repo_name)

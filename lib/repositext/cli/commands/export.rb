@@ -70,22 +70,16 @@ class Repositext
         end
       end
 
-      def export_pdf_book_bound(options)
+      def export_pdf_book(options)
         export_pdf_base(
-          'pdf_book_bound',
+          'pdf_book',
           options.merge(
             'include-version-control-info' => false,
-            'page_settings_key' => config.setting(:is_primary_repo) ? :english_bound : :foreign_bound,
-          )
-        )
-      end
-
-      def export_pdf_book_stitched(options)
-        export_pdf_base(
-          'pdf_book_stitched',
-          options.merge(
-            'include-version-control-info' => false,
-            'page_settings_key' => config.setting(:is_primary_repo) ? :english_stitched : :foreign_stitched,
+            'page_settings_key' => compute_pdf_export_page_settings_key(
+              config.setting(:is_primary_repo),
+              config.setting(:pdf_export_binding),
+              'book'
+            ),
           )
         )
       end
@@ -95,7 +89,11 @@ class Repositext
         export_pdf_base(
           'pdf_comprehensive',
           options.merge(
-            'page_settings_key' => config.setting(:is_primary_repo) ? :english_stitched : :foreign_stitched,
+            'page_settings_key' => compute_pdf_export_page_settings_key(
+              config.setting(:is_primary_repo),
+              config.setting(:pdf_export_binding),
+              'enlarged'
+            ),
           )
         )
       end
@@ -105,7 +103,11 @@ class Repositext
         export_pdf_base(
           'pdf_plain',
           options.merge(
-            'page_settings_key' => config.setting(:is_primary_repo) ? :english_stitched : :foreign_stitched,
+            'page_settings_key' => compute_pdf_export_page_settings_key(
+              config.setting(:is_primary_repo),
+              config.setting(:pdf_export_binding),
+              'enlarged'
+            ),
           )
         )
       end
@@ -116,8 +118,14 @@ class Repositext
         export_pdf_base(
           'pdf_recording',
           options.merge(
+            :add_title_to_filename => true,
+            :rename_file_extension => '.recording.pdf',
             :skip_file_proc => skip_file_proc,
-            'page_settings_key' => config.setting(:is_primary_repo) ? :english_stitched : :foreign_stitched,
+            'page_settings_key' => compute_pdf_export_page_settings_key(
+              config.setting(:is_primary_repo),
+              config.setting(:pdf_export_binding),
+              'enlarged'
+            ),
           )
         )
       end
@@ -149,10 +157,16 @@ class Repositext
         export_pdf_base(
           'pdf_recording_merged',
           options.merge(
+            add_title_to_filename: true,
+            rename_file_extension: '.recording_merged.pdf',
             skip_file_proc: skip_file_proc,
             pre_process_content_proc: pre_process_content_proc,
             post_process_latex_proc: post_process_latex_proc,
-            'page_settings_key' => config.setting(:is_primary_repo) ? :english_stitched : :foreign_stitched,
+            'page_settings_key' => compute_pdf_export_page_settings_key(
+              config.setting(:is_primary_repo),
+              config.setting(:pdf_export_binding),
+              'enlarged'
+            ),
           )
         )
       end
@@ -161,7 +175,11 @@ class Repositext
         export_pdf_base(
           'pdf_translator',
           options.merge(
-            'page_settings_key' => config.setting(:is_primary_repo) ? :english_stitched : :foreign_stitched,
+            'page_settings_key' => compute_pdf_export_page_settings_key(
+              config.setting(:is_primary_repo),
+              config.setting(:pdf_export_binding),
+              'enlarged'
+            ),
           )
         )
       end
@@ -171,7 +189,11 @@ class Repositext
           'pdf_web',
           options.merge(
             'include-version-control-info' => false,
-            'page_settings_key' => config.setting(:is_primary_repo) ? :english_stitched : :foreign_stitched,
+            'page_settings_key' => compute_pdf_export_page_settings_key(
+              config.setting(:is_primary_repo),
+              config.setting(:pdf_export_binding),
+              'enlarged'
+            ),
           )
         )
       end
@@ -185,17 +207,29 @@ class Repositext
         input_file_selector = config.compute_file_selector(options['file-selector'] || :all_files)
         input_file_extension = config.compute_file_extension(options['file-extension'] || :at_extension)
         output_base_dir = options['output'] || config.base_dir(:pdf_export_dir)
+        primary_config = content_type.corresponding_primary_content_type.config
         options = options.merge({
           additional_footer_text: options['additional-footer-text'],
-          first_eagle_override: config.setting(:first_eagle_override, false),
-          font_leading_override: config.setting(:font_leading_override, false),
-          font_name_override: config.setting(:font_name_override, false),
-          font_size_override: config.setting(:font_size_override, false),
+          company_long_name: config.setting(:company_long_name),
+          company_phone_number: config.setting(:company_phone_number),
+          company_short_name: config.setting(:company_short_name),
+          company_web_address: config.setting(:company_web_address),
+          id_address_primary_latex_1: config.setting(:pdf_export_id_address_primary_latex_1,false),
+          id_address_primary_latex_2: config.setting(:pdf_export_id_address_primary_latex_2,false),
+          id_address_secondary_latex_1: config.setting(:pdf_export_id_address_secondary_latex_1,false),
+          id_address_secondary_latex_2: config.setting(:pdf_export_id_address_secondary_latex_2,false),
+          id_address_secondary_latex_3: config.setting(:pdf_export_id_address_secondary_latex_3,false),
+          id_write_to_primary: config.setting(:pdf_export_id_write_to_primary,false),
+          id_write_to_secondary: config.setting(:pdf_export_id_write_to_secondary,false),
           is_primary_repo: config.setting(:is_primary_repo),
           language_code_2_chars: config.setting(:language_code_2_chars),
           language_code_3_chars: config.setting(:language_code_3_chars),
+          language_name: content_type.language.name,
+          paragraph_number_font_name: config.setting(:pdf_export_paragraph_number_font_name),
+          primary_font_name: primary_config.setting(:pdf_export_font_name),
           version_control_page: options['include-version-control-info'],
         })
+        primary_titles = compute_primary_titles # hash with date codes as keys and primary titles as values
         Repositext::Cli::Utils.export_files(
           input_base_dir,
           input_file_selector,
@@ -203,18 +237,33 @@ class Repositext
           output_base_dir,
           options['file_filter'],
           "Exporting AT files to #{ variant }",
-          options
-        ) do |contents, filename|
+          options.merge(
+            use_new_repositext_file_api: true,
+            content_type: content_type,
+          )
+        ) do |content_at_file|
+          contents = content_at_file.contents
+          filename = content_at_file.filename
           config.update_for_file(filename.gsub(/\.at\z/, '.data.json'))
-          options[:source_filename] = filename
+          options[:ed_and_trn_abbreviations] = config.setting(:pdf_export_ed_and_trn_abbreviations)
+          options[:first_eagle] = config.setting(:pdf_export_first_eagle)
+          options[:font_leading] = config.setting(:pdf_export_font_leading)
+          options[:font_name] = config.setting(:pdf_export_font_name)
+          options[:font_size] = config.setting(:pdf_export_font_size)
+          options[:footer_title_english] = primary_titles[content_at_file.extract_product_identity_id(false)]
           options[:header_text] = config.setting(:pdf_export_header_text)
+          options[:hrules_present] = config.setting(:pdf_export_hrules_present)
+          options[:id_copyright_year] = config.setting(:erp_id_copyright_year,false)
+          options[:title_font_name] = config.setting(:pdf_export_title_font_name)
+          options[:title_vspace] = config.setting(:pdf_export_title_vspace)
+          if options[:pre_process_content_proc]
+            contents = options[:pre_process_content_proc].call(contents, filename, options)
+          end
           if options[:skip_file_proc] && options[:skip_file_proc].call(contents, filename)
             $stderr.puts " - Skipping #{ filename } - matches options[:skip_file_proc]"
             next([Outcome.new(true, { contents: nil })])
           end
-          if options[:pre_process_content_proc]
-            contents = options[:pre_process_content_proc].call(contents, filename, options)
-          end
+          options[:source_filename] = filename
           # Since the kramdown parser is specified as module in Rtfile,
           # I can't use the standard kramdown API:
           # `doc = Kramdown::Document.new(contents, :input => 'kramdown_repositext')`
@@ -243,6 +292,42 @@ class Repositext
         end
         # Run pdf export validation after PDFs have been exported
         validate_pdf_export(options)
+
+        # Add title to filename after validations have run (validations require
+        # conventional filenames)
+        if options[:add_title_to_filename]
+          sanitized_primary_titles = primary_titles.inject({}) { |m, (pid, title)|
+            # sanitize titles: remove anything other than letters or numbers,
+            # collapse whitespace and replace with underscore.
+            # We also zero pad product_identity_ids to 4 digits.
+            m[pid.rjust(4, '0')] = title.downcase
+                          .strip
+                          .gsub(/[^a-z\d\s]/, '')
+                          .gsub(/\s+/, '_')
+            m
+          }
+          file_rename_proc = Proc.new { |input_filename|
+            r_file_stub = RFile::Content.new('_', Language.new, input_filename)
+            product_identity_id = r_file_stub.extract_product_identity_id
+            title = sanitized_primary_titles[product_identity_id]
+            # insert title into filename
+            # Regex contains negative lookahead to make sure product identity id
+            # is not followed by title already to avoid duplicate insertion of titles
+            input_filename.sub(
+              /_#{ product_identity_id }\.(?!\-\-)/,
+              "_#{ product_identity_id }.--#{ title }--.",
+            )
+          }
+          distribute_add_title_to_filename(
+            {
+              :input_base_dir => config.compute_base_dir(:pdf_export_dir),
+              :input_file_selector => config.compute_file_selector(options['file-selector']),
+              :input_file_extension => options[:rename_file_extension],
+              :file_rename_proc => file_rename_proc,
+              'file_filter' => options['file_filter'] || /\A((?!.--).)*\z/, # doesn't contain title already
+            }
+          )
+        end
       end
 
       # Export AT files in /content to plain kramdown (no record_marks,
@@ -417,6 +502,26 @@ class Repositext
 
     private
 
+      # Returns the page_settings_key to use
+      # @param is_primary_repo [Boolean]
+      # @param binding [String] 'stitched' or 'bound'
+      # @param size [String] 'book' or 'enlarged'
+      # @return [Symbol], e.g., :english_stitched, or :foreign_bound
+      def compute_pdf_export_page_settings_key(is_primary_repo, binding, size)
+        if !%w[bound stitched].include?(binding)
+          raise ArgumentError.new("Invalid binding: #{ binding.inspect }")
+        end
+        if !%w[book enlarged].include?(size)
+          raise ArgumentError.new("Invalid size: #{ size.inspect }")
+        end
+        [
+          (is_primary_repo ? 'english' : 'foreign'),
+          (
+            (!is_primary_repo && 'enlarged' == size) ? 'stitched' : binding
+          ), # always use stitched for foreign enlarged
+        ].join('_').to_sym
+      end
+
       def convert_at_string_to_plain_markdown(txt)
         # Remove AT specific tokens
         Suspension::TokenRemover.new(
@@ -427,8 +532,7 @@ class Repositext
 
       def export_pdf_variants
         %w[
-          pdf_book_bound
-          pdf_book_stitched
+          pdf_book
           pdf_comprehensive
           pdf_plain
           pdf_recording
@@ -436,6 +540,11 @@ class Repositext
           pdf_translator
           pdf_web
         ]
+      end
+
+      # Returns a hash with English titles as values and date code as keys
+      def compute_primary_titles
+        raise "Implement me in sub-class"
       end
 
     end

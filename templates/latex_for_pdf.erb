@@ -1,3 +1,4 @@
+\mag=<%= @magnification %> % geometry package magnification
 \documentclass[<%= @font_size %>pt, twoside, openright]{book}
 
 % NOTE: in latex, bp is equivalent to PS points in other programs. A latex
@@ -6,20 +7,13 @@
 % nag to be alerted of syntax issues
 \usepackage{nag}
 
-% set rt specific relative point, to be used for all point based lengths that
-% should be relative to font size.
-\newlength{\RtRelPt}
-\setlength{\RtRelPt}{<%= @scale_factor %>pt}
-
 % conditionally apply CJK package for chinese
 <% if @use_cjk_package %>
   \usepackage[AutoFakeBold=true]{xeCJK}[2011/05/20]
   \setCJKmainfont{<%= @font_name %>}
 <% end %>
 
-% fixltx2e to support \textsubscript command
-\usepackage{fixltx2e}
-
+% so we can render first eagle as drop cap
 \usepackage{lettrine}
 
 % sets the language specific linebreaking
@@ -36,59 +30,68 @@
 \newfontfamily\rtmainfont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @font_name %>}
 
 <% if @polyglossia_default_language %>
-  % Some languages require this package for correct font rendering
+  % This language requires polyglossia for correct font rendering
   \usepackage{polyglossia}
   \setdefaultlanguage{<%= @polyglossia_default_language %>}
 <% end %>
 
-% leading to set leading for document
+% set leading for document
 \usepackage{leading}
 
-% needspace to make sure there is no page break in id paragraphs at the end
+% make sure there is no page break in id paragraphs at the end
 \usepackage{needspace}
 
-% relsize to set font size relative to base font size
+% set font size relative to base font size
 \usepackage{relsize}
   % forces relsize to scale by the set percentage
   \renewcommand\RSpercentTolerance{0}
   \renewcommand\RSlargest{50pt}
   \renewcommand\RSsmallest{6pt}
 
-% setspace to ensure single line spacing is used
+% ensure single line spacing is used
 \usepackage[singlespacing]{setspace}
 
-% xcolor to color text
+% for coloring text
 \usepackage[svgnames]{xcolor}
 
 % package and command dependency boundary
 
-% changepage to indent paragraphs via adjustwidth
-\usepackage{changepage}
+% NOTE: JH jul 5, 2016 I didn't find any references to adjustwidth. Delete after Aug 2016
+% indent paragraphs via adjustwidth
+% \usepackage{changepage}
 
-% fancyhdr for custom headers and footers
+% for custom headers and footers
 \usepackage{fancyhdr}
-\setlength{\headheight}{14\RtRelPt}
-\newcommand{\RtDoubleHRule}{
+\setlength{\headheight}{14pt}
+\newcommand{\RtDoubleHRule}{%
   \begin{minipage}{\textwidth}
-  \hrule width \hsize height 0.2\RtRelPt
-  \kern 1.6\RtRelPt
-  \hrule width \hsize height 0.2\RtRelPt
+    \hrule width \hsize height 0.19pt
+    \kern 1.6pt
+    \hrule width \hsize height 0.19pt
   \end{minipage}
 }
-\newcommand{\RtFooterContent}{
+\newcommand{\RtFooterContent}{%
   <% if @include_meta_info %>
-    \fancyfoot[L]{<%= @date_code %>} % outside
-    \fancyfoot[C]{<%= @truncated_title_footer %>} % center
+    \fancyfoot[L]{\textscale{0.73}{<%= @date_code %>}} % outside
+    \fancyfoot[C]{\textscale{0.73}{<%= @footer_title %>}} % center
     \fancyfoot[R]{\textscale{0.67}{<%= @additional_footer_text %> Rev. <%= @latest_commit_hash %>}} % inside
   <% end %>
 }
 
-% specify pagestyle
-\fancypagestyle{RtPageStyle}{
+% redefine fancyhdr's headrule command to insert negative \vspace before \hrule
+% to bring lower hrule closer to header text.
+\makeatletter
+\renewcommand{\headrule}{{\if@fancyplain\let\headrulewidth\plainheadrulewidth\fi
+    \vspace*{-0.125pt}\hrule\@height\headrulewidth\@width\headwidth \vskip-\headrulewidth}}
+\makeatother
+
+% specify regular pagestyle
+\fancypagestyle{RtPageStyle}{%
   \fancyhf{}
   \fancyhfoffset[LE]{0mm}
-  <% if @is_primary_repo %>
+  <% if @hrules_present %>
     % single line in header (default)
+    \renewcommand{\headrulewidth}{0.19pt}
     % double line in footer
     \renewcommand{\footrule}{\RtDoubleHRule\par}
   <% else %>
@@ -96,7 +99,7 @@
     \renewcommand{\headrulewidth}{0mm}
     % no line in footer (default)
   <% end %>
-  \fancyhead[EL,OR]{<%= @page_number_command %>} % outside
+  \fancyhead[EL,OR]{<%= "\\hrule height 0.19\pt \\kern 0.33\pt"  if @hrules_present %><%= @page_number_command %>} % outside
   \fancyhead[ER]{<%= @header_text %>} % inside even
   \fancyhead[OL]{<%= @header_title %>} % inside odd
   \RtFooterContent
@@ -104,10 +107,10 @@
 \pagestyle{RtPageStyle} % apply custom pagestyle
 
 % override pagestyle for first page
-\fancypagestyle{RtFirstPageStyle}{
+\fancypagestyle{RtFirstPageStyle}{%
   \fancyhf{}
   \renewcommand{\headrulewidth}{0mm} % no line in header
-  <% if @is_primary_repo %>
+  <% if @hrules_present %>
     % double line in footer
     \renewcommand{\footrule}{\RtDoubleHRule\par}
   <% else %>
@@ -116,8 +119,18 @@
   \RtFooterContent
 }
 
-% geometry for custom page layout
-\usepackage[<%= @page_settings %>, includefoot, includehead]{geometry}
+% override pagestyle for id page
+% id pages do not have headers or footers
+\fancypagestyle{RtIdPageStyle}{%
+  \fancyhf{}
+  % no line in header
+  \renewcommand{\headrulewidth}{0mm}
+  % no line in footer (default)
+  \renewcommand{\footrule}{}
+}
+
+% for custom page layout
+\usepackage[<%= @page_settings %>]{geometry}
 \setlength{\marginparwidth}{0pt}
 
 % prevent hyphenation
@@ -126,15 +139,170 @@
 \usepackage[none]{hyphenat}
 \sloppy
 
-% layout for showing layout parameters in document (using \layout{} command)
-\usepackage{layout}
+% for showing layout parameters on separate page in document
+% (uncomment next line and the \layout{} command inside document)
+% \usepackage{layout}
 
-% showframe to display layout boundaries in the document on every page.
-%\usepackage{showframe}
+% uncomment this to display layout boundaries in the document on every page.
+% \usepackage{showframe}
+
+% command to render the first line of the primary address
+\newcommand{\RtIdAddressPrimaryFirst}
+  {%
+    <% if @id_address_primary_latex_1 %>
+      <% if @is_primary_repo %>
+        \setlength{\parskip}{5.962pt}
+      <% else %>
+        \setlength{\parskip}{7.882pt}
+      <% end %>
+      \setlength{\parindent}{0pt}
+      <%= @polyglossia_default_language ? '' : '\titlefont' %>%
+      \fontsize{12pt}{14.4pt}\selectfont
+      \centering
+      <%= @id_address_primary_latex_1 %>
+      \par
+    <% end %>
+  }
+
+% command to render the second line of the primary address
+\newcommand{\RtIdAddressPrimarySecond}
+  {%
+    <% if @id_address_primary_latex_2 %>
+      \setlength{\parskip}{1.635pt}
+      \setlength{\parindent}{0pt}
+      <%= @polyglossia_default_language ? '' : '\titlefont' %>%
+      \fontsize{10pt}{12pt}\selectfont
+      \centering
+      <%= @id_address_primary_latex_2 %>
+      \par
+    <% end %>
+  }
+
+% command to render the first line of the secondary address
+\newcommand{\RtIdAddressSecondaryFirst}
+  {%
+    <% if @id_address_secondary_latex_1 %>
+      <% if @is_primary_repo %>
+        \setlength{\parskip}{5.962pt}
+      <% else %>
+        \setlength{\parskip}{7.882pt}
+      <% end %>
+      \setlength{\parindent}{0pt}
+      <%= @polyglossia_default_language ? '' : '\titlefont' %>%
+      \fontsize{12pt}{14.4pt}\selectfont
+      \centering
+      <%= @id_address_secondary_latex_1 %>
+      \par
+    <% end %>
+  }
+
+% command to render the second line of the secondary address
+\newcommand{\RtIdAddressSecondarySecond}
+  {%
+    <% if @id_address_secondary_latex_2 %>
+      \setlength{\parskip}{1.635pt}
+      \setlength{\parindent}{0pt}
+      <%= @polyglossia_default_language ? '' : '\titlefont' %>%
+      \fontsize{10pt}{12pt}\selectfont
+      \centering
+      <%= @id_address_secondary_latex_2 %>
+      \par
+    <% end %>
+  }
+
+% command to render the third line of the secondary address
+\newcommand{\RtIdAddressSecondaryThird}
+  {%
+    <% if @id_address_secondary_latex_3 %>
+      \setlength{\parskip}{1.635pt}
+      \setlength{\parindent}{0pt}
+      <%= @polyglossia_default_language ? '' : '\titlefont' %>%
+      \fontsize{10pt}{12pt}\selectfont
+      \centering
+      <%= @id_address_secondary_latex_3 %>
+      \par
+    <% end %>
+  }
+
+% environment to render id copyright line
+\newcommand{\RtIdCopyrightYear}
+  {%
+    <% if @is_primary_repo %>
+      \setlength{\parskip}{6.769pt}
+    <% else %>
+      \setlength{\parskip}{4.345pt}
+    <% end %>
+    \setlength{\parindent}{0pt}
+    \centering
+    <%= @polyglossia_default_language ? '' : '\titlefont' %>%
+    \fontsize{5.5pt}{10.5pt}\selectfont
+    ©<%= @id_copyright_year %> <%= @company_short_name %>, ALL RIGHTS RESERVED
+    \par
+  }
+
+% command to render id language line
+\newcommand{\RtIdLanguage}
+  {%
+    \setlength{\parskip}{6.786pt}
+    \setlength{\parindent}{0pt}
+    \centering
+    <%= @polyglossia_default_language ? '' : '\titlefont' %>%
+    \fontsize{5.5pt}{10.5pt}\selectfont
+    <%= @language_name.upcase %>
+    \par
+  }
+
+% command to render id web address and phone number line, the phone number is not always present
+\newcommand{\RtIdWebMaybePhone}
+  {%
+    <% if @is_primary_repo %>
+      \setlength{\parskip}{1.3935pt}
+    <% else %>
+      \setlength{\parskip}{1.3445pt}
+    <% end %>
+    \setlength{\parindent}{0pt}
+    \centering
+    <%= @polyglossia_default_language ? '' : '\titlefont' %>%
+    \fontsize{7pt}{10pt}\selectfont
+    <% if @is_primary_repo %>
+      <%= @company_phone_number %> . <%= @company_web_address %>
+      \vspace*{-1.519pt}%
+    <% else %>
+      <%= @company_web_address %>
+      \vspace*{-1.47pt}%
+    <% end %>
+  }
+
+% command to render id write to primary line
+\newcommand{\RtIdWriteToPrimary}
+  {%
+    <% if @id_write_to_primary %>
+      \setlength{\parskip}{0pt}
+      \setlength{\parindent}{0pt}
+      <%= @polyglossia_default_language ? '' : '\titlefont' %>%
+      \fontsize{8pt}{10.5pt}\selectfont
+      <%= @id_write_to_primary %>
+      \par
+    <% end %>
+  }
+
+% command to render id write to secondary line
+\newcommand{\RtIdWriteToSecondary}
+  {%
+    <% if @id_write_to_secondary %>
+      \setlength{\parskip}{0pt}
+      \setlength{\parindent}{0pt}
+      <%= @polyglossia_default_language ? '' : '\titlefont' %>%
+      \fontsize{8pt}{10.5pt}\selectfont
+      <%= @id_write_to_secondary %>
+      \par
+    <% end %>
+  }
 
 % command to render gap mark. Pass the text to be highlighted as argument.
 \newcommand{\RtGapMarkText}[1]
   {\textcolor{red}{#1}}
+
 % command to render auto gap mark number.
 \newcounter{RtGapMarkCounter}
 \setcounter{RtGapMarkCounter}{3}
@@ -144,147 +312,311 @@
       \textnormal{%
         \textsuperscript{\{\theRtGapMarkCounter\}}}}%
     \stepcounter{RtGapMarkCounter}}
+
 % command to render paragraph number. Pass the para number as argument.
 \newcommand{\RtParagraphNumber}[1]
 <% if @polyglossia_default_language %>
-  {\noindent\makebox[\parindent][l]{\raisebox{0.45ex}{{\textscale{0.67}{#1}}}}}
+  {\noindent\makebox[\parindent][l]{\raisebox{0.5ex}{{\textscale{0.655}{#1}}}}}
 <% else %>
-  {\paragraphnumberfont\noindent\makebox[\parindent][l]{\raisebox{0.45ex}{{\textscale{0.67}{#1}}}}\rtmainfont}
+  {\paragraphnumberfont\noindent\makebox[\parindent][l]{\raisebox{0.5ex}{{\textscale{0.655}{#1}}}}\rtmainfont}
 <% end %>
+
 % command to render record_mark. Pass rid as param
 \newcommand{\RtRecordMark}[1]
   {\noindent\colorbox{LightGrey}{Record#1}\par}
+
 % command to emulate lower-case small-caps chars
 \newcommand{\RtSmCapsEmulation}[1]
   {\textscale{0.7}{#1}}
+
 % command to render last eagle
+% The penalty encourages a page break. Review this to see if it is still needed since we use \clearpage in RTIdTitle1.
 \newcommand{\RtLastEagle}
-  {\hspace*{\fill}~\mbox\makebox{\raisebox{-0.5ex}}\penalty -9999}
+  {\hspace*{\fill}~\mbox{\raisebox{-0.5ex}}\penalty -9999}
 
 % enviroment to render first eagle
 \newenvironment{RtFirstEagle}
   <%= @first_eagle %>
   {}
+
 % environment to render idparagraph paragraphs
 \newenvironment{RtIdParagraph}
-  {\setlength{\parindent}{0pt}\fontsize{8\RtRelPt}{10.5\RtRelPt}}
-  {\par}
+  {%
+    <% if @is_primary_repo %>
+      \setlength{\parskip}{4.022pt}
+    <% else %>
+      \setlength{\parskip}{2.991pt}
+    <% end %>
+    \setlength{\parindent}{0pt}
+    \begin{spacing}{1.0027}
+      \fontsize{8pt}{10.5pt}\selectfont
+  }
+  {%
+    \end{spacing}
+    \par
+  }
+
 % environment to render idtitle1 paragraphs
 \newenvironment{RtIdTitle1}
-  {
-    \needspace{350\RtRelPt}
+  {%
+    \clearpage % TODO: Make this variable based off of is_primary_repo. English ids should always be on a page by themselves and foreign ids are allowed to be on the same page as content. We need to investigate how to get that to work properly in the foreign. Also set margins to always be a left hand page for primary repo.
+    \thispagestyle{RtIdPageStyle}
     \vspace*{\fill}
-    \begin{center}
-    <%= @polyglossia_default_language ? '' : '\titlefont' %>
-    \fontsize{10\RtRelPt}{12\RtRelPt}
+    \setlength{\parskip}{0pt}
+    \setlength{\parindent}{0pt}
+    \centering
+    <%= @polyglossia_default_language ? '' : '\titlefont' %>%
+    \fontsize{10pt}{10.5pt}\selectfont
   }
-  {\end{center}}
+  {%
+    \par
+  }
+
 % environment to render idtitle2 paragraphs
 \newenvironment{RtIdTitle2}
-  {
-    \par
-    \begin{center}
-    <%= @polyglossia_default_language ? '' : '\titlefont' %>
-    \fontsize{8\RtRelPt}{9.6\RtRelPt}
+  {%
+    <% if @is_primary_repo %>
+      \setlength{\parskip}{2.487pt}
+    <% else %>
+      \setlength{\parskip}{1.467pt}
+    <% end %>
+    \setlength{\parindent}{0pt}
+    \centering
+    <%= @polyglossia_default_language ? '' : '\titlefont' %>%
+    \fontsize{8pt}{10.5pt}\selectfont
   }
-  {\par\end{center}}
+  {%
+    \par
+  }
+
 % environment to render meta info
 \newenvironment{RtMetaInfo}
-  {\par\relscale{0.73}}
-  {\par}
+  {%
+    \par
+    \fontsize{8pt}{9.6pt}\selectfont
+  }
+  {%
+    \par
+  }
+
+% environment to render .first_par
+\newenvironment{RtFirstPar}
+  {%
+    \par
+    \setlength{\parskip}{0pt plus 0pt minus 0pt} % to stop the vert space between title and first paragraph from varying
+  }
+  {%
+    \par
+  }
+
+% environment to render .indent_for_eagle
+% used for increasing the indention of a .normal paragraph that follows a
+% single line paragrpah that starts the file and contians an eagle
+\newenvironment{RtIndentForEagle}
+  {%
+    \par
+    \setlength{\parindent}{22pt}
+  }
+  {%
+    \par
+  }
+
 % environment to render .normal
 \newenvironment{RtNormal}
-  {}
-  {}
-% environment to render .normal_pn
-\newenvironment{RtNormalPn}
-  {}
-  {}
+  {%
+    \par
+  }
+  {%
+    % Force a minimum length for the last line in a paragraph by limiting parfillskip
+    % to a range of 0pt to 260pt. We use `260pt _minus_ 260pt` since the shrink limit is a hard limit
+    % versus the stretch limit of `0pt _plus_ 260pt` which can be exceeded.
+    \setlength{\parfillskip}{260pt minus 260pt}
+    \par
+  }
+
 % environment to render translator omit in green
 \newenvironment{RtOmit}
   {\par\color{Green}}
   {\par}
+
 % environment to render text in the primary font
+% only used for the recording_merged export where we have foreign and english text
 \newenvironment{RtPrimaryFont}
   {\primaryfont}
   {}
+
 % environment to render questions
 \newenvironment{RtQuestion}
-  {\par\noindent\hangindent=25\RtRelPt\hangafter=1}
-  {\par}
+  {%
+    \par
+    \noindent
+    \hangindent=25pt
+    \hangafter=1
+  }
+  {%
+    \par
+  }
+
 % environment to render scr paragraphs
 \newenvironment{RtScr}
- {\par\leftskip=20\RtRelPt \rightskip=20\RtRelPt \setlength{\parindent}{8\RtRelPt}}
- {\par}
+  {%
+    \par
+    \leftskip=20.236pt
+    \rightskip=20.236pt
+    \setlength{\parindent}{7.95pt}
+  }
+  {%
+    \par
+  }
+
 % environment to render song paragraphs.
 \newenvironment{RtSong}
- {\par\leftskip=60\RtRelPt \rightskip=30\RtRelPt \setlength{\parindent}{-8\RtRelPt} \nopagebreak \setlength{\parskip}{0pt plus 0pt minus 0pt}}
- {\par}
+  {%
+    \par
+    \leftskip=60.225pt
+    \rightskip=30.112pt
+    \setlength{\parindent}{-8pt}
+    \nopagebreak
+    \setlength{\parskip}{0pt plus 0pt minus 0pt}
+  }
+  {%
+    \par
+  }
+
+% environment to render song paragraphs.
+\newenvironment{RtSongBreak}
+  {%
+    \par
+    \leftskip=60.225pt
+    \rightskip=30.112pt
+    \setlength{\parindent}{-8pt}
+    \pagebreak
+    \setlength{\parskip}{0pt plus 0pt minus 0pt}
+  }
+  {%
+    \par
+  }
+
 % environment to render split pairs in pdf_recording_merged
 \newenvironment{RtSplitPair}
-  {\begin{minipage}{\textwidth}\setlength{\parskip}{3\RtRelPt}\setlength{\parindent}{18\RtRelPt}}
-  {\end{minipage}}
+  {%
+    \begin{minipage}{\textwidth}
+      \setlength{\parskip}{3pt}
+      \setlength{\parindent}{18pt}
+  }
+  {%
+    \end{minipage}
+  }
+
 % environment to render stanza paragraphs.
 \newenvironment{RtStanza}
- {\par\leftskip=60\RtRelPt \rightskip=30\RtRelPt \setlength{\parindent}{-8\RtRelPt}}
- {\par}
-% environment to render ### header
+  {%
+    \par
+    \leftskip=60.225pt
+    \rightskip=30.112pt
+    \setlength{\parindent}{-8pt}
+  }
+  {%
+    \par
+  }
+
+% environment to render level3 header
 \newenvironment{RtSubTitle}
-  {\begin{center}<%= @polyglossia_default_language ? '' : '\titlefont' %>\relscale{1.5}}
-  {\end{center}}
-% environment to render # header
+  {%
+    \begin{center}
+      <%= @polyglossia_default_language ? '' : '\titlefont' %>
+      \fontsize{10pt}{10.5pt}\selectfont
+  }
+  {%
+    \end{center}
+  }
+
+% environment to render level1 header
 \newenvironment{RtTitle}
-  {
-    \begin{center}
-    <%= @polyglossia_default_language ? '' : '\titlefont' %>
-    \relscale{2}
-    \begin{spacing}{3}
+  {%
+    \setlength{\parindent}{0pt}
+    \begin{minipage}{\textwidth}
+      \par
+      \begingroup
+        \vspace*{-3.262pt}% sets the location of the top hrule.
+        {%
+          \color{<%= @hrules_present ? 'black' : 'white' %>}
+          \hrule width \hsize height 0.201pt
+        }
+        \vspace*{-2.975pt}% sets the spacing between the title and the top hrule.
+        \begin{center}
+          \begin{spacing}{1.2311}
+            <%= @polyglossia_default_language ? '' : '\titlefont' %>
+            \fontsize{22pt}{26.4pt}\selectfont
+            \rule[-.3\baselineskip]{0pt}{\baselineskip}% Insert strut to avoid inconsistent vertical spacing caused by different height characters.
   }
-  {
-    \end{spacing}
-    \vspace{24\RtRelPt}
-    \end{center}
+  {%
+            \rule[-.3\baselineskip]{0pt}{\baselineskip}% Insert strut to avoid inconsistent vertical spacing caused by different height characters.
+            \par
+            \vspace*{-2.73pt}% sets the spacing between the title and the bottom hrule.
+            {%
+              \color{<%= @hrules_present ? 'black' : 'white' %>}
+              \hrule width \hsize height 0.201pt
+            }
+            \setstretch{0}
+          \end{spacing}
+        \end{center}
+        \vspace*{<%= @title_vspace %>pt}% sets the spacing between the bottom hrule and start of the content.
+      \endgroup
+    \end{minipage}
   }
-% RtTitle2 font size is 16 (down from 22 of RtTitle)
+
+% environment to render level2 header
 \newenvironment{RtTitle2}
-  {
+  {%
     \begin{center}
-    <%= @polyglossia_default_language ? '' : '\titlefont' %>
-    \relscale{2}
-    \begin{spacing}{3}
+      \begin{spacing}{1.2311}
+        <%= @polyglossia_default_language ? '' : '\titlefont' %>
+        \fontsize{16pt}{19.2pt}\selectfont
   }
-  {
-    \end{spacing}
-    \vspace{24\RtRelPt}
+  {%
+      \end{spacing}
+      \vspace*{<%= @title_vspace %>pt}
     \end{center}
   }
+
 % avoid widows and orphans
 \widowpenalty=5000
 \clubpenalty=5000
 
 % set rubber value between paras for flushbottom
-\setlength{\parskip}{3\RtRelPt plus 2\RtRelPt minus 0.1\RtRelPt}
-\setlength{\parindent}{18\RtRelPt}
-\setlength{\emergencystretch}{15\RtRelPt} % to prevent lines from sticking out on the right
+\setlength{\parskip}{3pt plus 3pt minus 0.2pt}
+\setlength{\parindent}{18pt}
+\setlength{\emergencystretch}{15pt} % to prevent lines from sticking out on the right
+\setlength{\topskip}{0pt}
 
 % single spaces between sentences
 \frenchspacing
 
-\leading{<%= @font_leading %>pt} % don't use \RtRelPt here since \rescale already scales all font metrics
+\leading{<%= @font_leading %>pt}
 
 \begin{document}
 
-\relscale{<%= @scale_factor %>} % scale all fonts in document (to be able to use this template for both book and enlarged)
+  \thispagestyle{RtFirstPageStyle} % to have same header and footer on title page
 
-\thispagestyle{RtFirstPageStyle} % to have same header and footer on title page
+  <%= @body %>
+  <% if !@is_primary_repo %> 
+    \RtIdLanguage
+  <% end %>
+  \RtIdCopyrightYear
+  \RtIdWriteToSecondary
+  \RtIdAddressSecondaryFirst
+  \RtIdAddressSecondarySecond
+  \RtIdAddressSecondaryThird
+  \RtIdWriteToPrimary
+  \RtIdAddressPrimaryFirst
+  \RtIdAddressPrimarySecond
+  \RtIdWebMaybePhone
+  <%= @meta_info %>
+  <%= @version_control_page %>
 
-<%= @body %>
-
-<%= @meta_info %>
-<%= @version_control_page %>
-
-% uncomment to display two pages with layout parameters
-%\newpage
-%\layout{}
+  % uncomment to display two pages with layout parameters
+  %\newpage
+  %\layout{}
 
 \end{document}

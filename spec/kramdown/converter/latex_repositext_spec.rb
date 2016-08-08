@@ -93,7 +93,7 @@ module Kramdown
 
         [
           # color first word after gap_mark red
-          ["<<<gap-mark>>>word1 word2", "\\RtGapMarkText{}\\RtGapMarkText{word1} word2"],
+          ["<<<gap-mark>>>word1 word2", "\\RtGapMarkText{word1} word2"],
           *[
             Repositext::D_QUOTE_OPEN,
             Repositext::S_QUOTE_OPEN,
@@ -106,32 +106,38 @@ module Kramdown
             '*',
           ].map { |c|
             # skip certain chars when coloring red
-            ["<<<gap-mark>>>#{ c }word1 word2", "\\RtGapMarkText{}#{ c }\\RtGapMarkText{word1} word2"]
+            ["<<<gap-mark>>>#{ c }word1 word2", "#{ c }\\RtGapMarkText{word1} word2"]
           },
-          ["<<<gap-mark>>>word1 word2", "\\RtGapMarkText{}\\RtGapMarkText{word1} word2"], # first word after gap_mark colored red
-          ["<<<gap-mark>>>\\emph{word1 word2} word3", "\\RtGapMarkText{}\\emph{\\RtGapMarkText{word1} word2} word3"], # first word in \em after gap_mark colored red
-          ["<<<gap-mark>>>…\\emph{word1}", "\\RtGapMarkText{…\\hspace{0pt}}\\emph{\\RtGapMarkText{word1}}"], # elipsis and first word in \em after gap_mark colored red
-          ["<<<gap-mark>>> word1 word2", "\\RtGapMarkText{}\\RtFirstEagle \\RtGapMarkText{word1} word2"], # eagle followed by whitespace not red
-          ["<<<gap-mark>>>…word1 word2", "\\RtGapMarkText{…\\hspace{0pt}}\\RtGapMarkText{word1} word2"], # elipsis and first word after gap_mark colored red
-          ["<<<gap-mark>>>word1… word2", "\\RtGapMarkText{}\\RtGapMarkText{word1}…\\hspace{0pt} word2"], # elipsis after first word after gap_mark is not red
-          ["\n\n<<<gap-mark>>>\\textit{\\textbf{“word", "\n\n\\RtGapMarkText{}\\textit{\\textbf{“\\RtGapMarkText{word}"], # replace gap-marks before nested latex commands and skip chars
-          ["<<<gap-mark>>>(\\emph{others}", "\\RtGapMarkText{}(\\emph{\\RtGapMarkText{others}}"], # replace gap-marks before nested latex commands and skip chars
-          ["<<<gap-mark>>>#{ Repositext::EM_DASH }word1 word2", "\\RtGapMarkText{}#{ Repositext::EM_DASH }\\hspace{0pt}\\RtGapMarkText{word1} word2"],
-          # Insert zero width space after elipsis, em-dash, and hyphen
-          ["word1 word2#{ Repositext::ELIPSIS }word3 word4", "word1 word2#{ Repositext::ELIPSIS }\\hspace{0pt}word3 word4"],
-          ["word1 word2#{ Repositext::EM_DASH }word3 word4", "word1 word2#{ Repositext::EM_DASH }\\hspace{0pt}word3 word4"],
-          ["word1 word2-word3 word4", "word1 word2-\\hspace{0pt}word3 word4"],
+          ["<<<gap-mark>>>word1 word2", "\\RtGapMarkText{word1} word2"], # first word after gap_mark colored red
+          ["<<<gap-mark>>>\\emph{word1 word2} word3", "\\emph{\\RtGapMarkText{word1} word2} word3"], # first word in \em after gap_mark colored red
+          ["<<<gap-mark>>>…\\emph{word1}", "\\RtGapMarkText{\\nolinebreak[4]…\\hspace{0pt}}\\emph{\\RtGapMarkText{word1}}"], # elipsis and first word in \em after gap_mark colored red
+          ["<<<gap-mark>>> word1 word2", "\\RtFirstEagle \\RtGapMarkText{word1} word2"], # eagle followed by whitespace not red
+          ["<<<gap-mark>>>…word1 word2", "\\RtGapMarkText{\\nolinebreak[4]…\\hspace{0pt}}\\RtGapMarkText{word1} word2"], # elipsis and first word after gap_mark colored red
+          ["<<<gap-mark>>>word1… word2", "\\RtGapMarkText{word1}\\nolinebreak[4]…\\hspace{0pt} word2"], # elipsis after first word after gap_mark is not red
+          ["\n\n<<<gap-mark>>>\\textit{\\textbf{“word", "\n\n\\textit{\\textbf{“\\RtGapMarkText{word}"], # replace gap-marks before nested latex commands and skip chars
+          ["<<<gap-mark>>>(\\emph{others}", "(\\emph{\\RtGapMarkText{others}}"], # replace gap-marks before nested latex commands and skip chars
+          ["<<<gap-mark>>>#{ Repositext::EM_DASH }word1 word2", "\\nolinebreak[4]#{ Repositext::EM_DASH }\\hspace{0pt}\\RtGapMarkText{word1} word2"],
+          # Insert zero width space after line_breakable_chars (elipsis, em-dash, and hyphen), except when followed by sertain characters
+          ["word1 word2#{ Repositext::ELIPSIS }word3 word4", "word1 word2\\nolinebreak[4]#{ Repositext::ELIPSIS }\\hspace{0pt}word3 word4"],
+          ["word1 word2#{ Repositext::EM_DASH }word3 word4", "word1 word2\\nolinebreak[4]#{ Repositext::EM_DASH }\\hspace{0pt}word3 word4"],
+          ["word1 word2-word3 word4", "word1 word2\\nolinebreak[4]-\\hspace{0pt}word3 word4"],
+          ["word1 word2#{ Repositext::ELIPSIS }! word3 word4", "word1 word2#{ Repositext::ELIPSIS }! word3 word4"],
+          ["word1 word2#{ Repositext::EM_DASH }! word3 word4", "word1 word2#{ Repositext::EM_DASH }! word3 word4"],
+          ["word1 word2-! word3 word4", "word1 word2-! word3 word4"],
+          ["word1 word2-ed. word3 word4", "word1 word2-ed. word3 word4"],
           # Don't insert zero width space before certain punctuation
           ["word1 word2-#{ Repositext::S_QUOTE_CLOSE }word3 word4", "word1 word2-#{ Repositext::S_QUOTE_CLOSE }word3 word4"],
           ["word1 word2-#{ Repositext::D_QUOTE_CLOSE }word3 word4", "word1 word2-#{ Repositext::D_QUOTE_CLOSE }word3 word4"],
           # Replace leading eagle with latex environment
           ["first para\n second para word1 word2 word3\nthird para", "first para\n\\RtFirstEagle second para word1 word2 word3\nthird para"],
-          ["<<<gap-mark>>> First para word1 word2 word3", "\\RtGapMarkText{}\\RtFirstEagle \\RtGapMarkText{First} para word1 word2 word3"],
+          ["<<<gap-mark>>> First para word1 word2 word3", "\\RtFirstEagle \\RtGapMarkText{First} para word1 word2 word3"],
           # Replace trailing eagle with latex command
           ["Second to last para\nLast para word1 word2 word3\n{: .normal}", "Second to last para\nLast para word1 word2 word3 \\RtLastEagle{}\n{: .normal}"],
+          # No line breaks _before_ or _after_ em dash when followed by some abbreviations
+          ["word1 word2#{ Repositext::EM_DASH }ed. word3 word4", "word1 word2\\nolinebreak[4]#{ Repositext::EM_DASH }\\nolinebreak[4]ed. word3 word4"],
         ].each do |test_string, xpect|
           it "handles #{ test_string.inspect }" do
-            c = LatexRepositext.send(:new, '_', {})
+            c = LatexRepositext.send(:new, '_', { ed_and_trn_abbreviations: "ed\\." })
             c.send(:post_process_latex_body, test_string).must_equal(xpect)
           end
         end

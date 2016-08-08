@@ -34,6 +34,10 @@ module Kramdown
           @options = options
         end
 
+        def include_meta_info
+          true
+        end
+
         # Returns latex_template as ERB string
         def latex_template
           @latex_template ||= File.new(
@@ -44,46 +48,37 @@ module Kramdown
 
         # Configure page settings. All values are in inches
         def page_settings(key)
-          ps = {
+          # We use #fetch instead of #[] so that an exception is raised on
+          # non-existing keys.
+          {
             english_stitched: {
-              paperwidth: 8.5,
-              paperheight: 11,
-              inner: 1.304655,
-              outer: 1.345345,
-              top: 0.65065,
-              bottom: 0.27981,
-              headsep: 0.1621,
-              footskip: 0.38965,
+              paperwidth: '8.5truein',
+              paperheight: '11truein',
+              inner: '1.304655truein',
+              outer: '1.345345truein',
+              top: '1.06154truein',
+              bottom: '0.66855truein',
+              headsep: '0.1106in', # We want this dimension to scale with geometry package \mag.
+              footskip: '0.351in', # We want this dimension to scale with geometry package \mag.
             },
             foreign_stitched: {
-              paperwidth: 8.5,
-              paperheight: 11,
-              inner: 1.304655,
-              outer: 1.345345,
-              top: 0.65065,
-              bottom: 0.27981,
-              headsep: 0.1621,
-              footskip: 0.38965,
+              paperwidth: '8.5truein',
+              paperheight: '11truein',
+              inner: '1.528125truein',
+              outer: '1.555165truein',
+              top: '1.04425truein',
+              bottom: '0.70715truein',
+              headsep: '0.172in', # We want this dimension to scale with geometry package \mag.
+              footskip: '0.25in', # We want this dimension to scale with geometry package \mag.
             },
-          }
-          ps = ps[key]
-          ps
-        end
-
-        # This factor will be applied to all font-metrics to enable enlarged
-        # PDFs.
-        def size_scale_factor
-          1.3
-        end
-
-        def include_meta_info
-          true
+          }.fetch(key)
         end
 
         # Returns the default language to use with polyglossia or nil if we don't
         # need to use polyglossia for the given language.
         # @param language_code_3_chars [String]
         # @return [String, Nil]
+        # TODO: Move this into `Language` classes
         def polyglossia_default_language(language_code_3_chars)
           {
             'mal' => 'malayalam',
@@ -93,6 +88,11 @@ module Kramdown
         end
 
       protected
+
+        # Latex geometry magnifaction factor.
+        def magnification
+          1300
+        end
 
         # Returns a complete latex document as string.
         # @param latex_body [String]
@@ -107,49 +107,67 @@ module Kramdown
                                                  .to_s
           git_repo = Repositext::Repository.new(@options[:source_filename])
           latest_commit = git_repo.latest_commit(@options[:source_filename])
-          # assign i_vars referenced in template file
+          # assign i_vars referenced in template file.
           @additional_footer_text = escape_latex_text(@options[:additional_footer_text])
           @body = latex_body
+          @company_long_name = @options[:company_long_name]
+          @company_phone_number = @options[:company_phone_number]
+          @company_short_name = @options[:company_short_name]
+          @company_web_address = @options[:company_web_address]
           @date_code = date_code.capitalize
-          @first_eagle = @options[:first_eagle_override] || "{\\lettrine[lines=2,lraise=0.355,findent=8.3,nindent=0]{\\textscale{0.465}}\\rtmainfont}"
-          @font_leading = @options[:font_leading_override] || 11.8
-          @font_name = @options[:font_name_override] || (@options[:is_primary_repo] ? 'V-Calisto-St' : 'V-Excelsior LT Std')
-          @font_size = @options[:font_size_override] || 11
+          # Applies the settings for the first eagle indent and drop cap.
+          @first_eagle = @options[:first_eagle]
+          @font_leading = @options[:font_leading]
+          @font_name = @options[:font_name]
+          @font_size = @options[:font_size]
+          @footer_title = truncate_plain_text_title(
+            @options[:footer_title_english], 43, 3
+          ).unicode_upcase
           @header_text = compute_header_text_latex(
             @options[:header_text],
-            @options[:is_primary_repo],
+            @options[:hrules_present],
             @options[:language_code_3_chars]
           )
           @header_title = compute_header_title_latex(
             document_title_plain_text,
             document_title_latex,
-            @options[:is_primary_repo],
+            @options[:hrules_present],
             @options[:language_code_3_chars]
           )
+          # Turns on hrules in title, header and footer.
+          @hrules_present = @options[:hrules_present]
+          @id_copyright_year = @options[:id_copyright_year]
+          @id_address_primary_latex_1 = @options[:id_address_primary_latex_1]
+          @id_address_primary_latex_2 = @options[:id_address_primary_latex_2]
+          @id_address_secondary_latex_1 = @options[:id_address_secondary_latex_1]
+          @id_address_secondary_latex_2 = @options[:id_address_secondary_latex_2]
+          @id_address_secondary_latex_3 = @options[:id_address_secondary_latex_3]
+          @id_write_to_primary = @options[:id_write_to_primary]
+          @id_write_to_secondary = @options[:id_write_to_secondary]
           @include_meta_info = include_meta_info
           @is_primary_repo = @options[:is_primary_repo]
+          @language_name = @options[:language_name]
           @latest_commit_hash = latest_commit.oid[0,8]
           @linebreaklocale = @options[:language_code_2_chars]
+          @magnification = magnification
           @page_number_command = compute_page_number_command(
-            @options[:is_primary_repo],
+            @options[:hrules_present],
             @options[:language_code_3_chars]
           )
           @page_settings = page_settings_for_latex_geometry_package
           # Force foreign languages to use Excelsior for paragraph numbers.
-          @paragraph_number_font_name = @options[:font_name_override] ? 'V-Excelsior LT Std' : @font_name
+          @paragraph_number_font_name = @options[:paragraph_number_font_name]
           @polyglossia_default_language = polyglossia_default_language(@options[:language_code_3_chars])
-          @primary_font_name = 'V-Calisto-St'
-          @scale_factor = size_scale_factor
-          @title_font_name = @options[:font_name_override] || 'V-Calisto-St'
-          @truncated_title_footer = compute_truncated_title(
-            document_title_plain_text, document_title_latex, 45, 3
-          )
+          @primary_font_name = @options[:primary_font_name]
+          @title_font_name = @options[:title_font_name]
+          @title_vspace = @options[:title_vspace] # space to be inserted above title to align with body text
           @use_cjk_package = ['chn','cnt'].include?(@options[:language_code_3_chars])
           @version_control_page = if @options[:version_control_page]
             compute_version_control_page(git_repo, @options[:source_filename])
           else
             ''
           end
+
           # dependency boundary
           @meta_info = include_meta_info ? compute_meta_info(git_repo, latest_commit) : ''
 
@@ -160,19 +178,19 @@ module Kramdown
 
         # Wraps header_text in latex markup (this is the non-title header text)
         # @param header_text [String]
-        # @param is_primary_repo [Boolean]
+        # @param hrules_present [Boolean]
         # @param language_code_3_chars [String]
         # @return [String]
-        def compute_header_text_latex(header_text, is_primary_repo, language_code_3_chars)
-          if is_primary_repo
+        def compute_header_text_latex(header_text, hrules_present, language_code_3_chars)
+          if hrules_present
             # italic, small caps and large font
             t = ::Kramdown::Converter::LatexRepositext.emulate_small_caps(
               escape_latex_text(header_text)
             )
-            "\\textscale{#{ 0.909091 * size_scale_factor }}{\\textbf{\\textit{#{ t }}}}"
+            "\\textscale{#{ 0.909091 }}{\\textbf{\\textit{#{ t }}}}"
           else
             # regular, all caps and small font
-            r = "\\textscale{#{ 0.7 * size_scale_factor }}{#{ escape_latex_text(header_text).unicode_upcase }}"
+            r = "\\textscale{#{ 0.7 }}{#{ escape_latex_text(header_text).unicode_upcase }}"
             if 'chn' == language_code_3_chars
               r = "\\textbf{#{ r }}"
             end
@@ -185,11 +203,11 @@ module Kramdown
         # digits.
         # @param document_title_plain_text [String]
         # @param document_title_latex [String]
-        # @param is_primary_repo [Boolean]
+        # @param hrules_present [Boolean]
         # @param language_code_3_chars [String]
         # @return [String]
-        def compute_header_title_latex(document_title_plain_text, document_title_latex, is_primary_repo, language_code_3_chars)
-          if is_primary_repo
+        def compute_header_title_latex(document_title_plain_text, document_title_latex, hrules_present, language_code_3_chars)
+          if hrules_present
             # bold, italic, small caps and large font
             # NOTE: All titles are wrapped in <em> and .smcaps, so that will
             # take care of the italics and smallcaps.
@@ -198,11 +216,11 @@ module Kramdown
             if truncated =~ /\d+\}\z/
               truncated.gsub!(/\d+\}\z/, "\\textsuperscript{" + '\0' + "}")
             end
-            "\\textscale{#{ 0.909091 * size_scale_factor }}{\\textbf{#{ truncated }}}"
+            "\\textscale{#{ 0.909091 }}{\\textbf{#{ truncated }}}"
           else
             # regular, all caps and small font
             truncated = truncate_plain_text_title(document_title_plain_text, 54, 3)
-            r = "\\textscale{#{ 0.7 * size_scale_factor }}{#{ truncated.unicode_upcase }}"
+            r = "\\textscale{#{ 0.7 }}{#{ truncated.unicode_upcase }}"
             # re-apply superscript to any trailing digits
             if r =~ /\d+\}\z/
               r.gsub!(/\d+\}\z/, "\\textsuperscript{" + '\0' + "}")
@@ -240,13 +258,13 @@ module Kramdown
         # @param is_primary_repo [Boolean]
         # @param language_code_3_chars [String]
         # @return [String]
-        def compute_page_number_command(is_primary_repo, language_code_3_chars)
-          if is_primary_repo
+        def compute_page_number_command(hrules_present, language_code_3_chars)
+          if hrules_present
             # bold, italic, small caps and large font
-            "\\textscale{#{ 0.909091 * size_scale_factor }}{\\textbf{\\textit{\\thepage}}}"
+            "\\textscale{#{ 0.909091 }}{\\textbf{\\textit{\\thepage}}}"
           else
             # regular
-            r = "\\textscale{#{ size_scale_factor }}{\\thepage}"
+            r = "{\\thepage}"
             if 'chn' == language_code_3_chars
               r = "\\textbf{#{ r }}"
             end
@@ -288,13 +306,14 @@ module Kramdown
         # @return [String]
         def compute_truncated_title(title_plain_text, title_latex, max_len, min_length_of_last_word)
           # Remove any line breaks
-          l_title_latex = title_latex.gsub("\\linebreak\\n", '')
+          l_title_latex = title_latex.gsub("\\linebreak\n", '')
+          l_title_plain_text = title_plain_text.gsub("\n", '')
 
-          # Nothing to do if title_plain_text is already short enough
-          return l_title_latex  if title_plain_text.length <= max_len
+          # Nothing to do if l_title_plain_text is already short enough
+          return l_title_latex  if l_title_plain_text.length <= max_len
 
           truncated_title_plain_text = truncate_plain_text_title(
-            title_plain_text,
+            l_title_plain_text,
             max_len,
             min_length_of_last_word
           )
@@ -331,7 +350,7 @@ module Kramdown
               matching_plain_text_char = s.scan(
                 Regexp.new(
                   Regexp.escape(
-                    title_plain_text[plain_text_index]
+                    l_title_plain_text[plain_text_index]
                   ),
                   true # small caps emulation will capitalize letters in `s`
                 )
@@ -436,7 +455,7 @@ module Kramdown
           if !ps.is_a?(Hash) || ps.first.last.is_a?(Hash)
             raise(ArgumentError.new("Invalid options[:page_settings_key]: #{ @options[:page_settings_key].inspect }, returns #{ ps.inspect }"))
           end
-          ps.map { |k,v| %(#{ k }=#{ v }in) }.join(', ')
+          ps.map { |k,v| %(#{ k }=#{ v }) }.join(', ')
         end
 
       end

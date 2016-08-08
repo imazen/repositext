@@ -14,17 +14,17 @@ class Repositext
               ["\n*2*{: .pn} second paragraph\n", 5]
             ],
             [
-              "# Header\n\n(This scenario uses the `submitted` key instead of `after`.\n\n*2*{: .pn} second paragraph\n\n*3*{: .pn} third paragraph \n\n",
+              "# Header\n\n(This scenario uses the `submitted` key instead of `becomes`.\n\n*2*{: .pn} second paragraph\n\n*3*{: .pn} third paragraph \n\n",
               { paragraph_number: '2', submitted: 'some text without any pararaph numbers so that only one para is relevant' },
               ["\n*2*{: .pn} second paragraph\n", 5]
             ],
             [
               "# Header\n\nFirst paragraph without a number\n\n*2*{: .pn} second paragraph\n\n*3*{: .pn} third paragraph \n\n",
               { paragraph_number: '2', becomes: "some text\n\n*2*{: .pn} with one pararaph number" },
-              ["\n*2*{: .pn} second paragraph\n\n*3*{: .pn} third paragraph ", 5]
+              ["\n*2*{: .pn} second paragraph\n\n*3*{: .pn} third paragraph ", 5]
             ],
             [
-              "# Header\n\nFirst paragraph without a number\n\n*2*{: .pn} second paragraph\n\n*3*{: .pn} third paragraph\n\n*4*{: .pn} fourth paragraph",
+              "# Header\n\nFirst paragraph without a number\n\n*2*{: .pn} second paragraph\n\n*3*{: .pn} third paragraph\n\n*4*{: .pn} fourth paragraph \n\n",
               { paragraph_number: '2', becomes: "some text\n\n*2*{: .pn} with one pararaph number" },
               ["\n*2*{: .pn} second paragraph\n\n*3*{: .pn} third paragraph\n", 5]
             ],

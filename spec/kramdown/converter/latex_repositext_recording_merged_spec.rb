@@ -31,7 +31,7 @@
 
 #         it "removes empty RtGapMarkText commands" do
 #           c = LatexRepositextRecordingMerged.custom_post_process_latex(
-#             "word \\RtGapMarkText{} word"
+#             "word  word"
 #           ).must_equal('word  word')
 #         end
 

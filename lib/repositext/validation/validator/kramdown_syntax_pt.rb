@@ -67,6 +67,7 @@ class Repositext
         def self.whitelisted_class_names
           [
             { :name => 'bold', :allowed_contexts => [:span] },
+            { :name => 'first_par', :allowed_contexts => [:block] },
             { :name => 'id_paragraph', :allowed_contexts => [:block] },
             { :name => 'id_title1', :allowed_contexts => [:block] },
             { :name => 'id_title2', :allowed_contexts => [:block] },

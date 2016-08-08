@@ -1,25 +1,34 @@
-# require_relative '../../helper'
+require_relative '../../helper'
 
-# module Kramdown
-#   module Converter
-#     describe LatexRepositextRecording do
+module Kramdown
+  module Converter
+    describe LatexRepositextRecording do
 
-#       describe '#post_process_latex_body' do
+      describe '#post_process_latex_body' do
 
-#         describe "Moves gap_mark numbers" do
-
-#           [
-#             ['eagle', ' TMP_GAP_MARKword', '\\RtGapMark word'],
-#           ].each do |(name, test, xpect)|
-#             it "moves gap_mark numbers outside of #{ name}" do
-#               c = LatexRepositext.send(:new, '_', {})
-#               c.send(:post_process_latex_body, '').must_equal ''
-#             end
-#           end
-
-#         end
-#       end
-
-#     end
-#   end
-# end
+        tmp_gap_mark_complete = "<<<gap-mark-number>>><<<gap-mark>>>"
+        describe "Moves gap_mark numbers outside of" do
+          [
+            ['apostrophe', "’#{ tmp_gap_mark_complete }word", "\\RtGapMarkNumber’\\RtGapMarkText{word}"],
+            ['double quote open', "“#{ tmp_gap_mark_complete }word", "\\RtGapMarkNumber“\\RtGapMarkText{word}"],
+          ].each do |(name, test_string, xpect)|
+            it "moves gap_mark numbers outside of #{ name}" do
+              c = LatexRepositextRecording.send(:new, '_', {})
+              c.send(:post_process_latex_body, test_string).must_equal(xpect)
+            end
+          end
+        end
+        describe "Moves gap_mark numbers after" do
+          [
+            ['eagle', "#{ tmp_gap_mark_complete } word", "\\RtFirstEagle \\RtGapMarkNumber \\RtGapMarkText{word}"],
+          ].each do |(name, test_string, xpect)|
+            it "moves gap_mark numbers after #{ name}" do
+              c = LatexRepositextRecording.send(:new, '_', {})
+              c.send(:post_process_latex_body, test_string).must_equal(xpect)
+            end
+          end
+        end
+      end
+    end
+  end
+end
