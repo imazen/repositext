@@ -22,7 +22,7 @@ class Repositext
       # @return [OperationsForFile]
       def self.from_json(content_at_file, json)
         hash = JSON.parse(json, symbolize_names: true)
-        new_from_hash(content_at_file, hash)
+        from_hash(content_at_file, hash)
       end
 
       # Instantiates a new instance of self from a Hash

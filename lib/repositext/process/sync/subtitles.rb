@@ -34,7 +34,6 @@ class Repositext
         end
 
         def sync
-          ensure_all_content_repos_are_ready
           @from_git_commit, @to_git_commit = compute_bounding_git_commits(
             @from_git_commit,
             @to_git_commit,
@@ -44,12 +43,14 @@ class Repositext
           if @from_git_commit == @to_git_commit
             raise "Subtitles are up-to-date, nothing to sync!"
           end
+
+          # ensure_all_content_repos_are_ready
           st_ops_for_repo = extract_or_load_primary_subtitle_operations
           update_primary_subtitle_marker_csv_files(
             @repository,
             st_ops_for_repo
           )
-          # transfer_subtitle_operations_to_foreign_repos
+          # transfer_subtitle_operations_to_foreign_repos(st_ops_for_repo)
           finalize_sync_operation(@repository, @to_git_commit)
         end
 

@@ -13,15 +13,17 @@ class Repositext
           #  * Existing STIDS and record ids from existing STM CSV file
           #  * New time slices from subtitle import marker files
           #  * Updates to subtitles from subtitle operations
-          # @param repo_root_dir [String]
-          # @param language [Repositext::Language] used to instantiate content AT files
+          # @param git_repo [Repositext::Repository]
           # @param st_ops_for_repo [Repositext::Subtitle::OperationsForRepository]
           # @return [True]
-          def update_primary_subtitle_marker_csv_files(repo_root_dir, content_type, st_ops_for_repo)
-            synced_content_at_files = RFile::ContentAt.find_all(
-              repo_root_dir,
-              content_type
-            )
+          def update_primary_subtitle_marker_csv_files(git_repo, st_ops_for_repo)
+            synced_content_at_files = []
+            ContentType.all(git_repo).each { |content_type|
+              synced_content_at_files += RFile::ContentAt.find_all(
+                git_repo.base_dir,
+                content_type
+              )
+            }
             synced_content_at_files.each do |content_at_file_current|
               # Get content_at_file as of from_git_commit
               content_at_file = content_at_file_current.as_of_git_commit(@from_git_commit)
@@ -30,7 +32,7 @@ class Repositext
                 st_ops_for_repo
               )
 
-              # Only process files that have salient operations
+              # Only process files that have subtitle operations
               next  if st_ops_for_file.nil?
 
               new_char_lengths = compute_new_char_lengths(content_at_file)

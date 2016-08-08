@@ -54,8 +54,11 @@ class Repositext
           # Extracts subtitle operations for entire repo between two git commits.
           # @return [String] the name of the file operations are stored in
           def extract_and_store_primary_subtitle_operations
+            subtitle_ops = []
+            # Pick any content_type, doesn't matter which one
+            content_type = ContentType.all(@repository).first
             subtitle_ops = Repositext::Process::Compute::SubtitleOperationsForRepository.new(
-              @content_type,
+              content_type,
               @from_git_commit,
               @to_git_commit,
               @file_list

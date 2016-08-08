@@ -154,6 +154,7 @@ class Repositext
 
           # @param files_flagged_for_manual_review [Array<RFile::ContentAt]
           def finalize_global_st_ops_transfer(files_flagged_for_manual_review)
+            return true  if files_flagged_for_manual_review.empty?
             puts "The following files require manual review:".color(:red)
             files_flagged_for_manual_review.each { |content_at_file|
               puts " - #{ content_at_file.filename }".color(:red)
