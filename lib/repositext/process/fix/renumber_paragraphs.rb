@@ -6,6 +6,7 @@ class Repositext
         # Renumbers numbered paragraphs in content_at_file. Works with placeholders
         # and existing paragraph numbers. Will raise a warning if a paragraph
         # number contains anything other than digits or placeholders.
+        # Allows subtitle_marks and gap_marks at beginning of line (in that order).
         # @param content_at_contents [String]
         # @return [Outcome] with `{ contents: new_contents }` as result.
         def self.fix(content_at_contents)
@@ -14,7 +15,7 @@ class Repositext
           error_messages = []
           res.gsub!(
             /
-              ((?<=^\*)|(?<=^@\*)) # asterisk or subtitle mark and asterisk at beginning of line
+              ((?<=^\*)|(?<=^@\*)|(?<=^@%\*)|(?<=^%\*)) # asterisk optionally preceded by subtitle mark or gap mark at beginning of line
               ([^\*]*) # inside asterisks
               (?=\*\{:\s*\.pn\}) # trailing asterisk and IAL
             /x,
