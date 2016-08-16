@@ -986,20 +986,14 @@ class Repositext
           file_list = file_list.find_all { |filename| file_filter === filename }
         end
         subtitle_ops = Repositext::Process::Compute::SubtitleOperationsForRepository.new(
-          repository,
+          content_type,
           options['from-commit'],
           options['to-commit'],
           file_list
         ).compute
         report_file_path = File.join(
           config.base_dir(:reports_dir),
-          [
-            'subtitle_operations-from-',
-            options['from-commit'].first(10),
-            '-to-',
-            options['to-commit'].first(10),
-            '.json'
-          ].join
+          'subtitle_operations.json'
         )
         File.open(report_file_path, 'w') { |f|
           f.write(subtitle_ops.to_json.to_s)

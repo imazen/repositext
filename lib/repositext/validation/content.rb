@@ -31,6 +31,7 @@ class Repositext
 
         # Validate that there are no significant changes to subtitle_mark positions.
         # Define proc that computes subtitle_mark_csv filename from content_at filename
+        # TODO: Should we rely on symlinks to STM CSV files instead?
         stm_csv_file_name_proc = lambda { |input_filename, file_specs|
           Repositext::Utils::CorrespondingPrimaryFileFinder.find(
             filename: input_filename,

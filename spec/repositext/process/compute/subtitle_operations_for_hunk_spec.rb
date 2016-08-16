@@ -87,7 +87,7 @@ class Repositext
                 {
                   :operationId=>"hunk_index-0",
                   :operationType=>:delete,
-                  :afterStid=>"previous_hunk_last_stid",
+                  :afterStid=>nil,
                   :affectedStids=>[
                     {
                       :stid=>"1000000",
@@ -106,7 +106,7 @@ class Repositext
                 {
                   :operationId=>"hunk_index-1",
                   :operationType=>:delete,
-                  :afterStid=>"1000000",
+                  :afterStid=>nil,
                   :affectedStids=>[
                     {
                       :stid=>"1000001",
@@ -337,6 +337,64 @@ class Repositext
             # ----------------------------------------------------------------
             # Compound operations
             # ----------------------------------------------------------------
+            [
+              'content change, moveLeft, moveLeft',
+              %w[@word1 word2 word3 word4 word5a  word6 word7 word8 word9 word10 word11 word12 word13 word14,  word15a word16a word17a word18a,                                                @word26 word27 word28 word29 word30 word31 word32 word33 word34 word35,  word36 word37 word39 word40 word41 word42 word43 word44 word45, @word46, word47 word48, word49 word50 word51 word52 word53 word54 word55 word56.],
+              %w[@word1 word2 word3 word4 other5b word6 word7 word8 word9 word10 word11 word12 word13 word14, @word15b word16b word17b word18b word19 word20 word21 word22 word23 word24 word25 word26 word27 word28 word29 word30 word31 word32 word33 word34 word35, @word36 word37 word39 word40 word41 word42 word43 word44 word45,  word46, word47 word48, word49 word50 word51 word52 word53 word54 word55 word56.],
+              [
+                {
+                  :operationId=>"hunk_index-1",
+                  :operationType=>:moveLeft,
+                  :afterStid=>nil,
+                  :affectedStids=>[
+                    {
+                      :stid=>"1000000",
+                      :before=>"word1 word2 word3 word4 word5a word6 word7 word8 word9 word10 word11 word12 word13 word14, word15a word16a word17a word18a, ",
+                      :after=>"word1 word2 word3 word4 other5b word6 word7 word8 word9 word10 word11 word12 word13 word14, "
+                    },
+                    {
+                      :stid=>"1000001",
+                      :before=>"word26 word27 word28 word29 word30 word31 word32 word33 word34 word35, word36 word37 word39 word40 word41 word42 word43 word44 word45, ",
+                      :after=>"word15b word16b word17b word18b word19 word20 word21 word22 word23 word24 word25 word26 word27 word28 word29 word30 word31 word32 word33 word34 word35, "
+                    }
+                  ]
+                },
+                {
+                  :operationId=>"hunk_index-2",
+                  :operationType=>:moveLeft,
+                  :afterStid=>nil,
+                  :affectedStids=>[
+                    {
+                      :stid=>"1000001",
+                      :before=>"word26 word27 word28 word29 word30 word31 word32 word33 word34 word35, word36 word37 word39 word40 word41 word42 word43 word44 word45, ",
+                      :after=>"word15b word16b word17b word18b word19 word20 word21 word22 word23 word24 word25 word26 word27 word28 word29 word30 word31 word32 word33 word34 word35, "
+                    },
+                    {
+                      :stid=>"1000002",
+                      :before=>"word46, word47 word48, word49 word50 word51 word52 word53 word54 word55 word56.\n",
+                      :after=>"word36 word37 word39 word40 word41 word42 word43 word44 word45, word46, word47 word48, word49 word50 word51 word52 word53 word54 word55 word56.\n"
+                    }
+                  ]
+                }
+              ]
+            ],
+            [
+              'merge, merge (adjacent)',
+              %w[@word1 word2 @word3 word4 word5 @word6 word7],
+              %w[@word1 word2  word3 word4 word5  word6 word7],
+              [
+                {
+                  :operationId=>"hunk_index-1",
+                  :operationType=>:merge,
+                  :afterStid=>nil,
+                  :affectedStids=>[
+                    { :stid=>"1000000", :before=>"word1 word2 ", :after=>"word1 word2 word3 word4 word5 word6 word7\n" },
+                    { :stid=>"1000001", :before=>"word3 word4 word5 ", :after=>"" },
+                    { :stid=>"1000002", :before=>"word6 word7\n", :after=>"" }
+                  ]
+                }
+              ]
+            ],
             [
               'merge (fits more than 50%), moveLeft',
               %w[@0word1 word2 @1word3 word4 word5   word6 @2word7],
@@ -637,6 +695,30 @@ class Repositext
                   :affectedStids=>[
                     { :stid=>"1000002", :before=>"2word4 word5\n", :after=>"2word4 " },
                     { :stid=>"tmp-1000002+1", :before=>"", :after=>"3word5\n" }
+                  ]
+                }
+              ]
+            ],
+            [
+              'moveLeft, split (2)',
+              %w[@word1 word2 word3  word4 word5@word6 word7 word8 word9 word10 word11  word12 word13 word14 word15 @and some more],
+              %w[@word1 word2 word3 @word4 word5 word6 word7 word8 word9 word10 word11 @word12 word13 word14 word15 @and some more],
+              [
+                {
+                  :operationId=>"hunk_index-1",
+                  :operationType=>:moveLeft,
+                  :afterStid=>nil,
+                  :affectedStids=>[
+                    { :stid=>"1000000", :before=>"word1 word2 word3 word4 word5", :after=>"word1 word2 word3 " },
+                    { :stid=>"1000001", :before=>"word6 word7 word8 word9 word10 word11 word12 word13 word14 word15 ", :after=>"word4 word5 word6 word7 word8 word9 word10 word11 " }
+                  ]
+                }, {
+                  :operationId=>"hunk_index-2",
+                  :operationType=>:split,
+                  :afterStid=>nil,
+                  :affectedStids=>[
+                    { :stid=>"1000001", :before=>"word6 word7 word8 word9 word10 word11 word12 word13 word14 word15 ", :after=>"word4 word5 word6 word7 word8 word9 word10 word11 " },
+                    { :stid=>"tmp-1000001+1", :before=>"", :after=>"word12 word13 word14 word15 " }
                   ]
                 }
               ]
@@ -1138,6 +1220,23 @@ class Repositext
               ]
             ],
             [
+              'split, split (adjacent)',
+              %w[@word1 word2  word3 word4 word5  word6 word7],
+              %w[@word1 word2 @word3 word4 word5 @word6 word7],
+              [
+                {
+                  :operationId=>"hunk_index-1",
+                  :operationType=>:split,
+                  :afterStid=>nil,
+                  :affectedStids=>[
+                    { :stid=>"1000000", :before=>"word1 word2 word3 word4 word5 word6 word7\n", :after=>"word1 word2 " },
+                    { :stid=>"tmp-1000000+1", :before=>"", :after=>"word3 word4 word5 " },
+                    { :stid=>"tmp-1000000+2", :before=>"", :after=>"word6 word7\n" }
+                  ]
+                }
+              ]
+            ],
+            [
               'split, split, split, moveRight',
               %w[@0word1   word2 @2word3   word4 @4word5   word6 @6word7   word8],
               %w[@0word1 @1word2 @2word3 @3word4 @4word5 @5word6   word7 @6word8],
@@ -1177,6 +1276,71 @@ class Repositext
                 }
               ]
             ],
+            # ----------------------------------------------------------------
+            # Production regression scenarios
+            # ----------------------------------------------------------------
+            [
+              'long subtitles (required tweaking of Jaccard similarity thresholds)',
+              %w[@word1 word2 word3 word4 word5 word6 word7 word8 word9 word10 word11 word12 word13 word14 word15 word16 word17 word18  word19 word20 @word21 word22 word23 word24 word25  word26 word27 word28 word29 word30 word31 word32 @and some more],
+              %w[@word1 word2 word3 word4 word5 word6 word7 word8 word9 word10 word11 word12 word13 word14 word15 word16 word17 word18 @word19 word20  word21 word22 word23 word24 word25 @word26 word27 word28 word29 word30 word31 word32 @and some more],
+              [
+                {
+                  :operationId=>"hunk_index-1",
+                  :operationType=>:split,
+                  :afterStid=>nil,
+                  :affectedStids=>[
+                    { :stid=>"1000000", :before=>"word1 word2 word3 word4 word5 word6 word7 word8 word9 word10 word11 word12 word13 word14 word15 word16 word17 word18 word19 word20 ", :after=>"word1 word2 word3 word4 word5 word6 word7 word8 word9 word10 word11 word12 word13 word14 word15 word16 word17 word18 " },
+                    { :stid=>"tmp-1000000+1", :before=>"", :after=>"word19 word20 word21 word22 word23 word24 word25 " }
+                  ]
+                }, {
+                  :operationId=>"hunk_index-2",
+                  :operationType=>:moveRight,
+                  :afterStid=>nil,
+                  :affectedStids=>[
+                    { :stid=>"tmp-1000000+1", :before=>"", :after=>"word19 word20 word21 word22 word23 word24 word25 " },
+                    { :stid=>"1000001", :before=>"word21 word22 word23 word24 word25 word26 word27 word28 word29 word30 word31 word32 ", :after=>"word26 word27 word28 word29 word30 word31 word32 " }
+                  ]
+                }
+              ]
+            ],
+            [
+              'subtitles with different amounts of duplicate tokens (required custom addition to jaccard index)',
+              %w[@word1 word2 word3 word4 word5 word6 word7 word8 word9 word10 word11 word12 word13 word14 word15 word16 word17 word18  dup_token @word19 word20 word21 word22 word23 word24  word25 word26 word27 word28 word29 word30 word31 word32 word33 word34 word35 @word36 word37 word38  word39 word40 word41 word42 word43 word44 word45 word46 word47 word48 word49 @and more words],
+              %w[@word1 word2 word3 word4 word5 word6 word7 word8 word9 word10 word11 word12 word13 word14 word15 word16 word17 word18 @dup_token  word19 word20 word21 word22 word23 word24 @word25 word26 word27 word28 word29 word30 word31 word32 word33 word34 word35  word36 word37 word38 @word39 word40 word41 word42 word43 word44 word45 word46 word47 word48 word49 @and more words],
+              [
+                {
+                  :operationId=>"hunk_index-1",
+                  :operationType=>:split,
+                  :afterStid=>nil,
+                  :affectedStids=>[
+                    { :stid=>"1000000", :before=>"word1 word2 word3 word4 word5 word6 word7 word8 word9 word10 word11 word12 word13 word14 word15 word16 word17 word18 dup_token ", :after=>"word1 word2 word3 word4 word5 word6 word7 word8 word9 word10 word11 word12 word13 word14 word15 word16 word17 word18 " },
+                    { :stid=>"tmp-1000000+1", :before=>"", :after=>"dup_token word19 word20 word21 word22 word23 word24 " }
+                  ]
+                }, {
+                  :operationId=>"hunk_index-2",
+                  :operationType=>:moveRight,
+                  :afterStid=>nil,
+                  :affectedStids=>[
+                    { :stid=>"tmp-1000000+1", :before=>"", :after=>"dup_token word19 word20 word21 word22 word23 word24 " },
+                    { :stid=>"1000001", :before=>"word19 word20 word21 word22 word23 word24 word25 word26 word27 word28 word29 word30 word31 word32 word33 word34 word35 ", :after=>"word25 word26 word27 word28 word29 word30 word31 word32 word33 word34 word35 word36 word37 word38 " }
+                  ]
+                }, {
+                  :operationId=>"hunk_index-3",
+                  :operationType=>:moveRight,
+                  :afterStid=>nil,
+                  :affectedStids=>[
+                    { :stid=>"1000001", :before=>"word19 word20 word21 word22 word23 word24 word25 word26 word27 word28 word29 word30 word31 word32 word33 word34 word35 ", :after=>"word25 word26 word27 word28 word29 word30 word31 word32 word33 word34 word35 word36 word37 word38 " },
+                    { :stid=>"1000002", :before=>"word36 word37 word38 word39 word40 word41 word42 word43 word44 word45 word46 word47 word48 word49 ", :after=>"word39 word40 word41 word42 word43 word44 word45 word46 word47 word48 word49 " }
+                  ]
+                }
+              ]
+            ],
+            [
+              'content change only, no st_ops',
+              %w[word1 %word2 word3 word4 word5 word6                                   word7 word8 word9 @word10 word11 word12 @word13 word14 word15 word16 word17],
+              %w[word1 %word2 word3 word4 word5 word6 added_at_least_30_chars_from_left word7 word8 word9 @word10 word11 word12 @word13 word14 word15 word16 word17],
+              []
+            ],
           ].each do |description, del_c, add_c, xpect|
 
             it "handles #{ description }" do
@@ -1194,11 +1358,8 @@ class Repositext
             end
 
           end
-
         end
-
       end
-
     end
   end
 end

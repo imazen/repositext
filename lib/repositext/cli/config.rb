@@ -184,6 +184,9 @@ class Repositext
         puts "settings_hierarchy"
         pp @settings_hierarchy
         puts
+        puts "execution context"
+        pp execution_context
+        puts
         puts "effective_settings"
         pp @effective_settings
         puts

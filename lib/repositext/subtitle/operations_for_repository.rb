@@ -13,6 +13,41 @@ class Repositext
       attr_accessor :operations_for_files
       attr_accessor *ATTR_NAMES
 
+      # Initializes self from operations serialized to JSON
+      # @param json [String]
+      # @param repo_base_dir [String]
+      def self.from_json(json, repo_base_dir)
+        from_hash(JSON.parse(json, symbolize_names: true), repo_base_dir)
+      end
+
+      # Initializes self from operations persisted to file in `subtitle_operations` dir
+      # @param hash [Hash] for repo
+      # @param repo_base_dir [String]
+      def self.from_hash(hash, repo_base_dir)
+        files = hash.delete(:files)
+        new(
+          hash,
+          files.map { |file_attrs|
+            file_path = File.join(repo_base_dir, file_attrs[:file_path])
+            repository = Repository.new(repo_base_dir)
+            content_type_base_dir = File.join(
+              repo_base_dir, file_attrs[:file_path].split('/').first
+            )
+            content_type = ContentType.new(
+              content_type_base_dir,
+              repository
+            )
+            content_at_file = RFile::ContentAt.new(
+              File.read(file_path),
+              content_type.language,
+              file_path,
+              content_type
+            )
+            OperationsForFile.from_hash(content_at_file, file_attrs.merge(hash))
+          }
+        )
+      end
+
       # @param attrs [Hash]
       #   {
       #     repository: 'english',
@@ -21,22 +56,20 @@ class Repositext
       #   }
       # @param operations_for_files [Array<Repositext::Subtitle::OperationsForFile>]
       def initialize(attrs, operations_for_files)
+        if (off = operations_for_files.first) && !off.is_a?(Repositext::Subtitle::OperationsForFile)
+          raise ArgumentError.new("Invalid first operations_for_file: #{ off.inspect }")
+        end
         ATTR_NAMES.each do |attr_name|
           self.send("#{ attr_name }=", attrs[attr_name])
         end
         self.operations_for_files = operations_for_files
       end
 
-      def inverse!
+      # Call on self to invert `from` and `to` git commits as well as each
+      # operation (i.e. a `merge` becomes a `split`, etc.)
+      def invert!
         self.fromGitCommit, self.toGitCommit = [toGitCommit, fromGitCommit]
-        self.operations_for_files = operations_for_files.map { |e| e.inverse!; e }
-      end
-
-      # Serializes self to json
-      # @return [String]
-      def to_json
-        #JSON.fast_generate(to_hash)
-        JSON.pretty_generate(to_hash)
+        self.operations_for_files = operations_for_files.map { |e| e.invert!; e }
       end
 
       # Converts self to Hash
@@ -48,6 +81,13 @@ class Repositext
         }
         r[:files] = operations_for_files.map { |e| e.to_hash }
         r
+      end
+
+      # Serializes self to json
+      # @return [String]
+      def to_json
+        #JSON.fast_generate(to_hash)
+        JSON.pretty_generate(to_hash)
       end
 
     end

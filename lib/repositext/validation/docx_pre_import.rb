@@ -11,6 +11,10 @@ class Repositext
           Validator::DocxImportSyntax.new(
             docx_file, @logger, @reporter, @options
           ).run
+          # TODO: Decide if we want to run this validation:
+          # Validator::DocxImportRoundTrip.new(
+          #   docx_file, @logger, @reporter, @options
+          # ).run
         end
       end
 

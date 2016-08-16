@@ -4,6 +4,31 @@ class Repositext
 
       extend ActiveSupport::Concern
 
+      module ClassMethods
+
+        # Finds an RFile given product_identity_id and a content_type
+        # @param product_identity_id [String]
+        # @param content_type [ContentType]
+        # @return [RFile, Nil]
+        def find_by_product_identity_id(product_identity_id, content_type)
+          file_path = Dir.glob(
+            File.join(
+              content_type.base_dir,
+              "content/**/*_#{ product_identity_id }.*"
+            )
+          ).first
+          return nil  if file_path.nil?
+          # create new instance of class (determined by which class this method is called on)
+          new(
+            File.read(file_path),
+            content_type.language,
+            file_path,
+            content_type
+          )
+        end
+
+      end
+
       # Returns self's date_code
       def extract_date_code
         basename.match(/\d{2}-\d{4}[[:alpha:]]?/).to_s

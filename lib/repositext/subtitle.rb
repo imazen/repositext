@@ -9,13 +9,24 @@ class Repositext
     STID_LENGTH = 7
     STID_REGEX = /\A[#{ Regexp.escape(STID_CHARS_WITHOUT_ZERO) }][#{ Regexp.escape(STID_CHARS) }]{#{ STID_LENGTH - 1 }}\z/
 
-    attr_reader :char_length,
-                :content,
-                :persistent_id,
-                :record_id,
-                :relative_milliseconds,
-                :samples,
-                :tmp_attrs
+    attr_accessor :char_length,
+                  :content,
+                  :persistent_id,
+                  :record_id,
+                  :relative_milliseconds,
+                  :samples,
+                  :tmp_attrs
+
+    # Instantiates instance of self from hash
+    def self.from_hash(hash)
+      new(
+        persistent_id: hash[:stid],
+        tmp_attrs: {
+          after: hash[:after],
+          before: hash[:before],
+        }
+      )
+    end
 
     # @param stid [String]
     # @return [Boolean] true if stid is valid format.
@@ -41,8 +52,8 @@ class Repositext
       (samples / 44.1).round
     end
 
-    def to_s
-      %(#<Repositext::Subtitle @persistent_id=#{ persistent_id.inspect }, @record_id=#{ record_id.inspect }>)
+    def inspect
+      to_s
     end
 
     # Returns a Hash describing self
@@ -57,8 +68,25 @@ class Repositext
       h
     end
 
-    def inspect
-      to_s
+    def to_s
+      attrs = %w[
+        persistent_id
+        record_id
+        char_length
+        relative_milliseconds
+        samples
+        content
+        tmp_attrs
+      ].map{ |e| "@#{ e }=#{ self.send(e).inspect }"}.join(', ')
+      %(#<Repositext::Subtitle #{ attrs }>)
+    end
+
+    def tmp_after
+      tmp_attrs[:after]
+    end
+
+    def tmp_before
+      tmp_attrs[:before]
     end
 
   end

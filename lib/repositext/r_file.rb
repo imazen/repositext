@@ -49,26 +49,6 @@ class Repositext
       end
     end
 
-    # Lock self for a block so only one process can modify it at a time.
-    # NOTE: This is from Rails' File Cache:
-    # https://github.com/rails/rails/blob/932655a4ef61083da98724bb612d00f89e153c46/activesupport/lib/active_support/cache/file_store.rb#L103
-    # OPTMIZE: We could use Rails Cache's File.atomic_write method for even better concurrency:
-    # https://github.com/rails/rails/blob/932655a4ef61083da98724bb612d00f89e153c46/activesupport/lib/active_support/core_ext/file/atomic.rb
-    def lock_self_exclusively(&block)
-      if File.exist?(filename)
-        File.open(filename, 'r+') do |f|
-          begin
-            f.flock File::LOCK_EX
-            yield
-          ensure
-            f.flock File::LOCK_UN
-          end
-        end
-      else
-        yield
-      end
-    end
-
     # @param contents [String] the file's contents as string
     # @param language [Language] the file's language
     # @param filename [String] the file's absolute path
@@ -84,6 +64,21 @@ class Repositext
       @language = language
       @filename = filename
       @content_type = content_type
+    end
+
+    # Returns copy of self with contents as of git_commit_sha1
+    # @param git_commit_sha1 [String]
+    def as_of_git_commit(git_commit_sha1)
+      if '' == git_commit_sha1.to_s
+        raise ArgumentError.new("Invalid git_commit_sha1: #{ git_commit_sha1.inspect }")
+      end
+      # Instantiate copy of self with contents as of the requested version
+      self.class.new(
+        `git --no-pager show #{ git_commit_sha1 }:#{ repo_relative_path }`,
+        language,
+        filename,
+        content_type
+      )
     end
 
     # Returns just the name without path
@@ -114,5 +109,40 @@ class Repositext
     def lang_code_3
       language.code_3_chars
     end
+
+    # Lock self for a block so only one process can modify it at a time.
+    # NOTE: This is from Rails' File Cache:
+    # https://github.com/rails/rails/blob/932655a4ef61083da98724bb612d00f89e153c46/activesupport/lib/active_support/cache/file_store.rb#L103
+    # OPTMIZE: We could use Rails Cache's File.atomic_write method for even better concurrency:
+    # https://github.com/rails/rails/blob/932655a4ef61083da98724bb612d00f89e153c46/activesupport/lib/active_support/core_ext/file/atomic.rb
+    def lock_self_exclusively(&block)
+      if File.exist?(filename)
+        File.open(filename, 'r+') do |f|
+          begin
+            f.flock File::LOCK_EX
+            yield
+          ensure
+            f.flock File::LOCK_UN
+          end
+        end
+      else
+        yield
+      end
+    end
+
+    # Returns relative path from repo root to self
+    def repo_relative_path
+      filename.sub(repository.base_dir, '')
+    end
+
+    # Updates contents and persists them
+    def update_contents!(new_contents)
+      if is_binary
+        File.binwrite(filename, new_contents)
+      else
+        File.write(filename, new_contents)
+      end
+    end
+
   end
 end

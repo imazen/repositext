@@ -30,7 +30,7 @@ class Repositext
             jaccard_sim, jaccard_conf = JaccardSimilarityComputer.compute(
               left_el[:content],
               right_el[:content],
-              true,
+              100_000,
               :left
             )
             left_aligned_sim = 100 * jaccard_sim * jaccard_conf

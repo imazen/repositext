@@ -26,7 +26,7 @@ class Repositext
 
       # Returns default data as Hash
       def self.default_data
-        { 'data' => {}, 'settings' => {}, 'subtitles' => {} }
+        { 'data' => {}, 'settings' => {} }
       end
 
       def self.json_formatting_options
@@ -42,7 +42,7 @@ class Repositext
       end
 
       # Returns all key value pairs as hash
-      def get_file_level_data
+      def get_all_attributes
         (JSON.load(contents) || self.class.default_data)
       end
 
@@ -50,15 +50,23 @@ class Repositext
         self.class.json_formatting_options
       end
 
+      def read_repo_level_data
+        get_all_attributes['data'] || {}
+      end
+
+      # Updates key_val_pairs under the 'data' key in self.
       # @param key_val_pairs [Hash] with string keys
-      def update_file_level_data(key_val_pairs)
+      def update_data!(key_val_pairs)
         lock_self_exclusively do
           # merge key_val_pairs under 'data' key
-          new_data = get_file_level_data
+          new_data = get_all_attributes
           new_data['data'] ||= {}
           new_data['data'].merge!(key_val_pairs)
           # write file back to disk
-          File.write(filename, JSON.generate(new_data, json_formatting_options))
+          File.write(
+            filename,
+            JSON.generate(new_data, json_formatting_options) + "\n"
+          )
         end
       end
     end

@@ -12,12 +12,6 @@ class Repositext
 
     attr_reader :repo_set_parent_path
 
-    def self.content_type_names
-      %w[
-        general
-      ]
-    end
-
     # @param repo_set_parent_path [String] path to the folder that contains all repos.
     def initialize(repo_set_parent_path)
       @repo_set_parent_path = repo_set_parent_path
@@ -38,10 +32,6 @@ class Repositext
       ]
     end
 
-    def content_type_names
-      self.class.content_type_names
-    end
-
     def foreign_content_repo_names
       %w[
         french
@@ -49,6 +39,11 @@ class Repositext
         italian
         spanish
       ]
+    end
+
+    # Returns an array of all repos in repo_set
+    def all_repos(repo_set)
+      all_repo_paths(repo_set).map{ |e| Repository.new(e) }
     end
 
     # Returns an array of paths to all repos in repo_set_spec
@@ -101,7 +96,7 @@ class Repositext
       repos_with_issues = {}
       compute_repo_paths(repo_set_spec).each { |repo_path|
         if block_given?
-          yield
+          yield(repo_path)
         end
         repo_issues = []
         cmd = %(cd #{ repo_path } && git pull && git status)
@@ -114,7 +109,10 @@ class Repositext
           if !r.index(%(Your branch is up-to-date with 'origin/master'))
             repo_issues << "Is not up-to-date with origin"
           end
-          if !r.index(%(nothing to commit, working directory clean))
+          if !(
+            r.index(%(nothing to commit, working directory clean)) ||
+            r.index(%(nothing added to commit but untracked files present))
+          )
             repo_issues << "Has uncommitted changes"
           end
           if !exit_status.success?
@@ -328,12 +326,12 @@ class Repositext
       # root level directories
       (
         %w[data] +
-        content_type_names.map{ |e| "ct-#{ e }" }
+        ContentType.all_names.map{ |e| "ct-#{ e }" }
       ).each do |rel_path|
         FileUtils.mkdir_p(File.join(repo_root_path, rel_path))
       end
       # per content_type directories
-      content_type_names.each do |content_type_name|
+      ContentType.all_names.each do |content_type_name|
         %w[
           content
           lucene_table_export
@@ -387,7 +385,7 @@ class Repositext
       File.write(dj_output_path, erb_template.result(binding))
 
       # Copy content_type level Rtfiles from code template
-      content_type_names.each do |content_type_name|
+      ContentType.all_names.each do |content_type_name|
         @content_type_name = content_type_name
         erb_template = ERB.new(File.read(rtfile_template_path))
         rtfile_output_path = File.join(repo_root_path, "ct-#{ content_type_name }", 'Rtfile')

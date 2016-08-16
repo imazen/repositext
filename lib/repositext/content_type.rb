@@ -23,6 +23,26 @@ class Repositext
              to: :config,
              prefix: :config
 
+    # Returns an array with all available content_types for repo
+    # @param repo [Repository]
+    # @return [Array<ContentType>]
+    def self.all(repo)
+      all_names.map { |content_type_name|
+        content_type_base_dir = File.join(
+          repo.base_dir,
+          "ct-#{ content_type_name }"
+        )
+        new(content_type_base_dir, repo)
+      }
+    end
+
+    # Returns array of all available names
+    def self.all_names
+      %w[
+        general
+      ]
+    end
+
     def self.new_from_config(config)
       ct = new('_')
       ct.config = config
@@ -37,19 +57,6 @@ class Repositext
     def initialize(base_dir, repository=nil)
       @base_dir = base_dir
       @repository = repository  if repository
-    end
-
-    # Lazily determines the containing git repo. Can also be set via initializer
-    def repository
-      @repository ||= Repository::Content.new(@base_dir)
-    end
-
-    def language
-      @language ||= Repositext::Language.find_by_code(config_setting(:language_code_3_chars))
-    end
-
-    def name
-      @name ||= @base_dir.split('/').last.sub(/\Act-/, '')
     end
 
     def config
@@ -79,6 +86,19 @@ class Repositext
 
     def is_primary_repo
       config_setting(:is_primary_repo)
+    end
+
+    def language
+      @language ||= Repositext::Language.find_by_code(config_setting(:language_code_3_chars))
+    end
+
+    def name
+      @name ||= @base_dir.split('/').last.sub(/\Act-/, '')
+    end
+
+    # Lazily determines the containing git repo. Can also be set via initializer
+    def repository
+      @repository ||= Repository::Content.new(@base_dir)
     end
 
   end

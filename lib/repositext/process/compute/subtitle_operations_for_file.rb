@@ -59,24 +59,28 @@ class Repositext
 
         # Initializes a new instance from high level objects.
         # @param content_at_file [Repositext::RFile::ContentAt]
+        # @param content_at_file [Repositext::RFile::SubtitleMarkersCsv]
         # @param patch [Rugged::Diff::Patch]
-        def self.new_from_content_at_file_and_patch(content_at_file, patch)
+        # @param repo_base_dir [String]
+        def self.new_from_content_at_file_and_patch(content_at_file, stm_csv_file, patch, repo_base_dir)
           new(
-            compute_content_at_lines_with_subtitles(content_at_file),
+            compute_content_at_lines_with_subtitles(content_at_file, stm_csv_file),
             patch.hunks.map { |e|
               SubtitleOperationsForFile::Hunk.new_from_rugged_hunk(e)
             },
-            content_at_file
+            content_at_file,
+            repo_base_dir
           )
         end
 
         # Returns a data structure for all text lines in content_at_file
         # with their subtitles.
         # @param content_at_file [Repositext::RFile::ContentAt]
+        # @param content_at_file [Repositext::RFile::SubtitleMarkersCsv]
         # @return [Array<Hash>] with keys :content, :line_no, :subtitles
-        def self.compute_content_at_lines_with_subtitles(content_at_file)
+        def self.compute_content_at_lines_with_subtitles(content_at_file, stm_csv_file)
           r = []
-          subtitles = content_at_file.subtitles
+          subtitles = stm_csv_file.subtitles
           content_at_file.contents
                          .split("\n")
                          .each_with_index { |content_at_line, idx|
@@ -92,10 +96,12 @@ class Repositext
         # @param content_at_lines_with_subtitles [Array<Hash>]
         # @param hunks [Array<SubtitleOperationsForFile::Hunk>]
         # @param content_at_file [Repositext::RFile::ContentAt]
-        def initialize(content_at_lines_with_subtitles, hunks, content_at_file)
+        # @param repo_base_dir [String]
+        def initialize(content_at_lines_with_subtitles, hunks, content_at_file, repo_base_dir)
           @content_at_lines_with_subtitles = content_at_lines_with_subtitles
           @hunks = hunks
           @content_at_file = content_at_file
+          @repo_base_dir = repo_base_dir
         end
 
         # @return [Repositext::Subtitle::OperationsForFile]
@@ -111,14 +117,15 @@ class Repositext
             ).compute
             last_stid = r[:last_stid]
             m += r[:subtitle_operations]
+            m
           }
           # TODO: Check if we have cross-hunk/line/para subtitle moves. They are
-          # indicated by ins/dels at the end of the first and the beginning of
-          # the second hunk.
+          # indicated by ins/del pairs at the end of the first and the beginning
+          # of the second hunk.
           Repositext::Subtitle::OperationsForFile.new(
             @content_at_file,
             {
-              comments: "File: #{ @content_at_file.basename }",
+              file_path: @content_at_file.filename.sub(@repo_base_dir, ''),
             },
             operations_for_all_hunks
           )

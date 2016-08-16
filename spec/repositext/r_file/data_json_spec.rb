@@ -30,9 +30,9 @@ class Repositext
         end
       end
 
-      describe '#get_file_level_data' do
+      describe '#get_all_attributes' do
         it 'handles default case' do
-          default_rfile.get_file_level_data.must_equal(
+          default_rfile.get_all_attributes.must_equal(
             {"data"=>{}, "settings"=>{}, "subtitles"=>{}}
           )
         end
@@ -44,7 +44,7 @@ class Repositext
         end
       end
 
-      describe '#update_file_level_data' do
+      describe '#update_data!' do
         # TODO
       end
     end

@@ -14,6 +14,14 @@ class Repositext
         { col_sep: "\t", headers: :first_row }
       end
 
+      # Yields each row as hash with stringified keys to block
+      def each_row
+        csv.each do |row|
+          # row: #<CSV::Row "relativeMS":"6223" "samples":"151367170" "charLength":"34" "persistentId":"4498439" "recordId":"55020559">
+          yield(row)
+        end
+      end
+
       # Returns an array of the contained subtitles
       # @param [Array<Repositext::Subtitle>]
       def subtitles
@@ -31,6 +39,32 @@ class Repositext
       # Returns contents as CSV object
       def csv
         csv = CSV.new(contents, self.class.csv_options)
+      end
+
+      # @param new_subtitle_markers_data [Array<Hash>]
+      #    [
+      #      {
+      #        relative_milliseconds: 123,
+      #        samples: 123,
+      #        charLength: 123,
+      #        persistentId: 123,
+      #        recordId: 123,
+      #      }
+      #    ]
+      def update!(new_subtitle_markers_data)
+        csv_string = CSV.generate(col_sep: "\t") do |csv|
+          csv << Repositext::Utils::SubtitleMarkTools.csv_headers
+          new_subtitle_markers_data.each do |st_attrs|
+            csv << [
+              st_attrs[:relative_milliseconds],
+              st_attrs[:samples],
+              st_attrs[:char_length],
+              st_attrs[:persistent_id],
+              st_attrs[:record_id],
+            ]
+          end
+        end
+        File.write(filename, csv_string)
       end
 
     end

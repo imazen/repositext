@@ -119,7 +119,31 @@ class Repositext
       end
 
       def sync_subtitles(options)
-        Process::Sync::Subtitles.new(options).sync
+        if !config.setting(:is_primary_repo)
+          raise "Please run this command from inside the primary repository"
+        end
+        # Compute options for extracting subtitles
+        file_list_pattern = config.compute_glob_pattern(
+          options['base-dir'] || :content_dir,
+          options['file-selector'] || :all_files,
+          options['file-extension'] || :at_extension
+        )
+        file_list = Dir.glob(file_list_pattern)
+        if (file_filter = options['file_filter'])
+          file_list = file_list.find_all { |filename| file_filter === filename }
+        end
+        stids_inventory_file = File.open(
+          File.join(config.base_dir(:data_dir), 'subtitle_ids.txt'),
+          'r+'
+        )
+        Process::Sync::Subtitles.new(
+          options.merge(
+            'config' => config,
+            'file_list' => file_list,
+            'repository' => content_type.repository,
+            'stids_inventory_file' => stids_inventory_file,
+          )
+        ).sync
       end
 
       def sync_test(options)
