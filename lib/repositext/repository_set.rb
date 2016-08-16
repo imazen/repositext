@@ -290,6 +290,10 @@ class Repositext
       puts "Command completed."
     end
 
+    def validate_content(repo_set_spec, content_type)
+      run_repositext_command(repo_set_spec, "rt #{ content_type.name } validate content")
+    end
+
   protected
 
     # Returns collection of paths to all repos in repo_set_spec

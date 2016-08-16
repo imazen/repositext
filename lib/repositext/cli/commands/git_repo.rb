@@ -60,6 +60,15 @@ class Repositext
         RepositorySet.new(repos_parent_path).update_all_rubygems
       end
 
+      # Runs `rt validate content` on all content repos
+      def git_repo_validate_all_content(options)
+        repos_parent_path = File.expand_path('..', Dir.pwd)
+        RepositorySet.new(repos_parent_path).validate_content(
+          :all_content_repos,
+          content_type
+        )
+      end
+
     end
   end
 end
