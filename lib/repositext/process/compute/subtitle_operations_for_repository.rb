@@ -67,7 +67,11 @@ class Repositext
               content_at_file_at_from_commit,
               stm_csv_file_at_from_commit,
               patch,
-              @repository.base_dir
+              @repository.base_dir,
+              {
+                from_git_commit: @fromGitCommit,
+                to_git_commit: @toGitCommit,
+              }
             ).compute
 
             # Return nil if no subtitle operations exist for this file

@@ -62,14 +62,22 @@ class Repositext
         # @param content_at_file [Repositext::RFile::SubtitleMarkersCsv]
         # @param patch [Rugged::Diff::Patch]
         # @param repo_base_dir [String]
-        def self.new_from_content_at_file_and_patch(content_at_file, stm_csv_file, patch, repo_base_dir)
+        # @param options [Hash] with keys :from_git_commit and :to_git_commit
+        def self.new_from_content_at_file_and_patch(
+          content_at_file,
+          stm_csv_file,
+          patch,
+          repo_base_dir,
+          options
+        )
           new(
             compute_content_at_lines_with_subtitles(content_at_file, stm_csv_file),
             patch.hunks.map { |e|
               SubtitleOperationsForFile::Hunk.new_from_rugged_hunk(e)
             },
             content_at_file,
-            repo_base_dir
+            repo_base_dir,
+            options
           )
         end
 
@@ -97,11 +105,13 @@ class Repositext
         # @param hunks [Array<SubtitleOperationsForFile::Hunk>]
         # @param content_at_file [Repositext::RFile::ContentAt]
         # @param repo_base_dir [String]
-        def initialize(content_at_lines_with_subtitles, hunks, content_at_file, repo_base_dir)
+        # @param options [Hash] with keys :from_git_commit and :to_git_commit
+        def initialize(content_at_lines_with_subtitles, hunks, content_at_file, repo_base_dir, options)
           @content_at_lines_with_subtitles = content_at_lines_with_subtitles
           @hunks = hunks
           @content_at_file = content_at_file
           @repo_base_dir = repo_base_dir
+          @options = options
         end
 
         # @return [Repositext::Subtitle::OperationsForFile]
@@ -126,6 +136,8 @@ class Repositext
             @content_at_file,
             {
               file_path: @content_at_file.filename.sub(@repo_base_dir, ''),
+              from_git_commit: @options[:from_git_commit],
+              to_git_commit: @options[:to_git_commit],
             },
             operations_for_all_hunks
           )
