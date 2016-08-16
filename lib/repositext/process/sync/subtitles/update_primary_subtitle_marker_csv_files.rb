@@ -8,32 +8,23 @@ class Repositext
           extend ActiveSupport::Concern
 
           # Updates STM CSV files for all of repository's content_at files that
-          # require subtitle synchronization.
-          # Merges the following to update STM CSV files:
-          #  * Existing STIDS and record ids from existing STM CSV file
-          #  * New time slices from subtitle import marker files
-          #  * Updates to subtitles from subtitle operations
+          # have subtitle operations.
+          # Computes new STM CSV file data by merging the following:
+          #  * Existing STIDS and record ids from existing STM CSV file.
+          #  * New time slices from subtitle import marker files.
+          #  * Updated subtitles based on subtitle operations (with new stids)
+          # Then updates the STM CSV file with the new data.
           # @param git_repo [Repositext::Repository]
           # @param st_ops_for_repo [Repositext::Subtitle::OperationsForRepository]
           # @return [True]
           def update_primary_subtitle_marker_csv_files(git_repo, st_ops_for_repo)
-            synced_content_at_files = []
-            ContentType.all(git_repo).each { |content_type|
-              synced_content_at_files += RFile::ContentAt.find_all(
-                git_repo.base_dir,
-                content_type
-              )
-            }
-            synced_content_at_files.each do |content_at_file_current|
+            st_ops_for_repo.affected_content_at_files.each do |content_at_file_current|
               # Get content_at_file as of from_git_commit
               content_at_file = content_at_file_current.as_of_git_commit(@from_git_commit)
               old_stids, new_time_slices, st_ops_for_file = extract_subtitle_sync_input_data(
                 content_at_file,
                 st_ops_for_repo
               )
-
-              # Only process files that have subtitle operations
-              next  if st_ops_for_file.nil?
 
               new_char_lengths = compute_new_char_lengths(content_at_file)
 

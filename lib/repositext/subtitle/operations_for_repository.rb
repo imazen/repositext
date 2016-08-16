@@ -65,6 +65,22 @@ class Repositext
         self.operations_for_files = operations_for_files
       end
 
+      # Returns array of all content AT files with ops
+      # @return [Array<RFile::ContentAt>]
+      def affected_content_at_files
+        operations_for_files.map { |e| e.content_at_file }
+      end
+
+      # Returns operations for file with product_identity_id, or nil if none
+      # exist.
+      # @param product_identity_id [String]
+      # @return [Subtitle::OperationsForFile, Nil]
+      def get_operations_for_file(product_identity_id)
+        operations_for_files.detect { |e|
+          e.content_at_file.extract_product_identity_id == product_identity_id
+        }
+      end
+
       # Call on self to invert `from` and `to` git commits as well as each
       # operation (i.e. a `merge` becomes a `split`, etc.)
       def invert!

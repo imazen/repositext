@@ -13,7 +13,7 @@ class Repositext
 
       ATTR_NAMES = [:file_path]
 
-      attr_accessor :content_at_file, :operations
+      attr_accessor :content_at_file, :from_git_commit, :operations, :to_git_commit
       attr_accessor *ATTR_NAMES
 
       # Instantiates a new instance of self from json string
@@ -57,7 +57,9 @@ class Repositext
         ATTR_NAMES.each do |attr_name|
           self.send("#{ attr_name }=", attrs[attr_name])
         end
-        # TODO Check for presence of fromGitCommit and toGitCommit
+        @from_git_commit = attrs[:fromGitCommit]
+        @to_git_commit = attrs[:toGitCommit]
+        # TODO Check for presence of from_git_commit and to_git_commit
         if operations.nil?
           raise(ArgumentError.new("Nil operations given"))
         end

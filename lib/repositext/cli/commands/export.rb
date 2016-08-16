@@ -401,6 +401,8 @@ class Repositext
         input_file_selector = config.compute_file_selector(options['file-selector'] || :all_files)
         input_file_extension = config.compute_file_extension(options['file-extension'] || :at_extension)
         output_base_dir = options['output'] || config.base_dir(:subtitle_export_dir)
+        primary_repo = content_type.corresponding_primary_content_type.repository
+        st_sync_commit_sha1 = primary_repo.read_repo_level_data['st_sync_commit']
         Repositext::Cli::Utils.export_files(
           input_base_dir,
           input_file_selector,
@@ -409,23 +411,38 @@ class Repositext
           options['file_filter'],
           "Exporting AT files to subtitle",
           options.merge(
-            :output_path_lambda => lambda { |input_filename, output_file_attrs|
+            output_path_lambda: lambda { |input_filename, output_file_attrs|
               Repositext::Utils::SubtitleFilenameConverter.convert_from_repositext_to_subtitle_export(
                 input_filename.gsub(input_base_dir, output_base_dir),
                 output_file_attrs
               )
-            }
+            },
+            use_new_repositext_file_api: true,
+            content_type: content_type,
           )
-        ) do |contents, filename|
+        ) do |content_at_file|
+          # Make sure primary file (or foreign file's corresponding primary file)
+          # does not require a subtitle sync.
+          self_or_corresponding_primary_file = content_at_file.corresponding_primary_file
+          if self_or_corresponding_primary_file.read_file_level_data['st_sync_required']
+            raise "Cannot export #{ content_at_file.filename } since it requires a subtitle sync!".color(:red)
+          end
           # Since the kramdown parser is specified as module in Rtfile,
           # I can't use the standard kramdown API:
           # `doc = Kramdown::Document.new(contents, :input => 'kramdown_repositext')`
           # We have to patch a base Kramdown::Document with the root to be able
           # to convert it.
-          root, warnings = config.kramdown_parser(:kramdown).parse(contents)
+          root, warnings = config.kramdown_parser(:kramdown).parse(content_at_file.contents)
           doc = Kramdown::Document.new('')
           doc.root = root
           subtitle = doc.send(config.kramdown_converter_method(:to_subtitle))
+          # Foreign files only: Record sync commit at which subtitles were exported
+          if !config.setting(:is_primary_repo)
+            content_at_file.update_file_level_data(
+              'exported_subtitles_at_st_sync_commit' => st_sync_commit_sha1
+            )
+          end
+          # Return Outcome
           [Outcome.new(true, { contents: subtitle, extension: 'txt' })]
         end
         # Fork depending on whether we're in primary or foreign repo.

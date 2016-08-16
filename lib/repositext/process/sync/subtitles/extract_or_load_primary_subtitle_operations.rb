@@ -8,14 +8,30 @@ class Repositext
           extend ActiveSupport::Concern
 
           # Checks if subtitle operations for boundary git commits have been
-          # extracted already, if so uses them. Otherwise extracts them.
-          def extract_or_load_primary_subtitle_operations
-            st_ops_dir = File.join(@repository.base_dir, 'subtitle_operations')
-            existing_st_ops_file_path = detect_expected_st_ops_file_path(
-              st_ops_dir,
-              from_to_git_commit_marker
+          # extracted already, if so uses them. Otherwise extracts them (unless
+          # it expects_st_ops_file_to_exist)
+          # @param expects_st_ops_file_to_exist [Boolean, optional] set to true
+          #        if you expect the st-ops file to exist and you don't want to
+          #        extract operations but raise an exception if it doesn't.
+          def extract_or_load_primary_subtitle_operations(expects_st_ops_file_to_exist=false)
+            existing_st_ops_file_path = Subtitle::OperationsFile.detect_st_ops_file_path(
+              @config.base_dir(:subtitle_operations_dir),
+              @from_git_commit,
+              @to_git_commit
             )
-            st_ops_file_path = existing_st_ops_file_path || extract_and_store_primary_subtitle_operations
+            if existing_st_ops_file_path.nil? && expects_st_ops_file_to_exist
+              raise([
+                "Expected st ops file for",
+                Subtitle::OperationsFile.compute_from_to_git_commit_marker(
+                  @from_git_commit, @to_git_commit
+                ),
+                "to exist!"
+              ].join(' '))
+            end
+            st_ops_file_path = (
+              existing_st_ops_file_path ||
+              extract_and_store_primary_subtitle_operations
+            )
             json_with_persistent_stids = File.read(st_ops_file_path)
             Subtitle::OperationsForRepository.from_json(
               json_with_persistent_stids,
@@ -24,32 +40,6 @@ class Repositext
           end
 
         private
-
-          # Detects if the st-ops file with the expected filename exists and
-          # returns its complete path, or Nil otherwise.
-          # @param st_ops_dir [String] path to directory that contains all st-ops files
-          # @param from_to_commit_id [String] the unique marker based on from_commit and to_commit
-          # @return [String, Nil] path to expected st-ops file if it exists, Nil otherwise.
-          def detect_expected_st_ops_file_path(st_ops_dir, from_to_commit_id)
-            Dir.glob(File.join(st_ops_dir, "st-ops-*-#{ from_to_commit_id }.json")).first
-          end
-
-          # Computes the next sequence marker for subtitle_operations files.
-          # We use a UTC date/time stamp for sequencing.
-          # @param subtitle_operations_dir [String]
-          # @return [String] with date/time stamp in the following format:
-          #     "2016_07_12-20_39_28" (UTC)
-          def compute_next_st_ops_file_sequence_marker(subtitle_operations_dir)
-            current_utc_time_stamp = Time.now.utc.strftime('%Y_%m_%d-%H_%M_%W')
-            existing_st_ops_file_names = Dir.glob(
-              File.join(subtitle_operations_dir, "st-ops-*.json")
-            )
-            if existing_st_ops_file_names.any? { |e| e.index(current_utc_time_stamp) }
-              raise "Duplicate timestamp #{ current_utc_time_stamp.inspect }. Please try again."
-            else
-              current_utc_time_stamp
-            end
-          end
 
           # Extracts subtitle operations for entire repo between two git commits.
           # @return [String] the name of the file operations are stored in
@@ -63,10 +53,10 @@ class Repositext
               @to_git_commit,
               @file_list
             ).compute
-            st_ops_file_path = compute_next_st_ops_file_path(
+            st_ops_file_path = Subtitle::OperationsFile.compute_next_file_path(
               @config.base_dir(:subtitle_operations_dir),
-              compute_next_st_ops_file_sequence_marker(@config.base_dir(:subtitle_operations_dir)),
-              from_to_git_commit_marker
+              @from_git_commit,
+              @to_git_commit
             )
             puts " - Writing JSON file to #{ st_ops_file_path }"
             json_with_temp_stids = subtitle_ops.to_json.to_s
@@ -78,38 +68,11 @@ class Repositext
             st_ops_file_path
           end
 
-          # Computes the path for the next st-ops file
-          # @param st_ops_dir [String] path to directory that contains all st-ops files
-          # @param next_sequence_number [String]
-          # @param from_to_commit_id [String] the unique marker based on from_commit and to_commit
-          def compute_next_st_ops_file_path(st_ops_dir, next_sequence_number, from_to_commit_id)
-            File.join(
-              st_ops_dir,
-              [
-                'st-ops-',
-                next_sequence_number,
-                '-',
-                from_to_commit_id,
-                '.json'
-              ].join
-            )
-          end
-
           # Persists st-ops to file
           # @param st_ops_file_path [String]
           # @param st_ops_json [String]
           def persist_st_ops!(st_ops_file_path, st_ops_json)
             File.open(st_ops_file_path, 'w') { |f| f.write(st_ops_json) }
-          end
-
-          # Returns the marker to be used in the file name for fromGitCommit
-          # and toGitCommit
-          def from_to_git_commit_marker
-            [
-              @from_git_commit.first(6),
-              '-to-',
-              @to_git_commit.first(6),
-            ].join
           end
 
           # Replaces all temp stids with persistent ones in json string

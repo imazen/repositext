@@ -92,6 +92,11 @@ class Repositext
         }
       end
 
+      # Returns nicely formatted representation of self as String.
+      def pretty_print
+        PP.pp(to_hash, "")
+      end
+
       # Returns the inverse operation of self
       # @return [Operation]
       def inverse_operation

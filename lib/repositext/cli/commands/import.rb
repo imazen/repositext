@@ -121,15 +121,21 @@ class Repositext
           options.merge({ 'base-dir' => :content_dir, 'file-extension' => :at_extension })
         )
         fix_normalize_trailing_newlines(options)
+
+        # Flag st_sync as required on primary repo.
+        # NOTE: On foreign repos we update data related to st_sync on a per file basis.
+        #       This is done in `merge_subtitle_marks_from_subtitle_import_into_content_at`
         if config.setting(:is_primary_repo)
-          # Reset `equiv_to_st_sync_commit` to null in matching file level data_json files.
           sync_file_level_data(
             options.merge(
               { 'base-dir' => :content_dir, 'file-extension' => :at_extension }
             ),
-            { 'equiv_to_st_sync_commit' => nil }
+            {
+              'st_sync_required' => true,
+            }
           )
         end
+
         options['append_to_validation_report'] = true
         validate_subtitle_import(options.merge('run_options' => %w[post_import]))
       end

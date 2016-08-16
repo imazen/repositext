@@ -13,13 +13,16 @@ class Repositext
         include EnsureAllContentReposAreReady
         include ExtractOrLoadPrimarySubtitleOperations
         include FinalizeSyncOperation
+        include TransferAccumulatedStOpsToForeignFile
         include TransferSubtitleOperationsToForeignRepos
         include UpdatePrimarySubtitleMarkerCsvFiles
 
         # Initialize a new subtitle sync process
         # @param options [Hash] with stringified keys
         # @option options [Config] 'config'
-        # @option options [Array<String>] 'file_list'
+        # @option options [Array<String>] 'file_list' can be used at command
+        #                                 line via file-selector to limit which
+        #                                 files should be synced.
         # @option options [String, Nil] 'from-commit', optional, defaults to previous `to-commit`
         # @option options [Repository] 'repository' the primary repo
         # @option options [IO] stids_inventory_file
@@ -50,8 +53,12 @@ class Repositext
             @repository,
             st_ops_for_repo
           )
-          # transfer_subtitle_operations_to_foreign_repos(st_ops_for_repo)
-          finalize_sync_operation(@repository, @to_git_commit)
+          transfer_subtitle_operations_to_foreign_repos!(st_ops_for_repo)
+          finalize_sync_operation(
+            @repository,
+            @to_git_commit,
+            st_ops_for_repo.affected_content_at_files
+          )
         end
 
       private
@@ -81,8 +88,8 @@ class Repositext
           from_setting = repository.read_repo_level_data['subtitles_last_synched_at_git_commit']
           raise "Missing subtitles_last_synched_at_git_commit datum"  if from_setting.nil?
           # Load from latest st-ops file
-          from_latest_st_ops_file = compute_to_commit_from_latest_st_ops_file(
-            find_latest_st_ops_file_path(config.base_dir(:subtitle_operations_dir))
+          from_latest_st_ops_file = Subtitle::OperationsFile.compute_latest_to_commit(
+            config.base_dir(:subtitle_operations_dir)
           )
           # Verify that setting and file name are consistent
           if from_latest_st_ops_file && from_setting.first(6) != from_latest_st_ops_file
@@ -90,26 +97,6 @@ class Repositext
           end
           # Return consistent value from setting
           from_setting
-        end
-
-        # Finds the path of the latest st-ops file if any exist
-        # @param st_ops_dir [String]
-        # @return [String, Nil]
-        def find_latest_st_ops_file_path(st_ops_dir)
-          latest_st_ops_file_name = Dir.glob(
-            File.join(st_ops_dir, "st-ops-*.json")
-          ).last
-        end
-
-        # Returns the `to` git commit from the latest st-ops file if any exist.
-        # @param latest_st_ops_file_name [String, Nil]
-        # @return [String, Nil]
-        def compute_to_commit_from_latest_st_ops_file(latest_st_ops_file_name)
-          return nil  if latest_st_ops_file_name.nil?
-          # Extract `from` commit from file name (e.g., st-ops-00001-791a1d-to-eea8b4.json)
-          from_commit = latest_st_ops_file_name.match(
-            /st-ops-\d+-[^\-]+-to-([^\.]+).json\z/
-          )[1]
         end
 
         # Computes the `to` commit
