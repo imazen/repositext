@@ -43,7 +43,12 @@ class Repositext
 
     # Returns an array of all repos in repo_set
     def all_repos(repo_set)
-      all_repo_paths(repo_set).map{ |e| Repository.new(e) }
+      repo_class = if repo_set.is_a?(Symbol) && repo_set.to_s.include?('_content_')
+        Repository::Content
+      else
+        Repository
+      end
+      all_repo_paths(repo_set).map{ |e| repo_class.new(e) }
     end
 
     # Returns an array of paths to all repos in repo_set_spec
