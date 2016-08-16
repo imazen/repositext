@@ -85,7 +85,7 @@ class Repositext
             return o
           end
           # Load from repository's data.json file
-          from_setting = repository.read_repo_level_data['subtitles_last_synched_at_git_commit']
+          from_setting = repository.read_repo_level_data['st_sync_commit']
           raise "Missing st_sync_commit datum".color(:red)  if from_setting.nil?
           # Load from latest st-ops file
           from_latest_st_ops_file = Subtitle::OperationsFile.compute_latest_to_commit(
