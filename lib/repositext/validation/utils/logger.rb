@@ -52,7 +52,7 @@ class Repositext
 
       # @param [Object] loggable
       def error(loggable)
-        @logging.error(loggable)
+        @logging.error(loggable.color(:red))
       end
 
       # Logs a header for validation
