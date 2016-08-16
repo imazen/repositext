@@ -903,6 +903,86 @@ class Repositext
         end
       end
 
+      # Reports anomalies and stats in the latest st-ops file.
+      def report_st_ops_file_analysis(options)
+        $stderr.puts "st-ops file analysis:".color(:blue)
+        $stderr.puts "-" * 40
+        st_ops_file_path = Subtitle::OperationsFile.find_latest(
+          config.base_dir(:subtitle_operations_dir)
+        )
+        if st_ops_file_path.nil?
+          $stderr.puts "No st-ops file found, aborting.".color(:red)
+        end
+        $stderr.puts " - Loading st-ops file at #{ st_ops_file_path }"
+        st_ops_for_repository = Subtitle::OperationsForRepository.from_json(
+          File.read(st_ops_file_path),
+          repository.base_dir
+        )
+        r = {
+          files_count: 0,
+          ops_type_counts: Hash.new(0),
+          ops_type_signatures: {
+            delete: Hash.new(0),
+            insert: Hash.new(0),
+            merge: Hash.new(0),
+            moveLeft: Hash.new(0),
+            moveRight: Hash.new(0),
+            split: Hash.new(0),
+          },
+          st_ops_count: 0,
+          unexpected_ops: [],
+        }
+        st_ops_for_repository.operations_for_files.each do |st_ops_for_file|
+          r[:files_count] += 1
+          # Record ops_type_signatures
+          st_ops_for_file.operations.each do |st_op|
+            r[:st_ops_count] += 1
+            type_signature = st_op.operationType.to_sym
+            r[:ops_type_counts][type_signature] += 1
+            ins_del_signature = st_op.affectedStids.map { |e|
+              # Mark unchanged/existing st as :noc, added as :add, and deleted as :del
+              case ['' == e.tmp_attrs[:before], '' == e.tmp_attrs[:after]]
+              when [false, false]
+                # No subtitles were added or deleted
+                :noc
+              when [false, true]
+                # before is present, after is blank
+                :del
+              when [true, false]
+                # before is blank, after is present
+                :add
+              else
+                # both before and after are blank. Shouldn't happen!
+                raise "Handle this: #{ st_op.to_hash }"
+              end
+            }
+            # Record unexpected ops
+            if :merge == type_signature && [:noc, :del] != ins_del_signature.uniq
+              r[:unexpected_ops] << [
+                "\nFirst st was deleted in merge:\n".color(:red),
+                "File: #{ st_ops_for_file.content_at_file.filename }",
+                st_op.pretty_print,
+              ].join("\n")
+            end
+            r[:ops_type_signatures][type_signature][ins_del_signature] += 1
+          end
+        end
+        $stderr.puts
+        $stderr.puts " - File count: #{ r[:files_count] }".color(:blue)
+        $stderr.puts " - Subtitle operations count: #{ r[:st_ops_count] }".color(:blue)
+
+        $stderr.puts " - Operation signatures:".color(:blue)
+        r[:ops_type_signatures].each { |ops_type, ins_del_signatures|
+          $stderr.puts "   - #{ ops_type.inspect }: #{ r[:ops_type_counts][ops_type] }"
+          ins_del_signatures.each { |ins_del_sig, count|
+            $stderr.puts "     - #{ ins_del_sig.inspect}: #{ count }"
+          }
+        }
+
+        $stderr.puts " - Unexpected operations:".color(:red)
+        r[:unexpected_ops].each { |op| $stderr.puts op }
+      end
+
       # Finds .stanza paragraphs that are not followed by .song paragraphs
       def report_stanza_without_song_paragraphs(options)
         file_count = 0
