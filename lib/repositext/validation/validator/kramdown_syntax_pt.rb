@@ -71,7 +71,9 @@ class Repositext
             { :name => 'id_paragraph', :allowed_contexts => [:block] },
             { :name => 'id_title1', :allowed_contexts => [:block] },
             { :name => 'id_title2', :allowed_contexts => [:block] },
+            { :name => 'indent_for_eagle', :allowed_contexts => [:block] },
             { :name => 'italic', :allowed_contexts => [:span] },
+            { :name => 'line_break', :allowed_contexts => [:span] },
             { :name => 'normal', :allowed_contexts => [:block] },
             { :name => 'normal_pn', :allowed_contexts => [:block] },
             { :name => 'omit', :allowed_contexts => [:block] },
@@ -82,11 +84,12 @@ class Repositext
             { :name => 'scr', :allowed_contexts => [:block] },
             { :name => 'smcaps', :allowed_contexts => [:span] },
             { :name => 'song', :allowed_contexts => [:block] },
+            { :name => 'song_break', :allowed_contexts => [:block] },
             { :name => 'stanza', :allowed_contexts => [:block] },
             { :name => 'subscript', :allowed_contexts => [:span] },
             { :name => 'subtitle', :allowed_contexts => [:block] },
             { :name => 'superscript', :allowed_contexts => [:span] },
-            { :name => 'underline', :allowed_contexts => [:span] }
+            { :name => 'underline', :allowed_contexts => [:span] },
           ]
         end
 
