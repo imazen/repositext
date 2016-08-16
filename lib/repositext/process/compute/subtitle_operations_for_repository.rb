@@ -41,17 +41,15 @@ class Repositext
 
           operations_for_all_files = diff.patches.map { |patch|
             file_name = patch.delta.old_file[:path]
+            next nil  if !@file_list.include?(file_name)
 
-            if !@file_list.include?(file_name)
-              puts "   - skipping #{ file_name }"
-              next nil
-            end
             # Skip non content_at files
             unless file_name =~ /\/content\/.+\d{4}\.at\z/
               raise "shouldn't get here"
             end
 
             puts "   - processing #{ file_name }"
+
             # We use the versions of content AT file and STM CSV file as they
             # existed at `fromGitCommit`.
             content_at_file_at_from_commit = Repositext::RFile::ContentAt.new(

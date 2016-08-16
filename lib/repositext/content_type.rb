@@ -74,6 +74,7 @@ class Repositext
 
     # @param content_type [String] the name of the content_type, e.g., 'general'
     def corresponding_primary_content_type
+      return self  if is_primary_repo
       self.class.new(corresponding_primary_content_type_base_dir)
     end
 
