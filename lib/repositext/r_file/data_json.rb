@@ -50,7 +50,7 @@ class Repositext
         self.class.json_formatting_options
       end
 
-      def read_repo_level_data
+      def read_data
         get_all_attributes['data'] || {}
       end
 

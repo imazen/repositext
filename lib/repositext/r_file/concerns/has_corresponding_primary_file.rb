@@ -31,7 +31,7 @@ class Repositext
       end
 
       def corresponding_primary_file
-        return self  if is_primary_repo
+        return self  if is_primary?
 
         cpct = corresponding_primary_content_type
         self.class.new(
@@ -43,7 +43,7 @@ class Repositext
       end
 
       def corresponding_primary_filename
-        return filename  if is_primary_repo
+        return filename  if is_primary?
 
         primary_filename = filename.sub(
           content_type.base_dir,
@@ -52,6 +52,11 @@ class Repositext
           /\/#{ content_type.config_setting(:language_code_3_chars) }/,
           "/#{ content_type.config_setting(:primary_repo_lang_code) }"
         )
+      end
+
+      # Returns true if self is a primary file
+      def is_primary?
+        content_type.is_primary_repo
       end
     end
   end

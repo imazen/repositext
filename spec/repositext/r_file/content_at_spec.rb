@@ -6,7 +6,11 @@ class Repositext
       let(:contents) { "# title\n\nparagraph 1" }
       let(:language) { Language::English.new }
       let(:filename) { '/content/57/eng0103-1234.at' }
-      let(:default_rfile) { RFile::ContentAt.new(contents, language, filename) }
+      let(:path_to_repo) { Repository::Test.create!('rt-english').first }
+      let(:content_type) { ContentType.new(File.join(path_to_repo, 'ct-general')) }
+      let(:default_rfile) {
+        RFile::ContentAt.new(contents, language, filename, content_type)
+      }
 
       describe '#compute_similarity_with_corresponding_primary_file' do
         # TODO

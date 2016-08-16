@@ -73,7 +73,7 @@ class Repositext
       # @param options [Hash, optional]
       def kramdown_doc(options = {})
         options = {
-          is_primary_repositext_file: is_primary_repo,
+          is_primary_repositext_file: is_primary?,
           input: kramdown_parser,
           line_width: 100000, # set to very large value so that each para is on a single line
         }.merge(options)

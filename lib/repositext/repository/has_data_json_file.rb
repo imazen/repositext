@@ -27,7 +27,7 @@ class Repositext
       def read_repo_level_data
         cdjf = corresponding_data_json_file
         return {}  if cdjf.nil?
-        cdjf.read_repo_level_data
+        cdjf.read_data
       end
 
       # Syncs key_val_pairs under data key in corresponding data_json file.
