@@ -44,7 +44,7 @@ class Repositext
             @repository
           )
           if @from_git_commit == @to_git_commit
-            raise "Subtitles are up-to-date, nothing to sync!"
+            raise "Subtitles are up-to-date, nothing to sync!".color(:red)
           end
 
           # ensure_all_content_repos_are_ready
@@ -86,14 +86,17 @@ class Repositext
           end
           # Load from repository's data.json file
           from_setting = repository.read_repo_level_data['subtitles_last_synched_at_git_commit']
-          raise "Missing subtitles_last_synched_at_git_commit datum"  if from_setting.nil?
+          raise "Missing st_sync_commit datum".color(:red)  if from_setting.nil?
           # Load from latest st-ops file
           from_latest_st_ops_file = Subtitle::OperationsFile.compute_latest_to_commit(
             config.base_dir(:subtitle_operations_dir)
           )
           # Verify that setting and file name are consistent
           if from_latest_st_ops_file && from_setting.first(6) != from_latest_st_ops_file
-            raise "Inconsistent from_git_commit: Setting is #{ from_setting.inspect } and latest st-ops file is #{ from_latest_st_ops_file }"
+            raise([
+              "Inconsistent from_git_commit: Setting is #{ from_setting.inspect }",
+              "and latest st-ops file is #{ from_latest_st_ops_file }"
+            ].join(' ').color(:red))
           end
           # Return consistent value from setting
           from_setting

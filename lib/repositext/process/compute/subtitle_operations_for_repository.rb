@@ -38,15 +38,11 @@ class Repositext
           diff = @repository.diff(@fromGitCommit, @toGitCommit, context_lines: 0)
 
           puts " - Processing content_at files"
-          puts # to move cursor down one line because we'll move it back up further down
 
           operations_for_all_files = diff.patches.map { |patch|
             file_name = patch.delta.old_file[:path]
 
             if !@file_list.include?(file_name)
-              # print "\r - skipping #{ file_name }                                      "
-              # print "\033[1A"
-              # print "\033[K"
               puts "   - skipping #{ file_name }"
               next nil
             end
@@ -55,9 +51,6 @@ class Repositext
               raise "shouldn't get here"
             end
 
-            # print "\r - processing #{ file_name }                                      "
-            # print "\033[1A"
-            # print "\033[K"
             puts "   - processing #{ file_name }"
             # We use the versions of content AT file and STM CSV file as they
             # existed at `fromGitCommit`.
