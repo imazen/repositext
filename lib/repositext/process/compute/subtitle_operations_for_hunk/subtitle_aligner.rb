@@ -19,17 +19,21 @@ class Repositext
           # param right_el [Hash]
           # return [Integer]
           def compute_score(left_el, right_el)
+            # We remove gap_marks to help with text alignment.
+            sanitized_left_txt = left_el[:content].gsub('%', '')
+            sanitized_right_txt = right_el[:content].gsub('%', '')
+
             jaccard_sim, jaccard_conf = JaccardSimilarityComputer.compute(
-              left_el[:content],
-              right_el[:content],
+              sanitized_left_txt,
+              sanitized_right_txt,
               false
             )
             abs_sim = 100 * jaccard_sim * jaccard_conf
             return abs_sim  if 100 == abs_sim
             # We boost left aligned similarity as it indicates that subtitles are aligned
             jaccard_sim, jaccard_conf = JaccardSimilarityComputer.compute(
-              left_el[:content],
-              right_el[:content],
+              sanitized_left_txt,
+              sanitized_right_txt,
               100_000,
               :left
             )
