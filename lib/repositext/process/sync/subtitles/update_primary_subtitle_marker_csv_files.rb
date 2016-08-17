@@ -18,9 +18,12 @@ class Repositext
           # @param st_ops_for_repo [Repositext::Subtitle::OperationsForRepository]
           # @return [True]
           def update_primary_subtitle_marker_csv_files(git_repo, st_ops_for_repo)
+            puts " - Updating primary subtitle marker CSV files".color(:blue)
             st_ops_for_repo.affected_content_at_files.each do |content_at_file_current|
               # Get content_at_file as of from_git_commit
               content_at_file = content_at_file_current.as_of_git_commit(@from_git_commit)
+              csv_file = content_at_file.corresponding_subtitle_markers_csv_file
+              puts "   - processing #{ csv_file.repo_relative_path }"
               old_stids, new_time_slices, st_ops_for_file = extract_subtitle_sync_input_data(
                 content_at_file,
                 st_ops_for_repo

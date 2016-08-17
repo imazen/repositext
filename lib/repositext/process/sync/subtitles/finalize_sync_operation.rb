@@ -12,6 +12,7 @@ class Repositext
           # @param git_to_commit [String]
           # @param synced_content_at_files [Array<RFile::ContentAt>] primary files
           def finalize_sync_operation(primary_repo, git_to_commit, synced_content_at_files)
+            puts " - Finalizing subtitle sync".color(:blue)
             # Record git_to_commit at primary repo level
             primary_repo.update_repo_level_data('st_sync_commit' => git_to_commit)
             # Reset st_sync_required at primary file level
@@ -20,8 +21,6 @@ class Repositext
             }
             true
           end
-
-        private
 
         end
       end

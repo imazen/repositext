@@ -9,8 +9,7 @@ class Repositext
 
           # @param st_ops_for_repo [Subtitle::OperationsForRepo]
           def transfer_subtitle_operations_to_foreign_repos!(st_ops_for_repo)
-            puts
-            puts "Transferring subtitle operations to foreign repos"
+            puts " - Transferring subtitle operations to foreign repos".color(:blue)
             # Iterate over all files that have subtitle changes
             primary_files_flagged_for_manual_resolution = []
             st_ops_for_repo.operations_for_files.each do |st_ops_for_file|
@@ -40,7 +39,7 @@ class Repositext
           )
             # Compute all data related to the to_primary_content_at_file
             to_primary_content_at_file = st_ops_for_file.content_at_file
-            puts " - primary file: #{ to_primary_content_at_file.basename }"
+            puts "   - primary file: #{ to_primary_content_at_file.basename }"
             to_stm_csv_file = to_primary_content_at_file.corresponding_subtitle_markers_csv_file
             to_subtitles = to_stm_csv_file.subtitles
             to_subtitles_count = to_subtitles.length
@@ -63,7 +62,6 @@ class Repositext
             end
             foreign_repos.each do |foreign_repo|
               foreign_files_flagged_for_manual_resolution = []
-              puts "   - repo: #{ foreign_repo.name }"
               # Iterate over all content_types or just the override
               foreign_content_types = if foreign_content_at_file_override
                 # Use override
@@ -73,7 +71,6 @@ class Repositext
                 ContentType.all(foreign_repo)
               end
               foreign_content_types.each do |foreign_content_type|
-                puts "     - content type: #{ foreign_content_type.name }"
                 # find corresponding foreign content_at file
                 foreign_content_at_file = (
                   foreign_content_at_file_override ||
@@ -83,15 +80,14 @@ class Repositext
                   )
                 )
                 next  if foreign_content_at_file.nil?
-                puts "       - foreign content_at file: #{ foreign_content_at_file.filename }"
-                # next  if foreign_content_at_file has no subtitles
+                print "     - #{ foreign_repo.name }:"
                 if !foreign_content_at_file.has_subtitle_marks?
-                  puts "         skipping, has no subtitle marks"
+                  puts " skipping, has no subtitle marks"
                   next
                 end
                 # next  if foreign_content_at_file has pending import
                 if foreign_content_at_file.read_file_level_data['exported_subtitles_at_st_sync_commit']
-                  puts "         skipping, has pending subtitle import"
+                  puts " skipping, has pending subtitle import"
                   next
                 end
 

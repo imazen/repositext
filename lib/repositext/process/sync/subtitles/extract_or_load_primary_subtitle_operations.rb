@@ -28,10 +28,14 @@ class Repositext
                 "to exist!"
               ].join(' '))
             end
-            st_ops_file_path = (
-              existing_st_ops_file_path ||
+            st_ops_file_path = if existing_st_ops_file_path
+              puts " - Using existing st-ops file at #{ existing_st_ops_file_path }".color(:blue)
+              existing_st_ops_file_path
+            else
+              puts " - Computing st-ops from #{ @from_git_commit.first(6) } to #{ @to_git_commit.first(6) }".color(:blue)
               extract_and_store_primary_subtitle_operations
-            )
+            end
+
             json_with_persistent_stids = File.read(st_ops_file_path)
             Subtitle::OperationsForRepository.from_json(
               json_with_persistent_stids,
@@ -58,12 +62,14 @@ class Repositext
               @from_git_commit,
               @to_git_commit
             )
-            puts " - Writing JSON file to #{ st_ops_file_path }"
+            puts " - Writing st-ops file to #{ st_ops_file_path }".color(:blue)
             json_with_temp_stids = subtitle_ops.to_json.to_s
+            puts "   - Assigning new subtitle ids"
             json_with_persistent_stids = replace_temp_with_persistent_stids!(
               json_with_temp_stids,
               @stids_inventory_file
             )
+            puts "   - Writing JSON file"
             persist_st_ops!(st_ops_file_path, json_with_persistent_stids)
             st_ops_file_path
           end

@@ -23,8 +23,6 @@ class Repositext
 
         # @return [Repositext::Subtitle::OperationsForRepository]
         def compute
-          puts " - Computing diff from #{ @fromGitCommit.first(10) } to #{ @toGitCommit.first(10) }"
-
           if @repository.latest_commit_sha_local != @toGitCommit
             raise ArgumentError.new(
               [
@@ -36,8 +34,6 @@ class Repositext
           end
 
           diff = @repository.diff(@fromGitCommit, @toGitCommit, context_lines: 0)
-
-          puts " - Processing content_at files"
 
           operations_for_all_files = diff.patches.map { |patch|
             file_name = patch.delta.old_file[:path]
