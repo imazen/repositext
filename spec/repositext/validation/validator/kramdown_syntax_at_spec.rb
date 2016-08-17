@@ -64,6 +64,54 @@ class Repositext
           end
         end
 
+        describe '#validate_source' do
+          [
+            ["valid kramdown AT", 0],
+            ["Disconnected IAL \n\n{: .normal}\n\n", 1],
+            ["gap_mark at invalid position (inside word) word%word", 1],
+            ["gap_mark at invalid position (after asterisk) *%word", 1],
+            ["gap_mark at invalid position (after quote) *%word", 1],
+            ["gap_mark at invalid position (after quote) \"%word", 1],
+            ["gap_mark at invalid position (after quote) “%word", 1],
+            ["gap_mark at invalid position (after quote) ”%word", 1],
+            ["gap_mark at invalid position (after quote) '%word", 1],
+            ["gap_mark at invalid position (after quote) ‘%word", 1],
+            ["gap_mark at invalid position (after quote) ’%word", 1],
+            ["gap_mark at invalid position (after parens) (%word", 1],
+            ["gap_mark at invalid position (after opening bracket) [%word", 1],
+            ["subtitle_mark at invalid position (inside word) word@word", 1],
+            ["subtitle_mark at invalid position (after asterisk) *@word", 1],
+            ["subtitle_mark at invalid position (after quote) *@word", 1],
+            ["subtitle_mark at invalid position (after quote) \"@word", 1],
+            ["subtitle_mark at invalid position (after quote) “@word", 1],
+            ["subtitle_mark at invalid position (after quote) ”@word", 1],
+            ["subtitle_mark at invalid position (after quote) '@word", 1],
+            ["subtitle_mark at invalid position (after quote) ‘@word", 1],
+            ["subtitle_mark at invalid position (after quote) ’@word", 1],
+            ["subtitle_mark at invalid position (after parens) (@word", 1],
+            ["subtitle_mark at invalid position (after opening bracket) [@word", 1],
+            ["subtitle_mark NOT at invalid position (if followed by …?…) word@…?…", 0],
+            ["subtitle_mark NOT at invalid position (if preced by …*) …*@word", 0],
+            ["Paragraph not followed by exactly two newlines \n{: .normal}\nNext para", 1],
+            ["Paragraph not followed by exactly two newlines \n{: .normal}\n\n", 0],
+            ["Paragraph not followed by exactly two newlines \n{: .normal}\n\n\n", 1],
+            ["Multiple adjacent  spaces", 1],
+          ].each do |test_string, xpect|
+            it "handles #{ test_string.inspect }" do
+              validator, logger, reporter = build_validator_logger_and_reporter(
+                KramdownSyntaxAt,
+                FileLikeStringIO.new('_path', '_txt')
+              )
+              errors = []
+              warnings = []
+              validator.send(
+                :validate_source, test_string, errors, warnings
+              )
+              errors.size.must_equal(xpect)
+            end
+          end
+        end
+
         describe '#validate_record_mark_syntax' do
           [
             ["valid kramdown AT", 0],
