@@ -48,11 +48,13 @@ class Repositext
           end
 
           # ensure_all_content_repos_are_ready
-          st_ops_for_repo = extract_or_load_primary_subtitle_operations
-          update_primary_subtitle_marker_csv_files(
-            @repository,
-            st_ops_for_repo
-          )
+          st_ops_for_repo, created_new_st_ops_file = extract_or_load_primary_subtitle_operations
+          if created_new_st_ops_file
+            # We update CSV marker files only if a new st_ops file was created.
+            # If we reuse an existing one, then CSV marker files have been updated
+            # already and we don't want to do it again.
+            update_primary_subtitle_marker_csv_files(@repository, st_ops_for_repo)
+          end
           transfer_subtitle_operations_to_foreign_repos!(st_ops_for_repo)
           finalize_sync_operation(
             @repository,

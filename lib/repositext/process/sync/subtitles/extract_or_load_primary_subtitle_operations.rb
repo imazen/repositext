@@ -13,12 +13,16 @@ class Repositext
           # @param expects_st_ops_file_to_exist [Boolean, optional] set to true
           #        if you expect the st-ops file to exist and you don't want to
           #        extract operations but raise an exception if it doesn't.
+          # @return [Array<Subtitle::OperationsForRepository, Boolean>] a tuple
+          #        of the operations and a flag that indicates whether a new
+          #        st-ops file was created, or an existing one was used.
           def extract_or_load_primary_subtitle_operations(expects_st_ops_file_to_exist=false)
             existing_st_ops_file_path = Subtitle::OperationsFile.detect_st_ops_file_path(
               @config.base_dir(:subtitle_operations_dir),
               @from_git_commit,
               @to_git_commit
             )
+            created_new_st_ops_file = nil
             if existing_st_ops_file_path.nil? && expects_st_ops_file_to_exist
               raise([
                 "Expected st ops file for",
@@ -30,17 +34,20 @@ class Repositext
             end
             st_ops_file_path = if existing_st_ops_file_path
               puts " - Using existing st-ops file at #{ existing_st_ops_file_path }".color(:blue)
+              created_new_st_ops_file = false
               existing_st_ops_file_path
             else
               puts " - Computing st-ops from #{ @from_git_commit.first(6) } to #{ @to_git_commit.first(6) }".color(:blue)
+              created_new_st_ops_file = true
               extract_and_store_primary_subtitle_operations
             end
 
             json_with_persistent_stids = File.read(st_ops_file_path)
-            Subtitle::OperationsForRepository.from_json(
+            st_ops = Subtitle::OperationsForRepository.from_json(
               json_with_persistent_stids,
               @repository.base_dir
             )
+            [st_ops, created_new_st_ops_file]
           end
 
         private
