@@ -125,7 +125,7 @@ class Repositext
         # Compute options for extracting subtitles
         file_list_pattern = config.compute_glob_pattern(
           options['base-dir'] || :content_dir,
-          options['file-selector'] || :all_files,
+          :all_files, # NOTE: We can't allow file-selector since this would result in an incomplete st-ops file
           options['file-extension'] || :at_extension
         )
         file_list = Dir.glob(file_list_pattern)
