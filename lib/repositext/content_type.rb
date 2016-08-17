@@ -72,13 +72,35 @@ class Repositext
       @config = a_config
     end
 
+    # Returns corresponding content_type in other repository.
+    # @param other_repository [Repository]
+    # @return [ContentType]
+    def corresponding_content_type_in_other_repo(other_repository)
+      return self  if other_repository.name == repository.name
+      self.class.new(corresponding_content_type_base_dir_in_other_repo(other_repository))
+    end
+
+    # Returns base_dir to corresponding content_type in other_repository as
+    # string with trailing slash.
+    # @param other_repository [Repository]
+    # @return [String]
+    def corresponding_content_type_base_dir_in_other_repo(other_repository)
+      base_dir.sub(repository.base_dir, other_repository.base_dir)
+    end
+
+    # Returns corresponding primary content_type.
     # @param content_type [String] the name of the content_type, e.g., 'general'
+    # @return [ContentType]
     def corresponding_primary_content_type
       return self  if is_primary_repo
       self.class.new(corresponding_primary_content_type_base_dir)
     end
 
+    # Returns base_dir to corresponding primary content_type as string with
+    # trailing slash.
+    # @return [String]
     def corresponding_primary_content_type_base_dir
+      # OPTIMIZE: Can we replace this method with #corresponding_content_type_base_dir_in_other_repo ?
       File.expand_path(
         config_setting(:relative_path_to_primary_content_type),
         config_base_dir(:content_type_dir)
