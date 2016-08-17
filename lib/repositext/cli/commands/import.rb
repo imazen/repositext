@@ -121,6 +121,17 @@ class Repositext
           options.merge({ 'base-dir' => :content_dir, 'file-extension' => :at_extension })
         )
         fix_normalize_trailing_newlines(options)
+
+        # For the time being we copy subtitle marker csv files to content.
+        # TODO: Remove this once we use st sync in production!
+        if config.setting(:is_primary_repo)
+          # Handle subtitle_marker CSV files only when we're working in the primary repo.
+          copy_subtitle_marker_csv_files_to_content(
+            options.merge({ 'base-dir' => :subtitle_import_dir, 'file-extension' => :txt_extension })
+          )
+          sync_subtitle_mark_character_positions(options)
+        end
+
         if config.setting(:is_primary_repo)
           # Reset `equiv_to_st_sync_commit` to null in matching file level data_json files.
           sync_file_level_data(
