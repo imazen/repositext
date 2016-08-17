@@ -406,14 +406,14 @@ module Kramdown
             ( # first capture group
               [^]{10,} # at least ten non eagle chars
             )
-            \s* # zero or more whitespace chars
+            \s # a single whitespace char
              # eagle
             ( # second capture group
               [^]{,3} # up to three non eagle chars
               $ # end of line
             )
           /x,
-          '\1' + " \\RtLastEagle{}" + '\2' # we use a command for last eagle
+          '\1' + "\\RtLastEagle{}" + '\2' # we use a command for last eagle
         )
 
         # Don't break lines between double open quote and apostrophe (via ~)
@@ -441,11 +441,13 @@ module Kramdown
             (
               [#{ line_breakable_chars }]
             )
-            (?!
+            (?! # not followed by one of the following options
               (
-                [#{ no_break_following_chars }]
+                [#{ no_break_following_chars }] # certain characters
                 |
-                #{ options[:ed_and_trn_abbreviations] }
+                #{ options[:ed_and_trn_abbreviations] } # language specific editor or translator abbreviations
+                |
+                \\RtLastEagle # last eagle latex command
               )
             )
           /ix,
@@ -483,15 +485,14 @@ module Kramdown
       def escape_latex_text(txt)
         return txt  unless txt.is_a?(String)
         r = txt.dup
-        r.gsub!(/(?<!\\)\&/, '\\\&') # ampersand requires special escaping
+        # Replace all backslashes with latex macro.
+        r.gsub!(/\\/, "\\textbackslash")
+        r.gsub!(/(\\textbackslash)?&/, '\\\&') # ampersand requires special escaping
         %w[% $ # _ { }].each { |char|
-          r.gsub!(/(?<!\\)#{ Regexp.escape(char) }/, "\\#{ char }")
+          r.gsub!(/(\\textbackslash)?#{ Regexp.escape(char) }/, "\\#{ char }")
         }
         r.gsub!('~', "\\textasciitilde")
         r.gsub!('^', "\\textasciicircum")
-        # NOTE: we should also escape backslashes, however the only case we use
-        # backslashes is for escaping, so we won't do that. Otherwise it would
-        # break all the escaped other characters.
         r
       end
 

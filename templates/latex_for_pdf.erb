@@ -299,6 +299,18 @@
     <% end %>
   }
 
+% command to render recording id
+\newcommand{\RtIdRecording}
+  {%
+    <% if @id_recording %>
+      \setlength{\parskip}{10pt}
+      \setlength{\parindent}{0pt}
+      \fontsize{8pt}{10.5pt}\selectfont
+      <%= @id_recording %>
+      \par
+    <% end %>
+  }
+
 % command to render gap mark. Pass the text to be highlighted as argument.
 \newcommand{\RtGapMarkText}[1]
   {\textcolor{red}{#1}}
@@ -330,9 +342,8 @@
   {\textscale{0.7}{#1}}
 
 % command to render last eagle
-% The penalty encourages a page break. Review this to see if it is still needed since we use \clearpage in RTIdTitle1.
 \newcommand{\RtLastEagle}
-  {\hspace*{\fill}~\mbox{\raisebox{-0.5ex}}\penalty -9999}
+  {~\hspace{\fill}~\mbox{\raisebox{-0.5ex}}\flushright}
 
 % enviroment to render first eagle
 \newenvironment{RtFirstEagle}
@@ -353,6 +364,19 @@
   }
   {%
     \end{spacing}
+    \par
+    <% if !@is_primary_repo %> 
+      \RtIdLanguage
+    <% end %>
+    \RtIdCopyrightYear
+    \RtIdWriteToSecondary
+    \RtIdAddressSecondaryFirst
+    \RtIdAddressSecondarySecond
+    \RtIdAddressSecondaryThird
+    \RtIdWriteToPrimary
+    \RtIdAddressPrimaryFirst
+    \RtIdAddressPrimarySecond
+    \RtIdWebMaybePhone
     \par
   }
 
@@ -600,18 +624,7 @@
   \thispagestyle{RtFirstPageStyle} % to have same header and footer on title page
 
   <%= @body %>
-  <% if !@is_primary_repo %> 
-    \RtIdLanguage
-  <% end %>
-  \RtIdCopyrightYear
-  \RtIdWriteToSecondary
-  \RtIdAddressSecondaryFirst
-  \RtIdAddressSecondarySecond
-  \RtIdAddressSecondaryThird
-  \RtIdWriteToPrimary
-  \RtIdAddressPrimaryFirst
-  \RtIdAddressPrimarySecond
-  \RtIdWebMaybePhone
+  \RtIdRecording
   <%= @meta_info %>
   <%= @version_control_page %>
 
