@@ -83,6 +83,14 @@ class Repositext
                       "Subtitle ##{ e[:subtitle_index] } on line #{ e[:line_num] }: #{ e[:excerpt] }"
                     ]
                   )
+                when :too_long
+                  Reportable.error(
+                    [@file_to_validate.first.path], # content_at file
+                    [
+                      'Subtitle caption is too long!',
+                      "Subtitle ##{ e[:subtitle_index] } on line #{ e[:line_num] }: #{ e[:excerpt] }"
+                    ]
+                  )
                 else
                   raise "Invalid severity: #{ e.inspect }"
                 end
@@ -95,6 +103,7 @@ class Repositext
         # @param [Integer] old_len
         # @param [Integer] new_len
         def compute_subtitle_mark_change(old_len, new_len)
+          return :too_long  if new_len > 120
           relative_change = (new_len - old_len).abs / old_len.to_f
           threshold = case old_len
           when 0..24
@@ -103,10 +112,9 @@ class Repositext
             0.3
           when 25..60
             0.25
-          when 61..120
+          when else
+            # longer then 60, possibly over 120
             0.2
-          else
-            raise "Found subtitle_mark spacing > 120 (#{ old_len })."
           end
           if 0 == relative_change
             nil
