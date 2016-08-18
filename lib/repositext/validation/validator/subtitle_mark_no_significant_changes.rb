@@ -112,7 +112,7 @@ class Repositext
             0.3
           when 25..60
             0.25
-          when else
+          else
             # longer then 60, possibly over 120
             0.2
           end
