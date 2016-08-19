@@ -524,6 +524,7 @@ class Repositext
                 content_at_file.update_file_level_data(
                   {
                     'exported_subtitles_at_st_sync_commit' => nil,
+                    'st_sync_autosplit' => nil,
                     'st_sync_commit' => export_sync_commit,
                     'st_sync_subtitles_to_review' => {},
                   }
