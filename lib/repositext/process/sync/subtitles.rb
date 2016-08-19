@@ -89,15 +89,19 @@ class Repositext
           # Load from repository's data.json file
           from_setting = repository.read_repo_level_data['st_sync_commit']
           raise "Missing st_sync_commit datum".color(:red)  if from_setting.nil?
-          # Load from latest st-ops file
-          from_latest_st_ops_file = Subtitle::OperationsFile.compute_latest_to_commit(
+          # Load `from` and `to` commits from latest st-ops file as array
+          from_latest_st_ops_file = Subtitle::OperationsFile.compute_latest_from_and_to_commits(
             config.base_dir(:subtitle_operations_dir)
           )
-          # Verify that setting and file name are consistent
-          if from_latest_st_ops_file && from_setting.first(6) != from_latest_st_ops_file
+          # Verify that setting and file name are consistent, either `from` or `to`
+          # commit. If setting is consistent with `from` commit, then the st-ops
+          # file already exists and we'll re-use it. If setting is consistent
+          # with `to` commit, then st-ops file doesn't exist yet and we'll
+          # create it.
+          if from_latest_st_ops_file.any? && !from_latest_st_ops_file.include?(from_setting.first(6))
             raise([
               "Inconsistent from_git_commit: Setting is #{ from_setting.inspect }",
-              "and latest st-ops file is #{ from_latest_st_ops_file }"
+              "and latest st-ops file has `from` and `to` commits #{ from_latest_st_ops_file.inspect }"
             ].join(' ').color(:red))
           end
           # Return consistent value from setting

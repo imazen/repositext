@@ -22,14 +22,14 @@ class Repositext
         ].join
       end
 
-      # Returns the `to` git commit from the latest st-ops file if any exist.
+      # Returns an array with `from` and `to` git commits from the latest st-ops
+      # file if any exist. Otherwise returns empty array.
       # @param st_ops_dir [String]
-      # @return [String, Nil]
-      def self.compute_latest_to_commit(st_ops_dir)
+      # @return [Array<String>]
+      def self.compute_latest_from_and_to_commits(st_ops_dir)
         latest_st_ops_file_name = find_latest(st_ops_dir)
-        return nil  if latest_st_ops_file_name.nil?
-        _, to_commit = extract_from_and_to_commit_from_filename(latest_st_ops_file_name)
-        to_commit
+        return []  if latest_st_ops_file_name.nil?
+        extract_from_and_to_commit_from_filename(latest_st_ops_file_name)
       end
 
       # Computes the path for the next st-ops file
