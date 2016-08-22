@@ -55,7 +55,7 @@ class Repositext
     # Example: '/path/to/content_type/ct-general' will result in name 'general'
     # @param base_dir [String] absolute path to the root of the content type
     def initialize(base_dir, repository=nil)
-      @base_dir = base_dir
+      @base_dir = base_dir.sub(/\/?\z/, '/') # guaranteed to have trailing slash
       @repository = repository  if repository
     end
 
