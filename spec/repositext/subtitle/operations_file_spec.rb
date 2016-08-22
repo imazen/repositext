@@ -29,7 +29,7 @@ class Repositext
             'toCommit',
             DateTime.new(2016,8,13,19,43,42)
           ).must_equal(
-            '/st-ops/dir/st-ops-2016_08_13-19_43_32-fromCo-to-toComm.json'
+            '/st-ops/dir/st-ops-2016_08_13-19_43_42-fromCo-to-toComm.json'
           )
         end
       end

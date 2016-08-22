@@ -57,7 +57,7 @@ class Repositext
       # @return [String] with date/time stamp in the following format:
       #     "2016_07_12-20_39_28" (UTC)
       def self.compute_next_file_sequence_marker(st_ops_dir, time_override=nil)
-        current_utc_time_stamp = (time_override || Time.now.utc).strftime('%Y_%m_%d-%H_%M_%W')
+        current_utc_time_stamp = (time_override || Time.now.utc).strftime('%Y_%m_%d-%H_%M_%S')
         existing_st_ops_file_names = get_all_st_ops_files(st_ops_dir)
         if existing_st_ops_file_names.any? { |e| e.index(current_utc_time_stamp) }
           raise "Duplicate timestamp #{ current_utc_time_stamp.inspect }. Please try again."
