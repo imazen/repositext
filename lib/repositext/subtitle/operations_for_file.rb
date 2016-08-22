@@ -112,6 +112,18 @@ class Repositext
         all_ids[:added].uniq.length - all_ids[:deleted].uniq.length
       end
 
+      # Returns a Hash of subtitles that require review after self has been
+      # applied.
+      # @return [Hash] with stids as keys and operation type as value
+      def subtitles_that_require_review
+        operations.inject({}) { |m,op|
+          op.affectedStids.each { |subtitle|
+            m[subtitle.persistent_id] = op.operationType
+          }
+          m
+        }
+      end
+
       # Converts self to Hash
       # @return [Hash]
       def to_hash
