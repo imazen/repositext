@@ -270,6 +270,7 @@ class Repositext
           content_at_files: [input_base_dir, input_file_selector, at_file_extension],
         )
         validation_options = {
+          'is_primary_repo' => config.setting(:is_primary_repo),
           'primary_content_type_transform_params' => primary_content_type_transform_params,
         }.merge(options)
         Repositext::Validation::SubtitleMarkAtBeginningOfEveryParagraph.new(file_specs, validation_options).run
