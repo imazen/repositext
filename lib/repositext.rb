@@ -210,11 +210,10 @@ require 'repositext/process/report/stanza_without_song_paragraphs'
 require 'repositext/process/split/subtitles'
 require 'repositext/process/sync/subtitle_marker_csv_file_symlinks'
 require 'repositext/process/sync/subtitles/ensure_all_content_repos_are_ready'
-require 'repositext/process/sync/subtitles/extract_or_load_primary_subtitle_operations'
 require 'repositext/process/sync/subtitles/finalize_sync_operation'
-require 'repositext/process/sync/subtitles/transfer_accumulated_st_ops_to_foreign_file'
-require 'repositext/process/sync/subtitles/transfer_subtitle_operations_to_foreign_repos'
-require 'repositext/process/sync/subtitles/update_primary_subtitle_marker_csv_files'
+require 'repositext/process/sync/subtitles/sync_foreign_file/compute_applicable_st_ops_for_foreign_file'
+require 'repositext/process/sync/subtitles/sync_foreign_file/compute_from_git_commit_for_foreign_file'
+require 'repositext/process/sync/subtitles/sync_foreign_file/transfer_applicable_st_ops_to_foreign_file'
 require 'repositext/r_file'
 require 'repositext/r_file/content'
 require 'repositext/r_file/content_at'
@@ -308,12 +307,16 @@ require 'repositext/process/split/subtitles/bilingual_text_pair'
 require 'repositext/process/split/subtitles/paragraph'
 require 'repositext/process/split/subtitles/sentence'
 require 'repositext/process/split/subtitles/sequence'
-require 'repositext/process/sync/subtitles'
+require 'repositext/process/sync/subtitles/sync_foreign_file'
+require 'repositext/process/sync/subtitles/sync_foreign_repo'
+require 'repositext/process/sync/subtitles/sync_primary_file'
+require 'repositext/process/sync/subtitles/sync_primary_repo'
 
 # Dependency boundary
 
 require 'repositext/cli/commands/export'
 require 'repositext/cli/commands/import'
+require 'repositext/process/sync/subtitles'
 
 # Dependency boundary
 

@@ -3,37 +3,37 @@ class Repositext
     class Compute
 
       # Computes subtitle operations for an entire repository. Going from
-      # git commit `fromGitCommit` to git commit `toGitCommit`.
+      # git commit `from_git_commit` to git commit `to_git_commit`.
       class SubtitleOperationsForRepository
 
         # Initializes a new instance from high level objects.
         # @param content_type [Repositext::ContentType]
-        # @param fromGitCommit [String]
-        # @param toGitCommit [String]
+        # @param from_git_commit [String]
+        # @param to_git_commit [String]
         # @param file_list [Array<String>] path to files to include
-        def initialize(content_type, fromGitCommit, toGitCommit, file_list)
+        def initialize(content_type, from_git_commit, to_git_commit, file_list)
           @content_type = content_type
           @repository = @content_type.repository
           @language = @content_type.language
-          @fromGitCommit = fromGitCommit
-          @toGitCommit = toGitCommit
+          @from_git_commit = from_git_commit
+          @to_git_commit = to_git_commit
           # Convert to repo relative paths
           @file_list = file_list.map { |e| e.sub!(@repository.base_dir, '') }
         end
 
         # @return [Repositext::Subtitle::OperationsForRepository]
         def compute
-          if @repository.latest_commit_sha_local != @toGitCommit
+          if @repository.latest_commit_sha_local != @to_git_commit
             raise ArgumentError.new(
               [
-                "`toGitCommit` is not the latest commit in repo. We haven't confirmed that this works!",
+                "`to_git_commit` is not the latest commit in repo #{ @repository.name }. We haven't confirmed that this works!",
                 "Latest git commit: #{ @repository.latest_commit_sha_local.inspect }",
-                "toGitCommit: #{ @toGitCommit.inspect }",
+                "to_git_commit: #{ @to_git_commit.inspect }",
               ]
             )
           end
 
-          diff = @repository.diff(@fromGitCommit, @toGitCommit, context_lines: 0)
+          diff = @repository.diff(@from_git_commit, @to_git_commit, context_lines: 0)
 
           operations_for_all_files = diff.patches.map { |patch|
             file_name = patch.delta.old_file[:path]
@@ -44,27 +44,27 @@ class Repositext
               raise "shouldn't get here"
             end
 
-            puts "   - processing #{ file_name }"
+            puts "     - process #{ file_name }"
 
             # We use the versions of content AT file and STM CSV file as they
-            # existed at `fromGitCommit`.
+            # existed at `from_git_commit`.
             content_at_file_at_from_commit = Repositext::RFile::ContentAt.new(
               '_',
               @language,
               File.join(@repository.base_dir, file_name),
               @content_type
-            ).as_of_git_commit(@fromGitCommit)
+            ).as_of_git_commit(@from_git_commit)
             stm_csv_file_at_from_commit = content_at_file_at_from_commit
                                             .corresponding_subtitle_markers_csv_file
-                                            .as_of_git_commit(@fromGitCommit)
+                                            .as_of_git_commit(@from_git_commit)
             soff = SubtitleOperationsForFile.new_from_content_at_file_and_patch(
               content_at_file_at_from_commit,
               stm_csv_file_at_from_commit,
               patch,
               @repository.base_dir,
               {
-                from_git_commit: @fromGitCommit,
-                to_git_commit: @toGitCommit,
+                from_git_commit: @from_git_commit,
+                to_git_commit: @to_git_commit,
               }
             ).compute
 
@@ -75,8 +75,8 @@ class Repositext
           ofr = Repositext::Subtitle::OperationsForRepository.new(
             {
               repository: @repository.name,
-              fromGitCommit: @fromGitCommit,
-              toGitCommit: @toGitCommit,
+              from_git_commit: @from_git_commit,
+              to_git_commit: @to_git_commit,
             },
             operations_for_all_files
           )

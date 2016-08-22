@@ -7,11 +7,11 @@ class Repositext
 
         # Applies operations to foreign content_at file. Returns new contents
         # with updated subtitles as string.
+        # @param foreign_content_at_file [RFile::ContentAt]
         # @param from_subtitles [Array<Subtitle>]
         # @param to_subtitles [Array<Subtitle>]
-        # @param foreign_content_at_file [RFile::ContentAt]
         # @return [String] modified contents of foreign_content_at_file with st ops applied
-        def apply_to_foreign_content_at_file(from_subtitles, to_subtitles, foreign_content_at_file)
+        def apply_to_foreign_content_at_file(foreign_content_at_file, from_subtitles, to_subtitles)
           foreign_subtitles_with_content = foreign_content_at_file.subtitles(
             true,
             from_subtitles

@@ -8,7 +8,7 @@ class Repositext
     #
     class OperationsForRepository
 
-      ATTR_NAMES = [:fromGitCommit, :repository, :toGitCommit]
+      ATTR_NAMES = [:from_git_commit, :repository, :to_git_commit]
 
       attr_accessor :operations_for_files
       attr_accessor *ATTR_NAMES
@@ -51,8 +51,8 @@ class Repositext
       # @param attrs [Hash]
       #   {
       #     repository: 'english',
-      #     fromGitCommit: '1234',
-      #     toGitCommit: '2345',
+      #     from_git_commit: '1234',
+      #     to_git_commit: '2345',
       #   }
       # @param operations_for_files [Array<Repositext::Subtitle::OperationsForFile>]
       def initialize(attrs, operations_for_files)
@@ -84,7 +84,7 @@ class Repositext
       # Call on self to invert `from` and `to` git commits as well as each
       # operation (i.e. a `merge` becomes a `split`, etc.)
       def invert!
-        self.fromGitCommit, self.toGitCommit = [toGitCommit, fromGitCommit]
+        self.from_git_commit, self.to_git_commit = [to_git_commit, from_git_commit]
         self.operations_for_files = operations_for_files.map { |e| e.invert!; e }
       end
 

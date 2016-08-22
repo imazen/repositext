@@ -40,10 +40,10 @@ class Repositext
         )
       end
 
-      # @param content_at_file [Repositext::RFile::ContentAt] at :fromGitCommit
+      # @param content_at_file [Repositext::RFile::ContentAt] at :from_git_commit
       # @param attrs [Hash] with keys
-      # @option attrs [String] :fromGitCommit
-      # @option attrs [String] :toGitCommit
+      # @option attrs [String] :from_git_commit
+      # @option attrs [String] :to_git_commit
       # @option attrs [String] :file_path
       # @param operations [Array<Subtitle::Operation>]
       def initialize(content_at_file, attrs, operations)
@@ -57,8 +57,8 @@ class Repositext
         ATTR_NAMES.each do |attr_name|
           self.send("#{ attr_name }=", attrs[attr_name])
         end
-        @from_git_commit = attrs[:fromGitCommit]
-        @to_git_commit = attrs[:toGitCommit]
+        @from_git_commit = attrs[:from_git_commit]
+        @to_git_commit = attrs[:to_git_commit]
         # TODO Check for presence of from_git_commit and to_git_commit
         if operations.nil?
           raise(ArgumentError.new("Nil operations given"))
