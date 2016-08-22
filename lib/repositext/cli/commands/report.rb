@@ -961,7 +961,7 @@ class Repositext
               r[:unexpected_ops] << [
                 "\nFirst st was deleted in merge:\n".color(:red),
                 "File: #{ st_ops_for_file.content_at_file.filename }",
-                st_op.pretty_print,
+                st_op.print_pretty,
               ].join("\n")
             end
             r[:ops_type_signatures][type_signature][ins_del_signature] += 1

@@ -93,7 +93,8 @@ class Repositext
       end
 
       # Returns nicely formatted representation of self as String.
-      def pretty_print
+      # NOTE: Don't call this method #pretty_print as it conflicts with pp
+      def print_pretty
         PP.pp(to_hash, "")
       end
 
