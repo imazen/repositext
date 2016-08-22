@@ -28,14 +28,15 @@ class Repositext
       %(#<#{ self.class.name }:#{ object_id } #name=#{ name.inspect })
     end
 
-    # Returns sha of latest commit that included filename
+    # Returns sha of latest commit that included filename.
     # @param [String] filename
+    # @param before_time [Time, optional] defaults to Time.now
     # @return [Rugged::Commit] a commit git object. Responds to the following
     # methods:
     # * #time (the time of the commit)
     # * #oid (the sha of the commit)
-    def latest_commit(filename)
-      @repo.lookup(latest_commit_sha_local(filename))
+    def latest_commit(filename, before_time=nil)
+      @repo.lookup(latest_commit_sha_local(filename, before_time))
     rescue Rugged::InvalidError => e
       puts
       puts "There was a problem retrieving the latest remote git commit for #{ filename }"
@@ -49,8 +50,9 @@ class Repositext
     # https://github.com/libgit2/rugged/issues/343#issue-30232795
     # @param [String, optional] filename if given will return latest commit that
     #   included filename
+    # @param before_time [Time, optional] defaults to Time.now
     # @return [String] the sha1 of the commit
-    def latest_commit_sha_local(filename = '')
+    def latest_commit_sha_local(filename = '', before_time=nil)
       s, _ = Open3.capture2(
         [
           "git",
@@ -58,6 +60,7 @@ class Repositext
           "log",
           "-1",
           "--pretty=format:'%H'",
+          ("--until='#{ before_time.strftime('%Y-%m-%d') }'"  if before_time),
           "--",
           filename.sub(base_dir, ''),
         ].join(' ')
