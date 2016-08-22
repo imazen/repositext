@@ -28,6 +28,22 @@ class Repositext
         ).compute
       end
 
+      def corresponding_subtitle_export_markers_file
+        return nil  if !File.exist?(corresponding_subtitle_export_markers_filename)
+        RFile::SubtitleMarkersCsv.new(
+          File.read(corresponding_subtitle_export_markers_filename),
+          language,
+          corresponding_subtitle_export_markers_filename,
+          content_type
+        )
+      end
+
+      def corresponding_subtitle_export_markers_filename
+        filename.sub(/(?<=\/)[a-z]{3}(?=[\d]{2}-[\d]{4})/, '') # remove lang code
+                .sub(/\/content\//, '/subtitle_export/') # update path
+                .sub(/\.at\z/, '.markers.txt') # update extension
+      end
+
       def corresponding_subtitle_import_markers_file
         return nil  if !File.exist?(corresponding_subtitle_import_markers_filename)
         RFile::SubtitleMarkersCsv.new(
@@ -44,6 +60,21 @@ class Repositext
                 .sub(/\.at\z/, '.markers.txt') # update extension
       end
 
+      def corresponding_subtitle_import_txt_file
+        return nil  if !File.exist?(corresponding_subtitle_import_txt_filename)
+        RFile::Text.new(
+          File.read(corresponding_subtitle_import_txt_filename),
+          language,
+          corresponding_subtitle_import_txt_filename,
+          content_type
+        )
+      end
+
+      def corresponding_subtitle_import_txt_filename
+        filename.sub(/(?<=\/)[a-z]{3}(?=[\d]{2}-[\d]{4})/, '') # remove lang code
+                .sub(/\/content\//, '/subtitle_import/') # update path
+                .sub(/\.at\z/, ".#{ language.code_2_chars }.txt") # update extension w/ lang code
+      end
       # Returns the corresponding subtitle markers csv file or nil if it
       # doesn't exist
       def corresponding_subtitle_markers_csv_file
@@ -86,6 +117,15 @@ class Repositext
 
       def plain_text_contents(options)
         kramdown_doc(options).to_plain_text
+      end
+
+      # Returns count of subtitle_marks in self's content.
+      # NOTE: This can return different results than #subtitles.count for foreign
+      # files who don't have a symlink to the STM CSV file yet.
+      # This method is based on subtitle_marks in content, #subtitles looks at
+      # STM CSV file.
+      def subtitle_marks_count
+        contents.count('@')
       end
 
       # Returns subtitles based on content in self and attrs in corresponding
