@@ -1,4 +1,3 @@
-# encoding UTF-8
 class Repositext
   class Process
     class Sync
@@ -67,7 +66,10 @@ class Repositext
 
           # @param content_at_file [RFile::ContentAt]
           def update_primary_file_level_st_sync_data(content_at_file)
-            content_at_file.update_file_level_data('st_sync_required' => false)
+            content_at_file.update_file_level_data(
+              'st_sync_required' => false,
+              'last_st_sync_commit_for_this_file' => @to_git_commit,
+            )
           end
 
           # @param st_ops_for_repo [Repositext::Subtitle::OperationsForRepository]
@@ -91,33 +93,28 @@ class Repositext
 
             # old_stids: extract STIDs and record_ids from corresponding STM CSV file
             old_stids = []
-            corr_stm_csv_file = content_at_file
-                                  .corresponding_subtitle_markers_csv_file
-                                  .as_of_git_commit(@from_git_commit)
+            corr_stm_csv_file = content_at_file.corresponding_subtitle_markers_csv_file
+                                               .as_of_git_commit(@from_git_commit)
             corr_stm_csv_file.each_row { |e|
               old_stids << { persistent_id: e['persistentId'], record_id: e['recordId'] }
             }
+
             # new_time_slices: extract time_slices from corresponding_subtitle_import_markers_file
             new_time_slices = []
             corr_st_import_markers_file = content_at_file.corresponding_subtitle_import_markers_file
             if corr_st_import_markers_file.nil?
-              # no corresponding subtitle import markers file exists.
-              if !st_ops_for_file.adds_or_removes_subtitles?
-                # File only contains subtitle moves (some of which may be false
-                # positives and be just content changes.
-                # Use existing time slices from STM CSV file.
-                corr_stm_csv_file.each_row { |e|
-                  new_time_slices << { relative_milliseconds: e['relativeMS'], samples: e['samples'] }
-                }
-              else
-                raise "no subtitle import file for #{ content_at_file.filename }"
-              end
+              # No corresponding subtitle import markers file exists.
+              # This is unexpected since we ran Fix::PrepareInitialPrimarySubtitleSync
+              # which would have created a subtitle_import file for every
+              # primary content AT file.
+              raise "no subtitle import file for #{ content_at_file.filename }"
             else
               # Import file exists, grab updated time slices from there
               corr_st_import_markers_file.each_row { |e|
                 new_time_slices << { relative_milliseconds: e['relativeMS'], samples: e['samples'] }
               }
             end
+
             [old_stids, new_time_slices]
           end
 
