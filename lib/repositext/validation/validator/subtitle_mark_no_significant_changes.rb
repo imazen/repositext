@@ -103,10 +103,9 @@ class Repositext
             0.3
           when 25..60
             0.25
-          when 61..120
-            0.2
           else
-            raise "Found subtitle_mark spacing > 120 (#{ old_len })."
+            # longer then 60, possibly over 120
+            0.2
           end
           if 0 == relative_change
             nil

@@ -51,9 +51,11 @@ class Repositext
           end
           # Detect gap_marks (%) and subtitle_marks (@) inside of words,
           # asterisks, quotes (straight or typographic), parentheses, or brackets.
+          # NOTE: We allow subtitle_marks to immediately follow words if the
+          # subtitle mark is followed by `…?…`.
           str_sc.reset
           while !str_sc.eos? do
-            if (match = str_sc.scan_until(/(?<=[[:alpha:]\*\"\“\”\'\‘\’\(\[])[%@]/))
+            if (match = str_sc.scan_until(/(?<=[[:alpha:]\*\"\“\”\'\‘\’\(\[])(%|@(?!…?…))/))
               next  if "…*@" == match[-3..-1] # allow subtitle marks after ellipsis and asterisk
               msg = case match[-1]
               when '%'

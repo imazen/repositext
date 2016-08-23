@@ -142,6 +142,7 @@ module Kramdown
           @id_address_secondary_latex_1 = @options[:id_address_secondary_latex_1]
           @id_address_secondary_latex_2 = @options[:id_address_secondary_latex_2]
           @id_address_secondary_latex_3 = @options[:id_address_secondary_latex_3]
+          @id_recording = @options[:id_recording]  if @options[:include_id_recording]
           @id_write_to_primary = @options[:id_write_to_primary]
           @id_write_to_secondary = @options[:id_write_to_secondary]
           @include_meta_info = include_meta_info

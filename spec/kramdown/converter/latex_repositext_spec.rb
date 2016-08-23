@@ -65,6 +65,7 @@ module Kramdown
           ["word } word", "word \\} word"],
           ["word ~ word", "word \\textasciitilde word"],
           ["word ^ word", "word \\textasciicircum word"],
+          ["word \\n word", "word \\textbackslashn word"],
         ].each do |test_string, xpect|
           it "escapes #{ test_string.inspect }" do
             c = LatexRepositext.send(:new, '_', {})
@@ -132,7 +133,7 @@ module Kramdown
           ["first para\n second para word1 word2 word3\nthird para", "first para\n\\RtFirstEagle second para word1 word2 word3\nthird para"],
           ["<<<gap-mark>>> First para word1 word2 word3", "\\RtFirstEagle \\RtGapMarkText{First} para word1 word2 word3"],
           # Replace trailing eagle with latex command
-          ["Second to last para\nLast para word1 word2 word3\n{: .normal}", "Second to last para\nLast para word1 word2 word3 \\RtLastEagle{}\n{: .normal}"],
+          ["Second to last para\nLast para word1 word2 word3 \n{: .normal}", "Second to last para\nLast para word1 word2 word3\\RtLastEagle{}\n{: .normal}"],
           # No line breaks _before_ or _after_ em dash when followed by some abbreviations
           ["word1 word2#{ Repositext::EM_DASH }ed. word3 word4", "word1 word2\\nolinebreak[4]#{ Repositext::EM_DASH }\\nolinebreak[4]ed. word3 word4"],
         ].each do |test_string, xpect|

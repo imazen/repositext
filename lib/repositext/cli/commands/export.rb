@@ -118,9 +118,10 @@ class Repositext
         export_pdf_base(
           'pdf_recording',
           options.merge(
-            :add_title_to_filename => true,
-            :rename_file_extension => '.recording.pdf',
-            :skip_file_proc => skip_file_proc,
+            add_title_to_filename: true,
+            include_id_recording: true,
+            rename_file_extension: '.recording.pdf',
+            skip_file_proc: skip_file_proc,
             'page_settings_key' => compute_pdf_export_page_settings_key(
               config.setting(:is_primary_repo),
               config.setting(:pdf_export_binding),
@@ -158,6 +159,7 @@ class Repositext
           'pdf_recording_merged',
           options.merge(
             add_title_to_filename: true,
+            include_id_recording: true,
             rename_file_extension: '.recording_merged.pdf',
             skip_file_proc: skip_file_proc,
             pre_process_content_proc: pre_process_content_proc,
@@ -175,6 +177,7 @@ class Repositext
         export_pdf_base(
           'pdf_translator',
           options.merge(
+            include_id_recording: true,
             'page_settings_key' => compute_pdf_export_page_settings_key(
               config.setting(:is_primary_repo),
               config.setting(:pdf_export_binding),
@@ -254,6 +257,7 @@ class Repositext
           options[:header_text] = config.setting(:pdf_export_header_text)
           options[:hrules_present] = config.setting(:pdf_export_hrules_present)
           options[:id_copyright_year] = config.setting(:erp_id_copyright_year,false)
+          options[:id_recording] = config.setting(:pdf_export_id_recording,false)
           options[:title_font_name] = config.setting(:pdf_export_title_font_name)
           options[:title_vspace] = config.setting(:pdf_export_title_vspace)
           if options[:pre_process_content_proc]

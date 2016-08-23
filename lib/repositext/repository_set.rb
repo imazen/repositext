@@ -228,9 +228,9 @@ class Repositext
     # @param command_string [String] the command to run on the command line,
     #     e.g., "repositext general fix update_rtfiles_to_settings_hierarchy -g"
     def run_repositext_command(repo_set_spec, command_string)
-      puts " - Running command `#{ command_string }`"
+      puts " - Running command `#{ command_string }`".color(:blue)
       compute_repo_paths(repo_set_spec).each { |repo_path|
-        puts "   - in #{ repo_path }"
+        puts "   - in #{ repo_path }".color(:blue)
         cmd = %(cd #{ repo_path } && #{ command_string })
         Open3.popen2e(cmd) do |stdin, stdout_err, wait_thr|
           while line = stdout_err.gets
@@ -241,7 +241,7 @@ class Repositext
           if exit_status.success?
             puts "   - completed"
           else
-            msg = %(Could not run command in #{ repo_path }!)
+            puts "Could not run command in #{ repo_path }!".color(:red)
           end
         end
       }
@@ -291,6 +291,10 @@ class Repositext
       # Wrap up message
       puts
       puts "Command completed."
+    end
+
+    def validate_content(repo_set_spec, content_type)
+      run_repositext_command(repo_set_spec, "rt #{ content_type.name } validate content")
     end
 
   protected
