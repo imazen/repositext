@@ -141,6 +141,27 @@ class Repositext
         end
       end
 
+      # Run this command once on the primary repo to initialize STM CSV and
+      # file level data.json files before running first sync subtitles command.
+      def fix_prepare_initial_primary_subtitle_sync(options)
+        file_list_pattern = config.compute_glob_pattern(
+          options['base-dir'] || :content_dir,
+          :all_files, # NOTE: We can't allow file-selector since this would result in an incomplete st-ops file
+          options['file-extension'] || :at_extension
+        )
+        file_list = Dir.glob(file_list_pattern)
+        if (file_filter = options['file_filter'])
+          file_list = file_list.find_all { |filename| file_filter === filename }
+        end
+        Process::Fix::PrepareInitialPrimarySubtitleSync.new(
+          options.merge(
+            'config' => config,
+            'file_list' => file_list,
+            'primary_repository' => content_type.repository,
+          )
+        ).sync
+      end
+
     end
   end
 end
