@@ -24,7 +24,6 @@ class Repositext
         def initialize(options)
           @config = options['config']
           @file_list = options['file_list']
-          @from_git_commit = options['from-commit']
           @primary_repository = options['primary_repository']
           @processed_files_count = 0
         end
@@ -80,6 +79,10 @@ class Repositext
           File.write(subtitle_import_markers_filename, csv_string)
 
           puts "     - set 'last_st_sync_commit_for_this_file'"
+          content_at_file.update_file_level_data(
+            'last_st_sync_commit_for_this_file' => @from_git_commit
+          )
+
           @processed_files_count += 1
         end
 
