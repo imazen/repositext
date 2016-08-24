@@ -30,7 +30,7 @@ class Repositext
           #  * New time slices from subtitle import marker file.
           #  * Updated subtitles based on subtitle operations (with new stids)
           # Then updates the STM CSV file with the new data.
-          # @param content_at_file [RFile::ContentAt]
+          # @param content_at_file_current [RFile::ContentAt]
           # @param st_ops_for_file [Subtitle::OperationsForFile]
           # @return [True]
           def update_primary_subtitle_marker_csv_file(content_at_file_current, st_ops_for_file)
@@ -42,7 +42,7 @@ class Repositext
               st_ops_for_file
             )
 
-            new_char_lengths = compute_new_char_lengths(content_at_file)
+            new_char_lengths = compute_new_char_lengths(content_at_file_current)
 
             validate_subtitle_sync_input_data(
               content_at_file,
@@ -82,7 +82,7 @@ class Repositext
 
           # Extracts old_stids and new_time_slices for content_at_file.
           # Returns empty arrays if no st_ops exist for file.
-          # @param content_at_file [RFile::ContentAt]
+          # @param content_at_file [RFile::ContentAt] as of from_git_commit
           # @param st_ops_for_file [Subtitle::OperationsForFile]
           # @return [Array] with the following elements:
           #     * old_stids <Array>
@@ -128,7 +128,7 @@ class Repositext
           end
 
           # Raises an exception if any of the input data is not valid
-          # @param content_at_file [RFile::ContentAt]
+          # @param content_at_file [RFile::ContentAt] as of from_git_commit
           # @param old_stids [Array<Hash>]
           # @param new_time_slices [Array<Hash>]
           # @param st_ops_for_file [Subtitle::OperationsForFile]

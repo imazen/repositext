@@ -33,7 +33,12 @@ class Repositext
             )
           end
 
-          diff = @repository.diff(@from_git_commit, @to_git_commit, context_lines: 0)
+          diff = @repository.diff(
+            @from_git_commit,
+            @to_git_commit,
+            context_lines: 0,
+            patience: true
+          )
 
           operations_for_all_files = diff.patches.map { |patch|
             file_name = patch.delta.old_file[:path]

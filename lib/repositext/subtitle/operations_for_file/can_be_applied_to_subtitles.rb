@@ -63,13 +63,13 @@ class Repositext
           insert_at_index = case op.operationType
           when 'insert'
             # Insert new stid after op#afterStid
+            if 1 != op.affectedStids.length
+              raise "Handle this: #{ op.inspect }"
+            end
             compute_insert_at_index_given_after_stid(
               op.afterStid,
               updated_subtitles
             )
-            if 1 != op.affectedStids.length
-              raise "Handle this: #{ op.inspect }"
-            end
           when 'split'
             first_st = op.affectedStids.first
             rest_sts = op.affectedStids[1..-1]
@@ -93,7 +93,7 @@ class Repositext
               # This is an unexpected case.
               puts @content_at_file.filename
               p op
-              p op.affectedStids
+              p aff_stid_before_signatures
               raise "Handle unexpected split!"
             end
           else

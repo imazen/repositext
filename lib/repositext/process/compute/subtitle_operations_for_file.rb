@@ -58,9 +58,9 @@ class Repositext
         end
 
         # Initializes a new instance from high level objects.
-        # @param content_at_file [Repositext::RFile::ContentAt]
-        # @param content_at_file [Repositext::RFile::SubtitleMarkersCsv]
-        # @param patch [Rugged::Diff::Patch]
+        # @param content_at_file [Repositext::RFile::ContentAt] as of from_git_commit
+        # @param stm_csv_file [Repositext::RFile::SubtitleMarkersCsv] as of from_git_commit
+        # @param patch [Rugged::Diff::Patch] spanning from_git_commit to to_git_commit
         # @param repo_base_dir [String]
         # @param options [Hash] with keys :from_git_commit and :to_git_commit
         def self.new_from_content_at_file_and_patch(
@@ -101,7 +101,7 @@ class Repositext
           r
         end
 
-        # @param content_at_lines_with_subtitles [Array<Hash>]
+        # @param content_at_lines_with_subtitles [Array<Hash>] as of from_git_commit
         # @param hunks [Array<SubtitleOperationsForFile::Hunk>]
         # @param content_at_file [Repositext::RFile::ContentAt]
         # @param repo_base_dir [String]
