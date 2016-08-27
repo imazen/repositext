@@ -221,6 +221,10 @@ class Repositext
     def replace_text(filename, &block)
     end
 
+    def report_content_sources(repo_set_spec, content_type)
+      run_repositext_command(repo_set_spec, "rt #{ content_type.name } report content_sources")
+    end
+
     # Allows running of any command (e.g., export, fix, report, validate) on
     # a repository set.
     # @param repo_set_spec [Symbol, Array<String>] A symbol describing a predefined
