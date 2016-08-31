@@ -424,7 +424,7 @@ module Kramdown
           vcp << "\\begin{RtSubTitle}\nVersion Control Info\n\\end{RtSubTitle}\n"
           vcp << "\\relscale{0.66}\n"
           # commits table
-          vcp << "\\begin{tabular}{ | l | l | l | p{7.5cm} |}\n"
+          vcp << "\\begin{tabular}{ | p{0.4in} | p{0.7in} | p{0.5in} | p{1.9in} |}\n"
           vcp << "\\hline\n"
           vcp << "\\textbf{Commit} & \\textbf{Author} & \\textbf{Date} & \\textbf{Commit message} \\\\ \n"
           vcp << "\\hline\n"
