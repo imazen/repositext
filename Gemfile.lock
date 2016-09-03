@@ -27,6 +27,7 @@ PATH
     repositext (0.0.1)
       activesupport (~> 4.2)
       alignment
+      amatch
       awesome_print
       builder
       caracal (~> 1.0)
@@ -35,7 +36,7 @@ PATH
       logging
       micromachine
       multi_ruby_runner (~> 1.0.2)
-      needleman_wunsch_aligner
+      needleman_wunsch_aligner (~> 1.1.1)
       nokogiri
       outcome
       parallel
@@ -51,15 +52,17 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (4.2.6)
+    activesupport (4.2.7.1)
       i18n (~> 0.7)
       json (~> 1.7, >= 1.7.7)
       minitest (~> 5.1)
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
-    awesome_print (1.6.1)
+    amatch (0.3.0)
+      tins (~> 1.0)
+    awesome_print (1.7.0)
     builder (3.2.2)
-    caracal (1.0.4)
+    caracal (1.0.6)
       nokogiri (~> 1.6)
       rubyzip (~> 1.1)
       tilt (>= 1.4)
@@ -74,18 +77,20 @@ GEM
       little-plugger (~> 1.1)
       multi_json (~> 1.10)
     micromachine (2.0.0)
-    mini_portile2 (2.0.0)
+    mini_portile2 (2.1.0)
     minitest (5.8.3)
     minitest-spec-expect (2.0.0)
       minitest (~> 5.0)
     multi_json (1.12.1)
     multi_ruby_runner (1.0.2)
-    needleman_wunsch_aligner (1.0.4)
-    nokogiri (1.6.7.2)
-      mini_portile2 (~> 2.0.0.rc2)
+    needleman_wunsch_aligner (1.1.1)
+    nokogiri (1.6.8)
+      mini_portile2 (~> 2.1.0)
+      pkg-config (~> 1.1.7)
     outcome (1.0.1)
-    parallel (1.8.0)
-    pragmatic_segmenter (0.3.7)
+    parallel (1.9.0)
+    pkg-config (1.1.7)
+    pragmatic_segmenter (0.3.10)
       unicode
     rainbow (2.1.0)
     rake (10.4.2)
@@ -96,7 +101,8 @@ GEM
     rugged (0.24.0)
     thor (0.19.1)
     thread_safe (0.3.5)
-    tilt (2.0.4)
+    tilt (2.0.5)
+    tins (1.12.0)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
     unicode (0.4.4.2)
