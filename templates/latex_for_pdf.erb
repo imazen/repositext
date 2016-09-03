@@ -240,6 +240,18 @@
     \par
   }
 
+% command to render id extra langauge info
+\newcommand{\RtIdExtraLanguageInfo}
+  {%
+    \setlength{\parskip}{6.786pt}
+    \setlength{\parindent}{0pt}
+    \centering
+    <%= @polyglossia_default_language ? '' : '\titlefont' %>%
+    \fontsize{8pt}{10.5pt}\selectfont
+    <%= @id_extra_language_info %>
+    \par
+  }
+
 % command to render id language line
 \newcommand{\RtIdLanguage}
   {%
@@ -365,6 +377,9 @@
   {%
     \end{spacing}
     \par
+    <% if @id_extra_language_info %>
+      \RtIdExtraLanguageInfo
+    <% end %>
     <% if !@is_primary_repo %> 
       \RtIdLanguage
     <% end %>

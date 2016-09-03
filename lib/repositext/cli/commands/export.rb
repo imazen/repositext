@@ -222,6 +222,7 @@ class Repositext
           id_address_secondary_latex_1: config.setting(:pdf_export_id_address_secondary_latex_1,false),
           id_address_secondary_latex_2: config.setting(:pdf_export_id_address_secondary_latex_2,false),
           id_address_secondary_latex_3: config.setting(:pdf_export_id_address_secondary_latex_3,false),
+          id_extra_language_info: config.setting(:pdf_export_id_extra_language_info,false),
           id_write_to_primary: config.setting(:pdf_export_id_write_to_primary,false),
           id_write_to_secondary: config.setting(:pdf_export_id_write_to_secondary,false),
           is_primary_repo: config.setting(:is_primary_repo),

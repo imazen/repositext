@@ -40,6 +40,15 @@ class Repositext
         RepositorySet.new(repos_parent_path).git_pull(:all_content_repos)
       end
 
+      # Runs `rt report content_sources` on all content repos
+      def git_repo_report_all_content_sources(options)
+        repos_parent_path = File.expand_path('..', Dir.pwd)
+        RepositorySet.new(repos_parent_path).report_content_sources(
+          :all_content_repos,
+          content_type
+        )
+      end
+
       # Prints git status for all code repositories.
       # @param [Hash] options
       def git_repo_status_all_code(options)
