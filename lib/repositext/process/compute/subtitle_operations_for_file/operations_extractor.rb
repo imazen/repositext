@@ -37,34 +37,36 @@ class Repositext
             @asp_group_cumulative_content_change += @current_asp[:content_length_change]
             @asp_group_cumulative_content_length_to += @current_asp[:to][:content].length
 
-# puts "P"  if @current_asp[:first_in_para]
-# puts " - #{ @current_asp[:type] }"
-# just_method = case @current_asp[:type]
-# when :right_aligned
-#   :rjust
-# when :left_aligned, :fully_aligned
-#   :ljust
-# when :unaligned, :st_added, :st_removed
-#   :center
-# else
-#   raise "Handle this: #{ @current_asp[:type] }"
-# end
-# para_boundaries_reporter = ->(st_attrs) {
-#   [
-#     (st_attrs[:first_in_para] ? 'first_ip' : nil),
-#     (st_attrs[:last_in_para] ? 'last_ip' : nil)
-#   ].compact.join(', ')
-# }
-# puts "   From: #{ @current_asp[:from][:content].strip.send(just_method, 130) }   #{ para_boundaries_reporter.call(@current_asp[:from]) }"
-# puts "   To:   #{ @current_asp[:to][:content].strip.send(just_method, 130) }   #{ para_boundaries_reporter.call(@current_asp[:to]) }"
-# puts([
-#   "   ",
-#   "clc:#{ @current_asp[:content_length_change] } ",
-#   "ccc:#{ @asp_group_cumulative_content_change } ",
-#   "sl:#{ @current_asp[:sim_left] } ",
-#   "sa:#{ @current_asp[:sim_abs] } ",
-#   "sr:#{ @current_asp[:sim_right] } ",
-# ].join)
+            if debug
+              puts "P"  if @current_asp[:first_in_para]
+              puts " - #{ @current_asp[:type] }"
+              just_method = case @current_asp[:type]
+              when :right_aligned
+                :rjust
+              when :left_aligned, :fully_aligned
+                :ljust
+              when :unaligned, :st_added, :st_removed
+                :center
+              else
+                raise "Handle this: #{ @current_asp[:type] }"
+              end
+              para_boundaries_reporter = ->(st_attrs) {
+                [
+                  (st_attrs[:first_in_para] ? 'first_ip' : nil),
+                  (st_attrs[:last_in_para] ? 'last_ip' : nil)
+                ].compact.join(', ')
+              }
+              puts "   From: #{ @current_asp[:from][:content].strip.send(just_method, 130) }   #{ para_boundaries_reporter.call(@current_asp[:from]) }"
+              puts "   To:   #{ @current_asp[:to][:content].strip.send(just_method, 130) }   #{ para_boundaries_reporter.call(@current_asp[:to]) }"
+              puts([
+                "   ",
+                "clc:#{ @current_asp[:content_length_change] } ",
+                "ccc:#{ @asp_group_cumulative_content_change } ",
+                "sl:#{ @current_asp[:sim_left] } ",
+                "sa:#{ @current_asp[:sim_abs] } ",
+                "sr:#{ @current_asp[:sim_right] } ",
+              ].join)
+            end
 
             case @prev_right_edge
 
@@ -153,7 +155,7 @@ class Repositext
               raise "Handle this! #{ @prev_right_edge }"
             end
 
-# puts "P"  if @current_asp[:last_in_para]
+            puts "P"  if debug && @current_asp[:last_in_para]
           end
 
           def advance_to_next_asp
@@ -316,7 +318,7 @@ class Repositext
               @ops_in_group << op
               @ops_in_file << op
             end
-# puts "   OP: #{ op_type }".color(:blue)
+            puts "   OP: #{ op_type }".color(:blue)  if debug
           end
 
           def compute_move_direction
@@ -330,6 +332,9 @@ class Repositext
             end
           end
 
+          def debug
+            true
+          end
         end
       end
     end
