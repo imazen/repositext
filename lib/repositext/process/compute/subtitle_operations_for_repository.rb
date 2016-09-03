@@ -55,7 +55,7 @@ class Repositext
         def process_all_primary_files
           Dir.glob(
             File.join(@repository.base_dir, '**/content/**/*.at')
-          ).each { |absolute_file_path|
+          ).map { |absolute_file_path|
             next nil  if !@file_list.any? { |e| absolute_file_path.index(e) }
             # Skip non content_at files
             unless absolute_file_path =~ /\/content\/.+\d{4}\.at\z/
@@ -81,6 +81,7 @@ class Repositext
             ).compute
 
             # Return nil if no subtitle operations exist for this file
+            # So #compact will remove it.
             soff.operations.any? ? soff : nil
           }.compact
         end
