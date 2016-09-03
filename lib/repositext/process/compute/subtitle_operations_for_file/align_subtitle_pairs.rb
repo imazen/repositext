@@ -167,10 +167,10 @@ class Repositext
             else
               # Check if it's left or right aligned
               high_sim_left = (
-                al_st_pair[:sim_left].first >= 0.83 and al_st_pair[:sim_left].last >= 0.9
+                al_st_pair[:sim_left].first >= 0.87 and al_st_pair[:sim_left].last >= 0.9
               ) ? al_st_pair[:sim_left].first : false
               high_sim_right = (
-                al_st_pair[:sim_right].first >= 0.83 and al_st_pair[:sim_right].last >= 0.9
+                al_st_pair[:sim_right].first >= 0.87 and al_st_pair[:sim_right].last >= 0.9
               ) ? al_st_pair[:sim_right].first : false
               if high_sim_left && high_sim_right
                 # Both similarities score high, use max to determine alignment
