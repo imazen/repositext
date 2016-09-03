@@ -62,10 +62,9 @@ class Repositext
         def compute_insert_at_index(op, updated_subtitles)
           insert_at_index = case op.operationType
           when 'insert'
-            # Insert new stid after op#afterStid
-            if 1 != op.affectedStids.length
-              raise "Handle this: #{ op.inspect }"
-            end
+            # No matter if op has one or more affectedStids, we only need the
+            # first index. All affectedStids will be inserted here in the
+            # correct order.
             compute_insert_at_index_given_after_stid(
               op.afterStid,
               updated_subtitles

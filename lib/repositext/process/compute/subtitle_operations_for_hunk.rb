@@ -579,7 +579,8 @@ protected
 
             # Return early if all operations in asp_group are insertions or deletions
             if(ops = detect_pure_insertions_or_deletions(asp_group, prev_stid)).any?
-              return ops
+              collected_operations += ops
+              next
             end
 
             case asp_group.length

@@ -44,6 +44,22 @@ class Repositext
             file_name = patch.delta.old_file[:path]
             next nil  if !@file_list.include?(file_name)
 
+files_that_break_during_sync_primary_repo = %w[
+  55-0123e_0228
+  55-0220a_0229
+  55-0302_0240
+  55-0501a_2074
+  55-0611_0256
+  55-0625_0261
+  55-1115_0291
+  56-1002a_0358
+  57-0127a_0382
+  58-0515_0506
+  61-0120_0728
+  63-0317m_0942
+]
+next nil  if files_that_break_during_sync_primary_repo.any? { |e| file_name.index(e) }
+
             # Skip non content_at files
             unless file_name =~ /\/content\/.+\d{4}\.at\z/
               raise "shouldn't get here"

@@ -1374,101 +1374,101 @@ class Repositext
           end
         end
 
-        # describe '#compute_ins_del_map_for_asp_group' do
-        #   [
-        #     # Leading
-        #     [
-        #       [
-        #         { type: :st_added, first_in_hunk: true },
-        #         { type: :right_aligned },
-        #       ],
-        #       [false, false],
-        #     ],
-        #     [
-        #       [
-        #         { type: :st_removed, first_in_hunk: true },
-        #         { type: :st_removed },
-        #         { type: :right_aligned },
-        #       ],
-        #       [true, false, false],
-        #     ],
-        #     [
-        #       [
-        #         { type: :st_added },
-        #         { type: :st_added },
-        #         { type: :right_aligned },
-        #       ],
-        #       [false, false, false],
-        #     ],
-        #     [
-        #       [
-        #         { type: :st_added, first_in_hunk: true },
-        #         { type: :st_added },
-        #         { type: :st_added },
-        #         { type: :right_aligned },
-        #       ],
-        #       [true, true, false, false],
-        #     ],
-        #     [
-        #       [
-        #         { type: :st_added, first_in_hunk: true },
-        #         { type: :st_removed },
-        #         { type: :st_added },
-        #         { type: :right_aligned },
-        #       ],
-        #       [false, false, false, false],
-        #     ],
-        #     # Trailing
-        #     [
-        #       [
-        #         { type: :left_aligned },
-        #         { type: :st_removed, last_in_hunk: true },
-        #       ],
-        #       [false, false],
-        #     ],
-        #     [
-        #       [
-        #         { type: :left_aligned },
-        #         { type: :st_added },
-        #         { type: :st_added, last_in_hunk: true },
-        #       ],
-        #       [false, false, true],
-        #     ],
-        #     [
-        #       [
-        #         { type: :left_aligned },
-        #         { type: :st_added },
-        #         { type: :st_added },
-        #       ],
-        #       [false, false, false],
-        #     ],
-        #     [
-        #       [
-        #         { type: :left_aligned },
-        #         { type: :st_removed },
-        #         { type: :st_removed },
-        #         { type: :st_removed, last_in_hunk: true },
-        #       ],
-        #       [false, false, true, true],
-        #     ],
-        #     [
-        #       [
-        #         { type: :left_aligned },
-        #         { type: :st_removed },
-        #         { type: :st_added },
-        #         { type: :st_removed, last_in_hunk: true },
-        #       ],
-        #       [false, false, false, false],
-        #     ],
-        #   ].each do |asp_group, xpect|
-        #     it "handles #{ asp_group.inspect }" do
-        #       default_computer.send(
-        #         :compute_ins_del_map_for_asp_group,
-        #         asp_group
-        #       ).must_equal(xpect)
-        #     end
-        #   end
-        # end
+        describe '#compute_ins_del_map_for_asp_group' do
+          [
+            # Leading
+            [
+              [
+                { type: :st_added, first_in_hunk: true },
+                { type: :right_aligned },
+              ],
+              [false, false],
+            ],
+            [
+              [
+                { type: :st_removed, first_in_hunk: true },
+                { type: :st_removed },
+                { type: :right_aligned },
+              ],
+              [true, false, false],
+            ],
+            [
+              [
+                { type: :st_added },
+                { type: :st_added },
+                { type: :right_aligned },
+              ],
+              [false, false, false],
+            ],
+            [
+              [
+                { type: :st_added, first_in_hunk: true },
+                { type: :st_added },
+                { type: :st_added },
+                { type: :right_aligned },
+              ],
+              [true, true, false, false],
+            ],
+            [
+              [
+                { type: :st_added, first_in_hunk: true },
+                { type: :st_removed },
+                { type: :st_added },
+                { type: :right_aligned },
+              ],
+              [false, false, false, false],
+            ],
+            # Trailing
+            [
+              [
+                { type: :left_aligned },
+                { type: :st_removed, last_in_hunk: true },
+              ],
+              [false, false],
+            ],
+            [
+              [
+                { type: :left_aligned },
+                { type: :st_added },
+                { type: :st_added, last_in_hunk: true },
+              ],
+              [false, false, true],
+            ],
+            [
+              [
+                { type: :left_aligned },
+                { type: :st_added },
+                { type: :st_added },
+              ],
+              [false, false, false],
+            ],
+            [
+              [
+                { type: :left_aligned },
+                { type: :st_removed },
+                { type: :st_removed },
+                { type: :st_removed, last_in_hunk: true },
+              ],
+              [false, false, true, true],
+            ],
+            [
+              [
+                { type: :left_aligned },
+                { type: :st_removed },
+                { type: :st_added },
+                { type: :st_removed, last_in_hunk: true },
+              ],
+              [false, false, false, false],
+            ],
+          ].each do |asp_group, xpect|
+            it "handles #{ asp_group.inspect }" do
+              default_computer.send(
+                :compute_ins_del_map_for_asp_group,
+                asp_group
+              ).must_equal(xpect)
+            end
+          end
+        end
       end
     end
   end

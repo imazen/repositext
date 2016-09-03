@@ -45,6 +45,12 @@ class Repositext
       @tmp_attrs = attrs[:tmp_attrs] || {}
     end
 
+    # Returns true if other_obj is a subtitle and has same persistent id.
+    # @param other_obj [Object]
+    def ==(other_obj)
+      other_obj.is_a?(Subtitle) && other_obj.persistent_id == persistent_id
+    end
+
     # Returns timestamp in absolute milliseconds, computed from samples.
     # Audio is sampled at 44.1 kHz.
     # @return [Integer]
@@ -54,6 +60,14 @@ class Repositext
 
     def inspect
       to_s
+    end
+
+    def tmp_after
+      tmp_attrs[:after]
+    end
+
+    def tmp_before
+      tmp_attrs[:before]
     end
 
     # Returns a Hash describing self
@@ -79,14 +93,6 @@ class Repositext
         tmp_attrs
       ].map{ |e| "@#{ e }=#{ self.send(e).inspect }"}.join(', ')
       %(#<Repositext::Subtitle #{ attrs }>)
-    end
-
-    def tmp_after
-      tmp_attrs[:after]
-    end
-
-    def tmp_before
-      tmp_attrs[:before]
     end
 
   end

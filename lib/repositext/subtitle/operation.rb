@@ -67,6 +67,14 @@ class Repositext
         self.affectedStids = attrs[:affectedStids]
       end
 
+      # Returns true if other_obj has the same class, operationId, and affectedStids.
+      # @param other_obj [Object]
+      def ==(other_obj)
+        other_obj.class == self.class &&
+        other_obj.operationId == operationId &&
+        other_obj.affectedStids == affectedStids
+      end
+
       # Returns persistent ids of added subtitles. Temporary stids are combined
       # with the hunk index so that they are unique at the file scope.
       # Example: 'tmp-hunk_start+1' => '17-tmp-hunk_start+1'.

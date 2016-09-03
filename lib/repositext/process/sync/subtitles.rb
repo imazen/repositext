@@ -50,7 +50,7 @@ class Repositext
 
         def sync
           puts
-          puts "Syncronizing subtitles".color(:blue)
+          puts "Synchronizing subtitles".color(:blue)
           puts
           puts " - Ensure all content repos are ready".color(:blue)
 

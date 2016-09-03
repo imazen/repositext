@@ -143,7 +143,7 @@ class Repositext
                   "subtitle ops changed count by #{ st_ops_count_delta }",
                   "new subtitle import files contain #{ new_time_slices.length } subtitles",
                   "for file #{ content_at_file.filename }",
-                ].join(' ')
+                ].join("\n")
               )
             end
           end
