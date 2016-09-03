@@ -188,44 +188,6 @@ class Repositext
             elsif [:right_aligned, :unaligned].include?(nxt[:type])
               # next_asp has no left boundary
               return false
-#               if cur[:last_in_para] || nxt[:first_in_para]
-#                 # We're at a paragraph boundary. Detect if cur and nxt are
-#                 # connected.
-#                 # compute max tolerance, between 2 and 4 depending on `to` length.
-#                 content_length_change_tolerance = [
-#                   (@asp_group_cumulative_content_length_to * 0.03).round,
-#                   2
-#                 ].max
-#                 if (@asp_group_cumulative_content_change + nxt[:content_length_change]).abs <= content_length_change_tolerance
-#                   # cumulative content changes of current capture group and next_asp
-#                   # neutralize each other. They are very likely to be connected.
-#                   return false
-#                 elsif(
-#                   @asp_group_cumulative_content_change.abs > 10 &&
-#                   @asp_group_cumulative_content_change * nxt[:content_length_change] < 0
-#                 )
-#                   # Capture group's cumulative change is significant, and nxt's
-#                   # change has opposite sign, so they complement each other and
-#                   # are likely to be connected.
-#                   return false
-#                 elsif(
-#                   cur[:from][:content_sim].longest_substring_similar(
-#                     nxt[:to][:content_sim]
-#                   ) > 0.3 or
-#                   cur[:to][:content_sim].longest_substring_similar(
-#                     nxt[:from][:content_sim]
-#                   ) > 0.3
-#                 )
-#                   # cur and nxt have content overlap, they are likely connected
-#                   return false
-#                 else
-#                   # cur and nxt are not connected
-#                   return true
-#                 end
-#               else
-#                 # Not at a para boundary, continue
-#                 return false
-#               end
             elsif [:st_added, :st_removed].include?(nxt[:type])
               # next_asp may be connected to current_asp
               return false
