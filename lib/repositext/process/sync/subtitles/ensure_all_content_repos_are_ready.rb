@@ -24,6 +24,7 @@ class Repositext
             ).git_ensure_repos_are_ready(
               :all_content_repos
             ) { |repo_path| puts "   - #{ repo_path.split('/').last }" }
+            # TODO: Use #all_synced_foreign_repos instead of the RepositorySet method. Requires a refactoring.
             repos_with_issues += ensure_st_ops_filenames_are_valid
             if repos_with_issues.any?
               puts

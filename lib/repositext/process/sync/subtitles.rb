@@ -53,6 +53,9 @@ class Repositext
           puts "Synchronizing subtitles".color(:blue)
           puts
           puts " - Ensure all content repos are ready".color(:blue)
+          # TODO: Should we do this on a per-repo basis? check for primary here, and then
+          # each foreign separately?
+          # ensure_all_content_repos_are_ready
 
           puts " - Compute 'to_git_commit':".color(:blue)
           @to_git_commit = compute_to_git_commit(@to_git_commit, @primary_repository)

@@ -152,6 +152,7 @@ class Repositext
       # Returns the subtitle to be reviewed after self has been applied
       # @return [Subtitle]
       def salient_subtitle
+        # TODO: handle deletes and inserts!
         if 'merge' == operationType
           affectedStids.first
         else

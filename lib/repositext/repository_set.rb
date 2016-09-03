@@ -98,6 +98,10 @@ class Repositext
     # @return [Hash] with repos that are not ready. Keys are repo paths, values
     #     are arrays with issue messages if any exist.
     def git_ensure_repos_are_ready(repo_set_spec)
+      # TODO: when we use this from st_sync we only want to include repos that have
+      # st_sync_active set to true. We already have a method that gives us a list of
+      # all synced repos. Maybe we could move this check to Repository... Then we
+      # could use it from here, or the other collection.
       repos_with_issues = {}
       compute_repo_paths(repo_set_spec).each { |repo_path|
         if block_given?
