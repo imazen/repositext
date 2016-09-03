@@ -42,9 +42,7 @@ Data types used in this file
       class SubtitleOperationsForFile
 
         include AlignSubtitlePairs
-        include ComputeOperations
         include ComputeSubtitleAttrs
-        include ExtractOperationSubtitlePairGroups
 
         # Returns a data structure for all text lines in content_at_file
         # with their subtitles.
@@ -120,12 +118,8 @@ Data types used in this file
             pp aligned_subtitle_pairs
           end
 
-          operation_subtitle_pair_groups = extract_operation_subtitle_pair_groups(
-            aligned_subtitle_pairs
-          )
-
           puts " - extract ops"
-          operations = compute_operations(operation_subtitle_pair_groups)
+          operations = OperationExtractor.new(aligned_subtitle_pairs).extract
           if debug
             puts ('-' * 80).color(:red)
             puts "operations"

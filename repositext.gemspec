@@ -18,6 +18,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency('activesupport', '~> 4.2')
   s.add_dependency('alignment')
+  s.add_dependency('amatch')
   s.add_dependency('awesome_print')
   s.add_dependency('builder')
   s.add_dependency('caracal', '~> 1.0') # To export docx
@@ -28,7 +29,7 @@ Gem::Specification.new do |s|
   s.add_dependency('logging')
   s.add_dependency('micromachine')
   s.add_dependency('multi_ruby_runner', '~> 1.0.2')
-  s.add_dependency('needleman_wunsch_aligner')
+  s.add_dependency('needleman_wunsch_aligner', '~> 1.1.1')
   s.add_dependency('nokogiri')
   s.add_dependency('outcome')
   s.add_dependency('parallel')
