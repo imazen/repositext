@@ -1,7 +1,7 @@
 class Repositext
   class Process
     class Compute
-      class SubtitleOperationsForHunk
+      class SubtitleOperationsForFile
 
         # Computes Jaccard similarity of two strings.
         # Has added behavior where it reduces similarity if a and b have different
@@ -71,9 +71,7 @@ class Repositext
           def self.tokenize_string(s)
             Set.new(s.split(/\s+/))
           end
-
         end
-
       end
     end
   end

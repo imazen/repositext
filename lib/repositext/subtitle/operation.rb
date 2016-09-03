@@ -29,9 +29,9 @@ class Repositext
           'Insert'
         when :merge
           'Merge'
-        when :moveLeft
+        when :move_left
           'MoveLeft'
-        when :moveRight
+        when :move_right
           'MoveRight'
         when :split
           'Split'

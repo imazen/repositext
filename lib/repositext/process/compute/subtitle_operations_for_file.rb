@@ -2,84 +2,49 @@ class Repositext
   class Process
     class Compute
 
+=begin
+
+Data types used in this file
+----------------------------
+
+* SubtitleAttrs
+      {
+        content: "Word1, 'word2' Word3.",
+        content_sim: "word1 word2 word3",
+        persistent_id: "1234567",
+        record_id: "123123123",
+        first_in_para: true,
+        last_in_para: false,
+        subtitle_count: 0,
+        index: 23,
+      }
+  Gaps have an empty string as content.
+
+* AlignedSubtitlePair: A hash describing two aligned subtitles in the file.
+      {
+        type: <:left_aligned|:right_aligned|:st_added...>
+        subtitle_object: <# Repositext::Subtitle ...>
+        sim_left: [sim<Float>, conf<Float>]
+        sim_right: [sim<Float>, conf<Float>]
+        sim_abs: [sim<Float>, conf<Float>]
+        content_length_change: <Integer from del to add>
+        subtitle_count_change: <Integer from del to add>
+        from: [SubtitleAttrs]
+        to: [SubtitleAttrs]
+        index: <Integer> index of aligned st pair in file
+        first_in_para: Boolean, true if asp is first in paragraph
+        last_in_para: Boolean, true if aps is last in paragraph
+      }
+
+=end
+
       # Computes subtitle operations for a file and patch.
       class SubtitleOperationsForFile
 
-        # Value object wrapper for Rugged::Diff::Hunk
-        class Hunk
-
-          attr_reader :lines, :old_lines, :old_start
-
-          # @param hunk [Rugged::Diff::Hunk]
-          def self.new_from_rugged_hunk(hunk)
-            new(
-              hunk.old_start,
-              hunk.old_lines,
-              hunk.lines.map { |e|
-                SubtitleOperationsForFile::HunkLine.new_from_rugged_line(e)
-              }
-            )
-          end
-
-          # @param old_start [Integer] first line of hunk
-          # @param old_lines [Integer] sum of context + deleted lines in hunk
-          # @param lines [Array<SubtitleOperationsForFile::HunkLine>]
-          def initialize(old_start, old_lines, lines)
-            @old_start = old_start
-            @old_lines = old_lines
-            @lines = lines
-          end
-
-        end
-
-        # Value object wrapper for Rugged::Diff::Line
-        class HunkLine
-
-          attr_reader :content, :old_lineno, :line_origin
-
-          # @param line [Rugged::Diff::Line]
-          def self.new_from_rugged_line(line)
-            new(
-              line.line_origin,
-              line.content.force_encoding(Encoding::UTF_8),
-              line.old_lineno
-            )
-          end
-
-          # @param line_origin [Symbol]
-          # @param content [String]
-          # @param old_lineno [Integer]
-          def initialize(line_origin, content, old_lineno)
-            @line_origin = line_origin
-            @content = content
-            @old_lineno = old_lineno
-          end
-
-        end
-
-        # Initializes a new instance from high level objects.
-        # @param content_at_file [Repositext::RFile::ContentAt] as of from_git_commit
-        # @param stm_csv_file [Repositext::RFile::SubtitleMarkersCsv] as of from_git_commit
-        # @param patch [Rugged::Diff::Patch] spanning from_git_commit to to_git_commit
-        # @param repo_base_dir [String]
-        # @param options [Hash] with keys :from_git_commit and :to_git_commit
-        def self.new_from_content_at_file_and_patch(
-          content_at_file,
-          stm_csv_file,
-          patch,
-          repo_base_dir,
-          options
-        )
-          new(
-            compute_content_at_lines_with_subtitles(content_at_file, stm_csv_file),
-            patch.hunks.map { |e|
-              SubtitleOperationsForFile::Hunk.new_from_rugged_hunk(e)
-            },
-            content_at_file,
-            repo_base_dir,
-            options
-          )
-        end
+        include AlignSubtitlePairs
+        include ComputeOperations
+        include ComputeSubtitleAttrs
+        include ExtractOperationSubtitlePairGroups
 
         # Returns a data structure for all text lines in content_at_file
         # with their subtitles.
@@ -101,48 +66,86 @@ class Repositext
           r
         end
 
-        # @param content_at_lines_with_subtitles [Array<Hash>] as of from_git_commit
-        # @param hunks [Array<SubtitleOperationsForFile::Hunk>]
         # @param content_at_file [Repositext::RFile::ContentAt]
+        # @param stm_csv_file [Repositext::RFile::SubtitleMarkersCsv]
         # @param repo_base_dir [String]
         # @param options [Hash] with keys :from_git_commit and :to_git_commit
-        def initialize(content_at_lines_with_subtitles, hunks, content_at_file, repo_base_dir, options)
-          @content_at_lines_with_subtitles = content_at_lines_with_subtitles
-          @hunks = hunks
-          @content_at_file = content_at_file
+        def initialize(content_at_file_to, repo_base_dir, options)
+          @content_at_file_to = content_at_file_to
           @repo_base_dir = repo_base_dir
           @options = options
         end
 
         # @return [Repositext::Subtitle::OperationsForFile]
         def compute
-          last_stid = 'new_file'
-          hunk_index = -1
-          operations_for_all_hunks = @hunks.inject([]) { |m,hunk|
-            r = SubtitleOperationsForHunk.new(
-              @content_at_lines_with_subtitles[(hunk.old_start - 1), hunk.old_lines],
-              hunk,
-              last_stid,
-              hunk_index += 1
-            ).compute
-            last_stid = r[:last_stid]
-            m += r[:subtitle_operations]
-            m
-          }
-          # TODO: Check if we have cross-hunk/line/para subtitle moves. They are
-          # indicated by ins/del pairs at the end of the first and the beginning
-          # of the second hunk.
+          print "       - compute st attrs"
+
+          if debug
+            puts ('-' * 80).color(:red)
+            puts "content_at_from"
+            puts @content_at_file_to.as_of_git_commit(@options[:from_git_commit]).contents
+
+            puts ('-' * 80).color(:red)
+            puts "content_at_to"
+            puts @content_at_file_to.contents
+          end
+
+          subtitle_attrs_from = compute_subtitle_attrs_from(
+            @content_at_file_to,
+            @options[:from_git_commit],
+          )
+          if debug
+            puts ('-' * 80).color(:red)
+            puts "subtitle_attrs_from"
+            pp subtitle_attrs_from
+          end
+
+          subtitle_attrs_to = compute_subtitle_attrs_to(
+            @content_at_file_to
+          )
+          if debug
+            puts ('-' * 80).color(:red)
+            puts "subtitle_attrs_to"
+            pp subtitle_attrs_to
+          end
+
+          print " - align st pairs"
+          aligned_subtitle_pairs = align_subtitle_pairs(
+            subtitle_attrs_from,
+            subtitle_attrs_to
+          )
+          if debug
+            puts ('-' * 80).color(:red)
+            puts "aligned_subtitle_pairs"
+            pp aligned_subtitle_pairs
+          end
+
+          operation_subtitle_pair_groups = extract_operation_subtitle_pair_groups(
+            aligned_subtitle_pairs
+          )
+
+          puts " - extract ops"
+          operations = compute_operations(operation_subtitle_pair_groups)
+          if debug
+            puts ('-' * 80).color(:red)
+            puts "operations"
+            pp operations.map { |e| e.to_hash }
+          end
+
           Repositext::Subtitle::OperationsForFile.new(
-            @content_at_file,
+            @content_at_file_to,
             {
-              file_path: @content_at_file.filename.sub(@repo_base_dir, ''),
+              file_path: @content_at_file_to.filename.sub(@repo_base_dir, ''),
               from_git_commit: @options[:from_git_commit],
               to_git_commit: @options[:to_git_commit],
             },
-            operations_for_all_hunks
+            operations
           )
         end
 
+        def debug
+          false
+        end
       end
     end
   end

@@ -33,32 +33,12 @@ class Repositext
             )
           end
 
-          diff = @repository.diff(
-            @from_git_commit,
-            @to_git_commit,
-            context_lines: 0,
-            patience: true
-          )
+          # We get the diff only so that we know which files have changed.
+          diff = @repository.diff(@from_git_commit, @to_git_commit, context_lines: 0)
 
           operations_for_all_files = diff.patches.map { |patch|
             file_name = patch.delta.old_file[:path]
             next nil  if !@file_list.include?(file_name)
-
-files_that_break_during_sync_primary_repo = %w[
-  55-0123e_0228
-  55-0220a_0229
-  55-0302_0240
-  55-0501a_2074
-  55-0611_0256
-  55-0625_0261
-  55-1115_0291
-  56-1002a_0358
-  57-0127a_0382
-  58-0515_0506
-  61-0120_0728
-  63-0317m_0942
-]
-next nil  if files_that_break_during_sync_primary_repo.any? { |e| file_name.index(e) }
 
             # Skip non content_at files
             unless file_name =~ /\/content\/.+\d{4}\.at\z/
@@ -67,21 +47,16 @@ next nil  if files_that_break_during_sync_primary_repo.any? { |e| file_name.inde
 
             puts "     - process #{ file_name }"
 
-            # We use the versions of content AT file and STM CSV file as they
-            # existed at `from_git_commit`.
-            content_at_file_at_from_commit = Repositext::RFile::ContentAt.new(
-              '_',
+            absolute_file_path = File.join(@repository.base_dir, file_name)
+            content_at_file_to = Repositext::RFile::ContentAt.new(
+              File.read(absolute_file_path),
               @language,
-              File.join(@repository.base_dir, file_name),
+              absolute_file_path,
               @content_type
-            ).as_of_git_commit(@from_git_commit)
-            stm_csv_file_at_from_commit = content_at_file_at_from_commit
-                                            .corresponding_subtitle_markers_csv_file
-                                            .as_of_git_commit(@from_git_commit)
-            soff = SubtitleOperationsForFile.new_from_content_at_file_and_patch(
-              content_at_file_at_from_commit,
-              stm_csv_file_at_from_commit,
-              patch,
+            )
+
+            soff = SubtitleOperationsForFile.new(
+              content_at_file_to,
               @repository.base_dir,
               {
                 from_git_commit: @from_git_commit,
