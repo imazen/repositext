@@ -101,13 +101,13 @@ class Repositext
                 @kpn_tracker = l_kpn
               end
             end
-            # Validates that all p.song paragraphs are preceded by p.stanza or
-            # p.song only. We assume that every p.song is a direct child of a
+            # Validates that all p.song and p.song_break paragraphs are preceded by p.stanza,
+            # p.song or p.song_break only. We assume that every p.song is a direct child of a
             # :record_mark
             non_blank_children = el.children.find_all { |e| :blank != e.type }
             first_child = non_blank_children.first
-            if(first_child && :p == first_child.type && first_child.has_class?('song'))
-              # First :p in :record_mark is p.song
+            if(first_child && :p == first_child.type && first_child.has_class?('song','song_break'))
+              # First :p in :record_mark is p.song or p.song_break
               errors << Reportable.error(
                 [
                   @file_to_validate.path,
@@ -121,8 +121,8 @@ class Repositext
             end
             non_blank_children.each_cons(2) { |first_el, second_el|
               if(
-                (:p == second_el.type && second_el.has_class?('song')) &&
-                !(:p == first_el.type && (first_el.has_class?('stanza') || first_el.has_class?('song')))
+                (:p == second_el.type && second_el.has_class?('song','song_break')) &&
+                (:p == first_el.type && !first_el.has_class?('stanza','song','song_break'))
               )
                 # subsequent p.song preceded by something other than p.stanza or p.song
                 errors << Reportable.error(
