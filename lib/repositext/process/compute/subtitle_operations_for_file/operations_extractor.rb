@@ -88,11 +88,14 @@ class Repositext
                 end
                 reset_current_capture_group
               when :left_aligned, :unaligned
-                if current_right_edge_aligned?
+                # Current ASP is left aligned, starting a new capture group
+                if strong_linkage_with_next_asp?
+                  # Current ASP is connected to next.
+                  @prev_right_edge = :unaligned
+                else
+                  # Self contained, not a subtitle operation
                   capture_op(:content_change)
                   reset_current_capture_group
-                else
-                  @prev_right_edge = :unaligned
                 end
               when :right_aligned
                 # Current ASP is self contained: Not a subtitle operation.
@@ -101,18 +104,18 @@ class Repositext
               when :st_added
                 # Added subtitle, not connected to previous: insert.
                 capture_op(:insert)
-                if current_right_edge_aligned?
-                  reset_current_capture_group
-                else
+                if strong_linkage_with_next_asp?
                   @prev_right_edge = :unaligned
+                else
+                  reset_current_capture_group
                 end
               when :st_removed
                 # Removed subtitle, not connected to previous: delete.
                 capture_op(:delete)
-                if current_right_edge_aligned?
-                  reset_current_capture_group
-                else
+                if strong_linkage_with_next_asp?
                   @prev_right_edge = :unaligned
+                else
+                  reset_current_capture_group
                 end
               else
                 raise "Handle this! #{ curr.inspect }"
@@ -136,10 +139,10 @@ class Repositext
                   # It's a split
                   capture_op(:split)
                 end
-                if current_right_edge_aligned?
-                  reset_current_capture_group
-                else
+                if strong_linkage_with_next_asp?
                   @prev_right_edge = :unaligned
+                else
+                  reset_current_capture_group
                 end
               when :st_removed
                 if :st_removed == @prev_asp[:type] && :delete == @ops_in_group.last.operationType
@@ -149,17 +152,17 @@ class Repositext
                   # It's a merge
                   capture_op(:merge)
                 end
-                if current_right_edge_aligned?
-                  reset_current_capture_group
-                else
+                if strong_linkage_with_next_asp?
                   @prev_right_edge = :unaligned
+                else
+                  reset_current_capture_group
                 end
               when :unaligned
                 capture_op(compute_move_direction)
-                if current_right_edge_aligned?
-                  reset_current_capture_group
-                else
+                if strong_linkage_with_next_asp?
                   @prev_right_edge = :unaligned
+                else
+                  reset_current_capture_group
                 end
               else
                 raise "Handle this! #{ curr.inspect }"
@@ -189,21 +192,44 @@ class Repositext
             @ops_in_group = []
           end
 
-          def current_right_edge_aligned?
+          # Computes strength of linkage between @current_asp and @next_asp
+          # @return [Boolean]
+          def strong_linkage_with_next_asp?
             cur = @current_asp
             nxt = @next_asp
             if nxt.nil?
               # current_asp is the last in file
-              return true
+              return false
             elsif [:fully_aligned, :left_aligned].include?(nxt[:type])
               # next_asp has clear left boundary
-              return true
+              return false
             elsif [:right_aligned, :unaligned].include?(nxt[:type])
-              # next_asp has no left boundary
-              return false
+              if(
+                @asp_group_cumulative_content_change > 10 &&
+                (
+                  @asp_group_cumulative_content_change + nxt[:content_length_change]
+                ) < 3
+              ) || (
+                compute_string_overlap(cur[:to][:content_sim], nxt[:from][:content_sim]) > 0 ||
+                compute_string_overlap(cur[:from][:content_sim], nxt[:to][:content_sim]) > 0
+              )
+                # Subtitles overlap, connected with next
+                return true
+              else
+                # No overlap, terminate capture group
+                return false
+              end
             elsif [:st_added, :st_removed].include?(nxt[:type])
-              # next_asp may be connected to current_asp
-              return false
+              if(
+                compute_string_overlap(cur[:to][:content_sim], nxt[:from][:content_sim]) > 0 ||
+                compute_string_overlap(cur[:from][:content_sim], nxt[:to][:content_sim]) > 0
+              )
+                # Subtitles overlap, connected with next
+                return true
+              else
+                # No overlap, terminate capture group
+                return false
+              end
             else
               raise "Should never get here!"
             end
@@ -297,18 +323,119 @@ class Repositext
           end
 
           def compute_move_direction
-            ccc_before_current_asp = @asp_group_cumulative_content_change - @current_asp[:content_length_change]
-            if ccc_before_current_asp < 0
-              # Capture group has gotten shorter up to @current_asp => move left
-              :move_left
+            case @current_asp[:type]
+            when :right_aligned
+              # Right edge is aligned, so we can look at length change of current ASP
+              if @current_asp[:content_length_change] < 0
+                # current asp got shorter, move right
+                :move_right
+              else
+                # current asp got longer, move left
+                :move_left
+              end
+            when :unaligned
+              # Right edge is unaligned, we have to look at capture group's length change
+              ccc_before_current_asp = @asp_group_cumulative_content_change - @current_asp[:content_length_change]
+              if ccc_before_current_asp < 0
+                # Capture group has gotten shorter up to @current_asp => move left
+                :move_left
+              else
+                # Capture group has gotten longer up to @current_asp => move right
+                :move_right
+              end
+            else
+              raise "Handle this: #{ @current_asp.inspect }"
+            end
+          end
+
           # @param asp_index [Integer] index of ASP in file
           def compute_operation_id
             [@file_date_code, @file_operation_index += 1].join('_')
           end
 
+          # This method measures by how many characters the end of string_a
+          # overlaps the beginning of string_b.
+          # It determines the overlap in characters at which the similarity
+          # surpasses a similarity threshold.
+          # NOTE: This method assumes that string_a and string_b are not very
+          # similar. This method should only get called for dissimilar strings.
+          # If we find we call this for similar strings, then we could further
+          # optimize it, e.g., by computing the overall string similarity and
+          # returning that if it is high enough.
+          # @param string_a [String]
+          # @param string_b [String]
+          # @min_overlap [Integer, optional]
+          # @return [Integer] Number of overlapping characters
+          def compute_string_overlap(string_a, string_b, min_overlap=3, debug=false)
+            min_string_length = [string_a, string_b].map(&:length).min
+            return 0  if 0 == min_string_length
+
+            max_sim = 0
+            prev_sim = 0
+            overlap = 1 # We start with 2 char overlap
+            until(
+              (overlap > min_overlap) &&
+              (
+                (sufficient_overlap_similarity?(max_sim, overlap)) ||
+                (overlap >= min_string_length)
+              )
+            ) do
+              overlap += 1
+              string_a_end = string_a[-overlap..-1]
+              string_b_start = string_b[0..(overlap-1)]
+              sim = string_a_end.longest_subsequence_similar(string_b_start)
+
+              if debug
+                puts ''
+                puts [
+                  ('█' * (sim * 10).round).rjust(10),
+                  ' ',
+                  string_a_end.inspect
+                ].join
+                puts [
+                  sim.round(3).to_s.rjust(10).color(prev_sim <= sim ? :green : :red),
+                  ' ',
+                  string_b_start.inspect
+                ].join
+              end
+
+              if sim > max_sim
+                optimal_overlap = overlap
+              end
+              max_sim = [max_sim, sim].max  if overlap >= min_overlap
+              prev_sim = sim
+
+            end
+            r = if sufficient_overlap_similarity?(max_sim, overlap)
+              optimal_overlap
             else
-              # Capture group has gotten longer up to @current_asp => move right
-              :move_right
+              0
+            end
+            puts "Returned overlap chars: #{ r }"  if debug
+            r
+          end
+
+          # Returns true if sim is sufficient for the given overlap.
+          # @param sim [Float]
+          # @param overlap [Integer]
+          # @return [Boolean]
+          def sufficient_overlap_similarity?(sim, overlap)
+            case overlap
+            when 0..2
+              false
+            when 3..4
+              1.0 == sim # 3 of 3, 4 of 4
+            when 5..8
+              # 4 of 5, 5 of 6, 6 of 7, 7 of 8,
+              sim >= 0.8
+            when 9..10
+              # 7 of 9, 8 of 10
+              sim >= 0.75
+            when 11..20
+              sim > 0.7
+            else
+              # 90% similarity
+              sim > 0.65
             end
           end
 
