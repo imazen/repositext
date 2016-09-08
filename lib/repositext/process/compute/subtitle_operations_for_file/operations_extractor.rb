@@ -4,8 +4,11 @@ class Repositext
       class SubtitleOperationsForFile
         class OperationsExtractor
 
-          def initialize(aligned_subtitle_pairs)
+          # @param aligned_subtitle_pairs [Array<AlignedSubtitlePair>]
+          # @param file_date_code [String]
+          def initialize(aligned_subtitle_pairs, file_date_code)
             @aligned_subtitle_pairs = aligned_subtitle_pairs
+            @file_date_code = file_date_code
           end
 
           # Takes all the file's aligned_subtitle_pairs, and extracts subtitle
@@ -26,6 +29,7 @@ class Repositext
           def init_context
             @current_asp_index = 0
             @current_asp = @aligned_subtitle_pairs[0]
+            @file_operation_index = 0
             @next_asp = @aligned_subtitle_pairs[1]
             @ops_in_file = []
             @prev_stid = 'new_file'
@@ -220,7 +224,7 @@ class Repositext
                 # record new operation
                 Subtitle::Operation.new_from_hash(
                   affectedStids: [@current_asp[:subtitle_object]],
-                  operationId: @current_asp[:index],
+                  operationId: compute_operation_id,
                   operationType: :delete,
                 )
               end
@@ -234,7 +238,7 @@ class Repositext
                 # record new operation
                 Subtitle::Operation.new_from_hash(
                   affectedStids: [@current_asp[:subtitle_object]],
-                  operationId: @current_asp[:index],
+                  operationId: compute_operation_id,
                   operationType: :insert,
                   afterStid: @prev_stid,
                 )
@@ -249,20 +253,20 @@ class Repositext
                 # record new operation
                 Subtitle::Operation.new_from_hash(
                   affectedStids: [@prev_asp, @current_asp].map { |e| e[:subtitle_object] },
-                  operationId: @prev_asp[:index],
+                  operationId: compute_operation_id,
                   operationType: :merge,
                 )
               end
             when :move_left
               Subtitle::Operation.new_from_hash(
                 affectedStids: [@prev_asp, @current_asp].map { |e| e[:subtitle_object] },
-                operationId: @prev_asp[:index],
+                operationId: compute_operation_id,
                 operationType: :move_left,
               )
             when :move_right
               Subtitle::Operation.new_from_hash(
                 affectedStids: [@prev_asp, @current_asp].map { |e| e[:subtitle_object] },
-                operationId: @prev_asp[:index],
+                operationId: compute_operation_id,
                 operationType: :move_right,
               )
             when :no_op
@@ -278,7 +282,7 @@ class Repositext
                 # record new operation
                 Subtitle::Operation.new_from_hash(
                   affectedStids: [@prev_asp, @current_asp].map { |e| e[:subtitle_object] },
-                  operationId: @prev_asp[:index],
+                  operationId: compute_operation_id,
                   operationType: :split,
                 )
               end
@@ -297,6 +301,11 @@ class Repositext
             if ccc_before_current_asp < 0
               # Capture group has gotten shorter up to @current_asp => move left
               :move_left
+          # @param asp_index [Integer] index of ASP in file
+          def compute_operation_id
+            [@file_date_code, @file_operation_index += 1].join('_')
+          end
+
             else
               # Capture group has gotten longer up to @current_asp => move right
               :move_right

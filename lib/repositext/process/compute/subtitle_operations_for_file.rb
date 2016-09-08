@@ -118,7 +118,10 @@ Data types used in this file
           end
 
           puts " - extract ops"
-          operations = OperationExtractor.new(aligned_subtitle_pairs).extract
+          operations = OperationsExtractor.new(
+            aligned_subtitle_pairs,
+            @content_at_file_to.extract_date_code
+          ).extract
           if debug
             puts ('-' * 80).color(:red)
             puts "operations"
