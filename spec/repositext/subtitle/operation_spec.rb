@@ -67,7 +67,7 @@ class Repositext
           ],
           afterStid: nil,
           operationId: '123',
-          operationType: :moveLeft,
+          operationType: :move_left,
         }
       }
       let(:moveRightDefaultAttrs){
@@ -86,7 +86,7 @@ class Repositext
           ],
           afterStid: nil,
           operationId: '123',
-          operationType: :moveLeft,
+          operationType: :move_left,
         }
       }
       let(:splitDefaultAttrs){

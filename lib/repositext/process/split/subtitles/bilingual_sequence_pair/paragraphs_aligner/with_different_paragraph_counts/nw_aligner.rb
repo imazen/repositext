@@ -9,10 +9,12 @@ class Repositext
               class NwAligner < ::NeedlemanWunschAligner
 
                 # Get score for alignment pair of records and paragraphs.
-                # param left_el [BlockElement]
-                # param right_el [BlockElement]
-                # return [Integer]
-                def compute_score(left_el, right_el)
+                # @param left_el [BlockElement]
+                # @param right_el [BlockElement]
+                # @param row_index [Integer]
+                # @param col_index [Integer]
+                # @return [Integer]
+                def compute_score(left_el, right_el, row_index, col_index)
                   score = 0
                   if left_el.type == right_el.type && left_el.key == right_el.key
                     # Extra boost if two headers are aligned

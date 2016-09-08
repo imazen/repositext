@@ -10,7 +10,7 @@ class Repositext
           Subtitle::Operation.new_from_hash(
             affectedStids: inverse_affected_stids,
             operationId: '',
-            operationType: :moveRight,
+            operationType: :move_right,
           )
         end
 

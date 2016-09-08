@@ -6,20 +6,13 @@ class Repositext
         # Uses the Jaccard similarity to compute the score.
         class SubtitleAligner < NeedlemanWunschAligner
 
-          # Get score for alignment pair of subtitle grains.
-          # Each grain looks like this:
+          # Get score for alignment pair of subtitle attrs.
           #
-          # {
-          #   content: "the full content",
-          #   length: 7,
-          #   stid: 'todo',
-          # }
-          #
-          # @param left_el [Hash]
-          # @param right_el [Hash]
-          # @param row_index [Integer]
-          # @param col_index [Integer]
-          # @return [Integer]
+          # @param left_el [SubtitleAttrs]
+          # @param right_el [SubtitleAttrs]
+          # @param row_index [Integer] in score matrix
+          # @param col_index [Integer] in score matrix
+          # @return [Float]
           def compute_score(left_el, right_el, row_index, col_index)
 
             # To improve performance, we only look at cells adjacent to
@@ -42,12 +35,12 @@ class Repositext
               right_txt,
               false
             )
+
             abs_sim = 100 * abs_sim * (abs_conf < 0.7 ? abs_conf : 1.0)
             return abs_sim  if 100 == abs_sim
 
             # If strings are not identical, then we compute left aligned
             # similarity so that gaps come after the shared content on splits.
-            # similarity, confidence = JaccardSimilarityComputer.compute(
             left_aligned_sim, la_conf = LcsSimilarityComputer.compute(
               left_txt,
               right_txt,

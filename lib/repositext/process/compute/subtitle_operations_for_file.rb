@@ -76,8 +76,6 @@ Data types used in this file
 
         # @return [Repositext::Subtitle::OperationsForFile]
         def compute
-          print "       - compute st attrs"
-
           if debug
             puts ('-' * 80).color(:red)
             puts "content_at_from"
@@ -88,6 +86,7 @@ Data types used in this file
             puts @content_at_file_to.contents
           end
 
+          print "       - compute st attrs"
           subtitle_attrs_from = compute_subtitle_attrs_from(
             @content_at_file_to,
             @options[:from_git_commit],

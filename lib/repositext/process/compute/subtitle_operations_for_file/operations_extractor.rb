@@ -2,7 +2,7 @@ class Repositext
   class Process
     class Compute
       class SubtitleOperationsForFile
-        class OperationExtractor
+        class OperationsExtractor
 
           def initialize(aligned_subtitle_pairs)
             @aligned_subtitle_pairs = aligned_subtitle_pairs
@@ -34,13 +34,15 @@ class Repositext
 
           def process_current_asp
 
-            @asp_group_cumulative_content_change += @current_asp[:content_length_change]
-            @asp_group_cumulative_content_length_to += @current_asp[:to][:content].length
+            curr = @current_asp
+
+            @asp_group_cumulative_content_change += curr[:content_length_change]
+            @asp_group_cumulative_content_length_to += curr[:to][:content].length
 
             if debug
-              puts "P"  if @current_asp[:first_in_para]
-              puts " - #{ @current_asp[:type] }"
-              just_method = case @current_asp[:type]
+              puts "P"  if curr[:first_in_para]
+              puts " - #{ curr[:type] }"
+              just_method = case curr[:type]
               when :right_aligned
                 :rjust
               when :left_aligned, :fully_aligned
@@ -48,7 +50,7 @@ class Repositext
               when :unaligned, :st_added, :st_removed
                 :center
               else
-                raise "Handle this: #{ @current_asp[:type] }"
+                raise "Handle this: #{ curr[:type] }"
               end
               para_boundaries_reporter = ->(st_attrs) {
                 [
@@ -56,24 +58,26 @@ class Repositext
                   (st_attrs[:last_in_para] ? 'last_ip' : nil)
                 ].compact.join(', ')
               }
-              puts "   From: #{ @current_asp[:from][:content].strip.send(just_method, 130) }   #{ para_boundaries_reporter.call(@current_asp[:from]) }"
-              puts "   To:   #{ @current_asp[:to][:content].strip.send(just_method, 130) }   #{ para_boundaries_reporter.call(@current_asp[:to]) }"
+              puts "   From: #{ curr[:from][:content].strip.send(just_method, 130) }   #{ para_boundaries_reporter.call(curr[:from]) }"
+              puts "   To:   #{ curr[:to][:content].strip.send(just_method, 130) }   #{ para_boundaries_reporter.call(curr[:to]) }"
               puts([
                 "   ",
-                "clc:#{ @current_asp[:content_length_change] } ",
+                "clc:#{ curr[:content_length_change] } ",
                 "ccc:#{ @asp_group_cumulative_content_change } ",
-                "sl:#{ @current_asp[:sim_left] } ",
-                "sa:#{ @current_asp[:sim_abs] } ",
-                "sr:#{ @current_asp[:sim_right] } ",
+                "sl:#{ curr[:sim_left] } ",
+                "sa:#{ curr[:sim_abs] } ",
+                "sr:#{ curr[:sim_right] } ",
               ].join)
             end
 
             case @prev_right_edge
-
             when :aligned
-              case @current_asp[:type]
+              # The right edge of the previous ASP is aligned:
+              # Start a new capture group.
+              case curr[:type]
               when :fully_aligned
-                if @current_asp[:from][:content] == @current_asp[:to][:content]
+                # Current ASP is self contained: Not a subtitle operation.
+                if curr[:from][:content] == curr[:to][:content]
                   capture_op(:no_op)
                 else
                   capture_op(:content_change)
@@ -87,9 +91,11 @@ class Repositext
                   @prev_right_edge = :unaligned
                 end
               when :right_aligned
+                # Current ASP is self contained: Not a subtitle operation.
                 capture_op(:content_change)
                 reset_current_capture_group
               when :st_added
+                # Added subtitle, not connected to previous: insert.
                 capture_op(:insert)
                 if current_right_edge_aligned?
                   reset_current_capture_group
@@ -97,6 +103,7 @@ class Repositext
                   @prev_right_edge = :unaligned
                 end
               when :st_removed
+                # Removed subtitle, not connected to previous: delete.
                 capture_op(:delete)
                 if current_right_edge_aligned?
                   reset_current_capture_group
@@ -104,13 +111,15 @@ class Repositext
                   @prev_right_edge = :unaligned
                 end
               else
-                raise "Handle this! #{ @current_asp.inspect }"
+                raise "Handle this! #{ curr.inspect }"
               end
 
             when :unaligned
-              case @current_asp[:type]
+              # The right edge of the previous ASP is not aligned:
+              # Continue capture group.
+              case curr[:type]
               when :fully_aligned, :left_aligned
-                raise "Handle this! #{ @current_asp.inspect }"
+                raise "Should never get here! #{ curr.inspect }"
               when :right_aligned
                 # It's a move, determine direction
                 capture_op(compute_move_direction)
@@ -149,13 +158,13 @@ class Repositext
                   @prev_right_edge = :unaligned
                 end
               else
-                raise "Handle this! #{ @current_asp.inspect }"
+                raise "Handle this! #{ curr.inspect }"
               end
             else
               raise "Handle this! #{ @prev_right_edge }"
             end
 
-            puts "P"  if debug && @current_asp[:last_in_para]
+            puts "P"  if debug && curr[:last_in_para]
           end
 
           def advance_to_next_asp

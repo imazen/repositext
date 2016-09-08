@@ -15,47 +15,59 @@ class Repositext
           }
           let(:default_content_at_from){
             [
-              "@word1 word2 word3 word4 word5 ",
-              "@word6 word7 word8 word9 word10 ",
-              "@word11 word12 word13 word14 word15 word16 word17 word18 word19 word20",
+              "@Abcd Efgh Ijkl Mnop Qrst ",
+              "@Vwxy Z123 A456 B789 C012 ",
+              "@D345 Qwer Tyui Opas Dfgh Jklz Xcvb Nmqw Erty Uiop",
             ].join
           }
           let(:default_subtitle_attrs_from){
             [
               {
-                content: "word1 word2 word3 word4 word5 ",
+                content: "Abcd Efgh Ijkl Mnop Qrst ",
+                content_sim: "abcd efgh ijkl mnop qrst",
                 subtitle_count: 1,
+                index: 0,
                 first_in_para: true,
               }, {
-                content: "word6 word7 word8 word9 word10 ",
+                content: "Vwxy Z123 A456 B789 C012 ",
+                content_sim: "vwxy z123 a456 b789 c012",
                 subtitle_count: 1,
+                index: 1,
               }, {
-                content: "word11 word12 word13 word14 word15 word16 word17 word18 word19 word20",
+                content: "D345 Qwer Tyui Opas Dfgh Jklz Xcvb Nmqw Erty Uiop",
+                content_sim: "d345 qwer tyui opas dfgh jklz xcvb nmqw erty uiop",
                 subtitle_count: 1,
+                index: 2,
                 last_in_para: true,
               },
             ]
           }
           let(:default_content_at_to){
             [
-              "@word1 word2 word3 word4 word5 word6 word7 word8 word9 ",
-              "@word10 word11 word12 word13 word14 word15 word16 word17 word18 word19 word20 ",
-              "@word20 word21 word22 word23",
+              "@Abcd Efgh Ijkl Mnop Qrst Vwxy Z123 A456 B789 ",
+              "@C012 D345 Qwer Tyui Opas Dfgh Jklz Xcvb Nmqw Erty Uiop ",
+              "@Uiop Asdf Mnbv Cxzl",
             ].join
           }
           let(:default_subtitle_attrs_to){
             [
               {
-                content: "word1 word2 word3 word4 word5 word6 word7 word8 word9 ",
-                subtitle_count: 1,
+                content: "Abcd Efgh Ijkl Mnop Qrst Vwxy Z123 A456 B789 ",
+                content_sim: "abcd efgh ijkl mnop qrst vwxy z123 a456 b789",
                 first_in_para: true,
-              }, {
-                content: "word10 word11 word12 word13 word14 word15 word16 word17 word18 word19 word20 ",
                 subtitle_count: 1,
+                index: 0,
               }, {
-                content: "word20 word21 word22 word23",
+                content: "C012 D345 Qwer Tyui Opas Dfgh Jklz Xcvb Nmqw Erty Uiop ",
+                content_sim: "c012 d345 qwer tyui opas dfgh jklz xcvb nmqw erty uiop",
                 subtitle_count: 1,
+                index: 1,
+              }, {
+                content: "Uiop Asdf Mnbv Cxzl",
+                content_sim: "uiop asdf mnbv cxzl",
                 last_in_para: true,
+                subtitle_count: 1,
+                index: 2,
               },
             ]
           }

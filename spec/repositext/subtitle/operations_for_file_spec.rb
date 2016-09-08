@@ -36,7 +36,7 @@ class Repositext
     },
     {
       "operationId": "0-2",
-      "operationType": "moveRight",
+      "operationType": "move_right",
       "afterStid": null,
       "affectedStids": [
         {
