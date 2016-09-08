@@ -123,7 +123,9 @@ class Repositext
               )
 
               # Compute remaining attrs
-              asp[:content_length_change] = sim_text_to.length - sim_text_from.length # neg means text removal
+              asp[:content_length_change] = (
+                asp[:to][:content].strip.length - asp[:from][:content].strip.length
+              ) # neg means text removal
               asp[:subtitle_count_change] = compute_subtitle_count_change(asp)
               asp[:type] = compute_subtitle_pair_type(asp)
               asp[:index] = idx + 1 # one based subtitle index
