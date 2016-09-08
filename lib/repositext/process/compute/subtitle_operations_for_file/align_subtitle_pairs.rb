@@ -21,7 +21,7 @@ class Repositext
             total_subtitle_count_change = st_count_to - st_count_from
             diagonal_band_range = [
               (total_subtitle_count_change.abs * 1.2).round,
-              10
+              15
             ].max
 
             aligner = SubtitleAligner.new(
@@ -48,7 +48,7 @@ class Repositext
               }
             }
             if max_alignment_offset >= diagonal_band_range
-              print " - diagonal_band_range too narrow for max offset of #{ max_alignment_offset }"
+              raise "Diagonal_band_range too narrow for max offset of #{ max_alignment_offset }"
             end
             r
           end
