@@ -28,17 +28,20 @@ class Repositext
                 subtitle_count: 1,
                 index: 0,
                 first_in_para: true,
+                repetitions: {},
               }, {
                 content: "Vwxy Z123 A456 B789 C012 ",
                 content_sim: "vwxy z123 a456 b789 c012",
                 subtitle_count: 1,
                 index: 1,
+                repetitions: {},
               }, {
                 content: "D345 Qwer Tyui Opas Dfgh Jklz Xcvb Nmqw Erty Uiop",
                 content_sim: "d345 qwer tyui opas dfgh jklz xcvb nmqw erty uiop",
                 subtitle_count: 1,
                 index: 2,
                 last_in_para: true,
+                repetitions: {},
               },
             ]
           }
@@ -57,17 +60,20 @@ class Repositext
                 first_in_para: true,
                 subtitle_count: 1,
                 index: 0,
+                repetitions: {},
               }, {
                 content: "C012 D345 Qwer Tyui Opas Dfgh Jklz Xcvb Nmqw Erty Uiop ",
                 content_sim: "c012 d345 qwer tyui opas dfgh jklz xcvb nmqw erty uiop",
                 subtitle_count: 1,
                 index: 1,
+                repetitions: {},
               }, {
                 content: "Uiop Asdf Mnbv Cxzl",
                 content_sim: "uiop asdf mnbv cxzl",
                 last_in_para: true,
                 subtitle_count: 1,
                 index: 2,
+                repetitions: {},
               },
             ]
           }
@@ -140,6 +146,34 @@ class Repositext
                 default_subtitle_attrs_from,
                 default_st_objects_from
               ).must_equal(default_enriched_subtitle_attrs_from)
+            end
+          end
+
+          describe '#detect_string_repetitions' do
+            [
+              [
+                "here we go repetition number one repetition number two repetition number three and then some more",
+                { " repetition number " => [10, 32, 54] }
+              ],
+              [
+                "this string does not contain any repetitions whatsoever",
+                {}
+              ],
+              [
+                "this string contains two repetitions repetitions",
+                { " repetitions" => [24, 36] }
+              ],
+              [
+                "repetitions are too short short",
+                {}
+              ],
+            ].each do |test_string, xpect|
+              it "Handles #{ test_string }" do
+                default_computer.send(
+                  :detect_string_repetitions,
+                  test_string
+                ).must_equal(xpect)
+              end
             end
           end
         end
