@@ -73,7 +73,7 @@ class Repositext
             temp_subtitle_offset = 0
             # Compute truncation length for sim_left and sim_right. We only
             # consider the first/last 30 chars. This length is aligned with
-            # max_conf_at_char_length in LcsSimilarityComputer.
+            # max_conf_at_char_length in `StringComputations.similarity`.
             half_truncation_length = 30
 
             aligned_subtitle_pairs.each_with_index { |asp,idx|
@@ -104,19 +104,19 @@ class Repositext
               # Compute various similarities between deleted and added content
               sim_text_from = asp[:from][:content_sim]
               sim_text_to = asp[:to][:content_sim]
-              asp[:sim_left] = LcsSimilarityComputer.compute(
+              asp[:sim_left] = StringComputations.similarity(
                 sim_text_from,
                 sim_text_to,
                 half_truncation_length,
                 :left
               )
-              asp[:sim_right] = LcsSimilarityComputer.compute(
+              asp[:sim_right] = StringComputations.similarity(
                 sim_text_from,
                 sim_text_to,
                 half_truncation_length,
                 :right
               )
-              asp[:sim_abs] = LcsSimilarityComputer.compute(
+              asp[:sim_abs] = StringComputations.similarity(
                 sim_text_from,
                 sim_text_to,
                 false # look at all chars, don't truncate

@@ -53,7 +53,7 @@ class Repositext
                   content_sim: content_sim,
                   subtitle_count: 1,
                   index: st_index += 1,
-                  repetitions: detect_string_repetitions(content_sim),
+                  repetitions: StringComputations.repetitions(content_sim),
                 }
               }.compact
               para_sts.first[:first_in_para] = true
@@ -86,69 +86,6 @@ class Repositext
               })
             }
             r
-          end
-
-          # Detects if a_string contains any repeated sequences with minimum
-          # length of ngram_length.
-          # Example:
-          #     "here we go repetition number one, repetition number two, repetition number three. And then some more"
-          # will return this:
-          #     { " repetition number " => [10, 33, 56] }
-          # @param a_string [String]
-          # @return [Hash] with repeated strings as keys and start positions as vals.
-          def detect_string_repetitions(a_string)
-            ngram_length = 8 # needs to by synched with sim_right!
-            string_length = a_string.length
-            return {}  if string_length <= ngram_length
-
-            start_pos = 0
-            ngrams = {}
-            while(start_pos + ngram_length) <= string_length do
-              test_string = a_string[start_pos, ngram_length]
-              ngrams[test_string]  ||= []
-              ngrams[test_string] << start_pos
-              start_pos += 1
-            end
-
-            max_rep_count = ngrams.inject(0) { |m,(k,v)| [m, v.length].max }
-            return {}  if max_rep_count <= 1
-
-            reps = ngrams.inject({}) { |m,(k,v)|
-              m[k] = v  if v.length == max_rep_count
-              m
-            }
-            # reps looks like this:
-            # {
-            #   " repetitio"=>[10, 33, 56],
-            #   "repetition"=>[11, 34, 57],
-            #   "epetition "=>[12, 35, 58],
-            #   "petition n"=>[13, 36, 59],
-            #   "etition nu"=>[14, 37, 60],
-            #   "tition num"=>[15, 38, 61],
-            #   "ition numb"=>[16, 39, 62],
-            #   "tion numbe"=>[17, 40, 63],
-            #   "ion number"=>[18, 41, 64],
-            #   "on number "=>[19, 42, 65]
-            # }
-
-            current_start_pos = -1
-            prev_key = ''
-            expanded_reps = reps.inject({}) { |m,(k,v)|
-              if current_start_pos.succ == v.first
-                # is connected, combine the two
-                new_key = prev_key + k.last
-                m[new_key] = m.delete(prev_key) || v
-                prev_key = new_key
-              else
-                # Not connected, start new capture group
-                m[k] = v
-                prev_key = k
-              end
-              current_start_pos = v.first
-              m
-            }
-
-            expanded_reps
           end
         end
       end

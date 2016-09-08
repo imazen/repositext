@@ -210,8 +210,14 @@ class Repositext
                   @asp_group_cumulative_content_change + nxt[:content_length_change]
                 ) < 3
               ) || (
-                compute_string_overlap(cur[:to][:content_sim], nxt[:from][:content_sim]) > 0 ||
-                compute_string_overlap(cur[:from][:content_sim], nxt[:to][:content_sim]) > 0
+                StringComputations.overlap(
+                  cur[:to][:content_sim],
+                  nxt[:from][:content_sim]
+                ) > 0 ||
+                StringComputations.overlap(
+                  cur[:from][:content_sim],
+                  nxt[:to][:content_sim]
+                ) > 0
               )
                 # Subtitles overlap, connected with next
                 return true
@@ -221,8 +227,14 @@ class Repositext
               end
             elsif [:st_added, :st_removed].include?(nxt[:type])
               if(
-                compute_string_overlap(cur[:to][:content_sim], nxt[:from][:content_sim]) > 0 ||
-                compute_string_overlap(cur[:from][:content_sim], nxt[:to][:content_sim]) > 0
+                StringComputations.overlap(
+                  cur[:to][:content_sim],
+                  nxt[:from][:content_sim]
+                ) > 0 ||
+                StringComputations.overlap(
+                  cur[:from][:content_sim],
+                  nxt[:to][:content_sim]
+                ) > 0
               )
                 # Subtitles overlap, connected with next
                 return true
@@ -353,95 +365,10 @@ class Repositext
             [@file_date_code, @file_operation_index += 1].join('_')
           end
 
-          # This method measures by how many characters the end of string_a
-          # overlaps the beginning of string_b.
-          # It determines the overlap in characters at which the similarity
-          # surpasses a similarity threshold.
-          # NOTE: This method assumes that string_a and string_b are not very
-          # similar. This method should only get called for dissimilar strings.
-          # If we find we call this for similar strings, then we could further
-          # optimize it, e.g., by computing the overall string similarity and
-          # returning that if it is high enough.
-          # @param string_a [String]
-          # @param string_b [String]
-          # @min_overlap [Integer, optional]
-          # @return [Integer] Number of overlapping characters
-          def compute_string_overlap(string_a, string_b, min_overlap=3, debug=false)
-            min_string_length = [string_a, string_b].map(&:length).min
-            return 0  if 0 == min_string_length
-
-            max_sim = 0
-            prev_sim = 0
-            overlap = 1 # We start with 2 char overlap
-            until(
-              (overlap > min_overlap) &&
-              (
-                (sufficient_overlap_similarity?(max_sim, overlap)) ||
-                (overlap >= min_string_length)
-              )
-            ) do
-              overlap += 1
-              string_a_end = string_a[-overlap..-1]
-              string_b_start = string_b[0..(overlap-1)]
-              sim = string_a_end.longest_subsequence_similar(string_b_start)
-
-              if debug
-                puts ''
-                puts [
-                  ('█' * (sim * 10).round).rjust(10),
-                  ' ',
-                  string_a_end.inspect
-                ].join
-                puts [
-                  sim.round(3).to_s.rjust(10).color(prev_sim <= sim ? :green : :red),
-                  ' ',
-                  string_b_start.inspect
-                ].join
-              end
-
-              if sim > max_sim
-                optimal_overlap = overlap
-              end
-              max_sim = [max_sim, sim].max  if overlap >= min_overlap
-              prev_sim = sim
-
-            end
-            r = if sufficient_overlap_similarity?(max_sim, overlap)
-              optimal_overlap
-            else
-              0
-            end
-            puts "Returned overlap chars: #{ r }"  if debug
-            r
-          end
-
-          # Returns true if sim is sufficient for the given overlap.
-          # @param sim [Float]
-          # @param overlap [Integer]
-          # @return [Boolean]
-          def sufficient_overlap_similarity?(sim, overlap)
-            case overlap
-            when 0..2
-              false
-            when 3..4
-              1.0 == sim # 3 of 3, 4 of 4
-            when 5..8
-              # 4 of 5, 5 of 6, 6 of 7, 7 of 8,
-              sim >= 0.8
-            when 9..10
-              # 7 of 9, 8 of 10
-              sim >= 0.75
-            when 11..20
-              sim > 0.7
-            else
-              # 90% similarity
-              sim > 0.65
-            end
-          end
-
           def debug
             true
           end
+
         end
       end
     end

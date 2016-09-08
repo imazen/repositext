@@ -5,7 +5,6 @@ class Repositext
     class Compute
       class SubtitleOperationsForFile
         describe ComputeSubtitleAttrs do
-
           let(:default_computer){
             SubtitleOperationsForFile.new(
               '_content_at_file_to',
@@ -13,6 +12,7 @@ class Repositext
               {}
             )
           }
+
           let(:default_content_at_from){
             [
               "@Abcd Efgh Ijkl Mnop Qrst ",
@@ -20,6 +20,7 @@ class Repositext
               "@D345 Qwer Tyui Opas Dfgh Jklz Xcvb Nmqw Erty Uiop",
             ].join
           }
+
           let(:default_subtitle_attrs_from){
             [
               {
@@ -45,6 +46,7 @@ class Repositext
               },
             ]
           }
+
           let(:default_content_at_to){
             [
               "@Abcd Efgh Ijkl Mnop Qrst Vwxy Z123 A456 B789 ",
@@ -52,6 +54,7 @@ class Repositext
               "@Uiop Asdf Mnbv Cxzl",
             ].join
           }
+
           let(:default_subtitle_attrs_to){
             [
               {
@@ -77,6 +80,7 @@ class Repositext
               },
             ]
           }
+
           let(:default_st_objects_from){
             [
               ::Repositext::Subtitle.new(
@@ -96,6 +100,7 @@ class Repositext
               ),
             ]
           }
+
           let(:default_enriched_subtitle_attrs_from){
             enriched_attrs = [
               { :persistent_id=>"1000001", :record_id=>"123123123" },
@@ -149,33 +154,6 @@ class Repositext
             end
           end
 
-          describe '#detect_string_repetitions' do
-            [
-              [
-                "here we go repetition number one repetition number two repetition number three and then some more",
-                { " repetition number " => [10, 32, 54] }
-              ],
-              [
-                "this string does not contain any repetitions whatsoever",
-                {}
-              ],
-              [
-                "this string contains two repetitions repetitions",
-                { " repetitions" => [24, 36] }
-              ],
-              [
-                "repetitions are too short short",
-                {}
-              ],
-            ].each do |test_string, xpect|
-              it "Handles #{ test_string }" do
-                default_computer.send(
-                  :detect_string_repetitions,
-                  test_string
-                ).must_equal(xpect)
-              end
-            end
-          end
         end
       end
     end

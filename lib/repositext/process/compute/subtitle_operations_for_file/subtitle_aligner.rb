@@ -29,7 +29,7 @@ class Repositext
             right_txt = right_el[:content_sim]
 
             # First we compute unaligned similarity
-            abs_sim, abs_conf = LcsSimilarityComputer.compute(
+            abs_sim, abs_conf = StringComputations.similarity(
               left_txt,
               right_txt,
               false
@@ -40,7 +40,7 @@ class Repositext
 
             # If strings are not identical, then we compute left aligned
             # similarity so that gaps come after the shared content on splits.
-            left_aligned_sim, la_conf = LcsSimilarityComputer.compute(
+            left_aligned_sim, la_conf = StringComputations.similarity(
               left_txt,
               right_txt,
               100_000,
