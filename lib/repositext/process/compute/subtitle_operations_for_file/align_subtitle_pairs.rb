@@ -160,21 +160,24 @@ class Repositext
             elsif -1 == al_st_pair[:subtitle_count_change]
               # Subtitle was removed
               :st_removed
-            elsif(
-              al_st_pair[:sim_abs].first > 0.93 and al_st_pair[:sim_abs].last == 1.0 and
-              al_st_pair[:content_length_change].abs <= 4
-            )
-              # very high absolute similarity, sufficient confidence
-              :fully_aligned
             else
-              # Check if it's left or right aligned
+              # No ins/del, compute alignment
               high_sim_left = (
-                al_st_pair[:sim_left].first >= 0.87 and al_st_pair[:sim_left].last >= 0.9
+                al_st_pair[:sim_left].first >= 0.87 and
+                al_st_pair[:sim_left].last >= 0.9
               ) ? al_st_pair[:sim_left].first : false
               high_sim_right = (
-                al_st_pair[:sim_right].first >= 0.87 and al_st_pair[:sim_right].last >= 0.9
+                al_st_pair[:sim_right].first >= 0.87 and
+                al_st_pair[:sim_right].last >= 0.9
               ) ? al_st_pair[:sim_right].first : false
-              if high_sim_left && high_sim_right
+              if(
+                al_st_pair[:sim_abs].first > 0.93 and al_st_pair[:sim_abs].last == 1.0 and
+                high_sim_left and
+                high_sim_right
+              )
+                # very high absolute similarity, sufficient confidence
+                :fully_aligned
+              elsif high_sim_left && high_sim_right
                 # Both similarities score high, use max to determine alignment
                 high_sim_left >= high_sim_right ? :left_aligned : :right_aligned
               elsif high_sim_left
