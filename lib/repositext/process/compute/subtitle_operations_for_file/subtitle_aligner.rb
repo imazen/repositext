@@ -25,7 +25,6 @@ class Repositext
               return -1000
             end
 
-            # Remove everything except chars, numbers, and whitespace
             left_txt = left_el[:content_sim]
             right_txt = right_el[:content_sim]
 
@@ -50,7 +49,16 @@ class Repositext
             left_aligned_sim = 100 * left_aligned_sim * (la_conf < 0.7 ? la_conf : 1.0)
 
             # Return larger of the two similarities
-            [abs_sim, left_aligned_sim].max
+            larger_sim = [abs_sim, left_aligned_sim].max
+            if larger_sim < 40
+              # Penalize very low similarity scores, make them slightly worse
+              # than a gap. This will avoid aligning of subtitle pairs that
+              # have nothing in common.
+              # 0.4 seems to be the baseline similarity for LcsSimilarity.
+              return -11
+            else
+              larger_sim
+            end
           end
 
           def default_gap_penalty
