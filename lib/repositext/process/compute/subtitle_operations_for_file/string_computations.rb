@@ -141,13 +141,13 @@ class Repositext
           # @return [Integer] Number of overlapping characters
           def self.overlap(string_a, string_b, min_overlap=3, debug=false)
             min_string_length = [string_a, string_b].map(&:length).min
-            return 0  if 0 == min_string_length
+            return 0  if min_string_length < min_overlap
 
             max_sim = 0
             prev_sim = 0
             overlap = 1 # We start with 2 char overlap
             until(
-              (overlap > min_overlap) &&
+              (overlap >= min_overlap) &&
               (
                 (sufficient_overlap_similarity?(max_sim, overlap)) ||
                 (overlap >= min_string_length)

@@ -129,21 +129,21 @@ class Repositext
             [
               [
                 "Empty string",
-                "asdf",
+                "asdf sdfg qwer [poi",
                 "",
                 0
               ],
               [
-                "14 char identical overlap",
-                "abcd efgh ijkl mnop common overlap",
-                                    "common overlap ponm lkji hgfe dcba",
-                11
+                "16 char identical overlap",
+                "abcd efgh ijkl mnop common 12 overlap",
+                                    "common 12 overlap ponm lkji hgfe dcba",
+                14
               ],
               [
-                "14 char similar overlap",
-                "abcd efgh ijkl mnop comXon overlap",
-                                    "common overlap ponm lkji hgfe dcba",
-                12
+                "16 char similar overlap",
+                "abcd efgh ijkl mnop comXon 12 overlap",
+                                    "common 12 overlap ponm lkji hgfe dcba",
+                14
               ],
               [
                 "No overlap",
@@ -152,15 +152,9 @@ class Repositext
                 0
               ],
               [
-                "4 char identical overlap",
-                "abcd efgh ijkl mnop comm",
-                                    "comm ponm lkji hgfe dcba",
-                4
-              ],
-              [
                 "Min overlap for medium repetition",
-                "abcd efgh ijkl mnop comm comm comm",
-                                              "comm comm ponm lkji hgfe dcba",
+                "abcd efgh ijkl mnop comm comm comm comm",
+                                                   "comm comm comm ponm lkji hgfe dcba",
                 4
               ],
               [
@@ -170,24 +164,23 @@ class Repositext
                 5
               ],
               [
-                "55-0815 (a)",
-                "healing campaign and if you re you re still here there",
-                                   "and if you re live near there we ll be looking forward to s",
-                29
-              ],
-              [
-                "55-0815 (b)",
-                "every believer. Well, then… Thank you.",
-                                 "Well, that’s perfect. If God has",
+                "Shorter string one less than min_overlap of 3",
+                "overlap",
+                     "ap",
                 0
               ],
               [
-                "55-0815 (c)",
-                "judgment and condemn many scholars, and teachers, and priests today.",
-                                                    "and preachers, and priests today. She recognized it.",
-                25
+                "Shorter string is exactly min_overlap of 3",
+                "overlap",
+                    "lap",
+                3
               ],
-
+              [
+                "Shorter string is one more than min_overlap of 3",
+                "overlap",
+                   "rlap",
+                4
+              ],
             ].each do |desc, string_a, string_b, xpect|
               it "Handles #{ desc }" do
                 StringComputations.overlap(
