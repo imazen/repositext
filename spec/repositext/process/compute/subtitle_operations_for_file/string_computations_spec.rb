@@ -105,12 +105,16 @@ class Repositext
                 {}
               ],
               [
-                "this string contains two repetitions repetitions",
-                { " repetitions" => [24, 36] }
+                "this string contains two long enough repetitions long enough repetitions",
+                { " long enough repetitions"=>[24, 48] }
               ],
               [
                 "repetitions are too short short",
                 {}
+              ],
+              [
+                "long enough repetition long enough repetition at the beginning and end long enough repetition",
+                { "long enough repetition"=>[0, 23, 71] }
               ],
             ].each do |test_string, xpect|
               it "Handles #{ test_string }" do

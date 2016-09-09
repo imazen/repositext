@@ -71,7 +71,7 @@ class Repositext
           # @param a_string [String]
           # @return [Hash] with repeated strings as keys and start positions as vals.
           def self.repetitions(a_string)
-            ngram_length = 8 # needs to by synched with sim_right!
+            ngram_length = 15 # based on min length of offensive repeat phrases in production content
             string_length = a_string.length
             return {}  if string_length <= ngram_length
 
@@ -91,6 +91,7 @@ class Repositext
               m[k] = v  if v.length == max_rep_count
               m
             }
+
             # reps looks like this:
             # {
             #   " repetitio"=>[10, 33, 56],
@@ -105,8 +106,8 @@ class Repositext
             #   "on number "=>[19, 42, 65]
             # }
 
-            current_start_pos = -1
-            prev_key = ''
+            current_start_pos = -2
+            prev_key = nil
             expanded_reps = reps.inject({}) { |m,(k,v)|
               if current_start_pos.succ == v.first
                 # is connected, combine the two

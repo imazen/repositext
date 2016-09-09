@@ -66,7 +66,7 @@ class Repositext
           end
 
           def gap_indicator
-            { content: '', content_sim: '', subtitle_count: 0 }
+            { content: '', content_sim: '', subtitle_count: 0, repetitions: {} }
           end
         end
       end

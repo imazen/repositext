@@ -71,6 +71,7 @@ class Repositext
                 "sl:#{ curr[:sim_left] } ",
                 "sa:#{ curr[:sim_abs] } ",
                 "sr:#{ curr[:sim_right] } ",
+                "reps: #{ curr[:has_repetitions] }"
               ].join)
             end
 
