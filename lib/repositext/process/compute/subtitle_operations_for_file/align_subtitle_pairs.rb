@@ -11,6 +11,7 @@ class Repositext
           def align_subtitle_pairs(sts_from, sts_to)
             asps = compute_aligned_subtitle_pairs(sts_from, sts_to)
             enriched_asps = enrich_aligned_subtitle_pair_attributes(asps)
+            post_processed_asps = post_process_aligned_subtitle_pairs(enriched_asps)
           end
 
         private
@@ -118,15 +119,51 @@ class Repositext
                 asp[:to][:content].strip.length - asp[:from][:content].strip.length
               ) # neg means text removal
               asp[:subtitle_count_change] = compute_subtitle_count_change(asp)
-              asp[:type] = compute_subtitle_pair_type(asp)
+              asp[:has_repetitions] = compute_repetitions(
+                asp[:from][:repetitions],
+                asp[:to][:repetitions]
+              )
               asp[:index] = idx + 1 # one based subtitle index
               # Take first and last_in_para from :to st
 # TODO: Check if this is the correct thing to do!
               asp[:first_in_para] = asp[:to][:first_in_para]
               asp[:last_in_para] = asp[:to][:last_in_para]
+
+              asp[:type] = compute_subtitle_pair_type(asp)
               enriched_aligned_subtitle_pairs << asp
             }
             enriched_aligned_subtitle_pairs
+          end
+
+          # Post processes aligned_subtitle_pairs:
+          # * Fixes alignment type issues around subtitles with repeated phrases
+          # @param aligned_subtitle_pairs [Array<AlignedSubtitlePair>]
+          # @return [Array<AlignedSubtitlePair>]
+          def post_process_aligned_subtitle_pairs(aligned_subtitle_pairs)
+            aligned_subtitle_pairs.each_cons(2) do |cur, nxt|
+              # If a subtitle pair has type "right_aligned" and is followed by
+              # an ins/del, we change it to "unaligned" if it has repetitions
+              # and text overlap with the following ST.
+              if(
+                cur[:has_repetitions] &&
+                :right_aligned == cur[:type] &&
+                [:st_added, :st_removed].include?(nxt[:type]) &&
+                (
+                  StringComputations.overlap(
+                    cur[:to][:content_sim],
+                    nxt[:from][:content_sim]
+                  ) > 0 ||
+                  StringComputations.overlap(
+                    cur[:from][:content_sim],
+                    nxt[:to][:content_sim]
+                  ) > 0
+                )
+              )
+                # Change type to `unaligned`
+                cur[:type] = :unaligned
+              end
+            end
+            aligned_subtitle_pairs
           end
 
           # Returns difference in subtitles from :from to :to in al_st_pair.
@@ -161,6 +198,7 @@ class Repositext
                 al_st_pair[:sim_right].first >= 0.87 and
                 al_st_pair[:sim_right].last >= 0.9
               ) ? al_st_pair[:sim_right].first : false
+              has_repetitions = al_st_pair[:has_repetitions]
               if(
                 al_st_pair[:sim_abs].first > 0.93 and al_st_pair[:sim_abs].last == 1.0 and
                 high_sim_left and
@@ -182,6 +220,13 @@ class Repositext
               end
             end
           end
+
+          # @param reps_from [Hash] {"repeated_text"=>[0, 23, 41, 60]}
+          # @param reps_to [Hash]
+          def compute_repetitions(reps_from, reps_to)
+            [reps_from, reps_to].any? { |reps| reps.any? { |k,v| v.length > 1 } }
+          end
+
         end
       end
     end
