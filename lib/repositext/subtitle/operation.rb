@@ -23,6 +23,8 @@ class Repositext
       def self.new_from_hash(attrs)
         new_attrs = attrs.dup
         class_name = case new_attrs[:operationType].to_sym
+        when :content_change
+          'ContentChange'
         when :delete
           'Delete'
         when :insert

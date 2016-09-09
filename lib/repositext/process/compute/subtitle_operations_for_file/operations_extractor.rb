@@ -251,8 +251,11 @@ class Repositext
           def capture_op(op_type)
             op = case op_type
             when :content_change
-              # Nothing to do
-              nil
+              Subtitle::Operation.new_from_hash(
+                affectedStids: [@current_asp[:subtitle_object]],
+                operationId: compute_operation_id,
+                operationType: :content_change,
+              )
             when :delete
               Subtitle::Operation.new_from_hash(
                 affectedStids: [@current_asp[:subtitle_object]],
