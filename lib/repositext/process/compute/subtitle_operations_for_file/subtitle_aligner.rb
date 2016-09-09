@@ -48,6 +48,12 @@ class Repositext
             )
             left_aligned_sim = 100 * left_aligned_sim * (la_conf < 0.7 ? la_conf : 1.0)
 
+            # We add a small length based offset to the score so that given same
+            # similarity, the longer string will win.
+            min_length = [[left_txt, right_txt].map(&:length).min, 1].max # guaranteed to be 1 or greater
+            length_based_offset = 1 - (1 / min_length.to_f)
+            left_aligned_sim += length_based_offset
+
             # Return larger of the two similarities
             larger_sim = [abs_sim, left_aligned_sim].max
             if larger_sim < 40
