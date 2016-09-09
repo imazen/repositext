@@ -254,34 +254,18 @@ class Repositext
               # Nothing to do
               nil
             when :delete
-              if(prev_op = @ops_in_group.last) && :delete == prev_op.operationType
-                # Don't record separate operation, just add @current_asp to
-                # affectedStids
-                prev_op.affectedStids << @current_asp[:subtitle_object]
-                nil
-              else
-                # record new operation
-                Subtitle::Operation.new_from_hash(
-                  affectedStids: [@current_asp[:subtitle_object]],
-                  operationId: compute_operation_id,
-                  operationType: :delete,
-                )
-              end
+              Subtitle::Operation.new_from_hash(
+                affectedStids: [@current_asp[:subtitle_object]],
+                operationId: compute_operation_id,
+                operationType: :delete,
+              )
             when :insert
-              if(prev_op = @ops_in_group.last) && :insert == prev_op.operationType
-                # Don't record separate operation, just add @current_asp to
-                # affectedStids
-                prev_op.affectedStids << @current_asp[:subtitle_object]
-                nil
-              else
-                # record new operation
-                Subtitle::Operation.new_from_hash(
-                  affectedStids: [@current_asp[:subtitle_object]],
-                  operationId: compute_operation_id,
-                  operationType: :insert,
-                  afterStid: @prev_stid,
-                )
-              end
+              Subtitle::Operation.new_from_hash(
+                affectedStids: [@current_asp[:subtitle_object]],
+                operationId: compute_operation_id,
+                operationType: :insert,
+                afterStid: @prev_stid,
+              )
             when :merge
               if(prev_op = @ops_in_group.last) && :merge == prev_op.operationType
                 # Don't record separate operation, just add @current_asp to
