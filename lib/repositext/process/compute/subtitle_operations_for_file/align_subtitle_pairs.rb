@@ -137,32 +137,66 @@ class Repositext
 
           # Post processes aligned_subtitle_pairs:
           # * Fixes alignment type issues around subtitles with repeated phrases
+          # * Assign missing record_ids
           # @param aligned_subtitle_pairs [Array<AlignedSubtitlePair>]
-          # @return [Array<AlignedSubtitlePair>]
+          # @return [Array<AlignedSubtitlePair>] modified original argument!
           def post_process_aligned_subtitle_pairs(aligned_subtitle_pairs)
-            aligned_subtitle_pairs.each_cons(2) do |cur, nxt|
+            aligned_subtitle_pairs.each_cons(3) do |prev, cur, nxt|
+              # Fix alignment type issues around subtitles with repeated phrases
+
               # If a subtitle pair has type "right_aligned" and is followed by
               # an ins/del, we change it to "unaligned" if it has repetitions
               # and text overlap with the following ST.
               if(
-                cur[:has_repetitions] &&
-                :right_aligned == cur[:type] &&
-                [:st_added, :st_removed].include?(nxt[:type]) &&
+                prev[:has_repetitions] &&
+                :right_aligned == prev[:type] &&
+                [:st_added, :st_removed].include?(cur[:type]) &&
                 (
                   StringComputations.overlap(
-                    cur[:to][:content_sim],
-                    nxt[:from][:content_sim]
+                    prev[:to][:content_sim],
+                    cur[:from][:content_sim]
                   ) > 0 ||
                   StringComputations.overlap(
-                    cur[:from][:content_sim],
-                    nxt[:to][:content_sim]
+                    prev[:from][:content_sim],
+                    cur[:to][:content_sim]
                   ) > 0
                 )
               )
                 # Change type to `unaligned`
-                cur[:type] = :unaligned
+                prev[:type] = :unaligned
+              end
+
+              # Assign missing record ids
+              if cur[:from][:record_id].nil?
+                new_record_id = if(
+                  prev[:from][:record_id] &&
+                  prev[:from][:record_id] == nxt[:from][:record_id]
+                )
+                  # between STs with identical record_ids, use from either
+                  nxt[:from][:record_id]
+                elsif cur[:to][:last_in_para]
+                  # The `to` ST is located at end of para, use record id from
+                  # previous `from` ST (looking back).
+                  prev[:from][:record_id]
+                elsif cur[:to][:first_in_para]
+                  # The `to` ST is located at beginnin of para, use record id from
+                  # next `from` ST (looking forward).
+                  nxt[:from][:record_id]
+                elsif(
+                  prev[:to][:first_in_para] &&
+                  prev[:from][:record_id]
+                )
+                  # This happens when we have two subsequent nil record_ids.
+                  # In this specific case, the prev was at beginning of para,
+                  # so we used its record_id
+                  prev[:from][:record_id]
+                else
+                  nil
+                end
+                cur[:from][:record_id] = new_record_id
               end
             end
+
             aligned_subtitle_pairs
           end
 

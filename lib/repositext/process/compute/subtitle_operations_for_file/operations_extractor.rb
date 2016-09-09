@@ -62,8 +62,8 @@ class Repositext
                   (st_attrs[:last_in_para] ? 'last_ip' : nil)
                 ].compact.join(', ')
               }
-              puts "   From: #{ curr[:from][:content].strip.send(just_method, 130) }   #{ para_boundaries_reporter.call(curr[:from]) }"
-              puts "   To:   #{ curr[:to][:content].strip.send(just_method, 130) }   #{ para_boundaries_reporter.call(curr[:to]) }"
+              puts "   From: #{ curr[:from][:content].strip.send(just_method, 130) }   #{ para_boundaries_reporter.call(curr[:from]).ljust(17) } rid:#{ curr[:from][:record_id] || 'N/A' }"
+              puts "   To:   #{ curr[:to][:content].strip.send(just_method, 130) }   #{ para_boundaries_reporter.call(curr[:to]).ljust(17) }"
               puts([
                 "   ",
                 "clc:#{ curr[:content_length_change] } ",
