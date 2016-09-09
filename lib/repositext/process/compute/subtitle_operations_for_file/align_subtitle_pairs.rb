@@ -7,7 +7,7 @@ class Repositext
           # Aligns subtitle pairs.
           # @param sts_from [Array<SubtitleAttrs>]
           # @param sts_to [Array<SubtitleAttrs>]
-          # @return [Array<Array>]
+          # @return [Array<AlignedSubtitlePair>]
           def align_subtitle_pairs(sts_from, sts_to)
             asps = compute_aligned_subtitle_pairs(sts_from, sts_to)
             enriched_asps = enrich_aligned_subtitle_pair_attributes(asps)
@@ -15,6 +15,9 @@ class Repositext
 
         private
 
+          # @param sts_from [Array<SubtitleAttrs>]
+          # @param sts_to [Array<SubtitleAttrs>]
+          # @return [Array<AlignedSubtitlePair>]
           def compute_aligned_subtitle_pairs(sts_from, sts_to)
             st_count_from = sts_from.inject(0) { |m,e| m += e[:subtitle_count] }
             st_count_to = sts_to.inject(0) { |m,e| m += e[:subtitle_count] }
@@ -53,20 +56,8 @@ class Repositext
             r
           end
 
-          # {
-          #   type: <:left_aligned|:right_aligned|:st_added...>
-          #   subtitle_object: <# Repositext::Subtitle ...>
-          #   sim_left: [sim<Float>, conf<Float>]
-          #   sim_right: [sim<Float>, conf<Float>]
-          #   sim_abs: [sim<Float>, conf<Float>]
-          #   content_length_change: <Integer from del to add>
-          #   subtitle_count_change: <Integer from del to add>
-          #   from: [SubtitleAttrs]
-          #   to: [SubtitleAttrs]
-          #   index: <Integer> index of aligned st pair in file
-          #   first_in_para: Boolean, true if asp is first in paragraph
-          #   last_in_para: Boolean, true if aps is last in paragraph
-          # }
+          # @param aligned_subtitle_pairs [Array<AlignedSubtitlePair>]
+          # @return [Array<AlignedSubtitlePair>]
           def enrich_aligned_subtitle_pair_attributes(aligned_subtitle_pairs)
             enriched_aligned_subtitle_pairs = []
             most_recent_existing_subtitle_id = nil # to create temp subtitle ids

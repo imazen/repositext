@@ -17,6 +17,7 @@ Data types used in this file
         last_in_para: false,
         subtitle_count: 0,
         index: 23,
+        repetitions: { 'repeated phrase' => [23, 56](start positions) },
       }
   Gaps have an empty string as content.
 
