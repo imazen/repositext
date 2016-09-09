@@ -43,7 +43,6 @@ class Repositext
               para_sts = e.split('@').map { |f|
                 next nil  if '' == f
                 f.sub!(/\A\d+\s{4}(?!\s)(.*)/, '\1') # remove paragraph numbers
-                f.sub!(/\n\z/, '') # remove trailing newlines
                 # Compute content for similarity computation:
                 content_sim = f.gsub(/[^[:alnum:]]+/, ' ') # Remove everything except letters, numbers, and space
                                .strip
@@ -100,7 +99,7 @@ class Repositext
             (?:       # start of non-matching group
               \s+     # one or more space
               \d+     # followed by one or more digits
-            )+        # one or more
+            ){2,}        # two or more
           /x
           def replace_digit_sequences_with_words(a_string)
             number_sequence_match = a_string.match(NUMBER_SEQUENCE_REGEX) # "21, 22, 23, 24"

@@ -158,7 +158,8 @@ class Repositext
             [
               ["abc", nil],
               ["123", nil],
-              ["123 456", '123 456'],
+              ["123 456", nil],
+              ["123 456 789", '123 456 789'],
               ["start text 21 22 23 24 end text", '21 22 23 24'],
             ].each do |test_string, xpect|
               it "Handles #{ test_string.inspect }" do
