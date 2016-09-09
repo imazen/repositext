@@ -154,6 +154,45 @@ class Repositext
             end
           end
 
+          describe 'NUMBER_SEQUENCE_REGEX' do
+            [
+              ["abc", nil],
+              ["123", nil],
+              ["123 456", '123 456'],
+              ["start text 21 22 23 24 end text", '21 22 23 24'],
+            ].each do |test_string, xpect|
+              it "Handles #{ test_string.inspect }" do
+                match = test_string.match(NUMBER_SEQUENCE_REGEX)
+                if xpect
+                  match[0].must_equal(xpect)
+                else
+                  match.must_equal(nil)
+                end
+              end
+            end
+          end
+
+          describe '#replace_digit_sequences_with_words' do
+            [
+              ["abc", "abc"],
+              [
+                "start 21 22 23 24 25 end",
+                "start twenty one twenty two twenty three twenty four twenty five end"
+              ],
+              [
+                "f 21 22 23 24 25 26 27 28 29 30 now let them",
+                "f twenty one twenty two twenty three twenty four twenty five twenty six twenty seven twenty eight twenty nine thirty now let them",
+              ]
+            ].each do |test_string, xpect|
+              it "Handles #{ test_string.inspect }" do
+                default_computer.send(
+                  :replace_digit_sequences_with_words,
+                  test_string
+                ).must_equal(xpect)
+              end
+            end
+          end
+
         end
       end
     end

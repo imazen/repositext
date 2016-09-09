@@ -48,6 +48,7 @@ class Repositext
                 content_sim = f.gsub(/[^[:alnum:]]+/, ' ') # Remove everything except letters, numbers, and space
                                .strip
                                .unicode_downcase
+                content_sim = replace_digit_sequences_with_words(content_sim)
                 {
                   content: f,
                   content_sim: content_sim,
@@ -87,6 +88,33 @@ class Repositext
             }
             r
           end
+
+          # Replaces sequences of digits with their word forms:
+          # "21, 22, 23, 24, 25"
+          #  =>
+          # "twenty-one, twenty-two, twenty-three, twenty-four, twenty-five"
+          # @param a_string [String]
+          # @return [String]
+          NUMBER_SEQUENCE_REGEX = /
+            \d+       # one or more digits
+            (?:       # start of non-matching group
+              \s+     # one or more space
+              \d+     # followed by one or more digits
+            )+        # one or more
+          /x
+          def replace_digit_sequences_with_words(a_string)
+            number_sequence_match = a_string.match(NUMBER_SEQUENCE_REGEX) # "21, 22, 23, 24"
+            return a_string  if number_sequence_match.nil?
+
+            numbers = number_sequence_match[0].split(" ")
+
+            numbers_in_words = numbers.map { |e|
+              Utils::NumberToWordConverter.convert(e.to_i)
+            }.join(' ')
+
+            a_string.sub(NUMBER_SEQUENCE_REGEX, numbers_in_words)
+          end
+
         end
       end
     end
