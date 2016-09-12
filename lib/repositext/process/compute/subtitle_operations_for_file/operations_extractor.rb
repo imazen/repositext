@@ -334,7 +334,7 @@ class Repositext
               @ops_in_group << op
               @ops_in_file << op
             end
-            puts "   OP: #{ op_type }".color(:blue)  if debug
+            puts "   OP: #{ op_type } (#{ op_id })".maybe_color(:blue)  if debug
           end
 
           def compute_move_direction
@@ -371,6 +371,21 @@ class Repositext
 
           def debug
             true
+          end
+
+          # Adds ability to turn off colored console output. This is used when
+          # we log console output to a text file and don't want the ANSI
+          # escape sequences in there.
+          # @param the_color [Symbol]
+          # @param add_color [Boolean, optional] defaults to true
+          def maybe_color(the_color, add_color=false)
+            if add_color
+              # Call method provided by Rainbow gem
+              color(the_color)
+            else
+              # Return self
+              self
+            end
           end
 
         end
