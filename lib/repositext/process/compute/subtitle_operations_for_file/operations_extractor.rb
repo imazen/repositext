@@ -258,18 +258,32 @@ class Repositext
                 operationType: :content_change,
               )
             when :delete
-              Subtitle::Operation.new_from_hash(
-                affectedStids: [@current_asp[:subtitle_object]],
-                operationId: compute_operation_id,
-                operationType: :delete,
-              )
+              if(prev_op = @ops_in_group.last) && :merge == prev_op.operationType
+                # Don't record separate :delete operation, just add @current_asp
+                # to affectedStids.
+                prev_op.affectedStids << @current_asp[:subtitle_object]
+                nil
+              else
+                Subtitle::Operation.new_from_hash(
+                  affectedStids: [@current_asp[:subtitle_object]],
+                  operationId: (op_id = compute_operation_id!),
+                  operationType: :delete,
+                )
+              end
             when :insert
-              Subtitle::Operation.new_from_hash(
-                affectedStids: [@current_asp[:subtitle_object]],
-                operationId: compute_operation_id,
-                operationType: :insert,
-                afterStid: @prev_stid,
-              )
+              if(prev_op = @ops_in_group.last) && :split == prev_op.operationType
+                # Don't record separate :insert operation, just add @current_asp
+                # to affectedStids.
+                prev_op.affectedStids << @current_asp[:subtitle_object]
+                nil
+              else
+                Subtitle::Operation.new_from_hash(
+                  affectedStids: [@current_asp[:subtitle_object]],
+                  operationId: (op_id = compute_operation_id!),
+                  operationType: :insert,
+                  afterStid: @prev_stid,
+                )
+              end
             when :merge
               if(prev_op = @ops_in_group.last) && :merge == prev_op.operationType
                 # Don't record separate operation, just add @current_asp to
