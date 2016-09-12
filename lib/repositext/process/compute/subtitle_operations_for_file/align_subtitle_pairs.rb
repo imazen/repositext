@@ -11,7 +11,7 @@ class Repositext
           def align_subtitle_pairs(sts_from, sts_to)
             asps = compute_aligned_subtitle_pairs(sts_from, sts_to)
             enriched_asps = enrich_aligned_subtitle_pair_attributes(asps)
-            post_processed_asps = post_process_aligned_subtitle_pairs(enriched_asps)
+            post_processed_asps = post_process_aligned_subtitle_pairs!(enriched_asps)
           end
 
         private
@@ -138,11 +138,12 @@ class Repositext
           # Post processes aligned_subtitle_pairs:
           # * Fixes alignment type issues around subtitles with repeated phrases
           # * Assign missing record_ids
-          # @param aligned_subtitle_pairs [Array<AlignedSubtitlePair>]
-          # @return [Array<AlignedSubtitlePair>] modified original argument!
-          def post_process_aligned_subtitle_pairs(aligned_subtitle_pairs)
             aligned_subtitle_pairs.each_cons(3) do |prev, cur, nxt|
               # Fix alignment type issues around subtitles with repeated phrases
+          # Modifies asps in place.
+          # @param asps [Array<AlignedSubtitlePair>]
+          # @return [Array<AlignedSubtitlePair>]
+          def post_process_aligned_subtitle_pairs!(asps)
 
               # If a subtitle pair has type "right_aligned" and is followed by
               # an ins/del, we change it to "unaligned" if it has repetitions

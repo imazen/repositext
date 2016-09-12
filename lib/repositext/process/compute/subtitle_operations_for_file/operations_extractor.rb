@@ -249,11 +249,12 @@ class Repositext
           end
 
           def capture_op(op_type)
+            op_id = nil
             op = case op_type
             when :content_change
               Subtitle::Operation.new_from_hash(
                 affectedStids: [@current_asp[:subtitle_object]],
-                operationId: compute_operation_id,
+                operationId: op_id = (op_id = compute_operation_id!),
                 operationType: :content_change,
               )
             when :delete
@@ -279,20 +280,20 @@ class Repositext
                 # record new operation
                 Subtitle::Operation.new_from_hash(
                   affectedStids: [@prev_asp, @current_asp].map { |e| e[:subtitle_object] },
-                  operationId: compute_operation_id,
+                  operationId: (op_id = compute_operation_id!),
                   operationType: :merge,
                 )
               end
             when :move_left
               Subtitle::Operation.new_from_hash(
                 affectedStids: [@prev_asp, @current_asp].map { |e| e[:subtitle_object] },
-                operationId: compute_operation_id,
+                operationId: (op_id = compute_operation_id!),
                 operationType: :move_left,
               )
             when :move_right
               Subtitle::Operation.new_from_hash(
                 affectedStids: [@prev_asp, @current_asp].map { |e| e[:subtitle_object] },
-                operationId: compute_operation_id,
+                operationId: (op_id = compute_operation_id!),
                 operationType: :move_right,
               )
             when :no_op
@@ -308,7 +309,7 @@ class Repositext
                 # record new operation
                 Subtitle::Operation.new_from_hash(
                   affectedStids: [@prev_asp, @current_asp].map { |e| e[:subtitle_object] },
-                  operationId: compute_operation_id,
+                  operationId: (op_id = compute_operation_id!),
                   operationType: :split,
                 )
               end
@@ -348,8 +349,9 @@ class Repositext
             end
           end
 
-          # @param asp_index [Integer] index of ASP in file
-          def compute_operation_id
+          # Calling this method increments the @operation_index i_var!
+          # @param asp_index [Integer] index of operation in file.
+          def compute_operation_id!
             [@file_date_code, @file_operation_index += 1].join('_')
           end
 
