@@ -44,7 +44,7 @@ class Repositext
             @asp_group_cumulative_content_length_to += curr[:to][:content].length
 
             if debug
-              puts "P"  if curr[:first_in_para]
+              puts "P (#{ @file_date_code })"  if curr[:first_in_para]
               puts " - #{ curr[:type] }"
               just_method = case curr[:type]
               when :right_aligned
@@ -249,12 +249,11 @@ class Repositext
           end
 
           def capture_op(op_type)
-            op_id = nil
             op = case op_type
             when :content_change
               Subtitle::Operation.new_from_hash(
                 affectedStids: [@current_asp[:subtitle_object]],
-                operationId: op_id = (op_id = compute_operation_id!),
+                operationId: compute_next_operation_id!,
                 operationType: :content_change,
               )
             when :delete
@@ -266,7 +265,7 @@ class Repositext
               else
                 Subtitle::Operation.new_from_hash(
                   affectedStids: [@current_asp[:subtitle_object]],
-                  operationId: (op_id = compute_operation_id!),
+                  operationId: compute_next_operation_id!,
                   operationType: :delete,
                 )
               end
@@ -279,7 +278,7 @@ class Repositext
               else
                 Subtitle::Operation.new_from_hash(
                   affectedStids: [@current_asp[:subtitle_object]],
-                  operationId: (op_id = compute_operation_id!),
+                  operationId: compute_next_operation_id!,
                   operationType: :insert,
                   afterStid: @prev_stid,
                 )
@@ -294,20 +293,20 @@ class Repositext
                 # record new operation
                 Subtitle::Operation.new_from_hash(
                   affectedStids: [@prev_asp, @current_asp].map { |e| e[:subtitle_object] },
-                  operationId: (op_id = compute_operation_id!),
+                  operationId: compute_next_operation_id!,
                   operationType: :merge,
                 )
               end
             when :move_left
               Subtitle::Operation.new_from_hash(
                 affectedStids: [@prev_asp, @current_asp].map { |e| e[:subtitle_object] },
-                operationId: (op_id = compute_operation_id!),
+                operationId: compute_next_operation_id!,
                 operationType: :move_left,
               )
             when :move_right
               Subtitle::Operation.new_from_hash(
                 affectedStids: [@prev_asp, @current_asp].map { |e| e[:subtitle_object] },
-                operationId: (op_id = compute_operation_id!),
+                operationId: compute_next_operation_id!,
                 operationType: :move_right,
               )
             when :no_op
@@ -323,7 +322,7 @@ class Repositext
                 # record new operation
                 Subtitle::Operation.new_from_hash(
                   affectedStids: [@prev_asp, @current_asp].map { |e| e[:subtitle_object] },
-                  operationId: (op_id = compute_operation_id!),
+                  operationId: compute_next_operation_id!,
                   operationType: :split,
                 )
               end
@@ -334,7 +333,7 @@ class Repositext
               @ops_in_group << op
               @ops_in_file << op
             end
-            puts "   OP: #{ op_type } (#{ op_id })".maybe_color(:blue)  if debug
+            puts "   OP: #{ op_type }"  if debug
           end
 
           def compute_move_direction
@@ -365,27 +364,12 @@ class Repositext
 
           # Calling this method increments the @operation_index i_var!
           # @param asp_index [Integer] index of operation in file.
-          def compute_operation_id!
+          def compute_next_operation_id!
             [@file_date_code, @file_operation_index += 1].join('_')
           end
 
           def debug
             true
-          end
-
-          # Adds ability to turn off colored console output. This is used when
-          # we log console output to a text file and don't want the ANSI
-          # escape sequences in there.
-          # @param the_color [Symbol]
-          # @param add_color [Boolean, optional] defaults to true
-          def maybe_color(the_color, add_color=false)
-            if add_color
-              # Call method provided by Rainbow gem
-              color(the_color)
-            else
-              # Return self
-              self
-            end
           end
 
         end
