@@ -249,6 +249,7 @@ class Repositext
           end
 
           def capture_op(op_type)
+            reported_op_type = op_type
             op = case op_type
             when :content_change
               Subtitle::Operation.new_from_hash(
@@ -261,6 +262,7 @@ class Repositext
                 # Don't record separate :delete operation, just add @current_asp
                 # to affectedStids.
                 prev_op.affectedStids << @current_asp[:subtitle_object]
+                reported_op_type = :merge_combo
                 nil
               else
                 Subtitle::Operation.new_from_hash(
@@ -274,6 +276,7 @@ class Repositext
                 # Don't record separate :insert operation, just add @current_asp
                 # to affectedStids.
                 prev_op.affectedStids << @current_asp[:subtitle_object]
+                reported_op_type = :split_combo
                 nil
               else
                 Subtitle::Operation.new_from_hash(
@@ -288,6 +291,7 @@ class Repositext
                 # Don't record separate operation, just add @current_asp to
                 # affectedStids
                 prev_op.affectedStids << @current_asp[:subtitle_object]
+                reported_op_type = :merge_combo
                 nil
               else
                 # record new operation
@@ -317,6 +321,7 @@ class Repositext
                 # Don't record separate operation, just add @current_asp to
                 # affectedStids
                 prev_op.affectedStids << @current_asp[:subtitle_object]
+                reported_op_type = :split_combo
                 nil
               else
                 # record new operation
@@ -333,7 +338,7 @@ class Repositext
               @ops_in_group << op
               @ops_in_file << op
             end
-            puts "   OP: #{ op_type }"  if debug
+            puts "   OP: #{ reported_op_type }"  if debug
           end
 
           def compute_move_direction
