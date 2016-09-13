@@ -14,7 +14,6 @@ class Repositext
           # @param col_index [Integer] in score matrix
           # @return [Float]
           def compute_score(left_el, right_el, row_index, col_index)
-
             # To improve performance, we only look at cells adjacent to
             # the matrix' diagonal. We can do this because we know the maximum
             # misalignment of subtitles from @options[:diagonal_band_range].
@@ -22,7 +21,7 @@ class Repositext
             # number as score so they are not considered when finding optimal
             # alignment.
             if (row_index - col_index).abs > @options[:diagonal_band_range]
-              return -1000
+              return default_gap_penalty * 2
             end
 
             left_txt = left_el[:content_sim]
@@ -36,7 +35,7 @@ class Repositext
             )
 
             abs_sim = 100 * abs_sim * (abs_conf < 0.7 ? abs_conf : 1.0)
-            return abs_sim  if 100 == abs_sim
+            return abs_sim  if abs_sim >= 100
 
             # If strings are not identical, then we compute left aligned
             # similarity so that gaps come after the shared content on splits.
@@ -74,6 +73,16 @@ class Repositext
           def gap_indicator
             { content: '', content_sim: '', subtitle_count: 0, repetitions: {} }
           end
+
+          def element_for_inspection_display(element, col_width = nil)
+            r = element[:content_sim]
+            col_width ? r[0...col_width] : r
+          end
+
+          def elements_are_equal_for_inspection(top_el, left_el)
+            top_el[:content_sim] == left_el[:content_sim]
+          end
+
         end
       end
     end
