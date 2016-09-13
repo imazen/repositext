@@ -1081,6 +1081,42 @@ class Repositext
         puts " - Writing JSON file to #{ report_file_path }"
       end
 
+      # Computes stats for the latest st-ops file
+      def report_st_ops_file_stats(options)
+        latest_st_ops_file_path = Subtitle::OperationsFile.find_latest(
+          config.base_dir(:subtitle_operations_dir)
+        )
+        st_ops_json_string = File.read(latest_st_ops_file_path)
+
+        operations = Hash.new(0)
+        # Match lines like `      "operationType": "content_change",`
+        st_ops_json_string.scan(/^\s+"operationType": "([^"]+)"/) { |match|
+          # match example: ["insert"]
+          operations[match.first] += 1
+        }
+
+        l = ['']
+        l << "st-ops file stats".color(:blue)
+        l << ("=" * 24).color(:blue)
+        l << "File: #{ latest_st_ops_file_path }"
+        l << "Size: #{ (File.size(latest_st_ops_file_path).to_f / 2**20).round } MB"
+        l << ''
+        l << "Operations:"
+        l << "-" * 24
+        operations.to_a.sort { |(k_a, v_a),(k_b, v_b)|
+          k_a <=> k_b
+        }.each { |k,v|
+          number_with_delimiter = v.to_s.reverse.gsub(/(\d{3})(?=\d)/, '\\1,').reverse
+          l << "#{ k.ljust(16) } #{ number_with_delimiter.rjust(7) }"
+        }
+        l << "-" * 24
+        total_ops_count = operations.inject(0) { |m,(k,v)| m += v; m }
+        l << "Total: #{ total_ops_count.to_s.reverse.gsub(/(\d{3})(?=\d)/, '\\1,').reverse.rjust(17) }"
+        l << ''
+
+        l.each { |e| $stderr.puts e }
+      end
+
       def report_words_with_apostrophe(options)
         # TODO: add report that shows all words starting with apostrophe that have only one character
         apostrophe_at_beginning = {}
