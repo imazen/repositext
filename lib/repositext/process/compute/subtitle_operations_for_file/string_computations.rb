@@ -127,9 +127,16 @@ class Repositext
           end
 
           # This method measures by how many characters the end of string_a
-          # overlaps the beginning of string_b.
+          # overlaps with the beginning of string_b.
           # It determines the overlap in characters at which the similarity
           # surpasses a similarity threshold.
+          #
+          # It starts with a minimal overlap and keeps increasing overlap until
+          # it reaches the length of the shorter of string_a or string_b. For
+          # each overlap it computes the similarity, and when it has reached
+          # sufficiently high similarity it returns the numbers of characters that
+          # overlap. Otherwise it returns zero.\
+          #
           # NOTE: This method assumes that string_a and string_b are not very
           # similar. This method should only get called for dissimilar strings.
           # If we find we call this for similar strings, then we could further
@@ -145,7 +152,7 @@ class Repositext
 
             max_sim = 0
             prev_sim = 0
-            overlap = 1 # We start with 2 char overlap
+            overlap = 1 # We start with 1+1 char overlap
             until(
               (overlap >= min_overlap) &&
               (
@@ -177,7 +184,6 @@ class Repositext
               end
               max_sim = [max_sim, sim].max  if overlap >= min_overlap
               prev_sim = sim
-
             end
             r = if sufficient_overlap_similarity?(max_sim, overlap)
               optimal_overlap
