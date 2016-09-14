@@ -28,11 +28,15 @@ class Repositext
 
           def init_context
             @current_asp_index = 0
-            @current_asp = @aligned_subtitle_pairs[0]
             @file_operation_index = 0
-            @next_asp = @aligned_subtitle_pairs[1]
             @ops_in_file = []
             @prev_stid = 'new_file'
+
+            @prev_asp = nil
+            @current_asp = @aligned_subtitle_pairs[0]
+            @next_asp = @aligned_subtitle_pairs[1]
+            @next_but_one_asp = @aligned_subtitle_pairs[2]
+
             reset_current_capture_group
           end
 
@@ -90,7 +94,7 @@ class Repositext
                 reset_current_capture_group
               when :left_aligned, :unaligned
                 # Current ASP is left aligned, starting a new capture group
-                if strong_linkage_with_next_asp?
+                if strong_linkage_with_following_asps?
                   # Current ASP is connected to next.
                   @prev_right_edge = :unaligned
                 else
@@ -105,7 +109,7 @@ class Repositext
               when :st_added
                 # Added subtitle, not connected to previous: insert.
                 capture_op(:insert)
-                if strong_linkage_with_next_asp?
+                if strong_linkage_with_following_asps?
                   @prev_right_edge = :unaligned
                 else
                   reset_current_capture_group
@@ -113,7 +117,7 @@ class Repositext
               when :st_removed
                 # Removed subtitle, not connected to previous: delete.
                 capture_op(:delete)
-                if strong_linkage_with_next_asp?
+                if strong_linkage_with_following_asps?
                   @prev_right_edge = :unaligned
                 else
                   reset_current_capture_group
@@ -140,7 +144,7 @@ class Repositext
                   # It's a split
                   capture_op(:split)
                 end
-                if strong_linkage_with_next_asp?
+                if strong_linkage_with_following_asps?
                   @prev_right_edge = :unaligned
                 else
                   reset_current_capture_group
@@ -153,14 +157,14 @@ class Repositext
                   # It's a merge
                   capture_op(:merge)
                 end
-                if strong_linkage_with_next_asp?
+                if strong_linkage_with_following_asps?
                   @prev_right_edge = :unaligned
                 else
                   reset_current_capture_group
                 end
               when :unaligned
                 capture_op(compute_move_direction)
-                if strong_linkage_with_next_asp?
+                if strong_linkage_with_following_asps?
                   @prev_right_edge = :unaligned
                 else
                   reset_current_capture_group
@@ -176,14 +180,15 @@ class Repositext
           end
 
           def advance_to_next_asp
+            @current_asp_index += 1
+
             @prev_asp = @current_asp
-            @current_asp = @aligned_subtitle_pairs[@current_asp_index += 1]
+            @current_asp = @aligned_subtitle_pairs[@current_asp_index]
             @next_asp = @aligned_subtitle_pairs[@current_asp_index + 1]
-            @prev_stid = if @prev_asp[:subtitle_object].nil?
-              'new_file'
-            else
-              @prev_asp[:subtitle_object].persistent_id
-            end
+            @next_but_one_asp = @aligned_subtitle_pairs[@current_asp_index + 2]
+            @next_but_two_asp = @aligned_subtitle_pairs[@current_asp_index + 3]
+
+            @prev_stid = @prev_asp[:subtitle_object].persistent_id
           end
 
           def reset_current_capture_group
@@ -195,12 +200,17 @@ class Repositext
 
           # Computes strength of linkage between @current_asp and @next_asp
           # @return [Boolean]
-          def strong_linkage_with_next_asp?
+          def strong_linkage_with_following_asps?
             cur = @current_asp
             nxt = @next_asp
+            nbo = @next_but_one_asp
+
             if nxt.nil?
               # current_asp is the last in file
               return false
+            elsif cur[:linked_to_next]
+              # Previous one was linked to next_but_one, so this one is connected, too
+              return true
             elsif [:fully_aligned, :left_aligned].include?(nxt[:type])
               # next_asp has clear left boundary
               return false
@@ -226,18 +236,69 @@ class Repositext
                 # No overlap, terminate capture group
                 return false
               end
-            elsif [:st_added, :st_removed].include?(nxt[:type])
+            elsif :st_added == nxt[:type]
               if(
-                StringComputations.overlap(
-                  cur[:to][:content_sim],
-                  nxt[:from][:content_sim]
-                ) > 0 ||
+                # Overlap with next
                 StringComputations.overlap(
                   cur[:from][:content_sim],
                   nxt[:to][:content_sim]
                 ) > 0
               )
+                return true
+              elsif(
+                # Overlap with next but one
+                nbo &&
+                ![:left_aligned, :fully_aligned].include?(nbo[:type]) &&
+                if @asp_group_cumulative_content_change > 0
+                  # Longer `to`, compare (cur_to + nxt_to) with nbo_from
+                  StringComputations.overlap(
+                    [cur[:to][:content_sim], nxt[:to][:content_sim]].join(' '),
+                    nbo[:from][:content_sim]
+                  )
+                else
+                  # Longer `from`, compare cur_from with (nxt_to + nbo_to)
+                  StringComputations.overlap(
+                    cur[:from][:content_sim],
+                    [nxt[:to][:content_sim], nbo[:to][:content_sim]].join(' ')
+                  )
+                end
+              )
+                # Subtitles overlap, connected with next but one
+                nxt[:linked_to_next] = true
+                return true
+              else
+                # No overlap, terminate capture group
+                return false
+              end
+            elsif :st_removed == nxt[:type]
+              if(
+                # Overlap with next
+                StringComputations.overlap(
+                  cur[:to][:content_sim],
+                  nxt[:from][:content_sim]
+                ) > 0
+              )
+                return true
+              elsif(
+                # Overlap with next but one
+                nbo &&
+                ![:left_aligned, :fully_aligned].include?(nbo[:type]) &&
+                if @asp_group_cumulative_content_change > 0
+                  # Longer `to`, compare cur_to with (nxt_from + nbo_from)
+                  StringComputations.overlap(
+                    cur[:to][:content_sim],
+                    [nxt[:from][:content_sim], nbo[:from][:content_sim]].join(' ')
+                  )
+                else
+                  # Longer `from`, compare (cur_from + nxt_from) with nbo_to
+                  StringComputations.overlap(
+                    [cur[:from][:content_sim], nxt[:from][:content_sim]].join(' '),
+                    nbo[:to][:content_sim]
+                  )
+                end
+              )
                 # Subtitles overlap, connected with next
+                nxt[:linked_to_next] = true
                 return true
               else
                 # No overlap, terminate capture group
