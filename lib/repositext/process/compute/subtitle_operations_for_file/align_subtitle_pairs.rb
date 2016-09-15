@@ -146,6 +146,10 @@ class Repositext
             asps.each_with_index do |cur, idx|
               prev = idx > 0 ? asps[idx-1] : nil
               nxt = idx < (asps.length-1) ? asps[idx+1] : nil
+              nxt_bo = idx < (asps.length-2) ? asps[idx+2] : nil
+              nxt_b2 = idx < (asps.length-3) ? asps[idx+3] : nil
+              nxt_b3 = idx < (asps.length-4) ? asps[idx+4] : nil
+
               fix_alignment_issues_around_subtitles_with_repeated_phrases!(
                 cur,
                 nxt
@@ -153,7 +157,10 @@ class Repositext
               assign_missing_record_ids!(
                 prev,
                 cur,
-                nxt
+                nxt,
+                nxt_bo,
+                nxt_b2,
+                nxt_b3
               )
             end
 
@@ -192,7 +199,10 @@ class Repositext
           # @param prev [AlignedSubtitlePair]
           # @param cur [AlignedSubtitlePair]
           # @param nxt [AlignedSubtitlePair]
-          def assign_missing_record_ids!(prev, cur, nxt)
+          # @param nxt_bo [AlignedSubtitlePair]
+          # @param nxt_b2 [AlignedSubtitlePair]
+          # @param nxt_b3 [AlignedSubtitlePair]
+          def assign_missing_record_ids!(prev, cur, nxt, nxt_bo, nxt_b2, nxt_b3)
             if cur[:from][:record_id].nil?
               new_record_id = if prev.nil?
                 # We're at the first ASP, use nxt's
@@ -202,10 +212,16 @@ class Repositext
                 prev[:from][:record_id]
               elsif(
                 prev[:from][:record_id] &&
-                prev[:from][:record_id] == nxt[:from][:record_id]
+                (
+                  (nxt && prev[:from][:record_id] == nxt[:from][:record_id]) ||
+                  (nxt_bo && prev[:from][:record_id] == nxt_bo[:from][:record_id]) ||
+                  (nxt_b2 && prev[:from][:record_id] == nxt_b2[:from][:record_id]) ||
+                  (nxt_b3 && prev[:from][:record_id] == nxt_b3[:from][:record_id])
+                )
               )
-                # between STs with identical record_ids, use from either
-                nxt[:from][:record_id]
+                # group sequence of nil record_ids between STs with identical
+                # record_ids, use from prev
+                prev[:from][:record_id]
               elsif cur[:to][:last_in_para]
                 # The `to` ST is located at end of para, use record id from
                 # previous `from` ST (looking back).
@@ -220,7 +236,15 @@ class Repositext
               )
                 # This happens when we have two subsequent nil record_ids.
                 # In this specific case, the prev was at beginning of para,
-                # so we used its record_id
+                # so we use its record_id.
+                prev[:from][:record_id]
+              elsif(
+                nxt[:to][:last_in_para] &&
+                prev[:from][:record_id]
+              )
+                # This happens when we have two subsequent nil record_ids.
+                # In this specific case, the nxt was at end of para,
+                # so we use prev's record_id.
                 prev[:from][:record_id]
               else
                 nil
