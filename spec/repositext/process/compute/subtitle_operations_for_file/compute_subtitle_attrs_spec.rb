@@ -183,7 +183,11 @@ class Repositext
               [
                 "f 21 22 23 24 25 26 27 28 29 30 now let them",
                 "f twenty one twenty two twenty three twenty four twenty five twenty six twenty seven twenty eight twenty nine thirty now let them",
-              ]
+              ],
+              [
+                "1 2 3 4 separated by some text 7 8 9 10",
+                "one two three four separated by some text seven eight nine ten",
+              ],
             ].each do |test_string, xpect|
               it "Handles #{ test_string.inspect }" do
                 default_computer.send(

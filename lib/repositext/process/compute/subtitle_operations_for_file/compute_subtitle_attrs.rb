@@ -91,7 +91,7 @@ class Repositext
           # Replaces sequences of digits with their word forms:
           # "21, 22, 23, 24, 25"
           #  =>
-          # "twenty-one, twenty-two, twenty-three, twenty-four, twenty-five"
+          # "twenty one, twenty two, twenty three, twenty four, twenty five"
           # @param a_string [String]
           # @return [String]
           NUMBER_SEQUENCE_REGEX = /
@@ -102,16 +102,15 @@ class Repositext
             ){2,}        # two or more
           /x
           def replace_digit_sequences_with_words(a_string)
-            number_sequence_match = a_string.match(NUMBER_SEQUENCE_REGEX) # "21, 22, 23, 24"
-            return a_string  if number_sequence_match.nil?
-
-            numbers = number_sequence_match[0].split(" ")
-
-            numbers_in_words = numbers.map { |e|
-              Utils::NumberToWordConverter.convert(e.to_i)
-            }.join(' ')
-
-            a_string.sub(NUMBER_SEQUENCE_REGEX, numbers_in_words)
+            new_string = a_string.dup
+            a_string.scan(/(#{ NUMBER_SEQUENCE_REGEX })/) { |m|
+              numbers = m[0].split(" ")
+              numbers_in_words = numbers.map { |e|
+                Utils::NumberToWordConverter.convert(e.to_i)
+              }.join(' ')
+              new_string.sub!(NUMBER_SEQUENCE_REGEX, numbers_in_words)
+            }
+            new_string
           end
 
         end
