@@ -208,13 +208,13 @@ class Repositext
               # 4 of 5, 5 of 6, 6 of 7, 7 of 8,
               sim >= 0.8
             when 9..10
-              # 7 of 9, 8 of 10
-              sim >= 0.75
+              # 8 of 9 or 9 of 10
+              sim >= 0.85
             when 11..20
-              sim > 0.7
+              sim > 0.89
             else
               # 90% similarity
-              sim > 0.65
+              sim > 0.9
             end
           end
 
