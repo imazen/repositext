@@ -67,7 +67,9 @@ class Repositext
                 ].compact.join(', ')
               }
               puts "   From: #{ curr[:from][:content].strip.send(just_method, 130) }   #{ para_boundaries_reporter.call(curr[:from]).ljust(17) } rid:#{ curr[:from][:record_id] || 'N/A' }"
+              # puts "         #{ curr[:from][:content_sim].send(just_method, 130) }"
               puts "   To:   #{ curr[:to][:content].strip.send(just_method, 130) }   #{ para_boundaries_reporter.call(curr[:to]).ljust(17) }"
+              # puts "         #{ curr[:to][:content_sim].send(just_method, 130) }"
               puts([
                 "   ",
                 "clc:#{ curr[:content_length_change] } ",
@@ -186,7 +188,6 @@ class Repositext
             @current_asp = @aligned_subtitle_pairs[@current_asp_index]
             @next_asp = @aligned_subtitle_pairs[@current_asp_index + 1]
             @next_but_one_asp = @aligned_subtitle_pairs[@current_asp_index + 2]
-            @next_but_two_asp = @aligned_subtitle_pairs[@current_asp_index + 3]
 
             @prev_stid = @prev_asp[:subtitle_object].persistent_id
           end
