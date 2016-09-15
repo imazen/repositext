@@ -144,23 +144,22 @@ class Repositext
           # returning that if it is high enough.
           # @param string_a [String]
           # @param string_b [String]
-          # @min_overlap [Integer, optional]
+          # @param threshold [Float, optional]
+          # @param min_overlap [Integer, optional]
+          # @param debug [Boolean, optional]
           # @return [Integer] Number of overlapping characters
-          def self.overlap(string_a, string_b, min_overlap=3, debug=false)
+          def self.overlap(string_a, string_b, threshold=0.7, min_overlap=3, debug=false)
             min_string_length = [string_a, string_b].map(&:length).min
             return 0  if min_string_length < min_overlap
 
             max_sim = 0
             prev_sim = 0
-            overlap = 1 # We start with 1+1 char overlap
-            until(
-              (overlap >= min_overlap) &&
-              (
-                (sufficient_overlap_similarity?(max_sim, overlap)) ||
-                (overlap >= min_string_length)
-              )
-            ) do
-              overlap += 1
+            overlap = min_overlap
+            keep_going = true
+            reached_sufficient_similarity = false
+
+            while keep_going do
+
               string_a_end = string_a[-overlap..-1]
               string_b_start = string_b[0..(overlap-1)]
               sim = string_a_end.longest_subsequence_similar(string_b_start)
@@ -182,10 +181,17 @@ class Repositext
               if sim > max_sim
                 optimal_overlap = overlap
               end
-              max_sim = [max_sim, sim].max  if overlap >= min_overlap
+              max_sim = [max_sim, sim].max
+              reached_sufficient_similarity = sufficient_overlap_similarity?(
+                max_sim,
+                overlap,
+                0.7
+              )
+              keep_going = !reached_sufficient_similarity && overlap < min_string_length
               prev_sim = sim
+              overlap += 1
             end
-            r = if sufficient_overlap_similarity?(max_sim, overlap)
+            r = if reached_sufficient_similarity
               optimal_overlap
             else
               0
@@ -197,24 +203,16 @@ class Repositext
           # Returns true if sim is sufficient for the given overlap.
           # @param sim [Float]
           # @param overlap [Integer]
+          # @param threshold [Float]
           # @return [Boolean]
-          def self.sufficient_overlap_similarity?(sim, overlap)
+          def self.sufficient_overlap_similarity?(sim, overlap, threshold)
             case overlap
             when 0..2
               false
             when 3..4
               1.0 == sim # 3 of 3, 4 of 4
-            when 5..8
-              # 4 of 5, 5 of 6, 6 of 7, 7 of 8,
-              sim >= 0.8
-            when 9..10
-              # 8 of 9 or 9 of 10
-              sim >= 0.85
-            when 11..20
-              sim > 0.89
             else
-              # 90% similarity
-              sim > 0.9
+              sim >= threshold
             end
           end
 

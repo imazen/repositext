@@ -202,25 +202,16 @@ class Repositext
               ["Overlap 3, high sim", 1.0, 3, true],
               ["Overlap 4, low sim", 0.8, 4, false],
               ["Overlap 4, high sim", 1.0, 4, true],
-              ["Overlap 5, low sim", 0.7, 5, false],
-              ["Overlap 5, high sim", 0.8, 5, true],
-              ["Overlap 8, low sim", 0.7, 8, false],
-              ["Overlap 8, high sim", 0.8, 8, true],
-              ["Overlap 9, low sim", 0.7, 9, false],
-              ["Overlap 9, high sim", 0.75, 9, true],
-              ["Overlap 10, low sim", 0.7, 10, false],
-              ["Overlap 10, high sim", 0.75, 10, true],
-              ["Overlap 11, low sim", 0.7, 11, false],
-              ["Overlap 11, high sim", 0.71, 11, true],
-              ["Overlap 20, low sim", 0.7, 20, false],
-              ["Overlap 20, high sim", 0.71, 20, true],
-              ["Overlap 21, low sim", 0.65, 21, false],
-              ["Overlap 21, high sim", 0.66, 21, true],
+              ["Overlap 5, low sim", 0.6, 5, false],
+              ["Overlap 5, high sim", 0.7, 5, true],
+              ["Overlap 10, low sim", 0.6, 10, false],
+              ["Overlap 10, high sim", 0.7, 10, true],
             ].each do |desc, sim, overlap, xpect|
               it "Handles #{ desc }" do
                 StringComputations.sufficient_overlap_similarity?(
                   sim,
-                  overlap
+                  overlap,
+                  0.7
                 ).must_equal(xpect)
               end
             end
