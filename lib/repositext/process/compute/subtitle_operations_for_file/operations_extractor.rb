@@ -206,16 +206,22 @@ class Repositext
             nxt = @next_asp
             nbo = @next_but_one_asp
 
-            if nxt.nil?
-              # current_asp is the last in file
-              return false
-            elsif cur[:linked_to_next]
-              # Previous one was linked to next_but_one, so this one is connected, too
-              return true
-            elsif [:fully_aligned, :left_aligned].include?(nxt[:type])
-              # next_asp has clear left boundary
-              return false
-            elsif [:right_aligned, :unaligned].include?(nxt[:type])
+            # Current_asp is the last in file
+            return false  if nxt.nil?
+
+            # Previous one was linked to next_but_one, so this one is connected, too
+            return true  if cur[:linked_to_next]
+
+            # Next_asp has clear left boundary
+            return false  if [:fully_aligned, :left_aligned].include?(nxt[:type])
+
+            cur_contains_number_sequence = (
+              cur[:to][:content] =~ ComputeSubtitleAttrs::NUMBER_SEQUENCE_REGEX ||
+              cur[:from][:content] =~ ComputeSubtitleAttrs::NUMBER_SEQUENCE_REGEX
+            )
+            overlap_threshold = cur_contains_number_sequence ? 0.9 : 0.7
+
+            if [:right_aligned, :unaligned].include?(nxt[:type])
               if(
                 @asp_group_cumulative_content_change > 10 &&
                 (
@@ -224,11 +230,13 @@ class Repositext
               ) || (
                 StringComputations.overlap(
                   cur[:to][:content_sim],
-                  nxt[:from][:content_sim]
+                  nxt[:from][:content_sim],
+                  overlap_threshold
                 ) > 0 ||
                 StringComputations.overlap(
                   cur[:from][:content_sim],
-                  nxt[:to][:content_sim]
+                  nxt[:to][:content_sim],
+                  overlap_threshold
                 ) > 0
               )
                 # Subtitles overlap, connected with next
@@ -242,7 +250,8 @@ class Repositext
                 # Overlap with next
                 StringComputations.overlap(
                   cur[:from][:content_sim],
-                  nxt[:to][:content_sim]
+                  nxt[:to][:content_sim],
+                  overlap_threshold
                 ) > 0
               )
                 return true
@@ -254,13 +263,15 @@ class Repositext
                   # Longer `to`, compare (cur_to + nxt_to) with nbo_from
                   StringComputations.overlap(
                     [cur[:to][:content_sim], nxt[:to][:content_sim]].join(' '),
-                    nbo[:from][:content_sim]
+                    nbo[:from][:content_sim],
+                    overlap_threshold
                   )
                 else
                   # Longer `from`, compare cur_from with (nxt_to + nbo_to)
                   StringComputations.overlap(
                     cur[:from][:content_sim],
-                    [nxt[:to][:content_sim], nbo[:to][:content_sim]].join(' ')
+                    [nxt[:to][:content_sim], nbo[:to][:content_sim]].join(' '),
+                    overlap_threshold
                   )
                 end
               )
@@ -276,7 +287,8 @@ class Repositext
                 # Overlap with next
                 StringComputations.overlap(
                   cur[:to][:content_sim],
-                  nxt[:from][:content_sim]
+                  nxt[:from][:content_sim],
+                  overlap_threshold
                 ) > 0
               )
                 return true
@@ -288,13 +300,15 @@ class Repositext
                   # Longer `to`, compare cur_to with (nxt_from + nbo_from)
                   StringComputations.overlap(
                     cur[:to][:content_sim],
-                    [nxt[:from][:content_sim], nbo[:from][:content_sim]].join(' ')
+                    [nxt[:from][:content_sim], nbo[:from][:content_sim]].join(' '),
+                    overlap_threshold
                   )
                 else
                   # Longer `from`, compare (cur_from + nxt_from) with nbo_to
                   StringComputations.overlap(
                     [cur[:from][:content_sim], nxt[:from][:content_sim]].join(' '),
-                    nbo[:to][:content_sim]
+                    nbo[:to][:content_sim],
+                    overlap_threshold
                   )
                 end
               )
