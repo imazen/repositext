@@ -201,6 +201,9 @@ module Kramdown
             "\\nolinebreak[4]" + Repositext::EM_DASH + "\\nolinebreak[4]" + '\1'
           )
 
+          # We don't allow linebreaks before certain numbers
+          lb.gsub!(/(?<=[a-z])\s(?=\d)/, "~")
+
           # Convert any zero-width spaces to latex equivelant
           lb.gsub!(/\u200B/, "\\hspace{0pt}")
         end
