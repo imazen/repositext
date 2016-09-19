@@ -227,7 +227,8 @@ class Repositext
           extract_text_from_pdf_service.start
           validation_options = {
             'content_type' => content_type,
-            'extract_text_from_pdf_service' => extract_text_from_pdf_service
+            'extract_text_from_pdf_service' => extract_text_from_pdf_service,
+            'pdfbox_text_extraction_options' => config.setting(:pdfbox_text_extraction_options),
           }.merge(options)
           Repositext::Validation::PdfExport.new(file_specs, validation_options).run
         ensure
