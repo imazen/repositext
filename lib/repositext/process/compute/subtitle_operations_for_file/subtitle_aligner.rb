@@ -55,7 +55,7 @@ class Repositext
 
             # Return larger of the two similarities
             larger_sim = [abs_sim, left_aligned_sim].max
-            if larger_sim < 40
+            if larger_sim < 50
               # Penalize very low similarity scores, make them slightly worse
               # than a gap. This will avoid aligning of subtitle pairs that
               # have nothing in common.

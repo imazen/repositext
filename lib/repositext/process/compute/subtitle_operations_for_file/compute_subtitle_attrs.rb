@@ -47,6 +47,7 @@ class Repositext
                 content_sim = f.gsub(/[^[:alnum:]]+/, ' ') # Remove everything except letters, numbers, and space
                                .strip
                                .unicode_downcase
+                               .gsub('blank spot on tape', '') # remove that editors note for better similarity matches.
                 content_sim = replace_digit_sequences_with_words(content_sim)
                 {
                   content: f,

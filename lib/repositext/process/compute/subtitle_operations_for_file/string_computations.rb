@@ -148,7 +148,7 @@ class Repositext
           # @param min_overlap [Integer, optional]
           # @param debug [Boolean, optional]
           # @return [Integer] Number of overlapping characters
-          def self.overlap(string_a, string_b, threshold=0.7, min_overlap=3, debug=false)
+          def self.overlap(string_a, string_b, threshold=0.67, min_overlap=3, debug=false)
             min_string_length = [string_a, string_b].map(&:length).min
             return 0  if min_string_length < min_overlap
 
@@ -185,7 +185,7 @@ class Repositext
               reached_sufficient_similarity = sufficient_overlap_similarity?(
                 max_sim,
                 overlap,
-                0.7
+                threshold
               )
               keep_going = !reached_sufficient_similarity && overlap < min_string_length
               prev_sim = sim
@@ -208,10 +208,13 @@ class Repositext
           def self.sufficient_overlap_similarity?(sim, overlap, threshold)
             case overlap
             when 0..2
+              # Insufficient overlap
               false
-            when 3..4
-              1.0 == sim # 3 of 3, 4 of 4
+            when 3..5
+              # Perfect match required for small overlap
+              1.0 == sim
             else
+              # Min of threshold
               sim >= threshold
             end
           end

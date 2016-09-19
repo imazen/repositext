@@ -215,11 +215,15 @@ class Repositext
             # Next_asp has clear left boundary
             return false  if [:fully_aligned, :left_aligned].include?(nxt[:type])
 
+            # For number sequences we require a higher similarity threshold to
+            # detect overlaps. The reason is that even different number sequences
+            # automatically get a fairly high similarity score because there
+            # is so much repetition.
             cur_contains_number_sequence = (
               cur[:to][:content] =~ ComputeSubtitleAttrs::NUMBER_SEQUENCE_REGEX ||
               cur[:from][:content] =~ ComputeSubtitleAttrs::NUMBER_SEQUENCE_REGEX
             )
-            overlap_threshold = cur_contains_number_sequence ? 0.9 : 0.7
+            overlap_threshold = cur_contains_number_sequence ? 0.90 : 0.64
 
             if [:right_aligned, :unaligned].include?(nxt[:type])
               if(
