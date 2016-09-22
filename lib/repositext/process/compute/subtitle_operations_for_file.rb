@@ -13,6 +13,7 @@ Data types used in this file
         content_sim: "word1 word2 word3",
         persistent_id: "1234567",
         record_id: "123123123",
+        para_index: 0,
         first_in_para: true,
         last_in_para: false,
         subtitle_count: 0,

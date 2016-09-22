@@ -21,6 +21,7 @@ class Repositext
     def self.from_hash(hash)
       new(
         persistent_id: hash[:stid],
+        record_id: hash[:record_id],
         tmp_attrs: {
           after: hash[:after],
           before: hash[:before],
@@ -74,6 +75,7 @@ class Repositext
     def to_hash
       h = {
         stid: persistent_id,
+        record_id: record_id,
         before: tmp_attrs[:before],
         after: tmp_attrs[:after],
       }

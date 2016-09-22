@@ -165,25 +165,15 @@ class Repositext
           #         ]
           def compute_new_subtitle_data(old_sts, new_time_slices, new_char_lengths, st_ops_for_file)
             new_sts = st_ops_for_file.apply_to_subtitles(old_sts)
+            # Make sure all record_ids are present
+            sts_with_missing_record_ids = new_sts.find_all { |e| e[:record_id].nil? }
+            if sts_with_missing_record_ids.any?
+              raise "Found subtitles with missing record ids: #{ sts_with_missing_record_ids.inspect }"
+            end
             # Merge new time slices and char_lengths
             new_sts.each_with_index { |new_st, idx|
               new_st.merge!(new_time_slices[idx])
               new_st[:char_length] = new_char_lengths[idx]
-            }
-            # Assign record ids to inserted subtitles
-            # Since every paragraph has to start with a subtitle, we can assume
-            # that any added subtitles are after an existing subtitle.
-            # TODO: move this out of this method, pass new_record_ids as argument to method.
-            if new_sts.first[:record_id].nil?
-              raise "Handle this: #{ new_sts.inspect }"
-            end
-            new_sts.each_cons(2) { |previous_st, st|
-              if st[:record_id].nil?
-                if previous_st[:record_id].nil?
-                  raise "Handle this: #{ new_sts.inspect }"
-                end
-                st[:record_id] = previous_st[:record_id]
-              end
             }
             new_sts
           end

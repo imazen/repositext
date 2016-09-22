@@ -87,6 +87,7 @@ class Repositext
                 most_recent_existing_subtitle_id = asp[:from][:persistent_id]
                 ::Repositext::Subtitle.new(
                   persistent_id: asp[:from][:persistent_id],
+                  record_id: asp[:from][:record_id],
                   tmp_attrs: {}
                 )
               end
@@ -125,8 +126,7 @@ class Repositext
                 asp[:to][:repetitions]
               )
               asp[:index] = idx + 1 # one based subtitle index
-              # Take first and last_in_para from :to st
-# TODO: Check if this is the correct thing to do!
+              # Take first and last_in_para from `to` st
               asp[:first_in_para] = asp[:to][:first_in_para]
               asp[:last_in_para] = asp[:to][:last_in_para]
 
@@ -144,6 +144,7 @@ class Repositext
           # @return [Array<AlignedSubtitlePair>]
           def post_process_aligned_subtitle_pairs!(asps)
             asps.each_with_index do |cur, idx|
+              prev_b1 = idx > 1 ? asps[idx-2] : nil
               prev = idx > 0 ? asps[idx-1] : nil
               nxt = idx < (asps.length-1) ? asps[idx+1] : nil
               nxt_bo = idx < (asps.length-2) ? asps[idx+2] : nil
@@ -154,7 +155,8 @@ class Repositext
                 cur,
                 nxt
               )
-              assign_missing_record_ids!(
+              update_record_ids!(
+                prev_b1,
                 prev,
                 cur,
                 nxt,
@@ -195,62 +197,108 @@ class Repositext
             end
           end
 
-          # Assigns record_ids to inserted ASPs. Modifies `cur` in place.
+          # Updates cur[:subtitle_object]'s record_id:
+          #   * Assigns record_ids to newly inserted subtitles.
+          #   * Updates record_ids of existing subtitles that moved to a
+          #     different record.
+          # Modifies `cur`s [:subtitle_object] in place.
+          # @param prev_b1 [AlignedSubtitlePair]
           # @param prev [AlignedSubtitlePair]
           # @param cur [AlignedSubtitlePair]
           # @param nxt [AlignedSubtitlePair]
           # @param nxt_bo [AlignedSubtitlePair]
           # @param nxt_b2 [AlignedSubtitlePair]
           # @param nxt_b3 [AlignedSubtitlePair]
-          def assign_missing_record_ids!(prev, cur, nxt, nxt_bo, nxt_b2, nxt_b3)
-            if cur[:from][:record_id].nil?
-              new_record_id = if prev.nil?
-                # We're at the first ASP, use nxt's
-                nxt[:from][:record_id]
-              elsif nxt.nil?
-                # We're at the last ASP, use prev's
-                prev[:from][:record_id]
-              elsif(
-                prev[:from][:record_id] &&
-                (
-                  (nxt && prev[:from][:record_id] == nxt[:from][:record_id]) ||
-                  (nxt_bo && prev[:from][:record_id] == nxt_bo[:from][:record_id]) ||
-                  (nxt_b2 && prev[:from][:record_id] == nxt_b2[:from][:record_id]) ||
-                  (nxt_b3 && prev[:from][:record_id] == nxt_b3[:from][:record_id])
-                )
-              )
-                # group sequence of nil record_ids between STs with identical
-                # record_ids, use from prev
-                prev[:from][:record_id]
-              elsif cur[:to][:last_in_para]
-                # The `to` ST is located at end of para, use record id from
-                # previous `from` ST (looking back).
-                prev[:from][:record_id]
-              elsif cur[:to][:first_in_para]
-                # The `to` ST is located at beginning of para, use record id from
-                # next `from` ST (looking forward).
-                nxt[:from][:record_id]
-              elsif(
-                prev[:to][:first_in_para] &&
-                prev[:from][:record_id]
-              )
-                # This happens when we have two subsequent nil record_ids.
-                # In this specific case, the prev was at beginning of para,
-                # so we use its record_id.
-                prev[:from][:record_id]
-              elsif(
-                nxt[:to][:last_in_para] &&
-                prev[:from][:record_id]
-              )
-                # This happens when we have two subsequent nil record_ids.
-                # In this specific case, the nxt was at end of para,
-                # so we use prev's record_id.
-                prev[:from][:record_id]
-              else
-                nil
-              end
-              cur[:from][:record_id] = new_record_id
+          def update_record_ids!(prev_b1, prev, cur, nxt, nxt_bo, nxt_b2, nxt_b3)
+            # First insert missing record_ids. Look one asp back and four ahead
+            if cur[:subtitle_object].record_id.nil?
+              assign_missing_record_id!(prev, cur, nxt, nxt_bo, nxt_b2, nxt_b3)
             end
+            # Then adjust record_ids on subtitles that moved to different record.
+            # We can't look ahead since next ones still may be nil. This step
+            # does not handle nil record_ids.
+            # So we operate on `prev` and use `prev_b1` as preceding and `cur` as following.
+            if(
+              (
+                prev_b1 &&
+                prev[:subtitle_object].record_id != prev_b1[:subtitle_object].record_id &&
+                prev[:to][:para_index] == prev_b1[:to][:para_index]
+              ) || (
+                prev &&
+                prev[:subtitle_object].record_id != cur[:subtitle_object].record_id &&
+                prev[:to][:para_index] == cur[:to][:para_index]
+              )
+            )
+              # Two STs in same para have different record_ids.
+              adjust_misaligned_record_id!(prev_b1, prev, cur)
+            end
+          end
+
+          # Given cur with nil [:subtitle_object].record_id, assigns a new record_id.
+          # Modifies `cur` in place.
+          # @param prev [AlignedSubtitlePair]
+          # @param cur [AlignedSubtitlePair]
+          # @param nxt [AlignedSubtitlePair]
+          # @param nxt_bo [AlignedSubtitlePair]
+          # @param nxt_b2 [AlignedSubtitlePair]
+          # @param nxt_b3 [AlignedSubtitlePair]
+          def assign_missing_record_id!(prev, cur, nxt, nxt_bo, nxt_b2, nxt_b3)
+            preceding_record_id = prev.nil? ? nil : prev[:subtitle_object].record_id
+            following_record_id = [nxt, nxt_bo, nxt_b2, nxt_b3].map { |asp|
+              next nil  if asp.nil?
+              asp[:from] && asp[:from][:record_id]
+            }.compact.first
+
+            new_record_id = if prev.nil? && following_record_id
+              # We're at the first ASP
+              following_record_id
+            elsif nxt.nil? && preceding_record_id
+              # We're at the last ASP
+              preceding_record_id
+            elsif((preceding_record_id == following_record_id) && preceding_record_id)
+              # group sequence of nil record_ids between STs with identical
+              # record_ids, use from prev
+              preceding_record_id
+            elsif((prev[:to][:para_index] == cur[:to][:para_index]) && preceding_record_id)
+              # cur is located in same paragraph as prev
+              preceding_record_id
+            elsif((nxt[:to][:para_index] == cur[:to][:para_index]) && following_record_id)
+              # cur is located in same paragraph as nxt
+              following_record_id
+            elsif prev[:to][:para_index] == (nxt[:to][:para_index] - 2)
+              # cur is different from both. We use the first existing one from
+              # prev and nxt
+              preceding_record_id || following_record_id
+            else
+              raise "Handle this: #{ [prev, cur, nxt, nxt_bo, nxt_b2, nxt_b3].inspect }"
+            end
+
+            if new_record_id.nil?
+              raise "Assigned nil record id at #{ [prev, cur, nxt, nxt_bo, nxt_b2, nxt_b3].inspect }"
+            end
+
+            cur[:subtitle_object].record_id = new_record_id
+          end
+
+          # Adjusts record_ids for subtitles that moved to a different record.
+          # We can safely assume that none of prev_b1, prev, or cur's
+          # [:subtitle_object].record_id is nil,
+          # and that it is different from either prev_b1 or cur's.
+          # Modifies `prev` in place.
+          # @param prev_b1 [AlignedSubtitlePair]
+          # @param prev [AlignedSubtitlePair]
+          # @param cur [AlignedSubtitlePair]
+          def adjust_misaligned_record_id!(prev_b1, prev, cur)
+            new_record_id = if prev_b1[:to][:para_index] == prev[:to][:para_index]
+              # Use record_id from prev_b1
+              prev_b1[:subtitle_object].record_id
+            elsif cur[:to][:para_index] == prev[:to][:para_index]
+              # use record_id from cur
+              cur[:subtitle_object].record_id
+            else
+              raise "Handle this: #{ [prev_b1, prev, cur].inspect }"
+            end
+            prev[:subtitle_object].record_id = new_record_id
           end
 
           # Returns difference in subtitles from :from to :to in al_st_pair.

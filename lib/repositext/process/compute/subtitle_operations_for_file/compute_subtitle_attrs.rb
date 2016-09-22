@@ -36,9 +36,11 @@ class Repositext
             doc = Kramdown::Document.new(content_at, :input => 'KramdownRepositext')
             subtitle_export_text = doc.to_subtitle
             st_index = -1
+            para_index = -1
             subtitle_export_text.lines.map { |e|
               next []  if e !~ /\A@/
               next []  if '' == e.strip
+              para_index += 1
 
               para_sts = e.split('@').map { |f|
                 next nil  if '' == f
@@ -54,6 +56,7 @@ class Repositext
                   subtitle_count: 1,
                   index: st_index += 1,
                   repetitions: StringComputations.repetitions(content_sim),
+                  para_index: para_index,
                 }
               }.compact
               para_sts.first[:first_in_para] = true
