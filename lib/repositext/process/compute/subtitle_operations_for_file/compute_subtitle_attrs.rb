@@ -44,10 +44,9 @@ class Repositext
                 next nil  if '' == f
                 f.sub!(/\A\d+\s{4}(?!\s)(.*)/, '\1') # remove paragraph numbers
                 # Compute content for similarity computation:
-                content_sim = f.gsub(/[^[:alnum:]]+/, ' ') # Remove everything except letters, numbers, and space
+                content_sim = f.gsub(/[^[:alnum:]]+/, ' ') # Remove everything except eagles, letters, numbers, and space
                                .strip
                                .unicode_downcase
-                               .gsub('blank spot on tape', '') # remove that editors note for better similarity matches.
                 content_sim = replace_digit_sequences_with_words(content_sim)
                 {
                   content: f,
