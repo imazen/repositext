@@ -21,7 +21,7 @@ class Repositext
             return [0.0, 0.0]  if 0 == min_string_length
 
             # Number of characters compared to reach max confidence.
-            max_conf_at_char_length = 30
+            max_conf_at_char_length = 15
 
             if truncate_to_shortest
               truncate_len = [min_string_length, truncate_to_shortest].min
@@ -50,7 +50,6 @@ class Repositext
               string_a = a
               string_b = b
 
-              # Reach max confidence at 50 chars
               confidence = [(max_string_length / max_conf_at_char_length.to_f), 1.0].min
             end
 
