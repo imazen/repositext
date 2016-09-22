@@ -226,12 +226,8 @@ class Repositext
             overlap_threshold = cur_contains_number_sequence ? 0.90 : 0.64
 
             if [:right_aligned, :unaligned].include?(nxt[:type])
+              # Possible overlap with nxt
               if(
-                @asp_group_cumulative_content_change > 10 &&
-                (
-                  @asp_group_cumulative_content_change + nxt[:content_length_change]
-                ) < 3
-              ) || (
                 StringComputations.overlap(
                   cur[:to][:content_sim],
                   nxt[:from][:content_sim],
@@ -251,15 +247,6 @@ class Repositext
               end
             elsif :st_added == nxt[:type]
               if(
-                # Overlap with next
-                StringComputations.overlap(
-                  cur[:from][:content_sim],
-                  nxt[:to][:content_sim],
-                  overlap_threshold
-                ) > 0
-              )
-                return true
-              elsif(
                 # Overlap with next but one
                 nbo &&
                 ![:left_aligned, :fully_aligned].include?(nbo[:type]) &&
@@ -282,21 +269,21 @@ class Repositext
                 # Subtitles overlap, connected with next but one
                 nxt[:linked_to_next] = true
                 return true
+              elsif(
+                # Overlap with just next
+                StringComputations.overlap(
+                  cur[:from][:content_sim],
+                  nxt[:to][:content_sim],
+                  overlap_threshold
+                ) > 0
+              )
+                return true
               else
                 # No overlap, terminate capture group
                 return false
               end
             elsif :st_removed == nxt[:type]
               if(
-                # Overlap with next
-                StringComputations.overlap(
-                  cur[:to][:content_sim],
-                  nxt[:from][:content_sim],
-                  overlap_threshold
-                ) > 0
-              )
-                return true
-              elsif(
                 # Overlap with next but one
                 nbo &&
                 ![:left_aligned, :fully_aligned].include?(nbo[:type]) &&
@@ -318,6 +305,15 @@ class Repositext
               )
                 # Subtitles overlap, connected with next
                 nxt[:linked_to_next] = true
+                return true
+              elsif(
+                # Overlap with next
+                StringComputations.overlap(
+                  cur[:to][:content_sim],
+                  nxt[:from][:content_sim],
+                  overlap_threshold
+                ) > 0
+              )
                 return true
               else
                 # No overlap, terminate capture group
