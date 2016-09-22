@@ -27,42 +27,72 @@ class Repositext
             left_txt = left_el[:content_sim]
             right_txt = right_el[:content_sim]
 
-            # First we compute unaligned similarity
+            max_score = 100 # maximum possible score
+            sim_weight = 80 # percentage of score that is determined by similarity
+            conf_weight = 10 # percentage of score that is determined by confidence
+            length_weight = 10 # percentage of score that is determined by string length
+            right_score_penalty = 20
+
+            # Beginning eagle gets special treatment
+            if [left_txt, right_txt].all? { |e| '' == e[0] }
+              # Both start with eagle, we want to lock them together by giving
+              # a very high score.
+              return max_score * 2
+            end
+
+            # We add a length based bonus to each score so that given same
+            # similarity, the longer string will win.
+            min_length = [[left_txt, right_txt].map(&:length).min, 1].max # guaranteed to be 1 or greater
+            length_bonus = length_weight * min_length / 120.0 # linear relationship of length
+
+            # Compute left_aligned, absolute, and right_aligned similarities,
+            # return the highest. Exit early if any of them are >= max_score
             abs_sim, abs_conf = StringComputations.similarity(
               left_txt,
               right_txt,
               false
             )
-
-            abs_sim = 100 * abs_sim * (abs_conf < 0.7 ? abs_conf : 1.0)
-            return abs_sim  if abs_sim >= 100
+            abs_score = (sim_weight * abs_sim) + (conf_weight * abs_conf) + length_bonus
+            if abs_score >= max_score
+              return abs_score
+            end
 
             # If strings are not identical, then we compute left aligned
             # similarity so that gaps come after the shared content on splits.
-            left_aligned_sim, la_conf = StringComputations.similarity(
+            left_sim, left_conf = StringComputations.similarity(
               left_txt,
               right_txt,
               100_000,
               :left
             )
-            left_aligned_sim = 100 * left_aligned_sim * (la_conf < 0.7 ? la_conf : 1.0)
+            left_score = (sim_weight * left_sim) + (conf_weight * left_conf) + length_bonus
+            if left_score >= max_score
+              return left_score
+            end
 
-            # We add a small length based offset to the score so that given same
-            # similarity, the longer string will win.
-            min_length = [[left_txt, right_txt].map(&:length).min, 1].max # guaranteed to be 1 or greater
-            length_based_offset = 1 - (1 / min_length.to_f)
-            left_aligned_sim += length_based_offset
+            # Last try right aligned
+            right_sim, right_conf = StringComputations.similarity(
+              left_txt,
+              right_txt,
+              100_000,
+              :right
+            )
+            right_score = (sim_weight * right_sim) + (conf_weight * right_conf) + length_bonus
+            # We prefer left alignment over right alignment. So given the same
+            # similarity, we always want to prefer the left, even if the right
+            # has a slightly higher score. We subtract right_score_penalty to
+            # express the preference.
+            right_score -= right_score_penalty
 
-            # Return larger of the two similarities
-            larger_sim = [abs_sim, left_aligned_sim].max
-            if larger_sim < 50
+            # Return highest score
+            highest_score = [abs_score, left_score, right_score].max
+            if highest_score < 50
               # Penalize very low similarity scores, make them slightly worse
               # than a gap. This will avoid aligning of subtitle pairs that
               # have nothing in common.
-              # 0.4 seems to be the baseline similarity for LcsSimilarity.
-              return -11
+              default_gap_penalty * 1.1
             else
-              larger_sim
+              highest_score
             end
           end
 

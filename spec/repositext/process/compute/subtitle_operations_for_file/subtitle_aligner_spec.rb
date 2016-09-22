@@ -5,6 +5,7 @@ class Repositext
     class Compute
       class SubtitleOperationsForFile
         describe SubtitleAligner do
+
           describe '#get_optimal_alignment' do
             [
               [
@@ -43,7 +44,7 @@ class Repositext
                   [
                     { content_sim: "qwerf okjhb qwsza" },
                     { content_sim: "oiuyt ikjfb plwsr ujkdf ew34j epasl asdfe ghrns iwjdk" },
-                    { content_sim: "", content: "", subtitle_count: 0 },
+                    { content_sim: "", content: "", subtitle_count: 0, :repetitions=>{} },
                   ],
                   [
                     { content_sim: "qwerf okjhb qwsza" },
@@ -72,15 +73,7 @@ class Repositext
                 'asdf ghjk zxcv vbnm qwer tyui sdfg',
                 1,
                 1,
-                100.0
-              ],
-              [
-                'one letter changed',
-                'asdf ghjk zxcv  bnm qwer tyui sdfg',
-                'asdf ghjk zxcv vbnm qwer tyui sdfg',
-                1,
-                1,
-                97.05882352941177
+                100.97058823529412
               ],
               [
                 'Outside of diagonal_band_range',
@@ -88,7 +81,39 @@ class Repositext
                 'asdf ghjk zxcv vbnm qwer tyui sdfg',
                 1,
                 100,
-                -1000
+                -20
+              ],
+              [
+                'High score if both begin with eagle',
+                ' abcd efgh ijkl mnop',
+                ' qrst uvwx yz12 3456',
+                1,
+                1,
+                200
+              ],
+              [
+                'High score if both end with eagle',
+                'abcd efgh ijkl mnop ',
+                'qrst uvwx yz12 3456 ',
+                1,
+                1,
+                200
+              ],
+              [
+                'Eagles at opposite ends get low score',
+                ' abcd efgh ijkl mnop',
+                'qrst uvwx yz12 3456 ',
+                1,
+                1,
+                -11
+              ],
+              [
+                'one letter changed',
+                'asdf ghjk zxcv  bnm qwer tyui sdfg',
+                'asdf ghjk zxcv vbnm qwer tyui sdfg',
+                1,
+                1,
+                98.02941176470588
               ],
               [
                 'Left aligned sim is preferred over absolute sim',
@@ -96,7 +121,15 @@ class Repositext
                 'asdf ghjk zxcv vbnm qwer tyui sdfg',
                 1,
                 1,
-                97.05882352941177
+                98.02941176470588
+              ],
+              [
+                'Right aligned sim gets penalty of 1',
+                'jwewef lkadfg sdkfjgh aaslkdfj asld asdf ghjk zxcv  bnm qwer tyui sdfg',
+                                                    'asdf ghjk zxcv vbnm qwer tyui sdfg',
+                1,
+                1,
+                97.02941176470588
               ],
               [
                 'Penalize low similarity slightly worse than gap',
@@ -185,6 +218,7 @@ class Repositext
             end
 
           end
+
         end
       end
     end
