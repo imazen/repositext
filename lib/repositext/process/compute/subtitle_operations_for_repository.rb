@@ -91,7 +91,7 @@ class Repositext
           # We get the diff only so that we know which files have changed.
           diff = @repository.diff(@from_git_commit, @to_git_commit, context_lines: 0)
 
-          operations_for_all_files = diff.patches.map { |patch|
+          diff.patches.map { |patch|
             file_name = patch.delta.old_file[:path]
             next nil  if !@file_list.include?(file_name)
 
