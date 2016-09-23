@@ -33,14 +33,23 @@ class Repositext
           # @param conten_at [String]
           # @return [Array<SubtitleAttrs>]
           def convert_content_at_to_subtitle_attrs(content_at)
-            doc = Kramdown::Document.new(content_at, :input => 'KramdownRepositext')
+            doc = Kramdown::Document.new(
+              content_at,
+              input: 'KramdownRepositext',
+              include_record_ids: true
+            )
             subtitle_export_text = doc.to_subtitle
             st_index = -1
             para_index = -1
+            # rid_regex is synced with Kramdown::Converter::Subtitle#convert
+            rid_regex = /\srid-([[:alnum:]]+)$/
             subtitle_export_text.lines.map { |e|
               next []  if e !~ /\A@/
               next []  if '' == e.strip
               para_index += 1
+              # Capture and remove record_id from end of line
+              para_record_id = e.match(rid_regex)[1]
+              e.sub!(rid_regex, '')
 
               para_sts = e.split('@').map { |f|
                 next nil  if '' == f
@@ -57,6 +66,7 @@ class Repositext
                   index: st_index += 1,
                   repetitions: StringComputations.repetitions(content_sim),
                   para_index: para_index,
+                  record_id: para_record_id,
                 }
               }.compact
               para_sts.first[:first_in_para] = true
@@ -85,7 +95,6 @@ class Repositext
               st_obj = st_objects[idx]
               r << st_attrs.merge({
                 persistent_id: st_obj.persistent_id,
-                record_id: st_obj.record_id,
               })
             }
             r
