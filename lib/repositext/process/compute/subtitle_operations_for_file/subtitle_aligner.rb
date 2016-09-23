@@ -86,7 +86,8 @@ class Repositext
 
             # Return highest score
             highest_score = [abs_score, left_score, right_score].max
-            if highest_score < 50
+
+            if highest_score < 64
               # Penalize very low similarity scores, make them slightly worse
               # than a gap. This will avoid aligning of subtitle pairs that
               # have nothing in common.
