@@ -66,9 +66,14 @@ class Repositext
                   (st_attrs[:last_in_para] ? 'last_ip' : nil)
                 ].compact.join(', ')
               }
-              puts "   From: #{ curr[:from][:content].strip.send(just_method, 130) }   #{ para_boundaries_reporter.call(curr[:from]).ljust(17) } rid:#{ curr[:subtitle_object].record_id || 'N/A' }"
+              from_record_id = if(r = curr[:from][:record_id]) != curr[:subtitle_object].record_id
+                "rid:#{ curr[:from][:record_id] || 'N/A' }"
+              else
+                ''
+              end
+              puts "   From: #{ curr[:from][:content].strip.send(just_method, 130) }   #{ para_boundaries_reporter.call(curr[:from]).ljust(17) } #{ from_record_id }"
               # puts "         #{ curr[:from][:content_sim].send(just_method, 130) }"
-              puts "   To:   #{ curr[:to][:content].strip.send(just_method, 130) }   #{ para_boundaries_reporter.call(curr[:to]).ljust(17) }"
+              puts "   To:   #{ curr[:to][:content].strip.send(just_method, 130) }   #{ para_boundaries_reporter.call(curr[:to]).ljust(17) } rid:#{ curr[:subtitle_object].record_id || 'N/A' }"
               # puts "         #{ curr[:to][:content_sim].send(just_method, 130) }"
               puts([
                 "   ",
@@ -390,8 +395,18 @@ class Repositext
                 operationType: :move_right,
               )
             when :no_op
-              # Nothing to do
-              nil
+              if @current_asp[:from][:record_id] != @current_asp[:to][:record_id]
+                # This subtitle was moved to a different record. Need to record
+                # new record_id so that we can update it in STM CSV file in a later step.
+                Subtitle::Operation.new_from_hash(
+                  affectedStids: [@current_asp[:subtitle_object]],
+                  operationId: compute_next_operation_id!,
+                  operationType: :record_id_change,
+                )
+              else
+                # Nothing to do
+                nil
+              end
             when :split
               if(prev_op = @ops_in_group.last) && :split == prev_op.operationType
                 # Don't record separate operation, just add @current_asp to

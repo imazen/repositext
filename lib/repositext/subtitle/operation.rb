@@ -35,6 +35,8 @@ class Repositext
           'MoveLeft'
         when :move_right
           'MoveRight'
+        when :record_id_change
+          'RecordIdChange'
         when :split
           'Split'
         else

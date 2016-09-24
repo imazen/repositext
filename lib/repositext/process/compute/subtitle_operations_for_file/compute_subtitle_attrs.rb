@@ -39,6 +39,7 @@ class Repositext
               include_record_ids: true
             )
             subtitle_export_text = doc.to_subtitle
+
             st_index = -1
             para_index = -1
             # rid_regex is synced with Kramdown::Converter::Subtitle#convert
