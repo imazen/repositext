@@ -26,7 +26,7 @@ class Repositext
                 %(abcd efgh ijkl),
                 %(abcd efgh ijkl mnop qrst),
                 { truncate_to_shortest: false, alignment: :left },
-                [0.5833333333333334, 0.8],
+                [0.5833333333333334, 1.0],
               ],
               [
                 %(abcd efgh ijkl),
@@ -38,13 +38,13 @@ class Repositext
                           %(abcd efgh ijkl),
                 %(abcd efgh ijkl mnop qrst),
                 { truncate_to_shortest: 100_000, alignment: :right },
-                [0.2857142857142857, 0.4666666666666667],
+                [0.2857142857142857, 0.9333333333333333],
               ],
               [
                 %(ijkl mnop qrst),
                 %(abcd efgh ijkl mnop qrst),
                 { truncate_to_shortest: 100_000, alignment: :left },
-                [0.2857142857142857, 0.4666666666666667],
+                [0.2857142857142857, 0.9333333333333333],
               ],
               [
                           %(ijkl mnop qrst),
@@ -80,7 +80,7 @@ class Repositext
                 ' in',
                 'in ',
                 {  },
-                [0.6666666666666666, 0.1],
+                [0.6666666666666666, 0.2],
               ],
             ].each do |(a, b, attrs, xpect)|
               it "Handles #{ a }, #{ b }" do
@@ -137,13 +137,13 @@ class Repositext
                 "16 char identical overlap",
                 "abcd efgh ijkl mnop common 12 overlap",
                                     "common 12 overlap ponm lkji hgfe dcba",
-                14
+                13
               ],
               [
                 "16 char similar overlap",
                 "abcd efgh ijkl mnop comXon 12 overlap",
                                     "common 12 overlap ponm lkji hgfe dcba",
-                14
+                13
               ],
               [
                 "No overlap",
@@ -186,6 +186,7 @@ class Repositext
                 StringComputations.overlap(
                   string_a,
                   string_b,
+                  0.67,
                   3,
                   false # set to true for debug output
                 ).must_equal(xpect)
@@ -203,7 +204,7 @@ class Repositext
               ["Overlap 4, low sim", 0.8, 4, false],
               ["Overlap 4, high sim", 1.0, 4, true],
               ["Overlap 5, low sim", 0.6, 5, false],
-              ["Overlap 5, high sim", 0.7, 5, true],
+              ["Overlap 5, high sim", 1.0, 5, true],
               ["Overlap 10, low sim", 0.6, 10, false],
               ["Overlap 10, high sim", 0.7, 10, true],
             ].each do |desc, sim, overlap, xpect|

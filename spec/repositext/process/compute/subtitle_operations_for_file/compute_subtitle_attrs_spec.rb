@@ -15,6 +15,7 @@ class Repositext
 
           let(:default_content_at_from){
             [
+              "^^^ {: .rid #rid-54040019}\n\n",
               "@Abcd Efgh Ijkl Mnop Qrst ",
               "@Vwxy Z123 A456 B789 C012 ",
               "@D345 Qwer Tyui Opas Dfgh Jklz Xcvb Nmqw Erty Uiop",
@@ -26,29 +27,36 @@ class Repositext
               {
                 content: "Abcd Efgh Ijkl Mnop Qrst ",
                 content_sim: "abcd efgh ijkl mnop qrst",
-                subtitle_count: 1,
-                index: 0,
                 first_in_para: true,
+                index: 0,
+                para_index: 0,
+                record_id: "54040019",
                 repetitions: {},
+                subtitle_count: 1,
               }, {
                 content: "Vwxy Z123 A456 B789 C012 ",
                 content_sim: "vwxy z123 a456 b789 c012",
-                subtitle_count: 1,
                 index: 1,
+                para_index: 0,
+                record_id: "54040019",
                 repetitions: {},
-              }, {
-                content: "D345 Qwer Tyui Opas Dfgh Jklz Xcvb Nmqw Erty Uiop",
-                content_sim: "d345 qwer tyui opas dfgh jklz xcvb nmqw erty uiop",
                 subtitle_count: 1,
+              }, {
+                content: "D345 Qwer Tyui Opas Dfgh Jklz Xcvb Nmqw Erty Uiop\n",
+                content_sim: "d345 qwer tyui opas dfgh jklz xcvb nmqw erty uiop",
                 index: 2,
                 last_in_para: true,
+                para_index: 0,
+                record_id: "54040019",
                 repetitions: {},
+                subtitle_count: 1,
               },
             ]
           }
 
           let(:default_content_at_to){
             [
+              "^^^ {: .rid #rid-54040019}\n\n",
               "@Abcd Efgh Ijkl Mnop Qrst Vwxy Z123 A456 B789 ",
               "@C012 D345 Qwer Tyui Opas Dfgh Jklz Xcvb Nmqw Erty Uiop ",
               "@Uiop Asdf Mnbv Cxzl",
@@ -61,22 +69,28 @@ class Repositext
                 content: "Abcd Efgh Ijkl Mnop Qrst Vwxy Z123 A456 B789 ",
                 content_sim: "abcd efgh ijkl mnop qrst vwxy z123 a456 b789",
                 first_in_para: true,
-                subtitle_count: 1,
                 index: 0,
+                para_index: 0,
+                record_id: "54040019",
                 repetitions: {},
+                subtitle_count: 1,
               }, {
                 content: "C012 D345 Qwer Tyui Opas Dfgh Jklz Xcvb Nmqw Erty Uiop ",
                 content_sim: "c012 d345 qwer tyui opas dfgh jklz xcvb nmqw erty uiop",
-                subtitle_count: 1,
                 index: 1,
+                para_index: 0,
+                record_id: "54040019",
                 repetitions: {},
-              }, {
-                content: "Uiop Asdf Mnbv Cxzl",
-                content_sim: "uiop asdf mnbv cxzl",
-                last_in_para: true,
                 subtitle_count: 1,
+              }, {
+                content: "Uiop Asdf Mnbv Cxzl\n",
+                content_sim: "uiop asdf mnbv cxzl",
                 index: 2,
+                last_in_para: true,
+                para_index: 0,
+                record_id: "54040019",
                 repetitions: {},
+                subtitle_count: 1,
               },
             ]
           }
@@ -103,9 +117,9 @@ class Repositext
 
           let(:default_enriched_subtitle_attrs_from){
             enriched_attrs = [
-              { :persistent_id=>"1000001", :record_id=>"123123123" },
-              { :persistent_id=>"1000002", :record_id=>"123123124" },
-              { :persistent_id=>"1000003", :record_id=>"123123125" }
+              { :persistent_id=>"1000001" },
+              { :persistent_id=>"1000002" },
+              { :persistent_id=>"1000003" }
             ]
             r = []
             default_subtitle_attrs_from.each_with_index {|saf, idx|
@@ -132,15 +146,15 @@ class Repositext
             it "Removes paragraph numbers" do
               default_computer.send(
                 :convert_content_at_to_subtitle_attrs,
-                "@1    word1 word2 word3",
-              ).first[:content].must_equal("word1 word2 word3")
+                "^^^ {: .rid #rid-54040019}\n\n@1    word1 word2 word3",
+              ).first[:content].must_equal("word1 word2 word3\n")
             end
 
             it "Removes trailing newlines" do
               default_computer.send(
                 :convert_content_at_to_subtitle_attrs,
-                "@word1 word2 word3\n",
-              ).first[:content].must_equal("word1 word2 word3")
+                "^^^ {: .rid #rid-54040019}\n\n@word1 word2 word3\n",
+              ).first[:content].must_equal("word1 word2 word3\n")
             end
           end
 

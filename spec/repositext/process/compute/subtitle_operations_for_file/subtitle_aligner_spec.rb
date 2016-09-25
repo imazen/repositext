@@ -73,7 +73,7 @@ class Repositext
                 'asdf ghjk zxcv vbnm qwer tyui sdfg',
                 1,
                 1,
-                100.97058823529412
+                92.83333333333333
               ],
               [
                 'Outside of diagonal_band_range',
@@ -92,12 +92,12 @@ class Repositext
                 200
               ],
               [
-                'High score if both end with eagle',
+                'Low score if both end with eagle',
                 'abcd efgh ijkl mnop ',
                 'qrst uvwx yz12 3456 ',
                 1,
                 1,
-                200
+                -11
               ],
               [
                 'Eagles at opposite ends get low score',
@@ -113,7 +113,7 @@ class Repositext
                 'asdf ghjk zxcv vbnm qwer tyui sdfg',
                 1,
                 1,
-                98.02941176470588
+                90.48039215686273
               ],
               [
                 'Left aligned sim is preferred over absolute sim',
@@ -121,7 +121,7 @@ class Repositext
                 'asdf ghjk zxcv vbnm qwer tyui sdfg',
                 1,
                 1,
-                98.02941176470588
+                90.48039215686273
               ],
               [
                 'Right aligned sim gets penalty of 1',
@@ -129,7 +129,7 @@ class Repositext
                                                     'asdf ghjk zxcv vbnm qwer tyui sdfg',
                 1,
                 1,
-                97.02941176470588
+                70.48039215686273
               ],
               [
                 'Penalize low similarity slightly worse than gap',
@@ -183,10 +183,10 @@ class Repositext
                 %({:content_sim=>"IJKL"}  ↑  ↑  ↑  ⬉  ←  ←  ⬉  ←  ←  ⬉),
                 %({:content_sim=>"ABCD"}  ↑  ⬉  ↑  ↑  ⬉  ←  ←  ⬉  ←  ←),
                 %({:content_sim=>"EFGH"}  ↑  ↑  ⬉  ↑  ↑  ⬉  ←  ←  ⬉  ←),
-                %({:content_sim=>"IJKL"}  ↑  ↑  ↑  ⬉  ↑  ↑  ⬉  ←  ←  ⬉),
+                %({:content_sim=>"IJKL"}  ↑  ↑  ↑  ⬉  ↑  ↑  ⬉  ←  ←  ←),
                 %({:content_sim=>"ABCD"}  ↑  ⬉  ↑  ↑  ⬉  ↑  ↑  ⬉  ←  ←),
                 %({:content_sim=>"EFGH"}  ↑  ↑  ⬉  ↑  ↑  ⬉  ↑  ↑  ⬉  ←),
-                %({:content_sim=>"IJKL"}  ↑  ↑  ↑  ⬉  ↑  ↑  ⬉  ↑  ↑  ⬉),
+                %({:content_sim=>"IJKL"}  ↑  ↑  ↑  ⬉  ↑  ↑  ↑  ↑  ↑  ⬉),
                 "",
               ].join("\n"))
             end
