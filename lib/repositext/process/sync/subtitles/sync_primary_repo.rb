@@ -43,7 +43,7 @@ class Repositext
             end
 
             files_to_sync.each do |content_at_file|
-              sync_primary_file(content_at_file_to, st_ops_for_repo)
+              sync_primary_file(content_at_file, st_ops_for_repo)
             end
 
             update_primary_repo_level_st_sync_data
