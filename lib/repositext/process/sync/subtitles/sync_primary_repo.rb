@@ -19,8 +19,31 @@ class Repositext
             st_ops_for_repo = extract_and_persist_primary_subtitle_operations
 
             puts "   - Sync primary files (update STM CSV and file level st_sync data):"
-            st_ops_for_repo.affected_content_at_files.each do |content_at_file|
-              sync_primary_file(content_at_file, st_ops_for_repo)
+            files_to_sync = if @is_initial_sync
+              # For the initial sync we include all files. This is required so that we
+              # restore the STM CSV files to have all columns even for those files that
+              # have no subtitle operations
+              content_type = ContentType.all(@primary_repository).last
+              Dir.glob(
+                File.join(content_type.base_dir, '**/content/**/*.at')
+              ).map { |absolute_file_path|
+                # Skip non content_at files
+                unless absolute_file_path =~ /\/content\/.+\d{4}\.at\z/
+                  raise "shouldn't get here"
+                end
+                Repositext::RFile::ContentAt.new(
+                  File.read(absolute_file_path),
+                  content_type.language,
+                  absolute_file_path,
+                  content_type
+                )
+              }
+            else
+              st_ops_for_repo.affected_content_at_files
+            end
+
+            files_to_sync.each do |content_at_file|
+              sync_primary_file(content_at_file_to, st_ops_for_repo)
             end
 
             update_primary_repo_level_st_sync_data
@@ -40,7 +63,8 @@ class Repositext
               content_type,
               @from_git_commit,
               @to_git_commit,
-              @file_list
+              @file_list,
+              @is_initial_sync
             ).compute
 
             puts "   - Assign new subtitle ids"

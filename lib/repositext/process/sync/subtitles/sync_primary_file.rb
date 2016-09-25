@@ -89,7 +89,7 @@ class Repositext
           #     * new_time_slices <Array>
           def extract_primary_stm_csv_file_input_data(content_at_file, st_ops_for_file)
             # Return blank values if no st_ops are found for file
-            return [[],[]]  if st_ops_for_file.nil?
+            return [[],[]]  if st_ops_for_file.nil? && !@is_initial_sync
 
             # old_stids: extract STIDs and record_ids from corresponding STM CSV file
             old_stids = []
@@ -134,7 +134,12 @@ class Repositext
           # @param st_ops_for_file [Subtitle::OperationsForFile]
           def validate_subtitle_sync_input_data(content_at_file, old_stids, new_time_slices, st_ops_for_file)
             # Validate that old and new subtitle counts are consistent with operations
-            st_ops_count_delta = st_ops_for_file.subtitles_count_delta
+            st_ops_count_delta = if @is_initial_sync && st_ops_for_file.nil?
+              # This is the initial sync for a file with no subtitle operations.
+              0
+            else
+              st_ops_for_file.subtitles_count_delta
+            end
             if old_stids.length + st_ops_count_delta != new_time_slices.length
               raise InvalidInputDataError.new(
                 [
@@ -164,7 +169,13 @@ class Repositext
           #           }
           #         ]
           def compute_new_subtitle_data(old_sts, new_time_slices, new_char_lengths, st_ops_for_file)
-            new_sts = st_ops_for_file.apply_to_subtitles(old_sts)
+            new_sts = if @is_initial_sync && st_ops_for_file.nil?
+              # This is the initial sync for a file with no subtitle operations.
+              old_sts.dup
+            else
+              st_ops_for_file.apply_to_subtitles(old_sts)
+            end
+
             # Make sure all record_ids are present
             sts_with_missing_record_ids = new_sts.find_all { |e| e[:record_id].nil? }
             if sts_with_missing_record_ids.any?

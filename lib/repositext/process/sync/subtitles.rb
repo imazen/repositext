@@ -34,6 +34,7 @@ class Repositext
           @primary_repository = options['primary_repository']
           @stids_inventory_file = options['stids_inventory_file']
           @to_git_commit = options['to-commit']
+          @is_initial_sync = options['is_initial_sync']
 
           # Init caches
 

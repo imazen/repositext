@@ -11,11 +11,12 @@ class Repositext
         # @param from_git_commit [String]
         # @param to_git_commit [String]
         # @param file_list [Array<String>] path to files to include
-        def initialize(content_type, from_git_commit, to_git_commit, file_list)
+        def initialize(content_type, from_git_commit, to_git_commit, file_list, is_initial_sync)
           @content_type = content_type
           @repository = @content_type.repository
           @language = @content_type.language
           @from_git_commit = from_git_commit
+          @is_initial_sync = is_initial_sync
           @to_git_commit = to_git_commit
           # Convert to repo relative paths
           @file_list = file_list.map { |e| e.sub!(@repository.base_dir, '') }
@@ -33,7 +34,7 @@ class Repositext
             )
           end
 
-          operations_for_all_files = if is_initial_sync?
+          operations_for_all_files = if @is_initial_sync
             process_all_primary_files
           else
             process_primary_files_with_changes_only
@@ -126,9 +127,6 @@ class Repositext
           }.compact
         end
 
-        def is_initial_sync?
-          true
-        end
       end
     end
   end
