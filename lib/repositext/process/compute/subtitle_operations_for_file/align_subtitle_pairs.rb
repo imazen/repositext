@@ -123,6 +123,7 @@ class Repositext
                 asp[:to][:content].strip.length - asp[:from][:content].strip.length
               ) # neg means text removal
               asp[:subtitle_count_change] = compute_subtitle_count_change(asp)
+
               asp[:has_repetitions] = compute_repetitions(
                 asp[:from][:repetitions],
                 asp[:to][:repetitions]

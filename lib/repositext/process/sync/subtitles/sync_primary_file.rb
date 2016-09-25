@@ -7,7 +7,7 @@ class Repositext
           extend ActiveSupport::Concern
 
           # Syncronizes subtitle operations in the primary file
-          # @param content_at_file_current [RFile::ContentAt] current version of file
+          # @param content_at_file_to [RFile::ContentAt] current version of file
           # @param st_ops_for_repo [Repositext::Subtitle::OperationsForRepository]
           def sync_primary_file(content_at_file, st_ops_for_repo)
             puts "     - process #{ content_at_file.repo_relative_path }"
@@ -15,34 +15,44 @@ class Repositext
               content_at_file.extract_product_identity_id,
               st_ops_for_repo
             )
+
             update_primary_subtitle_marker_csv_file(
               content_at_file,
               st_ops_for_file
             )
+
             update_primary_file_level_st_sync_data(content_at_file)
           end
 
         private
 
-          # Updates STM CSV file for content_at_file_current.
+          # @param st_ops_for_repo [Repositext::Subtitle::OperationsForRepository]
+          # @return [Subtitle::OperationsForFile, Nil]
+          def extract_st_ops_for_primary_file(product_identity_id, st_ops_for_repo)
+            st_ops_for_repo.operations_for_files.detect { |e|
+              product_identity_id == e.product_identity_id
+            }
+          end
+
+          # Updates STM CSV file for content_at_file_to.
           # Computes new STM CSV file data by merging the following:
           #  * Existing STIDS and record ids from existing STM CSV file.
           #  * New time slices from subtitle import marker file.
           #  * Updated subtitles based on subtitle operations (with new stids)
           # Then updates the STM CSV file with the new data.
-          # @param content_at_file_current [RFile::ContentAt]
+          # @param content_at_file_to [RFile::ContentAt]
           # @param st_ops_for_file [Subtitle::OperationsForFile]
           # @return [True]
-          def update_primary_subtitle_marker_csv_file(content_at_file_current, st_ops_for_file)
+          def update_primary_subtitle_marker_csv_file(content_at_file_to, st_ops_for_file)
             # Get content_at_file as of from_git_commit
-            content_at_file = content_at_file_current.as_of_git_commit(@from_git_commit)
+            content_at_file = content_at_file_to.as_of_git_commit(@from_git_commit)
             csv_file = content_at_file.corresponding_subtitle_markers_csv_file
             old_stids, new_time_slices = extract_primary_stm_csv_file_input_data(
               content_at_file,
               st_ops_for_file
             )
 
-            new_char_lengths = compute_new_char_lengths(content_at_file_current)
+            new_char_lengths = compute_new_char_lengths(content_at_file_to)
 
             validate_subtitle_sync_input_data(
               content_at_file,
@@ -70,14 +80,6 @@ class Repositext
               'st_sync_required' => false,
               'last_st_sync_commit_for_this_file' => @to_git_commit,
             )
-          end
-
-          # @param st_ops_for_repo [Repositext::Subtitle::OperationsForRepository]
-          # @return [Subtitle::OperationsForFile, Nil]
-          def extract_st_ops_for_primary_file(product_identity_id, st_ops_for_repo)
-            st_ops_for_repo.operations_for_files.detect { |e|
-              product_identity_id == e.product_identity_id
-            }
           end
 
           # Extracts old_stids and new_time_slices for content_at_file.
