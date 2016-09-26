@@ -41,6 +41,9 @@ class Repositext
       when /\-\d{4}.?_\d{4}\./
         # Date code followed by product identity id
         RFile::Content
+      when /_\d\d_-_[a-z]+_\d{4}./
+        # Sequence number followed by title and product identity id
+        RFile::Content
       when /\.txt\z/
         RFile::Text
       else
