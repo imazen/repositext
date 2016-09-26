@@ -537,7 +537,7 @@ class Repositext
                 # content_at_file.
                 if export_sync_commit != primary_repo_sync_commit
                   sync_sts = Repositext::Process::Sync::Subtitles.new('config' => config)
-                  sync_sts.transfer_accumulated_st_ops_to_foreign_file(
+                  sync_sts.sync_foreign_file(
                     export_sync_commit,
                     content_at_file
                   )

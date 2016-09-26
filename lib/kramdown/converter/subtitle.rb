@@ -12,6 +12,8 @@ module Kramdown
       def initialize(root, options)
         super
         @output = '' # collector for output string
+        @current_record_id = nil
+        @include_record_ids = options[:include_record_ids]
       end
 
       # Extracts subtitle from tree
@@ -58,7 +60,11 @@ module Kramdown
         when :hr
           # nothing to do
         when :record_mark
-          # nothing to do
+          if @include_record_ids
+            @current_record_id = el.attr['id'].sub('rid-', '')
+          else
+            # nothing to do
+          end
         when :root
           # nothing to do
         when :strong
@@ -75,6 +81,14 @@ module Kramdown
 
         # walk the tree
         el.children.each { |e| convert(e) }
+
+        # We append record_id to header and paragraph lines.
+        # We need to append it to header for any files that have headers
+        # further down in the file.
+        if [:header, :p].include?(el.type) && @include_record_ids
+          # append record id to end of each line
+          @output << " rid-#{ @current_record_id }"
+        end
 
         if :root == el.type
           # return @output for :root element
@@ -104,6 +118,9 @@ module Kramdown
         r.gsub!(/(?<=\[\|#)([^\n]*)/, '\1|]')
         # move subtitle marks that are inside header wrappers to before the wrapper
         r.gsub!(/(?<=\n)(\[\|[#]+\s+)(@)/, '\2\1')
+        # move record_ids that are inside header wrappers to after the wrapper
+        # Example: `"@[|# The title text rid-62200005|]\n"`
+        r.gsub!(/(\srid-[[:alnum:]]+)(\|\])$/, '\2\1')
         # trim leading and trailing whitespace
         r.strip!
         r << "\n" # add single newline to end of file to comply with repositext file conventions

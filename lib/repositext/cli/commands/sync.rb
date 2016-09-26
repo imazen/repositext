@@ -140,6 +140,7 @@ class Repositext
           options.merge(
             'config' => config,
             'file_list' => file_list,
+            'is_initial_sync' => true,
             'primary_repository' => content_type.repository,
             'stids_inventory_file' => stids_inventory_file,
           )

@@ -14,9 +14,14 @@ class Repositext
           # First we insert any new subtitles (so that their afterStids are still
           # all there as some may get deleted.)
           insert_new_subtitles!(updated_subtitles)
+          # Update record_ids for any subtitles that moved to a different record
+          # NOTE: Do this between insert_new and delete so that all subtitles
+          # are present.
+          update_record_ids!(updated_subtitles)
           # Next we handle deletions of subtitles (after inserts have been made
           # that may refer to deleted afterStids)
           delete_subtitles!(updated_subtitles)
+
           updated_subtitles
         end
 
@@ -55,6 +60,27 @@ class Repositext
           true
         end
 
+        # Updates record_ids for all subtitles. This is required for any
+        # subtitles that moved to a neighboring record.
+        # (in place)
+        # @param subtitles_container [Array<Hash>]
+        def update_record_ids!(subtitles_container)
+          # We iterate over all operations, find the affectedStids' corresponding
+          # subtitle and update the record id.
+          operations.each do |op|
+            op.affectedStids.each { |aff_st|
+              # Find matching st in subtitles_container
+              matching_st = subtitles_container.detect { |st| st[:persistent_id] == aff_st.persistent_id }
+              if matching_st
+                # Update record id
+                matching_st[:record_id] = aff_st.record_id
+              else
+                raise "Could not find matching_st with persistent_id #{ aff_st.persistent_id }"
+              end
+            }
+          end
+        end
+
         # Computes the index in updated_subtitles at which to insert a new subtitle.
         # @param op [Subtitle::Operation]
         # @param updated_subtitles [Array<Hash>]
@@ -62,14 +88,13 @@ class Repositext
         def compute_insert_at_index(op, updated_subtitles)
           insert_at_index = case op.operationType
           when 'insert'
-            # Insert new stid after op#afterStid
+            # No matter if op has one or more affectedStids, we only need the
+            # first index. All affectedStids will be inserted here in the
+            # correct order.
             compute_insert_at_index_given_after_stid(
               op.afterStid,
               updated_subtitles
             )
-            if 1 != op.affectedStids.length
-              raise "Handle this: #{ op.inspect }"
-            end
           when 'split'
             first_st = op.affectedStids.first
             rest_sts = op.affectedStids[1..-1]
@@ -93,7 +118,7 @@ class Repositext
               # This is an unexpected case.
               puts @content_at_file.filename
               p op
-              p op.affectedStids
+              p aff_stid_before_signatures
               raise "Handle unexpected split!"
             end
           else

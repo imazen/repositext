@@ -15,6 +15,15 @@ class Repositext
         RepositorySet.new(repos_parent_path).git_clone_missing_repos(:all_content_repos)
       end
 
+      # Runs `rt fix normalize_trailing_newlines` on all content repos
+      def git_repo_fix_normalize_trailing_newlines(options)
+        repos_parent_path = File.expand_path('..', Dir.pwd)
+        RepositorySet.new(repos_parent_path).fix_normalize_trailing_newlines(
+          :all_content_repos,
+          content_type
+        )
+      end
+
       # Initializes any empty language repos. Copies standard files from primary repo.
       # Run this from inside primary repo.
       # @param [Hash] options
@@ -38,6 +47,15 @@ class Repositext
       def git_repo_pull_all_content(options)
         repos_parent_path = File.expand_path('..', Dir.pwd)
         RepositorySet.new(repos_parent_path).git_pull(:all_content_repos)
+      end
+
+      # Runs `rt report content_sources` on all content repos
+      def git_repo_report_all_content_sources(options)
+        repos_parent_path = File.expand_path('..', Dir.pwd)
+        RepositorySet.new(repos_parent_path).report_content_sources(
+          :all_content_repos,
+          content_type
+        )
       end
 
       # Prints git status for all code repositories.

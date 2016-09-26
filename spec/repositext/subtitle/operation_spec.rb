@@ -9,6 +9,7 @@ class Repositext
           affectedStids: [
             {
               stid: "1234567",
+              record_id: nil,
               before: "@word3 word4 word5",
               after: nil,
             },
@@ -23,6 +24,7 @@ class Repositext
           affectedStids: [
             {
               stid: "1234567",
+              record_id: nil,
               before: nil,
               after: "@word3 word4 word5",
             },
@@ -37,11 +39,13 @@ class Repositext
           affectedStids: [
             {
               stid: "2345678",
+              record_id: nil,
               before: "@word1",
               after: "@word1 word2",
             },
             {
               stid: "5678901",
+              record_id: nil,
               before: "@word2",
               after: nil,
             },
@@ -56,18 +60,20 @@ class Repositext
           affectedStids: [
             {
               stid: "8901234",
+              record_id: nil,
               before: "@word1 word2",
               after: "@word1",
             },
             {
               stid: "3456789",
+              record_id: nil,
               before: "@word3 word4",
               after: "@word2 word3 word4",
             },
           ],
           afterStid: nil,
           operationId: '123',
-          operationType: :moveLeft,
+          operationType: :move_left,
         }
       }
       let(:moveRightDefaultAttrs){
@@ -75,18 +81,20 @@ class Repositext
           affectedStids: [
             {
               stid: "8901234",
+              record_id: nil,
               before: "@word1 word2",
               after: "@word1 word2 word3",
             },
             {
               stid: "3456789",
+              record_id: nil,
               before: "@word3 word4",
               after: "@word4",
             },
           ],
           afterStid: nil,
           operationId: '123',
-          operationType: :moveLeft,
+          operationType: :move_left,
         }
       }
       let(:splitDefaultAttrs){
@@ -94,11 +102,13 @@ class Repositext
           affectedStids: [
             {
               stid: "9012345",
+              record_id: nil,
               before: "@word1 word2 word3 word4",
               after: "@word1 word2",
             },
             {
               stid: "1234567",
+              record_id: nil,
               before: null,
               after: "@word3 word4",
             },

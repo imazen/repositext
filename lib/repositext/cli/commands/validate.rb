@@ -293,6 +293,23 @@ class Repositext
         Repositext::Validation::SubtitleMarkNoSignificantChanges.new(file_specs, validation_options).run
       end
 
+      def validate_subtitle_mark_spacing(options)
+        options['report_file'] ||= config.compute_glob_pattern(:content_dir, :validation_report_file, '')
+        reset_validation_report(options, 'validate_subtitle_mark_spacing')
+        input_base_dir = config.compute_base_dir(options['base-dir'] || :content_dir)
+        input_file_selector = config.compute_file_selector(options['file-selector'] || :all_files)
+        at_file_extension = config.compute_file_extension(options['file-extension'] || :at_extension)
+        file_specs = config.compute_validation_file_specs(
+          primary: [input_base_dir, input_file_selector, at_file_extension], # for reporting only
+          content_at_files: [input_base_dir, input_file_selector, at_file_extension],
+        )
+        validation_options = {
+          'is_primary_repo' => config.setting(:is_primary_repo),
+          'primary_content_type_transform_params' => primary_content_type_transform_params,
+        }.merge(options)
+        Repositext::Validation::SubtitleMarkSpacing.new(file_specs, validation_options).run
+      end
+
       def validate_system_setup
         # check for fonts
         # right version of git

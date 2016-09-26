@@ -103,10 +103,12 @@ class Repositext
       # @return [Integer]
       def subtitles_count_delta
         # We need to get each added/deleted subtitle's identity since each subtitle
-        # may appear in affectedSubtitles of multiple operations.
-        all_ids = operations.inject({ deleted: [], added: []}) { |m,e|
-          m[:added] += e.added_subtitle_ids
-          m[:deleted] += e.deleted_subtitle_ids
+        # may appear in affectedSubtitles of multiple operations within the same
+        # hunk in this file. In order to guarantee file scope uniqueness for
+        # temporary stids, we prefix them with the hunk index (has file scope).
+        all_ids = operations.inject({ deleted: [], added: []}) { |m,op|
+          m[:added] += op.added_subtitle_ids
+          m[:deleted] += op.deleted_subtitle_ids
           m
         }
         all_ids[:added].uniq.length - all_ids[:deleted].uniq.length

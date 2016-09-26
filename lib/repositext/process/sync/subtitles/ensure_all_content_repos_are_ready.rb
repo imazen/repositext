@@ -18,18 +18,13 @@ class Repositext
 
           # Finds any git repos that are not ready and raises an exception.
           def find_invalid_repos
-            # TODO: This only works if code and content repos are in same parent repo.
-            # Will break if we install this as a gem.
-            # To fix it: Start from a @config.base_dir instead of this file's location.
-            repos_parent_path = File.expand_path('../../../../../..', __FILE__)
-            puts
-            puts "Ensuring that all content repos are ready"
-            puts
+            repos_parent_path = File.expand_path('..', @primary_repository.base_dir)
             repos_with_issues = RepositorySet.new(
               repos_parent_path
             ).git_ensure_repos_are_ready(
-              :test_content_repos
-            ) { |repo_path| puts " * #{ repo_path.split('/').last }" }
+              :all_content_repos
+            ) { |repo_path| puts "   - #{ repo_path.split('/').last }" }
+            # TODO: Use #all_synced_foreign_repos instead of the RepositorySet method. Requires a refactoring.
             repos_with_issues += ensure_st_ops_filenames_are_valid
             if repos_with_issues.any?
               puts

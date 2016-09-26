@@ -25,16 +25,19 @@ class Repositext
       "affectedStids": [
         {
           "stid": "4329043",
+          "record_id": null,
           "before": "word1 word2 word3, word4 word5. word6 word7 word8. word9, word10 word11 word12. ",
           "after": "word1 word2 word3, word4 word5. "
         },
         {
           "stid": "1250739",
+          "record_id": null,
           "before": "",
           "after": "word6 word7 word8. "
         },
         {
           "stid": "7453629",
+          "record_id": null,
           "before": "",
           "after": "word9, word10 word11 word12. word13 word14 word15 word16. "
         }
@@ -42,16 +45,18 @@ class Repositext
     },
     {
       "operationId": "0-3",
-      "operationType": "moveRight",
+      "operationType": "move_right",
       "afterStid": null,
       "affectedStids": [
         {
           "stid": "7453629",
+          "record_id": null,
           "before": "",
           "after": "word9, word10 word11 word12. word13 word14 word15 word16. "
         },
         {
           "stid": "6033772",
+          "record_id": null,
           "before": "word13 word14 word15 word16. word17 word18, word19 word20 word21 word22? ",
           "after": "word17 word18, word19 word20 word21 word22? "
         }
@@ -64,11 +69,13 @@ class Repositext
       "affectedStids": [
         {
           "stid": "6303325",
+          "record_id": null,
           "before": "word1 word2 word3 word4 word5 word6, ",
           "after": "word1 word2 word3 word4 word5 word6, word7 word8 word9 word10 word11. "
         },
         {
           "stid": "4248106",
+          "record_id": null,
           "before": "word7 word8 word9 word10 word11. ",
           "after": ""
         }
@@ -88,14 +95,14 @@ class Repositext
 
         let(:existing_subtitles) {
           [
-            { persistent_id: '1234567' },
-            { persistent_id: '4329043' },
-            { persistent_id: '6033772' },
-            { persistent_id: '2345678' },
-            { persistent_id: '6303325' },
-            { persistent_id: '4248106' },
-            { persistent_id: '3456789' },
-            { persistent_id: '4567890' },
+            { persistent_id: '1234567', record_id: nil },
+            { persistent_id: '4329043', record_id: nil },
+            { persistent_id: '6033772', record_id: nil },
+            { persistent_id: '2345678', record_id: nil },
+            { persistent_id: '6303325', record_id: nil },
+            { persistent_id: '4248106', record_id: nil },
+            { persistent_id: '3456789', record_id: nil },
+            { persistent_id: '4567890', record_id: nil },
           ]
         }
 
@@ -103,16 +110,16 @@ class Repositext
           it 'handles default case' do
             default_st_ops_for_file.apply_to_subtitles(existing_subtitles).must_equal(
               [
-                {:persistent_id=>"1234567"},
-                {:persistent_id=>"4329043"},
-                {:persistent_id=>"1250739"}, # inserted
-                {:persistent_id=>"7453629"}, # inserted
-                {:persistent_id=>"6033772"},
-                {:persistent_id=>"2345678"},
-                {:persistent_id=>"6303325"},
+                {:persistent_id=>"1234567", record_id: nil},
+                {:persistent_id=>"4329043", record_id: nil},
+                {:persistent_id=>"1250739", record_id: nil}, # inserted
+                {:persistent_id=>"7453629", record_id: nil}, # inserted
+                {:persistent_id=>"6033772", record_id: nil},
+                {:persistent_id=>"2345678", record_id: nil},
+                {:persistent_id=>"6303325", record_id: nil},
                                              # removed '4248106'
-                {:persistent_id=>"3456789"},
-                {:persistent_id=>"4567890"},
+                {:persistent_id=>"3456789", record_id: nil},
+                {:persistent_id=>"4567890", record_id: nil},
               ]
             )
           end
@@ -123,16 +130,16 @@ class Repositext
             default_st_ops_for_file.insert_new_subtitles!(existing_subtitles)
             existing_subtitles.must_equal(
               [
-                {:persistent_id=>"1234567"},
-                {:persistent_id=>"4329043"},
-                {:persistent_id=>"1250739"}, # inserted
-                {:persistent_id=>"7453629"}, # inserted
-                {:persistent_id=>"6033772"},
-                {:persistent_id=>"2345678"},
-                {:persistent_id=>"6303325"},
-                {:persistent_id=>"4248106"},
-                {:persistent_id=>"3456789"},
-                {:persistent_id=>"4567890"},
+                {:persistent_id=>"1234567", record_id: nil },
+                {:persistent_id=>"4329043", record_id: nil },
+                {:persistent_id=>"1250739" }, # inserted
+                {:persistent_id=>"7453629" }, # inserted
+                {:persistent_id=>"6033772", record_id: nil },
+                {:persistent_id=>"2345678", record_id: nil },
+                {:persistent_id=>"6303325", record_id: nil },
+                {:persistent_id=>"4248106", record_id: nil },
+                {:persistent_id=>"3456789", record_id: nil },
+                {:persistent_id=>"4567890", record_id: nil },
               ]
             )
           end
@@ -143,14 +150,14 @@ class Repositext
             default_st_ops_for_file.delete_subtitles!(existing_subtitles)
             existing_subtitles.must_equal(
               [
-                {:persistent_id=>"1234567"},
-                {:persistent_id=>"4329043"},
-                {:persistent_id=>"6033772"},
-                {:persistent_id=>"2345678"},
-                {:persistent_id=>"6303325"},
+                {:persistent_id=>"1234567", record_id: nil },
+                {:persistent_id=>"4329043", record_id: nil },
+                {:persistent_id=>"6033772", record_id: nil },
+                {:persistent_id=>"2345678", record_id: nil },
+                {:persistent_id=>"6303325", record_id: nil },
                                              # removed '4248106'
-                {:persistent_id=>"3456789"},
-                {:persistent_id=>"4567890"},
+                {:persistent_id=>"3456789", record_id: nil},
+                {:persistent_id=>"4567890", record_id: nil},
               ]
             )
           end

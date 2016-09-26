@@ -2,15 +2,15 @@ class Repositext
   class Subtitle
     class Operation
 
-      # Represents a move right subtitle operation.
+      # Represents a content change operation (not really a subtitle operation!)
       #
-      class MoveRight < Operation
+      class ContentChange < Operation
 
         def inverse_operation
           Subtitle::Operation.new_from_hash(
             affectedStids: inverse_affected_stids,
             operationId: '',
-            operationType: :move_left,
+            operationType: :content_change,
           )
         end
 
@@ -25,7 +25,6 @@ class Repositext
         end
 
       end
-
     end
   end
 end

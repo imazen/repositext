@@ -34,6 +34,7 @@ class Repositext
           @primary_repository = options['primary_repository']
           @stids_inventory_file = options['stids_inventory_file']
           @to_git_commit = options['to-commit']
+          @is_initial_sync = options['is_initial_sync']
 
           # Init caches
 
@@ -50,9 +51,12 @@ class Repositext
 
         def sync
           puts
-          puts "Syncronizing subtitles".color(:blue)
+          puts "Synchronizing subtitles".color(:blue)
           puts
           puts " - Ensure all content repos are ready".color(:blue)
+          # TODO: Should we do this on a per-repo basis? check for primary here, and then
+          # each foreign separately?
+          # ensure_all_content_repos_are_ready
 
           puts " - Compute 'to_git_commit':".color(:blue)
           @to_git_commit = compute_to_git_commit(@to_git_commit, @primary_repository)

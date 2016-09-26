@@ -55,7 +55,7 @@ class Repositext
             [61, 74, :significant], # > +20%
             [120, 95, :significant], # < -20%
             [120, 97, :insignificant], # > -20%
-            [120, 121, :too_long],
+            [120, 121, :insignificant], # < +20%. We ignore the fact that it is too long.
             [120, 120, nil], # no change
           ].each do |old_len, new_len, xpect|
             it "handles #{ [old_len, new_len] }" do

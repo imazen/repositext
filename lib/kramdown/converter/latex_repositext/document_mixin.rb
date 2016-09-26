@@ -142,6 +142,7 @@ module Kramdown
           @id_address_secondary_latex_1 = @options[:id_address_secondary_latex_1]
           @id_address_secondary_latex_2 = @options[:id_address_secondary_latex_2]
           @id_address_secondary_latex_3 = @options[:id_address_secondary_latex_3]
+          @id_extra_language_info = @options[:id_extra_language_info]
           @id_recording = @options[:id_recording]  if @options[:include_id_recording]
           @id_write_to_primary = @options[:id_write_to_primary]
           @id_write_to_secondary = @options[:id_write_to_secondary]
@@ -423,7 +424,7 @@ module Kramdown
           vcp << "\\begin{RtSubTitle}\nVersion Control Info\n\\end{RtSubTitle}\n"
           vcp << "\\relscale{0.66}\n"
           # commits table
-          vcp << "\\begin{tabular}{ | l | l | l | p{7.5cm} |}\n"
+          vcp << "\\begin{tabular}{ | p{0.4in} | p{0.7in} | p{0.5in} | p{1.9in} |}\n"
           vcp << "\\hline\n"
           vcp << "\\textbf{Commit} & \\textbf{Author} & \\textbf{Date} & \\textbf{Commit message} \\\\ \n"
           vcp << "\\hline\n"
