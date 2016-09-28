@@ -77,10 +77,12 @@ class Repositext
             )
           )
 
-          # Syncronize all foreign repos that participate in st sync
-          all_synced_foreign_repos.each do |foreign_repo|
-            puts " - Sync foreign repo '#{ foreign_repo.name }'".color(:blue)
-            sync_foreign_repo(foreign_repo)
+          if !@is_initial_sync
+            # Syncronize all foreign repos that participate in st sync
+            all_synced_foreign_repos.each do |foreign_repo|
+              puts " - Sync foreign repo '#{ foreign_repo.name }'".color(:blue)
+              sync_foreign_repo(foreign_repo)
+            end
           end
 
           puts " - Finalize sync operation".color(:blue)
