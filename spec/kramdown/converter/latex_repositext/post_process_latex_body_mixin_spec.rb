@@ -91,6 +91,10 @@ module Kramdown
             ["word1 word2-#{ Repositext::D_QUOTE_CLOSE }word3 word4", "word1 word2-#{ Repositext::D_QUOTE_CLOSE }word3 word4"],
             # No line breaks _before_ or _after_ em dash when followed by some abbreviations
             ["word1 word2#{ Repositext::EM_DASH }ed. word3 word4", "word1 word2\\nolinebreak[4]#{ Repositext::EM_DASH }\\nolinebreak[4]ed. word3 word4"],
+            # No line breaks before certain numbers
+            ["word 4", "word~4"],
+            ["word 4:5", "word~4:5"],
+            ["word 42:52", "word~42:52"],
           ].each do |test_string, xpect|
             it "handles #{ test_string.inspect }" do
               c = LatexRepositext.send(:new, '_', { ed_and_trn_abbreviations: "ed\\." })
