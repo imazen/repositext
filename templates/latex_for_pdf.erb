@@ -156,7 +156,7 @@
         \setlength{\parskip}{7.882pt}
       <% end %>
       \setlength{\parindent}{0pt}
-      <%= @polyglossia_default_language ? '' : '\titlefont' %>%
+      \primaryfont
       \fontsize{12pt}{14.4pt}\selectfont
       \centering
       <%= @id_address_primary_latex_1 %>
@@ -170,7 +170,7 @@
     <% if @id_address_primary_latex_2 %>
       \setlength{\parskip}{1.635pt}
       \setlength{\parindent}{0pt}
-      <%= @polyglossia_default_language ? '' : '\titlefont' %>%
+      \primaryfont
       \fontsize{10pt}{12pt}\selectfont
       \centering
       <%= @id_address_primary_latex_2 %>
@@ -188,7 +188,7 @@
         \setlength{\parskip}{7.882pt}
       <% end %>
       \setlength{\parindent}{0pt}
-      <%= @polyglossia_default_language ? '' : '\titlefont' %>%
+      \primaryfont
       \fontsize{12pt}{14.4pt}\selectfont
       \centering
       <%= @id_address_secondary_latex_1 %>
@@ -202,7 +202,7 @@
     <% if @id_address_secondary_latex_2 %>
       \setlength{\parskip}{1.635pt}
       \setlength{\parindent}{0pt}
-      <%= @polyglossia_default_language ? '' : '\titlefont' %>%
+      \primaryfont
       \fontsize{10pt}{12pt}\selectfont
       \centering
       <%= @id_address_secondary_latex_2 %>
@@ -216,7 +216,7 @@
     <% if @id_address_secondary_latex_3 %>
       \setlength{\parskip}{1.635pt}
       \setlength{\parindent}{0pt}
-      <%= @polyglossia_default_language ? '' : '\titlefont' %>%
+      \primaryfont
       \fontsize{10pt}{12pt}\selectfont
       \centering
       <%= @id_address_secondary_latex_3 %>
@@ -234,7 +234,7 @@
     <% end %>
     \setlength{\parindent}{0pt}
     \centering
-    <%= @polyglossia_default_language ? '' : '\titlefont' %>%
+    \primaryfont
     \fontsize{5.5pt}{10.5pt}\selectfont
     ©<%= @id_copyright_year %> <%= @company_short_name %>, ALL RIGHTS RESERVED
     \par
@@ -246,7 +246,7 @@
     \setlength{\parskip}{6.786pt}
     \setlength{\parindent}{0pt}
     \centering
-    <%= @polyglossia_default_language ? '' : '\titlefont' %>%
+    \primaryfont
     \fontsize{8pt}{10.5pt}\selectfont
     <%= @id_extra_language_info %>
     \par
@@ -258,7 +258,7 @@
     \setlength{\parskip}{6.786pt}
     \setlength{\parindent}{0pt}
     \centering
-    <%= @polyglossia_default_language ? '' : '\titlefont' %>%
+    \primaryfont
     \fontsize{5.5pt}{10.5pt}\selectfont
     <%= @language_name.upcase %>
     \par
@@ -274,7 +274,7 @@
     <% end %>
     \setlength{\parindent}{0pt}
     \centering
-    <%= @polyglossia_default_language ? '' : '\titlefont' %>%
+    \primaryfont
     \fontsize{7pt}{10pt}\selectfont
     <% if @is_primary_repo %>
       <%= @company_phone_number %> . <%= @company_web_address %>
