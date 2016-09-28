@@ -71,6 +71,17 @@ require 'repositext/services/extract_text_from_pdf'
 
 # Dependency boundary
 
+# Establish namespace and class inheritance for LatexRepositext before we require
+# included modules (e.g., PostProcessLatexBodyMixin). Otherwise we get a
+# subclass mismatch error because LatexRepositext is initialized as
+# standalone class (not inheriting from Latex)
+module Kramdown
+  module Converter
+    class LatexRepositext < Latex
+    end
+  end
+end
+
 require 'kramdown/converter/docx'
 require 'kramdown/converter/docx_object'
 require 'kramdown/converter/graphviz'

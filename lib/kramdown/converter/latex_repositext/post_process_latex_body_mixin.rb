@@ -35,24 +35,28 @@ module Kramdown
             '（', # chinese parens
             '一', # chinese dash
             '《', # chinese left double angle bracket
-            '……', # chinese double ellipsis
           ].join
           lb.gsub!(
             /
               #{ gap_mark_complete_regex } # find tmp gap mark number and text
               ( # capturing group for first group of characters to be colored red
-                #{ Repositext::ELIPSIS }? # optional ellipsis
+                (?: # non capturing group
+                  #{ Repositext::ELIPSIS } # elipsis
+                  (?!#{ Repositext::ELIPSIS }) # not followed by another elipsis so we exclude chinese double elipsis
+                )? # optional
               )
               ( # capturing group for characters that are not to be colored red
                 (?: # find one of the following, use non-capturing group for grouping only
                   [#{ Regexp.escape(chars_to_skip) }]+ # special chars or delimiters
+                  | # or
+                  …… # chinese double elipsis
                   | # or
                   \\[[:alnum:]]+\{ # latex command with opening {
                   | # or
                   \s+ # eagle followed by whitespace
                 )* # any of these zero or more times to match nested latex commands
               )
-              ( #  This will be colored red
+              ( # capturing group for second group of characters to be colored red
                 #{ Repositext::ELIPSIS }? # optional elipsis
                 [[:alpha:][:digit:]’\-\?,]+ # words and some punctuation
               )
