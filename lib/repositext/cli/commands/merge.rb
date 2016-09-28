@@ -40,6 +40,7 @@ class Repositext
 
         Dir.glob(accepted_corrections_glob_pattern).each do |accepted_corrections_file_name|
           if accepted_corrections_file_name !~ /\.accepted_corrections\.txt\z/
+            $stderr.puts " - skipping #{ accepted_corrections_file_name }"
             next
           end
           total_count += 1

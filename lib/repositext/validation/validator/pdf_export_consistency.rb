@@ -41,7 +41,8 @@ class Repositext
 
           pdf_raw_text = extract_pdf_raw_text(
             pdf_file_name,
-            @options['extract_text_from_pdf_service']
+            @options['extract_text_from_pdf_service'],
+            @options['pdfbox_text_extraction_options']
           )
           content_at_plain_text = corresponding_content_at_file.plain_text_contents(
             convert_smcaps_to_upper_case: true
@@ -57,8 +58,12 @@ class Repositext
         # Extracts raw text from pdf_file_name
         # @param pdf_file_name [String]
         # @param extract_text_from_pdf_service [Services::ExtractTextFromPdf]
-        def extract_pdf_raw_text(pdf_file_name, extract_text_from_pdf_service)
-          extract_text_from_pdf_service.extract(pdf_file_name)
+        # @param pdfbox_text_extraction_options [Hash], e.g., `{ spacing_tolerance: 0.3 }`
+        def extract_pdf_raw_text(pdf_file_name, extract_text_from_pdf_service, pdfbox_text_extraction_options)
+          extract_text_from_pdf_service.extract(
+            pdf_file_name,
+            pdfbox_text_extraction_options
+          )
         end
 
         # Validates that contents of pdf_raw_text and content_at are consistent.

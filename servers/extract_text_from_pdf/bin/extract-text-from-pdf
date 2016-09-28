@@ -49,8 +49,17 @@ loop {
       next
     end
 
-    request = connection.read
-    command, path_to_pdf = request.split
+    request = JSON.parse(connection.read, symbolize_names: true)
+    # {
+    #   command: "EXTRACT_TEXT",
+    #   path_to_pdf: "/path/to/pdf",
+    #   pdfbox_text_extraction_options: {
+    #     spacing_tolerance: 0.3, # Set the space width-based tolerance value that is used to estimate where spaces in text should be added.
+    #   },
+    # }
+    command = request[:command]
+    path_to_pdf = request[:path_to_pdf]
+    pdfbox_text_extraction_options = request[:pdfbox_text_extraction_options]
 
     # Process the request
     case command
@@ -102,9 +111,7 @@ loop {
       connection.write(
         PdfboxTextExtraction.run(
           path_to_pdf,
-          {
-            spacing_tolerance: 0.3, # Set the space width-based tolerance value that is used to estimate where spaces in text should be added.
-          }.merge(crop_area_attrs)
+          crop_area_attrs.merge(pdfbox_text_extraction_options)
         )
       )
     when 'PING'

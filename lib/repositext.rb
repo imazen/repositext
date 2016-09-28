@@ -71,6 +71,17 @@ require 'repositext/services/extract_text_from_pdf'
 
 # Dependency boundary
 
+# Establish namespace and class inheritance for LatexRepositext before we require
+# included modules (e.g., PostProcessLatexBodyMixin). Otherwise we get a
+# subclass mismatch error because LatexRepositext is initialized as
+# standalone class (not inheriting from Latex)
+module Kramdown
+  module Converter
+    class LatexRepositext < Latex
+    end
+  end
+end
+
 require 'kramdown/converter/docx'
 require 'kramdown/converter/docx_object'
 require 'kramdown/converter/graphviz'
@@ -79,10 +90,7 @@ require 'kramdown/converter/html_repositext'
 require 'kramdown/converter/icml'
 require 'kramdown/converter/idml_story'
 require 'kramdown/converter/kramdown_repositext'
-require 'kramdown/converter/latex_repositext'
-require 'kramdown/converter/latex_repositext/document_mixin'
-require 'kramdown/converter/latex_repositext/render_record_marks_mixin'
-require 'kramdown/converter/latex_repositext/render_subtitle_and_gap_marks_mixin'
+require 'kramdown/converter/latex_repositext/post_process_latex_body_mixin'
 require 'kramdown/converter/paragraph_alignment_objects'
 require 'kramdown/converter/paragraph_alignment_objects/block_element'
 require 'kramdown/converter/plain_text'
@@ -158,13 +166,10 @@ require 'repositext/validation/validator'
 
 # Dependency boundary
 
-require 'kramdown/converter/latex_repositext_book'
-require 'kramdown/converter/latex_repositext_comprehensive'
-require 'kramdown/converter/latex_repositext_plain'
-require 'kramdown/converter/latex_repositext_recording'
-require 'kramdown/converter/latex_repositext_recording_merged'
-require 'kramdown/converter/latex_repositext_translator'
-require 'kramdown/converter/latex_repositext_web'
+require 'kramdown/converter/latex_repositext'
+require 'kramdown/converter/latex_repositext/document_mixin'
+require 'kramdown/converter/latex_repositext/render_record_marks_mixin'
+require 'kramdown/converter/latex_repositext/render_subtitle_and_gap_marks_mixin'
 require 'kramdown/converter/subtitle_tagging'
 require 'kramdown/mixins/ke_context_mixin'
 require 'repositext/cli/long_descriptions_for_commands'
@@ -287,6 +292,13 @@ require 'repositext/validation/validator/utf8_encoding'
 
 # Dependency boundary
 
+require 'kramdown/converter/latex_repositext_book'
+require 'kramdown/converter/latex_repositext_comprehensive'
+require 'kramdown/converter/latex_repositext_plain'
+require 'kramdown/converter/latex_repositext_recording'
+require 'kramdown/converter/latex_repositext_recording_merged'
+require 'kramdown/converter/latex_repositext_translator'
+require 'kramdown/converter/latex_repositext_web'
 require 'kramdown/parser/docx/ke_context'
 require 'kramdown/parser/folio/ke_context'
 require 'repositext/cli/commands/compare'

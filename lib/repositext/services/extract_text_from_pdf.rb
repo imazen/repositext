@@ -18,10 +18,20 @@ class Repositext
 
       # Extracts text contents of pdf_file_name.
       # @param pdf_file_name [String] absolute path to the PDF to extract text from.
-      def extract(pdf_file_name)
+      # @param pdfbox_text_extraction_options [Hash] options to be passed to
+      #        Pdfbox when extracting text from PDF.
+      #            {
+      #              spacing_tolerance: 0.3,
+      #            },
+      def extract(pdf_file_name, pdfbox_text_extraction_options)
         # Connect to jruby extract_text_from_pdf server
         Socket.tcp('localhost', @port) do |connection|
-          connection.write("EXTRACT_TEXT #{ pdf_file_name }")
+          command_with_args = {
+            command: "EXTRACT_TEXT",
+            path_to_pdf: pdf_file_name,
+            pdfbox_text_extraction_options: pdfbox_text_extraction_options
+          }
+          connection.write(JSON.dump(command_with_args))
           connection.close_write # send EOF
           r = connection.read
           r.force_encoding(Encoding::UTF_8)
