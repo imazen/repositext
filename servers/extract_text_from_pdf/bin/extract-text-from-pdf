@@ -25,6 +25,7 @@ Call like so:
 =end
 
 require 'java'
+require 'json'
 require 'socket'
 require 'pdfbox_text_extraction'
 
@@ -49,21 +50,26 @@ loop {
       next
     end
 
-    request = JSON.parse(connection.read, symbolize_names: true)
-    # {
-    #   command: "EXTRACT_TEXT",
-    #   path_to_pdf: "/path/to/pdf",
-    #   pdfbox_text_extraction_options: {
-    #     spacing_tolerance: 0.3, # Set the space width-based tolerance value that is used to estimate where spaces in text should be added.
-    #   },
-    # }
-    command = request[:command]
-    path_to_pdf = request[:path_to_pdf]
-    pdfbox_text_extraction_options = request[:pdfbox_text_extraction_options]
+    request = connection.read
 
     # Process the request
-    case command
-    when 'EXTRACT_TEXT'
+    case
+    when 'PING' == request
+      connection.write('PONG')
+    when 'TERMINATE' == request
+      exit
+    when request.index('"command":"EXTRACT_TEXT"')
+      request_attrs = JSON.parse(request, symbolize_names: true)
+      # {
+      #   command: "EXTRACT_TEXT",
+      #   path_to_pdf: "/path/to/pdf",
+      #   pdfbox_text_extraction_options: {
+      #     spacing_tolerance: 0.3, # Set the space width-based tolerance value that is used to estimate where spaces in text should be added.
+      #   },
+      # }
+      path_to_pdf = request_attrs[:path_to_pdf]
+      pdfbox_text_extraction_options = request_attrs[:pdfbox_text_extraction_options]
+
       # set crop area depending on pdf variant
       pdf_file_basename = path_to_pdf.split('/').last
       crop_area_attrs = case pdf_file_basename
@@ -108,16 +114,13 @@ loop {
           crop_height: 9.4, # crop area height
         }
       end
-      connection.write(
-        PdfboxTextExtraction.run(
-          path_to_pdf,
-          crop_area_attrs.merge(pdfbox_text_extraction_options)
-        )
+
+      r = PdfboxTextExtraction.run(
+        path_to_pdf,
+        crop_area_attrs.merge(pdfbox_text_extraction_options)
       )
-    when 'PING'
-      connection.write('PONG')
-    when 'TERMINATE'
-      exit
+
+      connection.write(r)
     else
       connection.write("Unhandled request: #{ request.inspect }")
     end
