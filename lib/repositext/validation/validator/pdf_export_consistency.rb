@@ -203,11 +203,11 @@ class Repositext
         def sanitize_pdf_raw_text(pdf_raw_text)
           sanitized_text = pdf_raw_text.dup
 
-          # Trim leading and trailing whitespace
-          sanitized_text.strip!
-
           # Remove revision information at the end of the doc
           sanitized_text.gsub!(/\sRevision\sInformation\sDate.+\z/m, '')
+
+          # Remove copyright and address information at the end of the doc
+          sanitized_text.gsub!(/^©[0-9\?]{4}\sVGR.+\z/m, '')
 
           # Clean up an edge case where a space is inserted before a question
           # mark, and a newline is inserted after the question mark.
@@ -230,6 +230,9 @@ class Repositext
 
           # Remove record_marks. Example: `Record id: rid-60281179\n`
           sanitized_text.gsub!(/^Record id: rid-[^\n]+\n/, '')
+
+          # Trim leading and trailing whitespace
+          sanitized_text.strip!
 
           # Append newline and return
           sanitized_text + "\n"
