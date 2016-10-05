@@ -9,47 +9,73 @@ class Repositext
 
         include SharedSpecBehaviors
 
+        let(:default_file_level_settings){ { 'pdf_export_id_recording' => '<<this is the id_recording>>' } }
+
         describe '#validate_content_consistency ignores' do
           [
             [
-              %(horizontal rule differences\n* * * * * * *\nword word\n),
-              %(horizontal rule differences\nword word\n),
-            ],
-            [
-              %(change of space to newline word1 word2\n),
-              %(change of space to newline\nword1 word2\n),
-            ],
-            [
-              %(insertion of newline after elipsis…word1 word2\n),
-              %(insertion of newline after elipsis…\nword1 word2\n),
-            ],
-            [
-              %(insertion of newline after emdash—word1 word2\n),
-              %(insertion of newline after emdash—\nword1 word2\n),
-            ],
-            [
-              %(insertion of newline after hyphen-word1 word2\n),
-              %(insertion of newline after hyphen-\nword1 word2\n),
-            ],
-            [
-              %(insertion of space before exclamation mark! word1 word2\n),
-              %(insertion of space before exclamation mark ! word1 word2\n),
-            ],
-            [
-              %(insertion of space before question mark? word1 word2\n),
-              %(insertion of space before question mark ? word1 word2\n),
-            ],
-            [
-              %(insertion of space before closing single quote’ word1 word2\n),
-              %(insertion of space before closing single quote ’ word1 word2\n),
-            ],
-            [
-              %(insertion of space before closing double quote” word1 word2\n),
-              %(insertion of space before closing double quote ” word1 word2\n),
+              %(Missing horizontal rule\n* * * * * * *\nword word\n),
+              %(Missing horizontal rule\nword word\n),
             ],
             [
               %(Missing space character\nWithin 80 characters of preceding eagle at beginning of line\n),
               %(Missing space character\nWithin 80 characters of precedingeagle at beginning of line\n),
+            ],
+            [
+              %(MISSING SPACE IN TITLE WITH EXPLICIT LINE BREAK \nWORD WORD WORD WORD),
+              %(MISSING SPACE IN TITLE WITH EXPLICIT LINE BREAK\nWORD WORD WORD WORD),
+            ],
+            [
+              %(Change of space to newline word1 word2\n),
+              %(Change of space to newline\nword1 word2\n),
+            ],
+            [
+              %(Extra newline after elipsis…word1 word2\n),
+              %(Extra newline after elipsis…\nword1 word2\n),
+            ],
+            [
+              %(Extra newline after emdash—word1 word2\n),
+              %(Extra newline after emdash—\nword1 word2\n),
+            ],
+            [
+              %(Extra newline after hyphen-word1 word2\n),
+              %(Extra newline after hyphen-\nword1 word2\n),
+            ],
+            [
+              %(Extra newline before elipsis…word1 word2\n),
+              %(Extra newline before elipsis\n…word1 word2\n),
+            ],
+            [
+              %(Extra newline before emdash—word1 word2\n),
+              %(Extra newline before emdash\n—word1 word2\n),
+            ],
+            [
+              %(Extra newline before hyphen-word1 word2\n),
+              %(Extra newline before hyphen\n-word1 word2\n),
+            ],
+            [
+              %(Extra newline after eagle \nword1 word2\n),
+              %(Extra newline after eagle \n\nword1 word2\n),
+            ],
+            [
+              %(Extra id_recording\nword1 word2\n),
+              %(Extra id_recording\n<<this is the id_recording>>\nword1 word2\n),
+            ],
+            [
+              %(Extra space before exclamation mark! word1 word2\n),
+              %(Extra space before exclamation mark ! word1 word2\n),
+            ],
+            [
+              %(Extra space before question mark? word1 word2\n),
+              %(Extra space before question mark ? word1 word2\n),
+            ],
+            [
+              %(Extra space before closing single quote’ word1 word2\n),
+              %(Extra space before closing single quote ’ word1 word2\n),
+            ],
+            [
+              %(Extra space before closing double quote” word1 word2\n),
+              %(Extra space before closing double quote ” word1 word2\n),
             ],
             [
               %(NO-BREAK SPACE\u00A0word1 word2\n),
@@ -71,7 +97,8 @@ class Repositext
                 pdf_raw_text,
                 content_at_plain_text,
                 errors,
-                warnings
+                warnings,
+                default_file_level_settings
               )
               errors.count.must_equal(0)
             end
@@ -112,7 +139,8 @@ class Repositext
                 pdf_raw_text,
                 content_at_plain_text,
                 errors,
-                warnings
+                warnings,
+                default_file_level_settings
               )
               errors.count.must_equal(1)
             end
@@ -127,6 +155,10 @@ class Repositext
             [
               %(handles edge case where space is inserted before questionmark ?\nand newline after),
               %(handles edge case where space is inserted before questionmark?\nand newline after\n),
+            ],
+            [
+              %(handles edge case where space is inserted before exclamation mark !\nand newline after),
+              %(handles edge case where space is inserted before exclamation mark!\nand newline after\n),
             ],
             [%(removes {123}gap_mark indexes), %(removes gap_mark indexes\n)],
             [%(removes record id lines\nRecord id: rid-60281179\nword word), %(removes record id lines\nword word\n)],

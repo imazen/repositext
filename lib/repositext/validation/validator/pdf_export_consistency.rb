@@ -47,11 +47,21 @@ class Repositext
           content_at_plain_text = corresponding_content_at_file.plain_text_contents(
             convert_smcaps_to_upper_case: true
           )
+          # We have to reload file settings to get 'id_recording' for each file.
+          # NOTE: Can't use @options['id_recording'] since that is not updated
+          # per file for validations, just for the export in Repositext::Cli::Export#export_pdf_base
+          file_level_settings = corresponding_content_at_file.read_file_level_settings
 
           errors = []
           warnings = []
 
-          validate_content_consistency(pdf_raw_text, content_at_plain_text, errors, warnings)
+          validate_content_consistency(
+            pdf_raw_text,
+            content_at_plain_text,
+            errors,
+            warnings,
+            file_level_settings
+          )
           Outcome.new(errors.empty?, nil, [], errors, warnings)
         end
 
@@ -70,9 +80,10 @@ class Repositext
         # Mutates `errors` and `warnings` in place.
         # @param pdf_raw_text [String]
         # @param content_at_plain_text [String]
-        # @param [Array] errors collector for errors
-        # @param [Array] warnings collector for warnings
-        def validate_content_consistency(pdf_raw_text, content_at_plain_text, errors, warnings)
+        # @param errors [Array] collector for errors
+        # @param warnings [Array] collector for warnings
+        # @param file_level_settings [Hash], stringified keys
+        def validate_content_consistency(pdf_raw_text, content_at_plain_text, errors, warnings, file_level_settings)
           pdf_plain_text = sanitize_pdf_raw_text(pdf_raw_text)
           c_at_pt = sanitize_content_at_plain_text(content_at_plain_text)
 
@@ -127,6 +138,14 @@ class Repositext
             current_diff_group = nil
           end
 
+          # Compute id_recording and prefix once for all diffs
+          id_recording = file_level_settings['pdf_export_id_recording'].to_s.strip
+          id_recording_prefix = if '' != id_recording
+            id_recording[0,20] # get first twenty chars for quick detection in diffs
+          else
+            nil
+          end
+
           # Process each diff_group
           diff_groups.each { |diff_group|
 
@@ -146,6 +165,10 @@ class Repositext
               # doesn't insert a space between the first and second line.
               # It's safe to ignore.
               next  if((' ' == txt_diff) && (context[0,excerpt_window].index("\n")))
+
+              # Titles with explicit linebreaks are missing a space, ignore.
+              # We match on all caps letters: "WORD WORD \nWORD WORD"
+              next  if((' ' == txt_diff) && (context =~ /[A-Z\s]{10,} \n[A-Z\s]{5,}/))
 
               # Prepare error reporting data
               description = "Missing "
@@ -171,6 +194,22 @@ class Repositext
               # Ignore any mismatches caused by PDF line wrapping.
               # Newline is inserted after elipsis, emdash, or hyphen.
               next  if("\n" == txt_diff && context =~ /[…—-]\n/)
+              # Newline is inserted before elipsis, emdash, or hyphen.
+              next  if("\n" == txt_diff && context =~ /\n[…—-]/)
+              # Newline is inserted after eagle "\n\n"
+              next  if("\n" == txt_diff && context.index("\n\n"))
+
+              # Ignore id_recording
+              if(
+                id_recording_prefix &&
+                txt_diff.index(id_recording_prefix) &&
+                # Do more expensive check, replace newlines (from PDF text
+                # extraction) with spaces
+                (sanitized_txt_diff = txt_diff.gsub("\n", ' ').strip) == id_recording
+              )
+                # Remove id_recording
+                next
+              end
 
               # Ignore extra spaces inserted before punctuation [!?’”]
               # We look at the 1st and 2nd char in trailing context, or the
@@ -210,19 +249,19 @@ class Repositext
           sanitized_text.gsub!(/^©[0-9\?]{4}\sVGR.+\z/m, '')
 
           # Clean up an edge case where a space is inserted before a question
-          # mark, and a newline is inserted after the question mark.
+          # or exclamation mark, and a newline is inserted after the question/exclamation mark.
           # This occurs a couple times in all files and is best handled here
           # since it's spread over three diffs: -1 '?', 0 ' ', 1 '?\n'
           # We convert "word ?\nWord" => "word?\nWord"
           # We don't touch instances like "word…?… ?". These are legitimate.
           sanitized_text.gsub!(
             /
-              (?<!…) # not preceded by ellipsis
-              \s # a single space
-              \? # a question mark
-              \n # a newline
+              (?<!…)  # not preceded by ellipsis
+              \s      # a single space
+              (\?|\!) # a question or exclamation mark
+              \n      # a newline
             /x,
-            "?\n"
+            '\1' + "\n"
           )
 
           # Remove gap_mark indexes on recording pdfs. Example: `{123}`
