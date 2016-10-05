@@ -54,6 +54,10 @@ class Repositext
         get_all_attributes['data'] || {}
       end
 
+      def read_settings
+        get_all_attributes['settings'] || {}
+      end
+
       # Updates key_val_pairs under the 'data' key in self.
       # @param key_val_pairs [Hash] with string keys
       def update_data!(key_val_pairs)
