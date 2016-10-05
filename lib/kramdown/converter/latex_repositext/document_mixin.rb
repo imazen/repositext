@@ -213,7 +213,7 @@ module Kramdown
             # bold, italic, small caps and large font
             # NOTE: All titles are wrapped in <em> and .smcaps, so that will
             # take care of the italics and smallcaps.
-            truncated = compute_truncated_title(document_title_plain_text, document_title_latex, 63, 3)
+            truncated = compute_truncated_title(document_title_plain_text, document_title_latex, 58, 3)
             # re-apply superscript to any trailing digits
             if truncated =~ /\d+\}\z/
               truncated.gsub!(/\d+\}\z/, "\\textsuperscript{" + '\0' + "}")
