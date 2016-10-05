@@ -1,17 +1,13 @@
-PATH
-  remote: ../../../../pdfbox_text_extraction
-  specs:
-    pdfbox_text_extraction (1.2.0)
-
 GEM
   remote: https://rubygems.org/
   specs:
+    pdfbox_text_extraction (1.2.0)
 
 PLATFORMS
   java
 
 DEPENDENCIES
-  pdfbox_text_extraction (~> 1.2.0)!
+  pdfbox_text_extraction (~> 1.2.0)
 
 BUNDLED WITH
    1.11.2
