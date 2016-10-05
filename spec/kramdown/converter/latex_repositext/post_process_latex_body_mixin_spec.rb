@@ -38,6 +38,7 @@ module Kramdown
             ["\n\n<<<gap-mark>>>\\textit{\\textbf{“word", "\n\n\\textit{\\textbf{“\\RtGapMarkText{word}"], # replace gap-marks before nested latex commands and skip chars
             ["<<<gap-mark>>>(\\emph{others}", "(\\emph{\\RtGapMarkText{others}}"], # replace gap-marks before nested latex commands and skip chars
             ["<<<gap-mark>>>#{ Repositext::EM_DASH }word1 word2", "#{ Repositext::EM_DASH }\\RtGapMarkText{word1} word2"],
+            ["<<<gap-mark>>>\\emph{…}word1 \\emph{word2}", "\\emph{\\RtGapMarkText{…}}word1 \\emph{word2}"],
           ].each do |test_string, xpect|
             it "handles #{ test_string.inspect }" do
               c = LatexRepositext.send(:new, '_', {})

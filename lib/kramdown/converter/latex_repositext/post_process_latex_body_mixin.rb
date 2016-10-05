@@ -58,7 +58,7 @@ module Kramdown
               )
               ( # capturing group for second group of characters to be colored red
                 #{ Repositext::ELIPSIS }? # optional elipsis
-                [[:alpha:][:digit:]’\-\?,]+ # words and some punctuation
+                [[:alpha:][:digit:]’\-\?,]* # words and some punctuation
               )
             /x,
             # we move the tmp_gap_mark_number to the very beginning so that if we
