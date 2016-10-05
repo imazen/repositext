@@ -104,7 +104,7 @@ module Kramdown
             lb.gsub!(gap_mark_number_regex, "\\RtGapMarkNumber")
           end
           # Make sure no tmp_gap_marks are left
-          if(ltgm = lb.match(/.{0,10}#{ Regexp.escape(tmp_gap_mark_text) }.{0,10}/))
+          if(ltgm = lb.match(/.{0,20}#{ Regexp.escape(tmp_gap_mark_text) }.{0,20}/))
             raise(LeftoverTempGapMarkError.new("Leftover temp gap mark: #{ ltgm.to_s.inspect }"))
           end
           if !['', nil].include?(tmp_gap_mark_number)
