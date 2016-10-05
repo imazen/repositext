@@ -11,3 +11,7 @@ This folder contains its own Ruby environment:
 
 See bin/extract-text-from-pdf for details.
 
+## How to update the Gems for this server process
+
+    cd repositext/servers/extract_text_from_pdf
+    bundle install
