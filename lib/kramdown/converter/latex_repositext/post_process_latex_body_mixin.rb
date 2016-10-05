@@ -208,6 +208,9 @@ module Kramdown
           # We don't allow linebreaks before certain numbers
           lb.gsub!(/(?<=[a-z])\s(?=\d)/, "~")
 
+          # We don't allow linebreaks between period and numbers, e.g., "word .22"
+          lb.gsub!(/( \.)(\d)/, '\1' + "\\nolinebreak[4]" + '\2')
+
           # Convert any zero-width spaces to latex equivelant
           lb.gsub!(/\u200B/, "\\hspace{0pt}")
         end

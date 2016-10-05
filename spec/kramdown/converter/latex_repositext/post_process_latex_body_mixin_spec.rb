@@ -96,6 +96,8 @@ module Kramdown
             ["word 4", "word~4"],
             ["word 4:5", "word~4:5"],
             ["word 42:52", "word~42:52"],
+            # No linebreaks between period and digits
+            ["word .22 word", "word .\\nolinebreak[4]22 word"],
           ].each do |test_string, xpect|
             it "handles #{ test_string.inspect }" do
               c = LatexRepositext.send(:new, '_', { ed_and_trn_abbreviations: "ed\\." })
