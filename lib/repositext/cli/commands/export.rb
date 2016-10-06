@@ -75,11 +75,7 @@ class Repositext
           'pdf_book',
           options.merge(
             'include-version-control-info' => false,
-            'page_settings_key' => compute_pdf_export_page_settings_key(
-              config.setting(:is_primary_repo),
-              config.setting(:pdf_export_binding),
-              'book'
-            ),
+            'pdf_export_size' => 'book',
           )
         )
       end
@@ -89,11 +85,7 @@ class Repositext
         export_pdf_base(
           'pdf_comprehensive',
           options.merge(
-            'page_settings_key' => compute_pdf_export_page_settings_key(
-              config.setting(:is_primary_repo),
-              config.setting(:pdf_export_binding),
-              'enlarged'
-            ),
+            'pdf_export_size' => 'enlarged',
           )
         )
       end
@@ -103,11 +95,7 @@ class Repositext
         export_pdf_base(
           'pdf_plain',
           options.merge(
-            'page_settings_key' => compute_pdf_export_page_settings_key(
-              config.setting(:is_primary_repo),
-              config.setting(:pdf_export_binding),
-              'enlarged'
-            ),
+            'pdf_export_size' => 'enlarged',
           )
         )
       end
@@ -122,11 +110,7 @@ class Repositext
             include_id_recording: true,
             rename_file_extension: '.recording.pdf',
             skip_file_proc: skip_file_proc,
-            'page_settings_key' => compute_pdf_export_page_settings_key(
-              config.setting(:is_primary_repo),
-              config.setting(:pdf_export_binding),
-              'enlarged'
-            ),
+            'pdf_export_size' => 'enlarged',
           )
         )
       end
@@ -164,11 +148,7 @@ class Repositext
             skip_file_proc: skip_file_proc,
             pre_process_content_proc: pre_process_content_proc,
             post_process_latex_proc: post_process_latex_proc,
-            'page_settings_key' => compute_pdf_export_page_settings_key(
-              config.setting(:is_primary_repo),
-              config.setting(:pdf_export_binding),
-              'enlarged'
-            ),
+            'pdf_export_size' => 'enlarged',
           )
         )
       end
@@ -178,11 +158,7 @@ class Repositext
           'pdf_translator',
           options.merge(
             include_id_recording: true,
-            'page_settings_key' => compute_pdf_export_page_settings_key(
-              config.setting(:is_primary_repo),
-              config.setting(:pdf_export_binding),
-              'enlarged'
-            ),
+            'pdf_export_size' => 'enlarged',
           )
         )
       end
@@ -192,11 +168,7 @@ class Repositext
           'pdf_web',
           options.merge(
             'include-version-control-info' => false,
-            'page_settings_key' => compute_pdf_export_page_settings_key(
-              config.setting(:is_primary_repo),
-              config.setting(:pdf_export_binding),
-              'enlarged'
-            ),
+            'pdf_export_size' => 'enlarged',
           )
         )
       end
@@ -259,6 +231,11 @@ class Repositext
           options[:hrules_present] = config.setting(:pdf_export_hrules_present)
           options[:id_copyright_year] = config.setting(:erp_id_copyright_year,false)
           options[:id_recording] = config.setting(:pdf_export_id_recording,false)
+          options[:page_settings_key] = compute_pdf_export_page_settings_key(
+            config.setting(:is_primary_repo),
+            config.setting(:pdf_export_binding),
+            options['pdf_export_size']
+          )
           options[:title_font_name] = config.setting(:pdf_export_title_font_name)
           options[:title_vspace] = config.setting(:pdf_export_title_vspace)
           if options[:pre_process_content_proc]
