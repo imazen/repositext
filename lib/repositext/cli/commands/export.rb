@@ -64,6 +64,22 @@ class Repositext
         end
       end
 
+      def export_pdf_agapao(options)
+        export_pdf_base(
+          'pdf_translator',
+          options.merge(
+            primary_titles_override:{
+              "7777" => "AGAPAO TOUR VIDEO",
+            },
+            'page_settings_key' => compute_pdf_export_page_settings_key(
+              config.setting(:is_primary_repo),
+              config.setting(:pdf_export_binding),
+              'enlarged'
+            ),
+          )
+        )
+      end
+
       def export_pdf_all(options)
         export_pdf_variants.each do |variant|
           self.send("export_#{ variant }", options)
@@ -233,7 +249,7 @@ class Repositext
           primary_font_name: primary_config.setting(:pdf_export_font_name),
           version_control_page: options['include-version-control-info'],
         })
-        primary_titles = compute_primary_titles # hash with date codes as keys and primary titles as values
+        primary_titles = options[:primary_titles_override] || compute_primary_titles # hash with product indentity ids as keys and primary titles as values
         Repositext::Cli::Utils.export_files(
           input_base_dir,
           input_file_selector,
