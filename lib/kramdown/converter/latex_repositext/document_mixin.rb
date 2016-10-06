@@ -52,12 +52,12 @@ module Kramdown
           # non-existing keys.
           {
             english_bound: {
-              paperwidth: '5.375truein',
-              paperheight: '8.375truein',
-              inner: '0.6875truein',
-              outer: '0.5208truein',
-              top: '0.7733truein',
-              bottom: '0.471truein',
+              paperwidth: '8.5truein',
+              paperheight: '11truein',
+              inner: '1.304655truein',
+              outer: '1.345345truein',
+              top: '1.06154truein',
+              bottom: '0.66855truein',
               headsep: '0.1106in', # We want this dimension to scale with geometry package \mag.
               footskip: '0.351in', # We want this dimension to scale with geometry package \mag.
             },
@@ -72,12 +72,12 @@ module Kramdown
               footskip: '0.351in', # We want this dimension to scale with geometry package \mag.
             },
             foreign_bound: {
-              paperwidth: '5.375truein',
-              paperheight: '8.375truein',
-              inner: '0.6875truein',
-              outer: '0.5208truein',
-              top: '0.76truein',
-              bottom: '0.5truein',
+              paperwidth: '8.5truein',
+              paperheight: '11truein',
+              inner: '1.528125truein',
+              outer: '1.555165truein',
+              top: '1.04425truein',
+              bottom: '0.70715truein',
               headsep: '0.172in', # We want this dimension to scale with geometry package \mag.
             },
             foreign_stitched: {
