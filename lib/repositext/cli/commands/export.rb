@@ -529,11 +529,14 @@ class Repositext
         if !%w[book enlarged].include?(size)
           raise ArgumentError.new("Invalid size: #{ size.inspect }")
         end
+        # Always use stitched for foreign enlarged.
+        # We need to support 'english_bound' because English text box is
+        # different between stitched and bound.
         [
           (is_primary_repo ? 'english' : 'foreign'),
           (
             (!is_primary_repo && 'enlarged' == size) ? 'stitched' : binding
-          ), # always use stitched for foreign enlarged
+          ),
         ].join('_').to_sym
       end
 
