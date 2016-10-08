@@ -71,11 +71,7 @@ class Repositext
             primary_titles_override:{
               "7777" => "AGAPAO TOUR VIDEO",
             },
-            'page_settings_key' => compute_pdf_export_page_settings_key(
-              config.setting(:is_primary_repo),
-              config.setting(:pdf_export_binding),
-              'enlarged'
-            ),
+            'pdf_export_size' => 'enlarged',
           )
         )
       end
