@@ -50,6 +50,11 @@ module Kramdown
         def page_settings(key)
           # We use #fetch instead of #[] so that an exception is raised on
           # non-existing keys.
+          # We need `english_bound` for englarged copies because the text box
+          # is different between bound and stitched in english.
+          # All foreign files are forced to stitched since text boxes between
+          # bound and stitched are identical. That way we have a single
+          # source of data and no duplication.
           {
             english_bound: {
               paperwidth: '8.5truein',
@@ -70,15 +75,6 @@ module Kramdown
               bottom: '0.66855truein',
               headsep: '0.1106in', # We want this dimension to scale with geometry package \mag.
               footskip: '0.351in', # We want this dimension to scale with geometry package \mag.
-            },
-            foreign_bound: {
-              paperwidth: '8.5truein',
-              paperheight: '11truein',
-              inner: '1.528125truein',
-              outer: '1.555165truein',
-              top: '1.04425truein',
-              bottom: '0.70715truein',
-              headsep: '0.172in', # We want this dimension to scale with geometry package \mag.
             },
             foreign_stitched: {
               paperwidth: '8.5truein',
