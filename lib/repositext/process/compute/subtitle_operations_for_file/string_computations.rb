@@ -144,10 +144,9 @@ class Repositext
           # @param string_a [String]
           # @param string_b [String]
           # @param threshold [Float, optional]
-          # @param min_overlap [Integer, optional]
           # @param debug [Boolean, optional]
           # @return [Integer] Number of overlapping characters
-          def self.overlap(string_a, string_b, threshold=0.67, min_overlap=3, debug=false)
+          def self.overlap(string_a, string_b, threshold=0.67, debug=false)
             min_string_length = [string_a, string_b].map(&:length).min
             return 0  if min_string_length < min_overlap
 
@@ -202,20 +201,25 @@ class Repositext
           # Returns true if sim is sufficient for the given overlap.
           # @param sim [Float]
           # @param overlap [Integer]
-          # @param threshold [Float]
+          # @param sim_threshold [Float]
           # @return [Boolean]
-          def self.sufficient_overlap_similarity?(sim, overlap, threshold)
+          def self.sufficient_overlap_similarity?(sim, overlap, sim_threshold)
             case overlap
-            when 0..2
+            when 0..(min_overlap - 1)
               # Insufficient overlap
               false
-            when 3..5
+            when min_overlap..5
               # Perfect match required for small overlap
               1.0 == sim
             else
-              # Min of threshold
-              sim >= threshold
+              # Min of sim_threshold
+              sim >= sim_threshold
             end
+          end
+
+          # Returns minimum number of characters to be considered an overlap
+          def self.min_overlap
+            2
           end
 
         end
