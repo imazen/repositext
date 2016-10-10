@@ -217,14 +217,6 @@ class Repositext
       def write(marker, report_file_path)
         ap_options = { indent: -2, sort_keys: true, index: false, plain: true }
         r = []
-        r << 'Summarize Reportables by class'
-        r << '=' * 80
-        r << summarize_reportables_by_class.ai(ap_options)
-        r << ''
-        r << 'Summarize Reportables by location'
-        r << '=' * 80
-        r << summarize_reportables_by_location.ai(ap_options)
-        r << ''
         r << 'Reportable Details by class'
         r << '=' * 80
         r << group_reportables_by_class.ai(ap_options)
@@ -232,6 +224,14 @@ class Repositext
         r << 'Reportable Details by location'
         r << '=' * 80
         r << group_reportables_by_location.ai(ap_options)
+        r << ''
+        r << 'Summarize Reportables by class'
+        r << '=' * 80
+        r << summarize_reportables_by_class.ai(ap_options)
+        r << ''
+        r << 'Summarize Reportables by location'
+        r << '=' * 80
+        r << summarize_reportables_by_location.ai(ap_options)
         r << ''
         r << ''
         r = r.join("\n")
