@@ -159,14 +159,14 @@ class Repositext
               ],
               [
                 "Min overlap for short repetition",
-                "abcd efgh ijkl mnop in in",
-                                    "in in ponm lkji hgfe dcba",
-                5
+                "abcd efgh ijkl mnop i i",
+                                    "i i ponm lkji hgfe dcba",
+                3
               ],
               [
-                "Shorter string one less than min_overlap of 3",
+                "Shorter string one less than min_overlap of 2",
                 "overlap",
-                     "ap",
+                      "p",
                 0
               ],
               [
@@ -181,13 +181,18 @@ class Repositext
                    "rlap",
                 4
               ],
+              [
+                "test case",
+                "something i didn t want… no",
+                                         "no it was just something that",
+                2
+              ],
             ].each do |desc, string_a, string_b, xpect|
               it "Handles #{ desc }" do
                 StringComputations.overlap(
                   string_a,
                   string_b,
                   0.67,
-                  3,
                   false # set to true for debug output
                 ).must_equal(xpect)
               end
@@ -198,7 +203,8 @@ class Repositext
             [
               ["Overlap 0", 1.0, 0, false],
               ["Overlap 1", 1.0, 1, false],
-              ["Overlap 2", 1.0, 2, false],
+              ["Overlap 2, low sim", 0.8, 2, false],
+              ["Overlap 2, high sim", 1.0, 2, true],
               ["Overlap 3, low sim", 0.8, 3, false],
               ["Overlap 3, high sim", 1.0, 3, true],
               ["Overlap 4, low sim", 0.8, 4, false],
