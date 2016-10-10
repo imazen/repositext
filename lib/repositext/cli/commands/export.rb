@@ -120,7 +120,7 @@ class Repositext
           options.merge(
             add_title_to_filename: true,
             include_id_recording: true,
-            rename_file_extension: '.recording.pdf',
+            rename_file_extension_filter: '.recording-',
             skip_file_proc: skip_file_proc,
             'pdf_export_size' => 'enlarged',
           )
@@ -156,7 +156,7 @@ class Repositext
           options.merge(
             add_title_to_filename: true,
             include_id_recording: true,
-            rename_file_extension: '.recording_merged.pdf',
+            rename_file_extension_filter: '.recording_merged-',
             skip_file_proc: skip_file_proc,
             pre_process_content_proc: pre_process_content_proc,
             post_process_latex_proc: post_process_latex_proc,
@@ -180,7 +180,7 @@ class Repositext
           'pdf_web',
           options.merge(
             'include-version-control-info' => false,
-            'pdf_export_size' => 'enlarged',
+            'pdf_export_size' => 'book',
           )
         )
       end
@@ -278,7 +278,7 @@ class Repositext
               true,
               {
                 contents: pdf,
-                extension: "#{ variant.sub(/\Apdf_/, '') }.pdf",
+                extension: "#{ variant.sub(/\Apdf_/, '') }-#{ config.setting(:pdf_export_binding) }.pdf",
                 output_is_binary: true,
               }
             )
@@ -316,7 +316,7 @@ class Repositext
             {
               :input_base_dir => config.compute_base_dir(:pdf_export_dir),
               :input_file_selector => config.compute_file_selector(options['file-selector']),
-              :input_file_extension => options[:rename_file_extension],
+              :input_file_extension => options[:rename_file_extension_filter],
               :file_rename_proc => file_rename_proc,
               'file_filter' => options['file_filter'] || /\A((?!.--).)*\z/, # doesn't contain title already
             }

@@ -73,46 +73,62 @@ loop {
       # set crop area depending on pdf variant
       pdf_file_basename = path_to_pdf.split('/').last
       crop_area_attrs = case pdf_file_basename
-      when /^eng.*\.book_bound\.pdf$/
-        # English bound book
-        {
-          crop_x: 0, # crop area top left corner x-coordinate
-          crop_y: 1.0, # crop area top left corner y-coordinate
-          crop_width: 5.5, # crop area width
-          crop_height: 6.6, # crop area height
-        }
-      when /^eng.*\.book_stitched\.pdf$/
-        # English stitched book
+      when /^eng.*\.book-bound\.pdf$/,
+           /^eng.*\.web-bound\.pdf$/
+        # English bound book/web
+        # TODO: Update English bound foreign bound once page settings are updated.
         {
           crop_x: 0, # crop area top left corner x-coordinate
           crop_y: 0.7, # crop area top left corner y-coordinate
           crop_width: 5.5, # crop area width
           crop_height: 7.26, # crop area height
         }
-      when /\.book_bound\.pdf$/
-        # Foreign bound book
-        {
-          crop_x: 0, # crop area top left corner x-coordinate
-          crop_y: 1.0, # crop area top left corner y-coordinate
-          crop_width: 5.5, # crop area width
-          crop_height: 6.6, # crop area height
-        }
-      when /\.book_stitched\.pdf$/
-        # Foreign stitched book
+      when /^eng.*\.book-stitched\.pdf$/,
+           /^eng.*\.web-stitched\.pdf$/
+        # English stitched book/web
         {
           crop_x: 0, # crop area top left corner x-coordinate
           crop_y: 0.7, # crop area top left corner y-coordinate
           crop_width: 5.5, # crop area width
           crop_height: 7.26, # crop area height
         }
-      else
-        # other variants
+      when /\.book-bound\.pdf$/,
+           /\.web-bound\.pdf$/
+        # Foreign bound book/web
+        {
+          crop_x: 0, # crop area top left corner x-coordinate
+          crop_y: 1.0, # crop area top left corner y-coordinate
+          crop_width: 5.5, # crop area width
+          crop_height: 6.6, # crop area height
+        }
+      when /\.book-stitched\.pdf$/,
+           /\.web-stitched\.pdf$/
+        # Foreign stitched book/web
+        {
+          crop_x: 0, # crop area top left corner x-coordinate
+          crop_y: 0.7, # crop area top left corner y-coordinate
+          crop_width: 5.5, # crop area width
+          crop_height: 7.26, # crop area height
+        }
+      when /-bound\.pdf$/
+        # Enlarged bound
         {
           crop_x: 0, # crop area top left corner x-coordinate
           crop_y: 1.0, # crop area top left corner y-coordinate
           crop_width: 8.5, # crop area width
           crop_height: 9.4, # crop area height
         }
+      when /-stitched\.pdf$/
+        # Enlarged stitched
+        {
+          crop_x: 0, # crop area top left corner x-coordinate
+          crop_y: 1.0, # crop area top left corner y-coordinate
+          crop_width: 8.5, # crop area width
+          crop_height: 9.4, # crop area height
+        }
+      else
+        raise "Handle this: #{ pdf_file_basename.inspect }"
+        connection.write("Handle this: #{ pdf_file_basename.inspect }")
       end
 
       r = PdfboxTextExtraction.run(
