@@ -16,11 +16,14 @@ class Repositext
       # @param _file_selector [String]
       # @param _file_extension [String]
       # @param logger [Logger]
-      def initialize(_input_base_dir, _file_selector, _file_extension, logger)
+      # @param options [Hash, optional]
+      # @option options [Boolean] verbose, default: false
+      def initialize(_input_base_dir, _file_selector, _file_extension, logger, options={})
         @file_extension = _file_extension
         @file_selector = _file_selector
         @input_base_dir = _input_base_dir
         @logger = logger
+        @options = options
 
         @errors = []
         @warnings = []
@@ -217,14 +220,16 @@ class Repositext
       def write(marker, report_file_path)
         ap_options = { indent: -2, sort_keys: true, index: false, plain: true }
         r = []
-        r << 'Reportable Details by class'
-        r << '=' * 80
-        r << group_reportables_by_class.ai(ap_options)
-        r << ''
-        r << 'Reportable Details by location'
-        r << '=' * 80
-        r << group_reportables_by_location.ai(ap_options)
-        r << ''
+        if @options['verbose']
+          r << 'Reportable Details by class'
+          r << '=' * 80
+          r << group_reportables_by_class.ai(ap_options)
+          r << ''
+          r << 'Reportable Details by location'
+          r << '=' * 80
+          r << group_reportables_by_location.ai(ap_options)
+          r << ''
+        end
         r << 'Summarize Reportables by class'
         r << '=' * 80
         r << summarize_reportables_by_class.ai(ap_options)

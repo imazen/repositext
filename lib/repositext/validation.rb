@@ -61,7 +61,7 @@ class Repositext
 
     # @return [Repositext::Validation::Reporter]
     def initialize_reporter
-      Reporter.new(*primary_file_spec, @logger)
+      Reporter.new(*primary_file_spec, @logger, @options)
     end
 
     # Returns the primary file spec for self. This is used for reporting where

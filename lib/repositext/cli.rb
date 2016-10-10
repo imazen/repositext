@@ -100,6 +100,11 @@ class Repositext
     class_option :'to-commit',
                  :type => :string,
                  :desc => "For commands that require from and to commit information (e.g., subtitle operations)"
+    class_option :'verbose',
+                 :aliases => "-v",
+                 :type => :boolean,
+                 :default => false,
+                 :desc => "Print more verbose console output."
     # Override original initialize so that the options hash is not frozen. We
     # need to modify it.
     def initialize(args=[], options={}, config={})
