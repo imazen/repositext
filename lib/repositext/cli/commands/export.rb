@@ -120,7 +120,7 @@ class Repositext
           options.merge(
             add_title_to_filename: true,
             include_id_recording: true,
-            rename_file_extension_filter: '.recording-',
+            rename_file_extension_filter: '.recording-{stitched,bound}.pdf',
             skip_file_proc: skip_file_proc,
             'pdf_export_size' => 'enlarged',
           )
@@ -156,7 +156,7 @@ class Repositext
           options.merge(
             add_title_to_filename: true,
             include_id_recording: true,
-            rename_file_extension_filter: '.recording_merged-',
+            rename_file_extension_filter: '.recording_merged-{stitched,bound}.pdf',
             skip_file_proc: skip_file_proc,
             pre_process_content_proc: pre_process_content_proc,
             post_process_latex_proc: post_process_latex_proc,
@@ -232,6 +232,7 @@ class Repositext
         ) do |content_at_file|
           contents = content_at_file.contents
           filename = content_at_file.filename
+          pdf_export_binding = config.setting(:pdf_export_binding)
           config.update_for_file(filename.gsub(/\.at\z/, '.data.json'))
           options[:ed_and_trn_abbreviations] = config.setting(:pdf_export_ed_and_trn_abbreviations)
           options[:first_eagle] = config.setting(:pdf_export_first_eagle)
@@ -245,7 +246,7 @@ class Repositext
           options[:id_recording] = config.setting(:pdf_export_id_recording,false)
           options[:page_settings_key] = compute_pdf_export_page_settings_key(
             config.setting(:is_primary_repo),
-            config.setting(:pdf_export_binding),
+            pdf_export_binding,
             options['pdf_export_size']
           )
           options[:title_font_name] = config.setting(:pdf_export_title_font_name)
@@ -278,7 +279,7 @@ class Repositext
               true,
               {
                 contents: pdf,
-                extension: "#{ variant.sub(/\Apdf_/, '') }-#{ config.setting(:pdf_export_binding) }.pdf",
+                extension: "#{ variant.sub(/\Apdf_/, '') }-#{ pdf_export_binding }.pdf",
                 output_is_binary: true,
               }
             )
