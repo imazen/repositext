@@ -219,7 +219,7 @@ class Repositext
 
           # Returns minimum number of characters to be considered an overlap
           def self.min_overlap
-            2
+            3
           end
 
         end

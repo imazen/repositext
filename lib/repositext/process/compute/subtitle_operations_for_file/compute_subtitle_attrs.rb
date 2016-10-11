@@ -56,7 +56,7 @@ class Repositext
                 next nil  if '' == f
                 f.sub!(/\A\d+\s{4}(?!\s)(.*)/, '\1') # remove paragraph numbers
                 # Compute content for similarity computation:
-                content_sim = f.gsub(/[^…[:alnum:]]+/, ' ') # Remove everything except eagles, ellipses, letters, numbers, and space
+                content_sim = f.gsub(/[^[:alnum:]]+/, ' ') # Remove everything except eagles, letters, numbers, and space
                                .strip
                                .unicode_downcase
                 content_sim = replace_digit_sequences_with_words(content_sim)
