@@ -32,7 +32,7 @@ class Repositext
               FileUtils.ln_s(
                 RFile::Content.relative_path_to_corresponding_primary_file(
                   foreign_subtitle_markers_csv_filename,
-                  @foreign_content_at_file.repository
+                  @foreign_content_at_file.content_type
                 ),
                 File.basename(foreign_subtitle_markers_csv_filename),
               )
