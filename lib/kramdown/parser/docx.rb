@@ -24,7 +24,6 @@ module Kramdown
     class Docx
 
       include Kramdown::AdjacentElementMerger
-      include Kramdown::DocxImportPostProcessor
       include Kramdown::ImportWhitespaceSanitizer
       include Kramdown::NestedEmsProcessor
       include Kramdown::TreeCleaner
@@ -522,6 +521,13 @@ module Kramdown
       # @param ke [Kramdown::Element] the p kramdown element
       def process_node_p_additions(xn, ke)
         # Nothing to do. Override this method in specialized subclasses.
+      end
+
+      # Recursively post processes tree under ke.
+      # Hook for specialized behavior in sub classes.
+      # @param [Kramdown::Element] ke
+      def recursively_post_process_tree!(ke)
+        # Nothing to do
       end
 
     end
