@@ -35,7 +35,9 @@ class Repositext
         %w[spn es],
         %w[swa sw],
         %w[swd sv],
+        %w[tam ta],
         %w[tso ts],
+        %w[vie vi],
         %w[zul zu],
       ].freeze
 
@@ -111,7 +113,7 @@ class Repositext
         else
           raise(ArgumentError.new("Invalid lang_code length, must be 2 or 3 chars: #{ lang_code.inspect }"))
         end
-        raise(ArgumentErrorlnew("Unknown lang_code: #{ lang_code.inspect }"))  if r.nil?
+        raise(ArgumentError.new("Unknown lang_code: #{ lang_code.inspect }"))  if r.nil?
         r
       end
 
