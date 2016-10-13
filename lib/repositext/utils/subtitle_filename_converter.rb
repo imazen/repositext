@@ -35,7 +35,9 @@ class Repositext
         %w[spn es],
         %w[swa sw],
         %w[swd sv],
+        %w[tam ta],
         %w[tso ts],
+        %w[vie vi],
         %w[zul zu],
       ].freeze
 
