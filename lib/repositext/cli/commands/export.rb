@@ -249,8 +249,10 @@ class Repositext
             pdf_export_binding,
             options['pdf_export_size']
           )
+          options[:source_filename] = filename
           options[:title_font_name] = config.setting(:pdf_export_title_font_name)
           options[:title_vspace] = config.setting(:pdf_export_title_vspace)
+          options[:truncated_header_title_length] = config.setting(:pdf_export_truncated_header_title_length)
           if options[:pre_process_content_proc]
             contents = options[:pre_process_content_proc].call(contents, filename, options)
           end
@@ -258,7 +260,6 @@ class Repositext
             $stderr.puts " - Skipping #{ filename } - matches options[:skip_file_proc]"
             next([Outcome.new(true, { contents: nil })])
           end
-          options[:source_filename] = filename
           # Since the kramdown parser is specified as module in Rtfile,
           # I can't use the standard kramdown API:
           # `doc = Kramdown::Document.new(contents, :input => 'kramdown_repositext')`

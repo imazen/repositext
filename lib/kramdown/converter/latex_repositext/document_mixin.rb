@@ -147,7 +147,8 @@ module Kramdown
             document_title_plain_text,
             document_title_latex,
             @options[:hrules_present],
-            @options[:language_code_3_chars]
+            @options[:language_code_3_chars],
+            @options[:truncated_header_title_length]
           )
           # Turns on hrules in title, header and footer.
           @hrules_present = @options[:hrules_present]
@@ -222,13 +223,20 @@ module Kramdown
         # @param document_title_latex [String]
         # @param hrules_present [Boolean]
         # @param language_code_3_chars [String]
+        # @param title_length_override [Integer, optional] will force
+        #        title to be truncated to this many chars, ignoring word boundaries.
         # @return [String]
-        def compute_header_title_latex(document_title_plain_text, document_title_latex, hrules_present, language_code_3_chars)
+        def compute_header_title_latex(document_title_plain_text, document_title_latex, hrules_present, language_code_3_chars, title_length_override)
           if hrules_present
             # bold, italic, small caps and large font
             # NOTE: All titles are wrapped in <em> and .smcaps, so that will
             # take care of the italics and smallcaps.
-            truncated = compute_truncated_title(document_title_plain_text, document_title_latex, 58, 3)
+            truncated = compute_truncated_title(
+              document_title_plain_text,
+              document_title_latex,
+              title_length_override || 58,
+              title_length_override ? 0 : 3,
+            )
             # re-apply superscript to any trailing digits
             if truncated =~ /\d+\}\z/
               truncated.gsub!(/\d+\}\z/, "\\textsuperscript{" + '\0' + "}")
@@ -236,7 +244,11 @@ module Kramdown
             "\\textscale{#{ 0.909091 }}{\\textbf{#{ truncated }}}"
           else
             # regular, all caps and small font
-            truncated = truncate_plain_text_title(document_title_plain_text, 54, 3)
+            truncated = truncate_plain_text_title(
+              document_title_plain_text,
+              title_length_override || 54,
+              title_length_override ? 0 : 3
+            )
             r = "\\textscale{#{ 0.7 }}{#{ truncated.unicode_upcase }}"
             # re-apply superscript to any trailing digits
             if r =~ /\d+\}\z/
@@ -412,14 +424,23 @@ module Kramdown
 
         # @param plain_text_title [String]
         # @param max_len [Integer] maximum length of returned string.
-        # @param min_length_of_last_word [Integer] minimum length of last word in returned string
+        # @param min_length_of_last_word [Integer] minimum length of last word
+        #        in returned string. If set to zero, word boundaries are ignored.
         # @return [String]
         def truncate_plain_text_title(plain_text_title, max_len, min_length_of_last_word)
-          plain_text_title.truncate(
-            max_len,
-            separator: /(?<=[[:alpha:]]{#{ min_length_of_last_word }})\s/,
-            omission: '…',
-          )
+          opts = if 0 == min_length_of_last_word
+            # Ignoring word boundaries
+            {
+              omission: '…',
+            }
+          else
+            # Truncate at word boundary
+            {
+              separator: /(?<=[[:alnum:]]{#{ min_length_of_last_word }})\s/,
+              omission: '…',
+            }
+          end
+          plain_text_title.truncate(max_len, opts)
         end
 
         # Returns a list of commits and commit messages for the exported file.
