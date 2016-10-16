@@ -63,7 +63,7 @@ class Repositext
           # TODO: handle encoding in language
           def encoding_rules
             [
-              # ['…?…', '…rtxt_helen…'],
+              # ['…?…', '…rtxt_ellquell…'],
               ['!)', 'rtxtExclPaCl'], # added for spn
               ['!,', 'rtxtExclComm'], # added for spn
               ['!:', 'rtxtExclColo'], # added for spn
