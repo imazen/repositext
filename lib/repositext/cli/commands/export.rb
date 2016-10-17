@@ -102,6 +102,19 @@ class Repositext
         )
       end
 
+      # This command exports a sample PDF with all kerning pairs.
+      # The file is exported to the current language repo's root as
+      # kerning_samples.pdf
+      def export_pdf_kerning_samples(options)
+        latex = Kramdown::Converter::LatexRepositext::SmallcapsKerningMap.kerning_sample_latex
+        pdf = Repositext::Convert::LatexToPdf.convert(latex)
+        file_path = File.join(
+          File.expand_path('..', config.base_dir(:content_type_dir)),
+          'kerning_samples.pdf'
+        )
+        File.binwrite(file_path, pdf)
+      end
+
       def export_pdf_plain(options)
         # contains all formatting, no AT specific tokens
         export_pdf_base(

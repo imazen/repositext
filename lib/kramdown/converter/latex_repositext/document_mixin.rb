@@ -202,8 +202,10 @@ module Kramdown
         def compute_header_text_latex(header_text, hrules_present, language_code_3_chars)
           if hrules_present
             # italic, small caps and large font
-            t = ::Kramdown::Converter::LatexRepositext.emulate_small_caps(
-              escape_latex_text(header_text)
+            t = emulate_small_caps(
+              escape_latex_text(header_text),
+              @options[:font_name],
+              %w[bold italic]
             )
             "\\textscale{#{ 0.909091 }}{\\textbf{\\textit{#{ t }}}}"
           else

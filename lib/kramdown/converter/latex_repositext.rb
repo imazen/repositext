@@ -12,19 +12,40 @@ module Kramdown
 
       # Since our font doesn't have a small caps variant, we have to emulate it
       # for latex.
-      # This is a class method so that we can easily use it from other places.
-      def self.emulate_small_caps(txt)
-        # wrap all groups of lower case characters and some punctuation
-        # (not latex commands!) in RtSmCapsEmulation command
+      # We wrap all groups of lower case characters and some punctuation
+      # (not latex commands!) in the \RtSmCapsEmulation command.
+      # @param txt [String] the text inside the em.smcaps.
+      # @param font_name [String]
+      # @param font_attrs [Array<String>]
+      # @return [String]
+      def emulate_small_caps(txt, font_name, font_attrs)
+        character_pair = txt[0,2]
+        font_attrs = font_attrs.compact.sort.join(' ')
+        kerning_value = smallcaps_kerning_map.lookup_kerning(
+          font_name,
+          font_attrs,
+          character_pair
+        )
+        if kerning_value
+          # We have a value, add `em` unit
+          kerning_value = "#{ kerning_value }em"
+        else
+          # No kerning value, print out warning
+          puts "Unhandled Kerning for font #{ font_name.inspect }, font_attrs #{ font_attrs.inspect } and character pair #{ character_pair.inspect }, ".color(:red)
+        end
         r = txt.gsub(
           /
             ( # wrap in capture group so that we can access it for replacement
               (?<![\\[:lower:]]) # negative lookbehind for latex commands like emph
               [[:lower:]\.]+ # capture all lower case letters and periods
             )
-          /x,
-        ) { |e| %(\\RtSmCapsEmulation{#{ e.unicode_upcase }}) }
+          /x
+        ) { |e| %(\\RtSmCapsEmulation{#{ e.unicode_upcase }}{#{ kerning_value || 'none' }}) }
         r
+      end
+
+      def smallcaps_kerning_map
+        @smallcaps_kerning_map ||= SmallcapsKerningMap.new
       end
 
       # Patch this method to handle ems that came via imports:
@@ -65,7 +86,13 @@ module Kramdown
             after << '}'
           end
           if el.has_class?('smcaps')
-            inner_text = self.class.emulate_small_caps(inner(el, opts))
+            font_attrs = ['bold', 'italic'] & el.get_classes
+            font_attrs = ['regular']  if font_attrs.empty?
+            inner_text = emulate_small_caps(
+              inner(el, opts),
+              @options[:font_name],
+              font_attrs
+            )
           end
           if el.has_class?('subscript')
             before << '\\textsubscript{'

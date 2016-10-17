@@ -193,6 +193,19 @@ module Kramdown
             "\\nolinebreak[4]" + '\1' + "\\hspace{0pt}"
           )
 
+          # When we adjust kerning in smallcaps emulation, the previous gsub!
+          # inserts a \nolinebreak[4] between the open brace and the minus sign
+          # of the second argument to \RtSmCapsEmulation
+          # This gsub! undoes it. I chose to break it into a separate gsub! call
+          # in order to keep the previous regex simpler:
+          # Original latex:
+          #     T\RtSmCapsEmulation{EXT}{-0.1em}
+          # Modified by above gsub! to:
+          #     T\RtSmCapsEmulation{EXT}{\nolinebreak[4]-\hspace{0pt}0.1em}
+          # Here we revert it back to:
+          #     T\RtSmCapsEmulation{EXT}{-0.1em}
+          lb.gsub!("}{\\nolinebreak[4]-\\hspace{0pt}", "}{-")
+
           # We don't allow linebreaks _before_ or _after_ an emdash when followed
           # by some abbreviations.
           lb.gsub!(

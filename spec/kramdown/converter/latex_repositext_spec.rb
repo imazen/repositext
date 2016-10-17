@@ -12,7 +12,8 @@ module Kramdown
           ["Word. Word,", "W\\RtSmCapsEmulation{ORD.} W\\RtSmCapsEmulation{ORD},"],
         ].each do |test_string, xpect|
           it "emulates small caps for #{ test_string.inspect }" do
-            LatexRepositext.emulate_small_caps(test_string).must_equal(xpect)
+            c = LatexRepositext.send(:new, '_', {})
+            c.emulate_small_caps(test_string).must_equal(xpect)
           end
         end
 

@@ -1,0 +1,28 @@
+{
+  "character_mappings": {
+    "à": "a",
+    "á": "a",
+    "â": "a",
+    "ä": "a"
+  },
+  "kerning_values": {
+    "Arial": {
+      "bold": {
+        "Aw": -0.1,
+        "Wa": -0.1
+      },
+      "bold italic": {
+        "Aw": -0.1,
+        "Wa": -0.1
+      },
+      "italic": {
+        "Aw": -0.1,
+        "Wa": -0.1
+      },
+      "regular": {
+        "Aw": -0.1,
+        "Wa": -0.1
+      }
+    }
+  }
+}

@@ -13,6 +13,9 @@
   \setCJKmainfont{<%= @font_name %>}
 <% end %>
 
+% for if-then control flow (RtSmCapsEmulation)
+\usepackage{ifthen}
+
 % so we can render first eagle as drop cap
 \usepackage{lettrine}
 
@@ -41,7 +44,7 @@
 % make sure there is no page break in id paragraphs at the end
 \usepackage{needspace}
 
-% set font size relative to base font size
+% set font size relative to base font size, use \textscale
 \usepackage{relsize}
   % forces relsize to scale by the set percentage
   \renewcommand\RSpercentTolerance{0}
@@ -350,8 +353,17 @@
   {\noindent\colorbox{LightGrey}{Record#1}\par}
 
 % command to emulate lower-case small-caps chars
-\newcommand{\RtSmCapsEmulation}[1]
-  {\textscale{0.7}{#1}}
+% first argument is the text to render in smallcaps
+% second argument is an optional kerning adjustment via \hspace{-0.1em}
+\newcommand{\RtSmCapsEmulation}[2]
+  {%
+    \ifthenelse{\equal{#2}{none}}%
+    {}%
+    {\hspace{#2}}%
+    \textscale{0.7}{#1}%
+  }
+
+
 
 % command to render last eagle
 \newcommand{\RtLastEagle}
