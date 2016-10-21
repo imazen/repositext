@@ -294,7 +294,7 @@
     <% if @id_write_to_primary %>
       \setlength{\parskip}{0pt}
       \setlength{\parindent}{0pt}
-      <%= @polyglossia_default_language ? '' : '\titlefont' %>%
+      \titlefont%
       \fontsize{8pt}{10.5pt}\selectfont
       <%= @id_write_to_primary %>
       \par
@@ -307,7 +307,7 @@
     <% if @id_write_to_secondary %>
       \setlength{\parskip}{0pt}
       \setlength{\parindent}{0pt}
-      <%= @polyglossia_default_language ? '' : '\titlefont' %>%
+      \titlefont%
       \fontsize{8pt}{10.5pt}\selectfont
       <%= @id_write_to_secondary %>
       \par
@@ -416,7 +416,7 @@
     \setlength{\parskip}{0pt}
     \setlength{\parindent}{0pt}
     \centering
-    <%= @polyglossia_default_language ? '' : '\titlefont' %>%
+    \titlefont%
     \fontsize{10pt}{10.5pt}\selectfont
   }
   {%
@@ -433,7 +433,7 @@
     <% end %>
     \setlength{\parindent}{0pt}
     \centering
-    <%= @polyglossia_default_language ? '' : '\titlefont' %>%
+    \titlefont%
     \fontsize{8pt}{10.5pt}\selectfont
   }
   {%
@@ -575,7 +575,7 @@
 \newenvironment{RtSubTitle}
   {%
     \begin{center}
-      <%= @polyglossia_default_language ? '' : '\titlefont' %>
+      \titlefont
       \fontsize{10pt}{10.5pt}\selectfont
   }
   {%
@@ -597,7 +597,7 @@
         \vspace*{-2.975pt}% sets the spacing between the title and the top hrule.
         \begin{center}
           \begin{spacing}{1.2311}
-            <%= @polyglossia_default_language ? '' : '\titlefont' %>
+            \titlefont
             \fontsize{22pt}{26.4pt}\selectfont
             \rule[-.3\baselineskip]{0pt}{\baselineskip}% Insert strut to avoid inconsistent vertical spacing caused by different height characters.
   }
@@ -622,7 +622,7 @@
   {%
     \begin{center}
       \begin{spacing}{1.2311}
-        <%= @polyglossia_default_language ? '' : '\titlefont' %>
+        \titlefont
         \fontsize{16pt}{19.2pt}\selectfont
   }
   {%
