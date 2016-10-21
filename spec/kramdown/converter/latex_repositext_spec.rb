@@ -7,11 +7,58 @@ module Kramdown
       describe "#emulate_small_caps" do
 
         [
-          ["Water Water", "W\\RtSmCapsEmulation{-0.1em}{ATER} W\\RtSmCapsEmulation{-0.1em}{ATER}"],
-          ["Wáter Wáter", "W\\RtSmCapsEmulation{-0.1em}{ÁTER} W\\RtSmCapsEmulation{-0.1em}{ÁTER}"],
-          ["Word. Word,", "W\\RtSmCapsEmulation{none}{ORD.} W\\RtSmCapsEmulation{none}{ORD},"],
-        ].each do |test_string, xpect|
-          it "emulates small caps for #{ test_string.inspect }" do
+          [
+            "Default case with single word",
+            "Water",
+            "W\\RtSmCapsEmulation{-0.1em}{ATER}{none}",
+          ],
+          [
+            "Two regular words",
+            "Water Water",
+            "W\\RtSmCapsEmulation{-0.1em}{ATER}{none} W\\RtSmCapsEmulation{-0.1em}{ATER}{none}",
+          ],
+          [
+            "Applies custom kerning between smallcaps and questionmark, doesn't scale down questionmark",
+            "Water?",
+            "W\\RtSmCapsEmulation{-0.1em}{ATER}{-0.3em}?",
+          ],
+          [
+            "Applies custom kerning between smallcaps and exclamation point, doesn't scale down exclamation point",
+            "Water!",
+            "W\\RtSmCapsEmulation{-0.1em}{ATER}{none}!",
+          ],
+          [
+            "Applies custom kerning between smallcaps and comma, doesn't scale down comma",
+            "Water,",
+            "W\\RtSmCapsEmulation{-0.1em}{ATER}{none},",
+          ],
+          [
+            "Applies custom kerning between smallcaps and period, doesn't scale down period",
+            "Water.",
+            "W\\RtSmCapsEmulation{-0.1em}{ATER}{none}.",
+          ],
+          [
+            "Handles two adjacent full caps",
+            "WAter",
+            "WA\\RtSmCapsEmulation{none}{TER}{none}",
+          ],
+          [
+            "With accented character mapping",
+            "Wáter Wáter",
+            "W\\RtSmCapsEmulation{-0.1em}{ÁTER}{none} W\\RtSmCapsEmulation{-0.1em}{ÁTER}{none}",
+          ],
+          [
+            "Handles fullcaps inside a word",
+            "WaterWater Word",
+            "W\\RtSmCapsEmulation{-0.1em}{ATER}{-0.4em}W\\RtSmCapsEmulation{-0.1em}{ATER}{none} W\\RtSmCapsEmulation{none}{ORD}{none}",
+          ],
+          [
+            "Handles leading punctuation character",
+            "¿Water",
+            "¿W\\RtSmCapsEmulation{-0.1em}{ATER}{none}",
+          ],
+        ].each do |desc, test_string, xpect|
+          it "handles #{ desc.inspect }" do
             c = LatexRepositext.send(:new, '_', {})
             c.emulate_small_caps(
               test_string,

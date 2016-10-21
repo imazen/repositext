@@ -12,35 +12,109 @@ module Kramdown
 
       # Since our font doesn't have a small caps variant, we have to emulate it
       # for latex.
-      # We wrap all groups of lower case characters and some punctuation
-      # (not latex commands!) in the \RtSmCapsEmulation command.
+      # We wrap all groups of lower case characters in the \RtSmCapsEmulation command.
+      #
+      # Strategy:
+      #
+      # * Find any pairs of adjacent letters with transition from upper to lower
+      #   case.
+      # * Capture upper case character as fullcaps char (fc_char).
+      # * Capture all lower case characters (sc_chars).
+      # * Look up leading custom kerning for fc_char/sc_chars.first (leading_ck).
+      # * Capture optional trailing character (either upper case letter or
+      #   punctuation [.,?!:]) following immediately after sc_chars for custom
+      #   kerning (trailing_ck_char).
+      # * If trailing_ck_char ? look up trailing custom kerning for
+      #   sc_chars.last/trailing_ck_char (trailing_ck).
+      # * Upcase and wrap sc_chars in RtSmCapsEmulation with leading_ck and
+      #   optional trailing_ck arguments.
+      #
       # @param txt [String] the text inside the em.smcaps.
       # @param font_name [String]
       # @param font_attrs [Array<String>]
       # @return [String]
       def emulate_small_caps(txt, font_name, font_attrs)
-        character_pair = txt[0,2]
+        r = txt.dup
         font_attrs = font_attrs.compact.sort.join(' ')
-        kerning_value = smallcaps_kerning_map.lookup_kerning(
-          font_name,
-          font_attrs,
-          character_pair
-        )
-        if kerning_value
-          # We have a value, add `em` unit
-          kerning_value = "#{ kerning_value }em"
-        else
-          # No kerning value, print out warning
-          puts "Unhandled Kerning for font #{ font_name.inspect }, font_attrs #{ font_attrs.inspect } and character pair #{ character_pair.inspect }, ".color(:red)
-        end
-        r = txt.gsub(
-          /
-            ( # wrap in capture group so that we can access it for replacement
-              (?<![\\[:lower:]]) # negative lookbehind for latex commands like emph
-              [[:lower:]\.]+ # capture all lower case letters and periods
+        str_sc = StringScanner.new(txt)
+        str_sc_state = :idle
+        fc_char = nil
+        sc_chars = nil
+        trailing_ck_char = nil
+        keep_scanning = true
+
+        while keep_scanning do
+          case str_sc_state
+          when :idle
+            fc_char = nil
+            sc_chars = nil
+            trailing_ck_char = nil
+            if(str_sc.skip_until(/(?=[[:upper:]][[:lower:]])/))
+              str_sc_state = :capture_fc_char
+            else
+              keep_scanning = false
+            end
+          when :capture_fc_char
+            if(str_sc.scan(/[[:upper:]](?=[[:lower:]])/))
+              fc_char = str_sc.matched
+              str_sc_state = :capture_sc_chars
+            else
+              raise "Handle this!"
+            end
+          when :capture_sc_chars
+            if(str_sc.scan(/[[:lower:]]+/))
+              sc_chars = str_sc.matched
+              str_sc_state = :maybe_capture_trailing_ck_char
+            else
+              raise "Handle this!"
+            end
+          when :maybe_capture_trailing_ck_char
+            if(str_sc.check(/[[:upper:]\.\,\?\!\:]/))
+              trailing_ck_char = str_sc.matched
+            end
+            str_sc_state = :finalize_capture
+          when :finalize_capture
+            # Determine leading custom kerning
+            leading_character_pair = [fc_char, sc_chars[0]].join
+            leading_kerning_value = smallcaps_kerning_map.lookup_kerning(
+              font_name,
+              font_attrs,
+              leading_character_pair
             )
-          /x
-        ) { |e| %(\\RtSmCapsEmulation{#{ kerning_value || 'none' }}{#{ e.unicode_upcase }}) }
+            if leading_kerning_value
+              # We have a value, add `em` unit
+              leading_kerning_value = "#{ leading_kerning_value }em"
+            else
+              # No kerning value, print out warning
+              puts "Unhandled Kerning for font #{ font_name.inspect }, font_attrs #{ font_attrs.inspect } and character pair #{ leading_character_pair.inspect }, ".color(:red)
+            end
+            # Determine trailing custom kerning
+            if trailing_ck_char
+              trailing_character_pair = [sc_chars[-1], trailing_ck_char].join
+              trailing_kerning_value = smallcaps_kerning_map.lookup_kerning(
+                font_name,
+                font_attrs,
+                trailing_character_pair
+              )
+              if trailing_kerning_value
+                # We have a value, add `em` unit
+                trailing_kerning_value = "#{ trailing_kerning_value }em"
+              else
+                # No kerning value, print out warning
+                puts "Unhandled Kerning for font #{ font_name.inspect }, font_attrs #{ font_attrs.inspect } and character pair #{ trailing_character_pair.inspect }, ".color(:red)
+              end
+            else
+              trailing_kerning_value = nil
+            end
+            r.sub!(
+              /(?<=#{ fc_char })#{ sc_chars }/,
+              %(\\RtSmCapsEmulation{#{ leading_kerning_value || 'none' }}{#{ sc_chars.unicode_upcase }}{#{ trailing_kerning_value || 'none' }})
+            )
+            str_sc_state = :idle
+          else
+            raise "Handle this: #{ str_sc_state.inspect }"
+          end
+        end
         r
       end
 
