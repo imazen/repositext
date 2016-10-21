@@ -191,12 +191,6 @@ class Repositext
             end
           end
 
-
-
-
-
-
-
           # Returns difference in subtitles from :from to :to in al_st_pair.
           # @param al_st_pair [AlignedSubtitlePair]
           # @return [Integer]
@@ -208,15 +202,15 @@ class Repositext
             )
           end
 
-          # Returns nature of al_st_pair.
-          # @param al_st_pair [AlignedSubtitlePair]
+          # Returns nature of asp.
+          # @param asp [AlignedSubtitlePair]
           # @return [Symbol]
-          def compute_subtitle_pair_type(al_st_pair)
+          def compute_subtitle_pair_type(asp)
             # check for gap first, so that we can assume presence of content in later checks.
-            if 1 == al_st_pair[:subtitle_count_change]
+            if 1 == asp[:subtitle_count_change]
               # Subtitle was added
               :st_added
-            elsif -1 == al_st_pair[:subtitle_count_change]
+            elsif -1 == asp[:subtitle_count_change]
               # Subtitle was removed
               :st_removed
             else
@@ -231,7 +225,7 @@ class Repositext
               ) ? al_st_pair[:sim_right].first : false
               has_repetitions = al_st_pair[:has_repetitions]
               if(
-                al_st_pair[:sim_abs].first > 0.93 and al_st_pair[:sim_abs].last == 1.0 and
+                asp[:sim_abs].first > 0.93 and asp[:sim_abs].last == 1.0 and
                 high_sim_left and
                 high_sim_right
               )

@@ -152,12 +152,12 @@ module Kramdown
           )
           # Turns on hrules in title, header and footer.
           @hrules_present = @options[:hrules_present]
-          @id_copyright_year = @options[:id_copyright_year]
           @id_address_primary_latex_1 = @options[:id_address_primary_latex_1]
           @id_address_primary_latex_2 = @options[:id_address_primary_latex_2]
           @id_address_secondary_latex_1 = @options[:id_address_secondary_latex_1]
           @id_address_secondary_latex_2 = @options[:id_address_secondary_latex_2]
           @id_address_secondary_latex_3 = @options[:id_address_secondary_latex_3]
+          @id_copyright_year = @options[:id_copyright_year]
           @id_extra_language_info = @options[:id_extra_language_info]
           @id_recording = @options[:id_recording]  if @options[:include_id_recording]
           @id_write_to_primary = @options[:id_write_to_primary]
