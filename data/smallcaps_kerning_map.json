@@ -1,9 +1,9 @@
 {
   "character_mappings": {
-    "à": "a",
-    "á": "a",
-    "â": "a",
-    "ä": "a"
+    "À": "A",
+    "Á": "A",
+    "Â": "A",
+    "Ä": "A"
   },
   "kerning_values": {
     "Arial": {

@@ -40,7 +40,7 @@ module Kramdown
               [[:lower:]\.]+ # capture all lower case letters and periods
             )
           /x
-        ) { |e| %(\\RtSmCapsEmulation{#{ e.unicode_upcase }}{#{ kerning_value || 'none' }}) }
+        ) { |e| %(\\RtSmCapsEmulation{#{ kerning_value || 'none' }}{#{ e.unicode_upcase }}) }
         r
       end
 

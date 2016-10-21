@@ -353,14 +353,14 @@
   {\noindent\colorbox{LightGrey}{Record#1}\par}
 
 % command to emulate lower-case small-caps chars
-% first argument is the text to render in smallcaps
-% second argument is an optional kerning adjustment via \hspace{-0.1em}
+% first argument is an optional kerning adjustment via \hspace{-0.1em}, inserted before the text
+% second argument is the text to render in smallcaps
 \newcommand{\RtSmCapsEmulation}[2]
   {%
-    \ifthenelse{\equal{#2}{none}}%
+    \ifthenelse{\equal{#1}{none}}%
     {}%
-    {\hspace{#2}}%
-    \textscale{0.7}{#1}%
+    {\hspace{#1}}%
+    \textscale{0.7}{#2}%
   }
 
 

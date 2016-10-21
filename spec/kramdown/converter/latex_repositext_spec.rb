@@ -7,13 +7,17 @@ module Kramdown
       describe "#emulate_small_caps" do
 
         [
-          ["Word Word", "W\\RtSmCapsEmulation{ORD} W\\RtSmCapsEmulation{ORD}"],
-          ["Wêrd Wêrd", "W\\RtSmCapsEmulation{ÊRD} W\\RtSmCapsEmulation{ÊRD}"],
-          ["Word. Word,", "W\\RtSmCapsEmulation{ORD.} W\\RtSmCapsEmulation{ORD},"],
+          ["Water Water", "W\\RtSmCapsEmulation{-0.1em}{ATER} W\\RtSmCapsEmulation{-0.1em}{ATER}"],
+          ["Wáter Wáter", "W\\RtSmCapsEmulation{-0.1em}{ÁTER} W\\RtSmCapsEmulation{-0.1em}{ÁTER}"],
+          ["Word. Word,", "W\\RtSmCapsEmulation{none}{ORD.} W\\RtSmCapsEmulation{none}{ORD},"],
         ].each do |test_string, xpect|
           it "emulates small caps for #{ test_string.inspect }" do
             c = LatexRepositext.send(:new, '_', {})
-            c.emulate_small_caps(test_string).must_equal(xpect)
+            c.emulate_small_caps(
+              test_string,
+              'Arial',
+              ['regular']
+            ).must_equal(xpect)
           end
         end
 
