@@ -8,6 +8,11 @@ module Kramdown
 
         [
           [
+            "Single letter (part of date code, no custom kerning)",
+            "m",
+            "\\RtSmCapsEmulation{none}{M}{none}",
+          ],
+          [
             "Default case with single word",
             "Water",
             "W\\RtSmCapsEmulation{-0.1em}{ATER}{none}",

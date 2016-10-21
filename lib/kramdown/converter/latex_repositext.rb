@@ -34,6 +34,11 @@ module Kramdown
       # @param font_attrs [Array<String>]
       # @return [String]
       def emulate_small_caps(txt, font_name, font_attrs)
+        if txt =~ /\A[[:alpha:]]\z/
+          # This is a single character, part of a date code
+          return %(\\RtSmCapsEmulation{none}{#{ txt.unicode_upcase }}{none})
+        end
+
         r = txt.dup
         font_attrs = font_attrs.compact.sort.join(' ')
         str_sc = StringScanner.new(txt)
