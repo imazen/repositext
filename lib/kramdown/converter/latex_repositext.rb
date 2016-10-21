@@ -90,7 +90,7 @@ module Kramdown
             font_attrs = ['regular']  if font_attrs.empty?
             inner_text = emulate_small_caps(
               inner(el, opts),
-              @options[:font_name],
+              opts[:smallcaps_font_override] || @options[:font_name],
               font_attrs
             )
           end
@@ -137,7 +137,7 @@ module Kramdown
         case output_header_level(el.options[:level])
         when 1
           # render in RtTitle environment
-          l_title = inner(el, opts)
+          l_title = inner(el, opts.merge(smallcaps_font_override: @options[:title_font_name]))
           # capture first level 1 header as document title
           @document_title_plain_text ||= el.to_plain_text
           @document_title_latex ||= l_title
@@ -152,7 +152,7 @@ module Kramdown
           "\\begin{RtTitle}%\n#{ l_title }%\n\\end{RtTitle}"
         when 2
           # render in RtTitle2 environment
-          l_title = inner(el, opts)
+          l_title = inner(el, opts.merge(smallcaps_font_override: opts[:title_font_name]))
           # Fix issue where superscript fontsize in RtTitle is not scaled down
           # Convert "\textsuperscript{1}"
           # To "\textsuperscript{\textscale{0.7}{1}}"
@@ -196,7 +196,7 @@ module Kramdown
             # render in RtIdTitle1 environment
             before << "\\begin{RtIdTitle1}\n"
             after << "\n\\end{RtIdTitle1}"
-            inner_text = inner(el, opts)
+            inner_text = inner(el, opts.merge(smallcaps_font_override: @options[:title_font_name]))
             # differentiate between primary and non-primary content_types
             if !@options[:is_primary_repo]
               # add space between title and date code
@@ -209,6 +209,7 @@ module Kramdown
             # render in RtIdTitle2 environment
             before << "\\begin{RtIdTitle2}\n"
             after << "\n\\end{RtIdTitle2}"
+            inner_text = inner(el, opts.merge(smallcaps_font_override: @options[:title_font_name]))
           end
           if el.has_class?('normal')
             # render in RtNormal environment

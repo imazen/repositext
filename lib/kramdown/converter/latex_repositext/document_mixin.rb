@@ -93,7 +93,7 @@ module Kramdown
         # need to use polyglossia for the given language.
         # @param language_code_3_chars [String]
         # @return [String, Nil]
-        # TODO: Move this into `Language` classes
+        # TODO: Move this into settings or `Language` classes
         def polyglossia_default_language(language_code_3_chars)
           {
             'mal' => 'malayalam',
