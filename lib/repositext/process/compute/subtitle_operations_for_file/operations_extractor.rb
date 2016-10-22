@@ -433,28 +433,14 @@ class Repositext
           end
 
           def compute_move_direction
-            case @current_asp[:type]
-            when :right_aligned
-              # Right edge is aligned, so we can look at length change of current ASP
-              if @current_asp[:content_length_change] < 0
-                # current asp got shorter, move right
-                :move_right
-              else
-                # current asp got longer, move left
-                :move_left
-              end
-            when :unaligned
-              # Right edge is unaligned, we have to look at capture group's length change
-              ccc_before_current_asp = @asp_group_cumulative_content_change - @current_asp[:content_length_change]
-              if ccc_before_current_asp < 0
-                # Capture group has gotten shorter up to @current_asp => move left
-                :move_left
-              else
-                # Capture group has gotten longer up to @current_asp => move right
-                :move_right
-              end
+            # Right edge is unaligned, we have to look at capture group's length change
+            ccc_before_current_asp = @asp_group_cumulative_content_change - @current_asp[:content_length_change]
+            if ccc_before_current_asp < 0
+              # Capture group has gotten shorter up to @current_asp => move left
+              :move_left
             else
-              raise "Handle this: #{ @current_asp.inspect }"
+              # Capture group has gotten longer up to @current_asp => move right
+              :move_right
             end
           end
 

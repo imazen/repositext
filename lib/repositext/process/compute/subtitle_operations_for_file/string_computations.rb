@@ -70,7 +70,7 @@ class Repositext
           # @param a_string [String]
           # @return [Hash] with repeated strings as keys and start positions as vals.
           def self.repetitions(a_string)
-            ngram_length = 15 # based on min length of offensive repeat phrases in production content
+            ngram_length = 12 # based on min length of offensive repeat phrases in production content
             string_length = a_string.length
             return {}  if string_length <= ngram_length
 

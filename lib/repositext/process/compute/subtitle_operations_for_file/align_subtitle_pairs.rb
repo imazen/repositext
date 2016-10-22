@@ -67,9 +67,10 @@ class Repositext
             # Compute truncation length for sim_left and sim_right. We only
             # consider the first/last 30 chars. This length is aligned with
             # max_conf_at_char_length in `StringComputations.similarity`.
-            half_truncation_length = 30
+            half_truncation_length = 15
 
             aligned_subtitle_pairs.each_with_index { |asp,idx|
+              st_index = idx + 1 # subtitle indexes are one-based
               # Assign Subtitle object
               st_obj = if '' == asp[:from][:content]
                 # Subtitle doesn't exist in `from` content, create temp subtitle object
@@ -155,6 +156,7 @@ class Repositext
               nxt_b3 = idx < (asps.length-4) ? asps[idx+4] : nil
 
               fix_alignment_issues_around_subtitles_with_repeated_phrases!(
+                prev,
                 cur,
                 nxt
               )
@@ -163,17 +165,25 @@ class Repositext
             asps
           end
 
-          # If a subtitle pair has type "right_aligned" and is followed by
-          # an ins/del, we change it to "unaligned" if it has repetitions
-          # and text overlap with the following ST.
+          # This method fixes two issues around subtitle pairs that have repetitions:
+          #
+          # 1) If a subtitle pair has type :right_aligned and is followed by
+          # an ins/del, we change it to :unaligned if it has repetitions
+          # and text overlap with the following ASP.
+          # 2) If a subtitle pair has repetitions, it will be marked as :unaligned,
+          # even though it may be perfectly aligned. We fix that in this method.
+          #
           # This method modifies `cur` in place to fix the issue.
+          # @param prev [AlignedSubtitlePair]
           # @param cur [AlignedSubtitlePair]
           # @param nxt [AlignedSubtitlePair]
-          def fix_alignment_issues_around_subtitles_with_repeated_phrases!(cur, nxt)
-            return true  if nxt.nil? # We're at the last ASP, nothing to do.
+          def fix_alignment_issues_around_subtitles_with_repeated_phrases!(prev, cur, nxt)
+
+            # Handle first issue
             if(
               cur[:has_repetitions] &&
               :right_aligned == cur[:type] &&
+              nxt &&
               [:st_added, :st_removed].include?(nxt[:type]) &&
               (
                 StringComputations.overlap(
@@ -188,6 +198,83 @@ class Repositext
             )
               # Change type to `unaligned`
               cur[:type] = :unaligned
+            end
+
+            # Handle second issue
+            if(
+              :unaligned != cur[:type] ||
+              !cur[:has_repetitions]
+            )
+              # Irrelevant alignment or no repetitions, nothing to do.
+              return true
+            end
+
+            # At this point we have an :unaligned ASP with repetitions.
+            # We want to mark it as :left_aligned or :right_aligned if that
+            # is the case.
+            cur_repeated_phrases = [:from, :to].map { |e|
+              cur[e][:repetitions].keys
+            }.flatten
+              .uniq
+              .compact
+              .map { |e| e.strip }
+              .find_all { |e| '' != e }
+            prev_reps_aligned, cur_reps_aligned, nxt_reps_aligned = [prev, cur, nxt].map { |asp|
+              return true  if asp.nil?
+
+              # Determine if repetitions are aligned
+              asp_joined_content_sim = [:from, :to].map { |e| asp[e][:content_sim] }.join(' ')
+
+              if asp[:has_repetitions]
+                # ASP has repetitions, however they are balanced.
+                asp[:from][:repetitions].values.length == asp[:to][:repetitions].values.length
+              else
+                # ASP doesn't have repetitions and both :from and :to contain
+                # the same count of each of cur's repeated phrases (0 or 1 times,
+                # any more and they'd be flagged as having repetitions).
+                cur_repeated_phrases.all? { |rep_phrase|
+                  [:from, :to].map { |e|
+                    asp[e][:content_sim].scan(rep_phrase).count
+                  }.compact.length == 1
+                }
+              end
+            }
+            high_sim_left = high_similarity_or_false(cur[:sim_left])
+            high_sim_right = high_similarity_or_false(cur[:sim_right])
+
+            # Check for possible left alignment, then right alignment
+            if (
+              # check for left alignment
+              (
+                # prev's right edge is aligned or its repetitions are aligned
+                (prev && [:fully_aligned, :right_aligned].include?(prev[:type])) ||
+                prev_reps_aligned
+              ) && (
+                # and cur's repetitions are aligned or cur's and nxt's repetitions aren't
+                cur_reps_aligned || !nxt_reps_aligned
+              ) && (
+                # and left sim is high and higher than right sim
+                high_sim_left && high_sim_left >= (high_sim_right || 0)
+              )
+            )
+              cur[:type] = :left_aligned
+            elsif (
+              # check for right alignment
+              (
+                # nxt's left edge is aligned or its repetitions are aligned
+                (nxt && [:fully_aligned, :left_aligned].include?(nxt[:type])) ||
+                nxt_reps_aligned
+              ) && (
+                # and cur's repetitions are aligned or cur's and prev's repetitions aren't
+                cur_reps_aligned || !prev_reps_aligned
+              ) && (
+                # right sim is high and higher than left sim
+                high_sim_right && high_sim_right > (high_sim_left || 0)
+              )
+            )
+              cur[:type] = :right_aligned
+            else
+              # Nothing to do, leave :unaligned
             end
           end
 
@@ -215,32 +302,28 @@ class Repositext
               :st_removed
             else
               # No ins/del, compute alignment
-              high_sim_left = (
-                al_st_pair[:sim_left].first >= 0.87 and
-                al_st_pair[:sim_left].last >= 0.9
-              ) ? al_st_pair[:sim_left].first : false
-              high_sim_right = (
-                al_st_pair[:sim_right].first >= 0.87 and
-                al_st_pair[:sim_right].last >= 0.9
-              ) ? al_st_pair[:sim_right].first : false
-              has_repetitions = al_st_pair[:has_repetitions]
+              high_sim_left = high_similarity_or_false(asp[:sim_left])
+              high_sim_right = high_similarity_or_false(asp[:sim_right])
+              no_repetitions = !asp[:has_repetitions]
               if(
-                asp[:sim_abs].first > 0.93 and asp[:sim_abs].last == 1.0 and
+                asp[:sim_abs].first > 0.93 and asp[:sim_abs].last >= 1.0 and
                 high_sim_left and
                 high_sim_right
               )
                 # very high absolute similarity, sufficient confidence
                 :fully_aligned
-              elsif high_sim_left && high_sim_right
-                # Both similarities score high, use max to determine alignment
+              elsif no_repetitions && high_sim_left && high_sim_right
+                # Both similarities score high, use max
                 high_sim_left >= high_sim_right ? :left_aligned : :right_aligned
-              elsif high_sim_left
+              elsif no_repetitions && high_sim_left
                 # very high left similarity, sufficient confidence
                 :left_aligned
-              elsif high_sim_right
+              elsif no_repetitions && high_sim_right
                 # very high right similarity, sufficient confidence
                 :right_aligned
               else
+                # Some pairs that are aligned but have repetitions may land
+                # here. We'll fix them in #fix_alignment_issues_around_subtitles_with_repeated_phrases!
                 :unaligned
               end
             end
@@ -250,6 +333,15 @@ class Repositext
           # @param reps_to [Hash]
           def compute_repetitions(reps_from, reps_to)
             [reps_from, reps_to].any? { |reps| reps.any? { |k,v| v.length > 1 } }
+          end
+
+          # Returns a high similarity if it meets requirements or false otherwise.
+          # @param asp_sim [Array<Float>] one of the asp's :sim_left or :sim_right
+          #     values: `sim_left: [sim<Float>, conf<Float>]`
+          # @return [Float, False]
+          def high_similarity_or_false(asp_sim)
+            # first is similarity, last is confidence
+            (asp_sim.first >= 0.93 && asp_sim.last >= 0.9) ? asp_sim.first : false
           end
 
         end
