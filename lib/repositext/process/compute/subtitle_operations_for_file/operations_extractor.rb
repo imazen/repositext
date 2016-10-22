@@ -82,7 +82,7 @@ class Repositext
                 "sl:#{ curr[:sim_left] } ",
                 "sa:#{ curr[:sim_abs] } ",
                 "sr:#{ curr[:sim_right] } ",
-                "reps: #{ curr[:has_repetitions] }"
+                "reps: #{ curr[:has_repetitions] ? [:from, :to].map { |e| curr[e][:repetitions].inspect } : 'n/a'}"
               ].join)
             end
 

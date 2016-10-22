@@ -39,6 +39,7 @@ class Repositext
                 )
               }
             else
+              # On subsequent syncs we only process affected files
               st_ops_for_repo.affected_content_at_files
             end
 

@@ -148,13 +148,8 @@ class Repositext
           # @return [Array<AlignedSubtitlePair>]
           def post_process_aligned_subtitle_pairs!(asps)
             asps.each_with_index do |cur, idx|
-              prev_b1 = idx > 1 ? asps[idx-2] : nil
               prev = idx > 0 ? asps[idx-1] : nil
               nxt = idx < (asps.length-1) ? asps[idx+1] : nil
-              nxt_bo = idx < (asps.length-2) ? asps[idx+2] : nil
-              nxt_b2 = idx < (asps.length-3) ? asps[idx+3] : nil
-              nxt_b3 = idx < (asps.length-4) ? asps[idx+4] : nil
-
               fix_alignment_issues_around_subtitles_with_repeated_phrases!(
                 prev,
                 cur,
@@ -196,7 +191,7 @@ class Repositext
                 ) > 0
               )
             )
-              # Change type to `unaligned`
+              # Change type to :unaligned
               cur[:type] = :unaligned
             end
 
@@ -282,11 +277,7 @@ class Repositext
           # @param al_st_pair [AlignedSubtitlePair]
           # @return [Integer]
           def compute_subtitle_count_change(al_st_pair)
-            (
-              al_st_pair[:to][:subtitle_count]
-            ) - (
-              al_st_pair[:from][:subtitle_count]
-            )
+            al_st_pair[:to][:subtitle_count] - al_st_pair[:from][:subtitle_count]
           end
 
           # Returns nature of asp.
