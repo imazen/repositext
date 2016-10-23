@@ -180,16 +180,7 @@ class Repositext
               :right_aligned == cur[:type] &&
               nxt &&
               [:st_added, :st_removed].include?(nxt[:type]) &&
-              (
-                StringComputations.overlap(
-                  cur[:to][:content_sim],
-                  nxt[:from][:content_sim]
-                ) > 0 ||
-                StringComputations.overlap(
-                  cur[:from][:content_sim],
-                  nxt[:to][:content_sim]
-                ) > 0
-              )
+              asps_have_overlap(cur, nxt)
             )
               # Change type to :unaligned
               cur[:type] = :unaligned
@@ -241,12 +232,13 @@ class Repositext
             if (
               # check for left alignment
               (
-                # prev's right edge is aligned or its repetitions are aligned
+                # prev's right edge is aligned
                 (prev && [:fully_aligned, :right_aligned].include?(prev[:type])) ||
-                prev_reps_aligned
-              ) && (
-                # and cur's repetitions are aligned or cur's and nxt's repetitions aren't
-                cur_reps_aligned || !nxt_reps_aligned
+                # or prev's repetitions are aligned and cur's repetitions are
+                #    aligned or cur's and nxt's repetitions aren't.
+                (prev_reps_aligned && (cur_reps_aligned || !nxt_reps_aligned)) ||
+                # or there is no overlap between prev and cur (most expensive operation, do last)
+                !asps_have_overlap(prev, cur)
               ) && (
                 # and left sim is high and higher than right sim
                 high_sim_left && high_sim_left >= (high_sim_right || 0)
@@ -256,14 +248,15 @@ class Repositext
             elsif (
               # check for right alignment
               (
-                # nxt's left edge is aligned or its repetitions are aligned
+                # nxt's left edge is aligned
                 (nxt && [:fully_aligned, :left_aligned].include?(nxt[:type])) ||
-                nxt_reps_aligned
+                # or nxt's repetitions are aligned and cur's repetitions are
+                #    aligned or cur's and prev's repetitions aren't.
+                (nxt_reps_aligned && (cur_reps_aligned || !prev_reps_aligned))
+                # or there is no overlap between cur and nxt (most expensive operation, do last)
+                !asps_have_overlap(cur, nxt)
               ) && (
-                # and cur's repetitions are aligned or cur's and prev's repetitions aren't
-                cur_reps_aligned || !prev_reps_aligned
-              ) && (
-                # right sim is high and higher than left sim
+                # and right sim is high and higher than left sim
                 high_sim_right && high_sim_right > (high_sim_left || 0)
               )
             )
@@ -271,6 +264,21 @@ class Repositext
             else
               # Nothing to do, leave :unaligned
             end
+          end
+
+          # Returns true if asp1 and asp2 have text overlap
+          # @param asp1 [AlignedSubtitlePair]
+          # @param asp2 [AlignedSubtitlePair]
+          # @return [Boolean]
+          def asps_have_overlap(asp1, asp2)
+            StringComputations.overlap(
+              asp1[:to][:content_sim],
+              asp2[:from][:content_sim]
+            ) > 0 ||
+            StringComputations.overlap(
+              asp1[:from][:content_sim],
+              asp2[:to][:content_sim]
+            ) > 0
           end
 
           # Returns difference in subtitles from :from to :to in al_st_pair.
