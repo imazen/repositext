@@ -230,7 +230,7 @@ class Repositext
                 cur_repeated_phrases.all? { |rep_phrase|
                   [:from, :to].map { |e|
                     asp[e][:content_sim].scan(rep_phrase).count
-                  }.compact.length == 1
+                  }.uniq.length == 1
                 }
               end
             }
