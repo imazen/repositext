@@ -85,6 +85,7 @@ module Kramdown
             ["word1 word2#{ Repositext::ELIPSIS }! word3 word4", "word1 word2#{ Repositext::ELIPSIS }! word3 word4"],
             ["word1 word2#{ Repositext::EM_DASH }! word3 word4", "word1 word2#{ Repositext::EM_DASH }! word3 word4"],
             ["word1 word2-! word3 word4", "word1 word2-! word3 word4"],
+            ["word1 word2{-0.05em}word3 word4", "word1 word2{-0.05em}word3 word4"],
             ["word1 word2-ed. word3 word4", "word1 word2-ed. word3 word4"],
             ["\\RtGapMarkText{…}\\emph{\\RtGapMarkText{word1}}", "\\RtGapMarkText{\\nolinebreak[4]…\\hspace{0pt}}\\emph{\\RtGapMarkText{word1}}"], #
             # Don't insert zero width space before certain punctuation
