@@ -25,6 +25,7 @@ class Repositext
         tmp_attrs: {
           after: hash[:after],
           before: hash[:before],
+          index: hash[:index],
         }
       )
     end
@@ -71,6 +72,10 @@ class Repositext
       tmp_attrs[:before]
     end
 
+    def tmp_index
+      tmp_attrs[:index]
+    end
+
     # Returns a Hash describing self
     def to_hash
       h = {
@@ -79,7 +84,7 @@ class Repositext
         before: tmp_attrs[:before],
         after: tmp_attrs[:after],
       }
-      h[:comments] = "st_index: #{ tmp_attrs[:index] }"  if tmp_attrs[:index]
+      # h[:comments] = "st_index: #{ tmp_attrs[:index] }"  if tmp_attrs[:index]
       h[:afterStid] = tmp_attrs[:afterStid]  if tmp_attrs[:afterStid]
       h
     end

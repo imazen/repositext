@@ -47,7 +47,7 @@ class Repositext
               sync_primary_file(content_at_file, st_ops_for_repo)
             end
 
-            update_primary_repo_level_st_sync_data
+            update_primary_repo_level_st_sync_data(st_ops_for_repo.next_operation_id)
           end
 
         private
@@ -90,11 +90,13 @@ class Repositext
             )
           end
 
-          def update_primary_repo_level_st_sync_data
+          # @param next_operation_id [Integer]
+          def update_primary_repo_level_st_sync_data(next_operation_id)
             # Record git_to_commit at primary repo level
             @primary_repository.update_repo_level_data(
               'st_sync_commit' => @to_git_commit,
               'st_sync_required' => nil,
+              'st_sync_next_operation_id' => next_operation_id,
             )
           end
 

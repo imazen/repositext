@@ -136,12 +136,14 @@ class Repositext
           File.join(config.base_dir(:data_dir), 'subtitle_ids.txt'),
           'r+'
         )
+        primary_repo = content_type.repository
         Process::Sync::Subtitles.new(
           options.merge(
             'config' => config,
             'file_list' => file_list,
             'is_initial_sync' => true,
-            'primary_repository' => content_type.repository,
+            'next_operation_id' => primary_repo.read_repo_level_data['st_sync_next_operation_id'],
+            'primary_repository' => primary_repo,
             'stids_inventory_file' => stids_inventory_file,
           )
         ).sync

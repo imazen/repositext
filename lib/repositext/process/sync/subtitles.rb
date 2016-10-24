@@ -30,6 +30,7 @@ class Repositext
         def initialize(options)
           @config = options['config']
           @file_list = options['file_list']
+          @next_operation_id = options['next_operation_id']
           @from_git_commit = options['from-commit']
           @primary_repository = options['primary_repository']
           @stids_inventory_file = options['stids_inventory_file']

@@ -81,7 +81,7 @@ class Repositext
                     '+',
                     temp_subtitle_offset += 1,
                   ].join,
-                  tmp_attrs: {},
+                  tmp_attrs: { index: st_index },
                   record_id: asp[:to][:record_id]
                 )
               else
@@ -91,7 +91,7 @@ class Repositext
                 ::Repositext::Subtitle.new(
                   persistent_id: asp[:from][:persistent_id],
                   record_id: asp[:to][:record_id],
-                  tmp_attrs: {}
+                  tmp_attrs: { index: st_index },
                 )
               end
               st_obj.tmp_attrs[:before] = asp[:from][:content]
@@ -129,7 +129,7 @@ class Repositext
                 asp[:from][:repetitions],
                 asp[:to][:repetitions]
               )
-              asp[:index] = idx + 1 # one based subtitle index
+              asp[:index] = st_index
               # Take first and last_in_para from `to` st
               asp[:first_in_para] = asp[:to][:first_in_para]
               asp[:last_in_para] = asp[:to][:last_in_para]
