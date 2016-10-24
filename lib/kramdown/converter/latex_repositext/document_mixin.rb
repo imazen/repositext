@@ -343,6 +343,13 @@ module Kramdown
           # Nothing to do if l_title_plain_text is already short enough
           return l_title_latex  if l_title_plain_text.length <= max_len
 
+          if 0 != min_length_of_last_word
+            # A non-zero value indicates that there is no truncation override for this file
+            # We want to know of any titles that require truncation so that we can review
+            # and set truncation point for best results.
+            puts "Truncating text without having truncation override! Please add setting `pdf_export_truncated_header_title_length` to file's data.json file (under settings): #{ title_plain_text }".color(:red)
+          end
+
           truncated_title_plain_text = truncate_plain_text_title(
             l_title_plain_text,
             max_len,
