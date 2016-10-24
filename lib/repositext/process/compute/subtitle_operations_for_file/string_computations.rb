@@ -146,7 +146,8 @@ class Repositext
           # @param threshold [Float, optional]
           # @param debug [Boolean, optional]
           # @return [Integer] Number of overlapping characters
-          def self.overlap(string_a, string_b, threshold=0.67, debug=false)
+          def self.overlap(string_a, string_b, threshold=nil, debug=false)
+            threshold ||= 0.67 # so that we can pass nil as argument and still get default
             min_string_length = [string_a, string_b].map(&:length).min
             return 0  if min_string_length < min_overlap
 

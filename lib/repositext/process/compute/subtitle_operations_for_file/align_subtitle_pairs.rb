@@ -238,7 +238,7 @@ class Repositext
                 #    aligned or cur's and nxt's repetitions aren't.
                 (prev_reps_aligned && (cur_reps_aligned || !nxt_reps_aligned)) ||
                 # or there is no overlap between prev and cur (most expensive operation, do last)
-                !asps_have_overlap(prev, cur)
+                !asps_have_overlap(prev, cur, 0.9)
               ) && (
                 # and left sim is high and higher than right sim
                 high_sim_left && high_sim_left >= (high_sim_right || 0)
@@ -254,7 +254,7 @@ class Repositext
                 #    aligned or cur's and prev's repetitions aren't.
                 (nxt_reps_aligned && (cur_reps_aligned || !prev_reps_aligned))
                 # or there is no overlap between cur and nxt (most expensive operation, do last)
-                !asps_have_overlap(cur, nxt)
+                !asps_have_overlap(cur, nxt, 0.9)
               ) && (
                 # and right sim is high and higher than left sim
                 high_sim_right && high_sim_right > (high_sim_left || 0)
@@ -269,15 +269,18 @@ class Repositext
           # Returns true if asp1 and asp2 have text overlap
           # @param asp1 [AlignedSubtitlePair]
           # @param asp2 [AlignedSubtitlePair]
+          # @param sim_threshold [Float]
           # @return [Boolean]
-          def asps_have_overlap(asp1, asp2)
+          def asps_have_overlap(asp1, asp2, sim_threshold)
             StringComputations.overlap(
               asp1[:to][:content_sim],
-              asp2[:from][:content_sim]
+              asp2[:from][:content_sim],
+              sim_threshold
             ) > 0 ||
             StringComputations.overlap(
               asp1[:from][:content_sim],
-              asp2[:to][:content_sim]
+              asp2[:to][:content_sim],
+              sim_threshold
             ) > 0
           end
 
