@@ -54,10 +54,15 @@ class Repositext
 
         # Returns array with operations for all primary files
         def process_all_primary_files
-          Dir.glob(
+          ops_queue = Queue.new # Use queue for thread safe production
+          all_file_names = Dir.glob(
             File.join(@repository.base_dir, '**/content/**/*.at')
-          ).map { |absolute_file_path|
-            next nil  if !@file_list.any? { |e| absolute_file_path.index(e) }
+          )
+          Parallel.each(
+            all_file_names,
+            {}
+          ) do |absolute_file_path|
+            next  if !@file_list.any? { |e| absolute_file_path.index(e) }
             # Skip non content_at files
             unless absolute_file_path =~ /\/content\/.+\d{4}\.at\z/
               raise "shouldn't get here"
@@ -81,10 +86,12 @@ class Repositext
               }
             ).compute
 
-            # Return nil if no subtitle operations exist for this file
-            # So #compact will remove it.
-            soff.operations.any? ? soff : nil
-          }.compact
+            # Only capture file if it has operations
+            ops_queue.push(soff)  if soff.operations.any?
+          end
+
+          # Convert queue to array
+          ops_queue.size.times.map { queue.pop }
         end
 
         # Returns array with operations for primary files that changed only
