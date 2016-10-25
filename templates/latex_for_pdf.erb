@@ -103,8 +103,8 @@
     % no line in footer (default)
   <% end %>
   \fancyhead[EL,OR]{<%= "\\hrule height 0.19\pt \\kern 0.33\pt"  if @hrules_present %><%= @page_number_command %>} % outside
-  \fancyhead[ER]{<%= @header_text %>} % inside even
-  \fancyhead[OL]{<%= @header_title %>} % inside odd
+  \fancyhead[ER]{\addfontfeature{LetterSpace=7.5}<%= @header_text %>} % inside even
+  \fancyhead[OL]{\addfontfeature{LetterSpace=7.5}<%= @header_title %>} % inside odd
   \RtFooterContent
 }
 \pagestyle{RtPageStyle} % apply custom pagestyle
