@@ -33,7 +33,7 @@ class Repositext
               sts_to,
               { diagonal_band_range: diagonal_band_range }
             )
-            print " with diagonal_band_range #{ diagonal_band_range }"  if debug
+            print " with diagonal_band_range #{ diagonal_band_range }"
             aligned_subtitles_from, aligned_subtitles_to = aligner.get_optimal_alignment
 
             # check for max alignment offset

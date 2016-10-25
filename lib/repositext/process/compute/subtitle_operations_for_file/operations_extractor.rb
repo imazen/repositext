@@ -451,7 +451,7 @@ class Repositext
           end
 
           def debug
-            false
+            true
           end
 
         end

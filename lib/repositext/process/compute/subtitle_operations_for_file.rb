@@ -86,9 +86,9 @@ Data types used in this file
             puts ('-' * 80).color(:red)
             puts "content_at_to"
             puts @content_at_file_to.contents
-            puts "       - compute st attrs"
           end
 
+          print "       - compute st attrs"
           subtitle_attrs_from = compute_subtitle_attrs_from(
             @content_at_file_to,
             @options[:from_git_commit],
@@ -106,9 +106,9 @@ Data types used in this file
             puts ('-' * 80).color(:red)
             puts "subtitle_attrs_to"
             pp subtitle_attrs_to
-            puts " - align st pairs"
           end
 
+          print " - align st pairs"
           aligned_subtitle_pairs = align_subtitle_pairs(
             subtitle_attrs_from,
             subtitle_attrs_to
@@ -117,9 +117,9 @@ Data types used in this file
             puts ('-' * 80).color(:red)
             puts "aligned_subtitle_pairs"
             pp aligned_subtitle_pairs
-            puts " - extract ops"
           end
 
+          puts " - extract ops"
           operations = OperationsExtractor.new(
             aligned_subtitle_pairs,
             @content_at_file_to.extract_date_code
