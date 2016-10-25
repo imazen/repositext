@@ -344,7 +344,7 @@ module Kramdown
           return l_title_latex  if l_title_plain_text.length <= max_len
 
           if 0 != min_length_of_last_word
-            # A non-zero value indicates that there is no truncation override for this file
+            # A non-zero value indicates that there is no truncation override for this file.
             # We want to know of any titles that require truncation so that we can review
             # and set truncation point for best results.
             puts "Truncating text without having truncation override! Please add setting `pdf_export_truncated_header_title_length` to file's data.json file (under settings): #{ title_plain_text }".color(:red)
@@ -365,6 +365,7 @@ module Kramdown
           back_to_back_braces_regex = /\}\{/
           closing_brace_regex = /\}/
           latex_command_regex = /\\[a-z]+/i
+          latex_kerning_argument_regex = /\}?\{(?:-?[\d\.]+em|none)\}/
 
           s = StringScanner.new(l_title_latex)
           while !s.eos? do
@@ -372,6 +373,11 @@ module Kramdown
             if (latex_cmd = s.scan(latex_command_regex))
               # latex command, capture, leave brace_nesting_level unchanged
               new_title_latex << latex_cmd
+            elsif (latex_kerning_argument = s.scan(latex_kerning_argument_regex))
+              # pos or neg kerning argument for RtSmCapsEmulation,
+              # e.g., {-0.3em}, {0.2em}, or {none}
+              # leave brace_nesting_level unchanged
+              new_title_latex << latex_kerning_argument
             elsif (back_to_back_braces = s.scan(back_to_back_braces_regex))
               # back to back braces, capture, leave brace_nesting_level unchanged
               new_title_latex << back_to_back_braces
@@ -410,7 +416,6 @@ module Kramdown
                   # No letter match, this is probably an ellipsis
                   new_title_latex << truncated_title_plain_text[plain_text_index]
                 end
-
               end
               plain_text_index += 1
               # detect whether we've reached truncation length
