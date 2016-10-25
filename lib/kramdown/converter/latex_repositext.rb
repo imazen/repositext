@@ -18,15 +18,15 @@ module Kramdown
       #
       # * Find any pairs of adjacent letters with transition from upper to lower
       #   case.
-      # * Capture upper case character as fullcaps char (fc_char).
-      # * Capture all lower case characters (sc_chars).
-      # * Look up leading custom kerning for fc_char/sc_chars.first (leading_ck).
+      # * Capture upper case character as fullcaps char (fullcaps_char).
+      # * Capture all lower case characters (smallcaps_chars).
+      # * Look up leading custom kerning for fullcaps_char/smallcaps_chars.first (leading_ck).
       # * Capture optional trailing character (either upper case letter or
-      #   punctuation [.,?!:]) following immediately after sc_chars for custom
+      #   punctuation [.,?!:]) following immediately after smallcaps_chars for custom
       #   kerning (trailing_ck_char).
       # * If trailing_ck_char ? look up trailing custom kerning for
-      #   sc_chars.last/trailing_ck_char (trailing_ck).
-      # * Upcase and wrap sc_chars in RtSmCapsEmulation with leading_ck and
+      #   smallcaps_chars.last/trailing_ck_char (trailing_ck).
+      # * Upcase and wrap smallcaps_chars in RtSmCapsEmulation with leading_ck and
       #   optional trailing_ck arguments.
       #
       # @param txt [String] the text inside the em.smcaps.
@@ -39,63 +39,81 @@ module Kramdown
           return %(\\RtSmCapsEmulation{none}{#{ txt.unicode_upcase }}{none})
         end
 
-        r = txt.dup
+        new_string = ""
         font_attrs = font_attrs.compact.sort.join(' ')
         str_sc = StringScanner.new(txt)
-        str_sc_state = :idle
-        fc_char = nil
-        sc_chars = nil
+
+        str_sc_state = :capture_non_letter_chars # take care of any leading non-letter chars
+        fullcaps_char = nil
+        smallcaps_chars = nil
         trailing_ck_char = nil
         keep_scanning = true
 
         while keep_scanning do
           case str_sc_state
+          when :capture_non_letter_chars
+            if str_sc.scan(/[^[:alpha:]]*/)
+              # capture any leading non-letter chars
+              new_string << str_sc.matched
+            end
+            str_sc_state = :idle
           when :idle
-            fc_char = nil
-            sc_chars = nil
+            fullcaps_char = nil
+            smallcaps_chars = nil
             trailing_ck_char = nil
-            if(str_sc.skip_until(/(?=[[:upper:]][[:lower:]])/))
-              str_sc_state = :capture_fc_char
+            if(str_sc.check(/(?=[[:upper:]][[:lower:]])/))
+              str_sc_state = :capture_fullcaps_char
+            elsif(str_sc.check(/(?=[[:lower:]])/))
+              str_sc_state = :capture_smallcaps_chars
+            elsif(str_sc.scan(/[[:upper:]][^[:lower:]]*/))
+              # Capture upper case not followed by lower case
+              new_string << str_sc.matched
             else
               keep_scanning = false
             end
-          when :capture_fc_char
+          when :capture_fullcaps_char
             if(str_sc.scan(/[[:upper:]](?=[[:lower:]])/))
-              fc_char = str_sc.matched
-              str_sc_state = :capture_sc_chars
+              fullcaps_char = str_sc.matched
+              str_sc_state = :capture_smallcaps_chars
             else
               raise "Handle this!"
             end
-          when :capture_sc_chars
+          when :capture_smallcaps_chars
             if(str_sc.scan(/[[:lower:]]+/))
-              sc_chars = str_sc.matched
-              str_sc_state = :maybe_capture_trailing_ck_char
+              # lowercase characters
+              smallcaps_chars = str_sc.matched
+              str_sc_state = :maybe_detect_trailing_ck_char
             else
               raise "Handle this!"
             end
-          when :maybe_capture_trailing_ck_char
+          when :maybe_detect_trailing_ck_char
             if(str_sc.check(/[[:upper:]\.\,\?\!\:]/))
               trailing_ck_char = str_sc.matched
             end
-            str_sc_state = :finalize_capture
-          when :finalize_capture
-            # Determine leading custom kerning
-            leading_character_pair = [fc_char, sc_chars[0]].join
-            leading_kerning_value = smallcaps_kerning_map.lookup_kerning(
-              font_name,
-              font_attrs,
-              leading_character_pair
-            )
-            if leading_kerning_value
-              # We have a value, add `em` unit
-              leading_kerning_value = "#{ leading_kerning_value }em"
+            str_sc_state = :finalize_smcaps_run
+          when :finalize_smcaps_run
+            if fullcaps_char
+              # Determine leading custom kerning
+              leading_character_pair = [fullcaps_char, smallcaps_chars[0]].join
+              leading_kerning_value = smallcaps_kerning_map.lookup_kerning(
+                font_name,
+                font_attrs,
+                leading_character_pair
+              )
+              if leading_kerning_value
+                # We have a value, add `em` unit
+                leading_kerning_value = "#{ leading_kerning_value }em"
+              else
+                # No kerning value, print out warning
+                puts "Unhandled Kerning for font #{ font_name.inspect }, font_attrs #{ font_attrs.inspect } and character pair #{ leading_character_pair.inspect }, ".color(:red)
+              end
+              new_string << fullcaps_char
             else
-              # No kerning value, print out warning
-              puts "Unhandled Kerning for font #{ font_name.inspect }, font_attrs #{ font_attrs.inspect } and character pair #{ leading_character_pair.inspect }, ".color(:red)
+              leading_kerning_value = nil
             end
             # Determine trailing custom kerning
             if trailing_ck_char
-              trailing_character_pair = [sc_chars[-1], trailing_ck_char].join
+              trailing_character_pair = [smallcaps_chars[-1], trailing_ck_char].join
               trailing_kerning_value = smallcaps_kerning_map.lookup_kerning(
                 font_name,
                 font_attrs,
@@ -111,16 +129,18 @@ module Kramdown
             else
               trailing_kerning_value = nil
             end
-            r.sub!(
-              /(?<=#{ fc_char })#{ sc_chars }/,
-              %(\\RtSmCapsEmulation{#{ leading_kerning_value || 'none' }}{#{ sc_chars.unicode_upcase }}{#{ trailing_kerning_value || 'none' }})
-            )
-            str_sc_state = :idle
+            new_string << [
+              %(\\RtSmCapsEmulation), # latex command
+              %({#{ leading_kerning_value || 'none' }}), # leading custom kerning argument
+              %({#{ smallcaps_chars.unicode_upcase }}), # text in smallcaps
+              %({#{ trailing_kerning_value || 'none' }}), # trailing custom kerning argument
+            ].join
+            str_sc_state = :capture_non_letter_chars
           else
             raise "Handle this: #{ str_sc_state.inspect }"
           end
         end
-        r
+        new_string
       end
 
       def smallcaps_kerning_map

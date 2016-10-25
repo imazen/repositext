@@ -62,6 +62,21 @@ module Kramdown
             "¿Water",
             "¿W\\RtSmCapsEmulation{-0.1em}{ATER}{none}",
           ],
+          [
+            "Upper cases character after apostrophe",
+            "Word’s Word",
+            "W\\RtSmCapsEmulation{none}{ORD}{none}’\\RtSmCapsEmulation{none}{S}{none} W\\RtSmCapsEmulation{none}{ORD}{none}",
+          ],
+          [
+            "Upper cases A.D., not scaling down the periods inbetween",
+            "a.d.",
+            "\\RtSmCapsEmulation{none}{A}{none}.\\RtSmCapsEmulation{none}{D}{none}.",
+          ],
+          [
+            "Handles standalone upper case chars",
+            "Word A Word",
+            "W\\RtSmCapsEmulation{none}{ORD}{none} A W\\RtSmCapsEmulation{none}{ORD}{none}",
+          ],
         ].each do |desc, test_string, xpect|
           it "handles #{ desc.inspect }" do
             c = LatexRepositext.send(:new, '_', {})
