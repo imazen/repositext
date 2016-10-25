@@ -156,6 +156,7 @@ This document was rendered at #{ Time.now.to_s }.
                 )
                 [
                   "\\begin{KerningSample}{\\#{ key_for_font_name(font_name) }}",
+                  "\\rule[-.3\\baselineskip]{0pt}{\\baselineskip}%", # Insert strut to avoid inconsistent vertical spacing caused by different height characters.
                   [
                     "  ",
                     font_attr_prefix,
