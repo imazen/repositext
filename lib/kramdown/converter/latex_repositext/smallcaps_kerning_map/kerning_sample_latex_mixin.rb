@@ -138,7 +138,12 @@ This document was rendered at #{ Time.now.to_s }.
 
               r = "Kernings for font #{ font_name.inspect }, font attrs #{ font_attrs.inspect }\n\n"
               r << "\\vspace{2em}\n\n"
-              r << font_attrs_map.map { |character_pair, kern_val|
+              # Partition character pairs, put the ones with null kerning values at the top.
+              cps_without_kern_val, cps_with_kern_val = font_attrs_map.partition { |character_pair, kern_val|
+                kern_val.nil?
+              }
+              all_cps = cps_without_kern_val + cps_with_kern_val # join them with null kerns at the front
+              r << all_cps.map { |character_pair, kern_val|
                 txt = case character_pair
                 when /[[:upper:]][[:lower:]]/
                   [sample_prefix, ' ', character_pair, sample_suffix].join
