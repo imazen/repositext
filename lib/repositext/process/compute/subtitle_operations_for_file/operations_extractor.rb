@@ -428,6 +428,16 @@ class Repositext
               raise "Handle this: #{ op_type.inspect }"
             end
             if op
+              if(prev_op = @ops_in_file.last)
+                # determine related operations
+                cur_aff_stids = op.affectedStids.map { |e| e.persistent_id }
+                prev_aff_stids = prev_op.affectedStids.map { |e| e.persistent_id }
+                if (cur_aff_stids & prev_aff_stids).any?
+                  # prev and cur share common affected stids, mark them as related
+                  prev_op.relatedOpIdAfter = op.operationId
+                  op.relatedOpIdBefore = prev_op.operationId
+                end
+              end
               @ops_in_group << op
               @ops_in_file << op
             end
