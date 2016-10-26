@@ -372,6 +372,10 @@
 % command to render last eagle
 \newcommand{\RtLastEagle}
   {~\hspace{\fill}~\mbox{\raisebox{-0.5ex}}\flushright}
+% command to render last eagle at right margin if it is located inside a song paragraph.
+\newcommand{\RtLastEagleInsideSong}
+  {~\hspace{\fill}~\rlap{\hspace{20pt}\raisebox{-0.5ex}{}}}
+
 
 % enviroment to render first eagle
 \newenvironment{RtFirstEagle}

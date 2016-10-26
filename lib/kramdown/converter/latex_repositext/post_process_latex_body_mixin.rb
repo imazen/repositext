@@ -118,6 +118,7 @@ module Kramdown
         # custom formatting.
         # @param lb [String] latex body, will be modified in place.
         def format_leading_and_trailing_eagles!(lb)
+          # Replace leading eagle with RtFirstEagle
           lb.gsub!(
             /
               ^ # beginning of line
@@ -130,6 +131,7 @@ module Kramdown
             /x,
             "\\RtFirstEagle " + '\1' # we use an environment for first eagle
           )
+          # Replace trailing eagle with RtLastEagle
           lb.gsub!(
             /
               (?!<^) # not preceded by line start
@@ -144,6 +146,18 @@ module Kramdown
               )
             /x,
             '\1' + "\\RtLastEagle{}" + '\2' # we use a command for last eagle
+          )
+          # Handle RtLastEagle inside of .song para: Songs have a wider
+          # right margin than regular text, so the eagle is not as
+          # close to the right margin as expected.
+          # In order to push the trailing eagle further to the right
+          # than the song paragraphs right margin, we move the
+          # eagle into a new paragraph where it is positioned
+          # further to the right, and shifted back up to be aligned
+          # with the previous line of text.
+          lb.gsub!(
+            /\\RtLastEagle(\{\}\n\\end\{(?:RtSong|RtStanza)\})/,
+            "\\RtLastEagleInsideSong" + '\1'
           )
         end
 
