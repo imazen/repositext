@@ -223,6 +223,7 @@ class Repositext
           id_write_to_primary: config.setting(:pdf_export_id_write_to_primary,false),
           id_write_to_secondary: config.setting(:pdf_export_id_write_to_secondary,false),
           is_primary_repo: config.setting(:is_primary_repo),
+          language: content_type.language,
           language_code_2_chars: config.setting(:language_code_2_chars),
           language_code_3_chars: config.setting(:language_code_3_chars),
           language_name: content_type.language.name,

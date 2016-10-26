@@ -11,6 +11,36 @@ class Repositext
       ]
     end
 
+    # Returns a map of semantic character names and their language
+    # specific implementation, e.g., double opening quote.
+    def self.chars
+      {
+        apostrophe: "’",
+        d_quote_close: "”",
+        d_quote_open: "“",
+        elipsis: "…",
+        em_dash: "—",
+        s_quote_close: "’",
+        s_quote_open: "‘",
+      }
+    end
+
+    def self.all_typographic_chars
+      [
+        :apostrophe,
+        :d_quote_close,
+        :d_quote_open,
+        :elipsis,
+        :em_dash,
+        :s_quote_close,
+        :s_quote_open,
+      ].map { |e| chars[e] }
+    end
+
+    def chars
+      self.class.chars
+    end
+
     # @param lang_code [Symbol, String] 2 or 3 character language code
     def self.find_by_code(lang_code)
       symbolized_lang_code = lang_code.to_sym

@@ -21,9 +21,9 @@ module Kramdown
           # gap_marks: Skip certain characters and find characters to highlight in red
           gap_mark_complete_regex = Regexp.new(Regexp.escape(tmp_gap_mark_complete))
           chars_to_skip = [
-            Repositext::D_QUOTE_OPEN,
-            Repositext::EM_DASH,
-            Repositext::S_QUOTE_OPEN,
+            @options[:language].chars[:d_quote_open],
+            @options[:language].chars[:em_dash],
+            @options[:language].chars[:s_quote_open],
             ' ',
             '(',
             '[',
@@ -41,8 +41,8 @@ module Kramdown
               #{ gap_mark_complete_regex } # find tmp gap mark number and text
               ( # capturing group for first group of characters to be colored red
                 (?: # non capturing group
-                  #{ Repositext::ELIPSIS } # elipsis
-                  (?!#{ Repositext::ELIPSIS }) # not followed by another elipsis so we exclude chinese double elipsis
+                  #{ @options[:language].chars[:elipsis] } # elipsis
+                  (?!#{ @options[:language].chars[:elipsis] }) # not followed by another elipsis so we exclude chinese double elipsis
                 )? # optional
               )
               ( # capturing group for characters that are not to be colored red
@@ -57,7 +57,7 @@ module Kramdown
                 )* # any of these zero or more times to match nested latex commands
               )
               ( # capturing group for second group of characters to be colored red
-                #{ Repositext::ELIPSIS }? # optional elipsis
+                #{ @options[:language].chars[:elipsis] }? # optional elipsis
                 [[:alpha:][:digit:]’\-\?,]* # words and some punctuation
               )
             /x,
@@ -77,9 +77,9 @@ module Kramdown
           if !['', nil].include?(tmp_gap_mark_number)
             gap_mark_number_regex = Regexp.new(Regexp.escape(tmp_gap_mark_number))
             chars_to_move_outside_of = [
-              Repositext::APOSTROPHE,
-              Repositext::D_QUOTE_OPEN,
-              Repositext::S_QUOTE_OPEN,
+              @options[:language].chars[:apostrophe],
+              @options[:language].chars[:d_quote_open],
+              @options[:language].chars[:s_quote_open],
               '(',
               '[',
             ].join
@@ -156,21 +156,22 @@ module Kramdown
         # Determines where line breaks are allowed to happen.
         # @param lb [String] latex body, will be modified in place.
         def set_line_break_positions!(lb)
+
           # Don't break lines between double open quote and apostrophe (via ~)
           lb.gsub!(
-            "#{ Repositext::D_QUOTE_OPEN } #{ Repositext::APOSTROPHE }",
-            "#{ Repositext::D_QUOTE_OPEN }~#{ Repositext::APOSTROPHE }"
+            "#{ @options[:language].chars[:d_quote_open] } #{ @options[:language].chars[:apostrophe] }",
+            "#{ @options[:language].chars[:d_quote_open] }~#{ @options[:language].chars[:apostrophe] }"
           )
 
           # Insert zero-width space after all elipses, emdashes, and hyphens.
           # This gives latex the option to break a line after these characters.
           # \hspace{0pt} is the latex equivalent of zero-width space (&#x200B;)
           line_breakable_chars = Regexp.escape(
-            [Repositext::ELIPSIS, Repositext::EM_DASH, '-'].join
+            [@options[:language].chars[:elipsis], @options[:language].chars[:em_dash], '-'].join
           )
           # Exceptions: Don't insert zero-width space if followed by no-break characters:
           no_break_following_chars = Regexp.escape(
-            [Repositext::S_QUOTE_CLOSE, Repositext::D_QUOTE_CLOSE, ')?,!'].join
+            [@options[:language].chars[:s_quote_close], @options[:language].chars[:d_quote_close], ')?,!'].join
           )
           # We only want to allow linebreak _after_ line_breakable_chars but not _before_.
           # We insert a \\nolinebreak to prevent linebreaks _before_.
@@ -210,12 +211,12 @@ module Kramdown
           # by some abbreviations.
           lb.gsub!(
             /
-              #{ Repositext::EM_DASH }
+              #{ @options[:language].chars[:em_dash] }
               (
                 #{ options[:ed_and_trn_abbreviations] }
               )
             /ix,
-            "\\nolinebreak[4]" + Repositext::EM_DASH + "\\nolinebreak[4]" + '\1'
+            "\\nolinebreak[4]" + @options[:language].chars[:em_dash] + "\\nolinebreak[4]" + '\1'
           )
 
           # We don't allow linebreaks before certain numbers

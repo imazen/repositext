@@ -4,6 +4,8 @@ module Kramdown
   module Converter
     describe LatexRepositext do
 
+      language = Repositext::Language::English
+
       describe "#emulate_small_caps" do
 
         [
@@ -64,8 +66,8 @@ module Kramdown
           ],
           [
             "Upper cases character after apostrophe",
-            "Word’s Word",
-            "W\\RtSmCapsEmulation{none}{ORD}{none}’\\RtSmCapsEmulation{none}{S}{none} W\\RtSmCapsEmulation{none}{ORD}{none}",
+            "Word#{ language.chars[:apostrophe] }s Word",
+            "W\\RtSmCapsEmulation{none}{ORD}{none}#{ language.chars[:apostrophe] }\\RtSmCapsEmulation{none}{S}{none} W\\RtSmCapsEmulation{none}{ORD}{none}",
           ],
           [
             "Upper cases A.D., not scaling down the periods inbetween",
@@ -77,9 +79,14 @@ module Kramdown
             "Word A Word",
             "W\\RtSmCapsEmulation{none}{ORD}{none} A W\\RtSmCapsEmulation{none}{ORD}{none}",
           ],
+          [
+            "Handles a word that starts with lower case letter",
+            "word Word",
+            "\\RtSmCapsEmulation{none}{WORD}{none} W\\RtSmCapsEmulation{none}{ORD}{none}",
+          ],
         ].each do |desc, test_string, xpect|
           it "handles #{ desc.inspect }" do
-            c = LatexRepositext.send(:new, '_', {})
+            c = LatexRepositext.send(:new, '_', { language: language })
             c.emulate_small_caps(
               test_string,
               'Arial',
@@ -100,7 +107,7 @@ module Kramdown
           ["word &#xFEFF; word", "word \uFEFF word\n\n"],
         ].each do |test_string, xpect|
           it "decodes valid encoded entity #{ test_string.inspect }" do
-            doc = Document.new(test_string, :input => 'KramdownRepositext')
+            doc = Document.new(test_string, input: 'KramdownRepositext', language: language)
             doc.to_latex_repositext.must_equal(xpect)
           end
         end
@@ -109,7 +116,7 @@ module Kramdown
           ["word &#x2012; word", "word  word\n\n"],
         ].each do |test_string, xpect|
           it "doesn't decode invalid encoded entity #{ test_string.inspect }" do
-            doc = Document.new(test_string, :input => 'KramdownRepositext')
+            doc = Document.new(test_string, input: 'KramdownRepositext', language: language)
             doc.to_latex_repositext.must_equal(xpect)
           end
         end
@@ -118,7 +125,7 @@ module Kramdown
           ["word &#x391; word", "word $A${} word\n\n"], # decimal 913
         ].each do |test_string, xpect|
           it "decodes kramdown built in entity #{ test_string.inspect }" do
-            doc = Document.new(test_string, :input => 'KramdownRepositext')
+            doc = Document.new(test_string, input: 'KramdownRepositext', language: language)
             doc.to_latex_repositext.must_equal(xpect)
           end
         end
