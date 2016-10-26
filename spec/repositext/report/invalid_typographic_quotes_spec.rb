@@ -46,7 +46,7 @@ class Repositext
         ],
       ].each do |(txt, xpect)|
         it "handles #{ txt.inspect }" do
-          r = InvalidTypographicQuotes.new(0)
+          r = InvalidTypographicQuotes.new(0, Repositext::Language::English)
           r.process(txt, '_')
           r.results.must_equal(xpect)
         end

@@ -13,32 +13,38 @@ class Repositext
       # (unless where elipsis and % are between two words like so: word…%word)
       # @param [String] text
       # @param [String] filename
+      # @param [Language]
       # @return [Outcome]
-      def self.fix(text, filename)
+      def self.fix(text, filename, language)
         new_at = text.dup
-        move_gap_marks_to_beginning_of_words!(new_at)
-        new_at = fix_standard_chars(new_at) # can't do in-place
-        new_at = fix_chinese_chars(new_at) # can't do in-place
-        new_at = fix_elipsis(new_at) # do this after fixing standard chars, can't do in-place
+        move_gap_marks_to_beginning_of_words!(new_at, language)
+        new_at = fix_standard_chars(new_at, language) # can't do in-place
+        new_at = fix_chinese_chars(new_at, language) # can't do in-place
+        new_at = fix_elipsis(new_at, language) # do this after fixing standard chars, can't do in-place
         # run again at the end to fix any in-word gap_marks that may have been
         # created by the previous steps.
-        move_gap_marks_to_beginning_of_words!(new_at)
+        move_gap_marks_to_beginning_of_words!(new_at, language)
         Outcome.new(true, { contents: new_at }, [])
       end
 
       # Moves a gap mark inside or at the end of a word to the beginning of the
       # word. Replaces any gap_marks that are already at the beginning of the word.
-      def self.move_gap_marks_to_beginning_of_words!(text)
+      # @param text [String]
+      # @param language [Language]
+      def self.move_gap_marks_to_beginning_of_words!(text, language)
         text.gsub!(/%?\b([[:alpha:]&&[^\p{Han}]]+)%/, '%\1')
       end
 
       # Fixes gap_marks in invalid positions after the standard characters
-      def self.fix_standard_chars(text)
+      # @param text [String]
+      # @param language [Language]
+      def self.fix_standard_chars(text, language)
         old_at = text.dup
         new_at = ''
         # asterisk, double open quote, single open quote, opening parens,
         # opening bracket, opening chinese parens, opening chinese quote
-        standard_chars_regex = /[\*“‘\(\[\（\《]+/
+        standard_chars = "*([（《#{ language.chars[:d_quote_open] }#{ language.chars[:s_quote_open] }"
+        standard_chars_regex = /[#{ Regexp.escape(standard_chars) }]+/
         standard_chars_and_gap_mark_regex = /#{ standard_chars_regex }\%/
 
         s = StringScanner.new(old_at)
@@ -66,19 +72,24 @@ class Repositext
       end
 
       # Fixes gap_marks for chinese docs
-      def self.fix_chinese_chars(text)
+      # @param text [String]
+      # @param language [Language]
+      def self.fix_chinese_chars(text, language)
         new_at = text.dup
         # Move gap_marks to after single closing quotes/apostrophes (%'c => '%c)
-        chars_regex = "[#{ Regexp.escape([Repositext::APOSTROPHE, Repositext::S_QUOTE_CLOSE].uniq.join) }]"
+        # TODO: update this to use Language.chars[:apostrophe] and [:s_quote_close] instead of Repositext constant
+        chars_regex = "[#{ Regexp.escape([language.chars[:apostrophe], language.chars[:s_quote_close]].uniq.join) }]"
         new_at.gsub!(/\%(#{ chars_regex })(?=\p{Han})/, '\1%')
         new_at
       end
 
       # Fixes gap_marks in invalid positions after elipsis
-      def self.fix_elipsis(text)
+      # @param text [String]
+      # @param language [Language]
+      def self.fix_elipsis(text, language)
         old_at = text.dup
         new_at = ''
-        elipsis_regex = /…+/
+        elipsis_regex = /#{ language.chars[:elipsis] }+/
         elipsis_and_gap_mark_regex = /#{ elipsis_regex }\%/
 
         s = StringScanner.new(old_at)

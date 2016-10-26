@@ -85,7 +85,11 @@ class Repositext
           "Adjusting :gap_mark positions",
           options
         ) do |contents, filename|
-          outcome = Repositext::Fix::AdjustGapMarkPositions.fix(contents, filename)
+          outcome = Repositext::Fix::AdjustGapMarkPositions.fix(
+            contents,
+            filename,
+            content_type.language
+          )
           [outcome]
         end
       end
@@ -142,7 +146,11 @@ class Repositext
           "Changing typographical characters in files",
           options
         ) do |contents, filename|
-          outcome = Repositext::Fix::ConvertFolioTypographicalChars.fix(contents, filename)
+          outcome = Repositext::Fix::ConvertFolioTypographicalChars.fix(
+            contents,
+            filename,
+            content_type.language
+          )
           [outcome]
         end
       end

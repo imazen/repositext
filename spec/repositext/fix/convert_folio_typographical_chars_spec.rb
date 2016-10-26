@@ -10,7 +10,7 @@ class Repositext
           ['-I think... I thought', '-I think… I thought'],
         ].each do |(txt, xpect)|
           it "handles #{ txt.inspect }" do
-            o = ConvertFolioTypographicalChars.fix(txt, '_')
+            o = ConvertFolioTypographicalChars.fix(txt, '_', Repositext::Language::English)
             o.result[:contents].must_equal(xpect)
           end
         end
@@ -99,7 +99,7 @@ class Repositext
           [%(word you've word), %(word you’ve word)],
         ].each do |(txt, xpect)|
           it "handles #{ txt.inspect }" do
-            o = ConvertFolioTypographicalChars.fix(txt, '_')
+            o = ConvertFolioTypographicalChars.fix(txt, '_', Repositext::Language::English)
             o.result[:contents].must_equal(xpect)
           end
         end
@@ -121,7 +121,7 @@ class Repositext
           [%(^^^ {: .rid #12345678 kpn="042"}), %(^^^ {: .rid #12345678 kpn="042"})],
         ].each do |(txt, xpect)|
           it "handles #{ txt.inspect }" do
-            o = ConvertFolioTypographicalChars.fix(txt, '_')
+            o = ConvertFolioTypographicalChars.fix(txt, '_', Repositext::Language::English)
             o.result[:contents].must_equal(xpect)
           end
         end
@@ -132,7 +132,7 @@ class Repositext
           [%(^^^ {: .rid #63410019 DNE="true" kpn="001"}), %(^^^ {: .rid #63410019 DNE="true" kpn="001"})],
         ].each do |(txt, xpect)|
           it "handles #{ txt.inspect }" do
-            o = ConvertFolioTypographicalChars.fix(txt, '_')
+            o = ConvertFolioTypographicalChars.fix(txt, '_', Repositext::Language::English)
             o.result[:contents].must_equal(xpect)
           end
         end

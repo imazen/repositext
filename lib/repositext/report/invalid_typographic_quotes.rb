@@ -25,8 +25,9 @@ class Repositext
 
       # Initialize a new report
       # @param context_size [Integer] how much context to provide around invalid quotes
-      def initialize(context_size)
+      def initialize(context_size, language)
         @context_size = context_size
+        @language = language
         @files_hash = {}
       end
 
@@ -75,19 +76,19 @@ class Repositext
     protected
 
       def apostrophe
-        %(’).freeze
+        @language.chars[:apostrophe]
       end
 
       def d_quote_close
-        %(”).freeze
+        @language.chars[:d_quote_close]
       end
 
       def d_quote_open
-        %(“).freeze
+        @language.chars[:d_quote_open]
       end
 
       def s_quote_open
-        %(‘).freeze
+        @language.chars[:s_quote_open]
       end
 
       def straight_quotes

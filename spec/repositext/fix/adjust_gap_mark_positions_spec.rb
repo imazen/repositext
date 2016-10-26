@@ -27,7 +27,7 @@ class Repositext
         ['圚《%儋', '圚%《儋'],
       ].each do |(txt, xpect)|
         it "handles #{ txt.inspect }" do
-          o = AdjustGapMarkPositions.fix(txt, '_')
+          o = AdjustGapMarkPositions.fix(txt, '_', Repositext::Language::English)
           o.result[:contents].must_equal(xpect)
         end
       end
@@ -38,7 +38,7 @@ class Repositext
           ['儋%’圚', '儋’%圚'],
         ].each do |(txt, xpect)|
           it "handles #{ txt.inspect }" do
-            r = AdjustGapMarkPositions.send(:fix_chinese_chars, txt)
+            r = AdjustGapMarkPositions.send(:fix_chinese_chars, txt, Repositext::Language::English)
             r.must_equal(xpect)
           end
         end
