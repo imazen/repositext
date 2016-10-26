@@ -11,12 +11,15 @@ class Repositext
         # @param from_git_commit [String]
         # @param to_git_commit [String]
         # @param file_list [Array<String>] path to files to include
-        def initialize(content_type, from_git_commit, to_git_commit, file_list, is_initial_sync)
+        # @param prev_last_operation_id [Integer] previous sync's last operation_id
+        def initialize(content_type, from_git_commit, to_git_commit, file_list, is_initial_sync, prev_last_operation_id)
           @content_type = content_type
           @repository = @content_type.repository
           @language = @content_type.language
           @from_git_commit = from_git_commit
           @is_initial_sync = is_initial_sync
+          @first_operation_id = prev_last_operation_id + 1
+          @prev_last_operation_id = prev_last_operation_id
           @to_git_commit = to_git_commit
           # Convert to repo relative paths
           @file_list = file_list.map { |e| e.sub!(@repository.base_dir, '') }
@@ -40,20 +43,33 @@ class Repositext
             process_primary_files_with_changes_only
           end
 
+          last_operation_id = operations_for_all_files.last.last_operation_id
+
           ofr = Repositext::Subtitle::OperationsForRepository.new(
             {
               repository: @repository.name,
               from_git_commit: @from_git_commit,
               to_git_commit: @to_git_commit,
+              first_operation_id: @first_operation_id,
+              last_operation_id: last_operation_id,
             },
             operations_for_all_files
           )
-
           ofr
         end
 
         # Returns array with operations for all primary files
         def process_all_primary_files
+          # NOTE: I investigated concurrent processing of files
+          # to speed up this process, however I didn't pursue it
+          # further: This process is highly CPU intensive, so the
+          # only way to get a significant speedup is to use
+          # multiple CPUs/Cores. In MRI this is only possible
+          # with multiple processes. I didn't want to go through
+          # the trouble of IPC to collect all files' operations.
+          # It would be easier if we could use threads, however
+          # that would require jruby or rbx. So I'm sticking with
+          # sequential processing for now.
           Dir.glob(
             File.join(@repository.base_dir, '**/content/**/*.at')
           ).map { |absolute_file_path|
@@ -78,6 +94,7 @@ class Repositext
               {
                 from_git_commit: @from_git_commit,
                 to_git_commit: @to_git_commit,
+                prev_last_operation_id: @prev_last_operation_id,
               }
             ).compute
 
@@ -119,11 +136,17 @@ class Repositext
               {
                 from_git_commit: @from_git_commit,
                 to_git_commit: @to_git_commit,
+                prev_last_operation_id: @prev_last_operation_id,
               }
             ).compute
 
-            # Return nil if no subtitle operations exist for this file
-            soff.operations.any? ? soff : nil
+            if soff.operations.any?
+              @prev_last_operation_id = soff.last_operation_id
+              soff
+            else
+              # Return nil if no subtitle operations exist for this file
+              nil
+            end
           }.compact
         end
 

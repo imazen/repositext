@@ -13,7 +13,7 @@ class Repositext
         :from_git_commit,
         :last_operation_id,
         :repository,
-        :to_git_commit
+        :to_git_commit,
       ]
 
       attr_accessor :operations_for_files
@@ -71,13 +71,11 @@ class Repositext
           self.send("#{ attr_name }=", attrs[attr_name])
         end
         self.operations_for_files = operations_for_files
-        # if !(
-        #   @first_operation_id.numeric? &&
-        #   @last_operation_id.numeric? &&
-        #   @first_operation_id <= @last_operation_id
-        # )
-        #   raise ArgumentError.new("Invalid operation_id boundaries: #{ [@first_operation_id, @last_operation_id].inspect }")
-        # end
+        if !(
+          @first_operation_id.to_i < @last_operation_id.to_i
+        )
+          raise ArgumentError.new("Invalid operation_id boundaries: #{ [@first_operation_id, @last_operation_id].inspect }")
+        end
       end
 
       # Returns array of all content AT files with ops
@@ -101,10 +99,6 @@ class Repositext
       def invert!
         self.from_git_commit, self.to_git_commit = [to_git_commit, from_git_commit]
         self.operations_for_files = operations_for_files.map { |e| e.invert!; e }
-      end
-
-      def next_operation_id
-        @last_operation_id + 1
       end
 
       # Converts self to Hash

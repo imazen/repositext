@@ -95,6 +95,14 @@ class Repositext
         @content_at_file.lang_code_3
       end
 
+      def last_operation_id
+        if (last_op = operations.last)
+          last_op.operationId
+        else
+          nil
+        end
+      end
+
       def product_identity_id
         @content_at_file.extract_product_identity_id
       end

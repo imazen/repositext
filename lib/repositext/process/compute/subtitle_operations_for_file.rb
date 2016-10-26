@@ -69,9 +69,10 @@ Data types used in this file
         # @param content_at_file [Repositext::RFile::ContentAt]
         # @param stm_csv_file [Repositext::RFile::SubtitleMarkersCsv]
         # @param repo_base_dir [String]
-        # @param options [Hash] with keys :from_git_commit and :to_git_commit
+        # @param options [Hash] with keys :from_git_commit, :to_git_commit, :prev_last_operation_id
         def initialize(content_at_file_to, repo_base_dir, options)
           @content_at_file_to = content_at_file_to
+          @file_date_code = @content_at_file_to.extract_date_code
           @repo_base_dir = repo_base_dir
           @options = options
         end
@@ -122,7 +123,8 @@ Data types used in this file
           puts " - extract ops"
           operations = OperationsExtractor.new(
             aligned_subtitle_pairs,
-            @content_at_file_to.extract_date_code
+            @file_date_code,
+            @options[:prev_last_operation_id]
           ).extract
           if debug
             puts ('-' * 80).color(:red)
