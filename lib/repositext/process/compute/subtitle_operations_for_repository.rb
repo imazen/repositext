@@ -98,9 +98,13 @@ class Repositext
               }
             ).compute
 
-            # Return nil if no subtitle operations exist for this file
-            # So #compact will remove it.
-            soff.operations.any? ? soff : nil
+            if soff.operations.any?
+              @prev_last_operation_id = soff.last_operation_id
+              soff
+            else
+              # Return nil if no subtitle operations exist for this file
+              nil
+            end
           }.compact
         end
 
