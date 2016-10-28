@@ -23,6 +23,8 @@ class Repositext
           @to_git_commit = to_git_commit
           # Convert to repo relative paths
           @file_list = file_list.map { |e| e.sub!(@repository.base_dir, '') }
+          # Uncomment this code to collect statistic related to subtitles.
+          # $repositext_subtitle_length_distribution = Hash.new(0)
         end
 
         # @return [Repositext::Subtitle::OperationsForRepository]
@@ -42,6 +44,9 @@ class Repositext
           else
             process_primary_files_with_changes_only
           end
+
+          # Uncomment this code to collect statistic related to subtitles.
+          # p $repositext_subtitle_length_distribution
 
           last_operation_id = operations_for_all_files.last.last_operation_id
 

@@ -22,9 +22,15 @@ class Repositext
           end
 
           def compute_subtitle_attrs_to(content_at_file_to)
-            convert_content_at_to_subtitle_attrs(
+            r = convert_content_at_to_subtitle_attrs(
               content_at_file_to.contents
             )
+            # Uncomment this code to collect statistic related to subtitles.
+            # r.each { |e|
+            #   hkey = e[:content].to_s.length
+            #   $repositext_subtitle_length_distribution[hkey] += 1
+            # }
+            r
           end
 
         private
