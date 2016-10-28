@@ -6,7 +6,7 @@ module Kramdown
 
       # Instantiate converter
       # @param [Kramdown::Element] root
-      # @param [Hash] options
+      # @param [Hash{Symbol => Object}] options
       def initialize(root, options)
         super
         @misaligned_question_paragraphs = []

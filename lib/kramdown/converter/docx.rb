@@ -6,21 +6,21 @@ module Kramdown
       class InvalidElementException < Exception; end
 
       # Maps Kramdown block level elements to paragraph styles.
-      # @return [Hash] Hash with block_level element descriptors as keys and
-      # paragraph style attributes as values.
-      # * id        'Heading1'  # sets the internal identifier for the style.
-      # * name      'heading 1' # sets the friendly name of the style.
-      # * font      'Palantino' # sets the font family.
-      # * color     '333333'    # sets the text color. accepts hex RGB.
-      # * size      28          # sets the font size. units in half points.
-      # * bold      false       # sets the font weight.
-      # * italic    false       # sets the font style.
-      # * underline false       # sets whether or not to underline the text.
-      # * caps      false       # sets whether or not text should be rendered in all capital letters.
-      # * align     :left       # sets the alignment. accepts :left, :center, :right, and :both.
-      # * line      360         # sets the line height. units in twips.
-      # * top       100         # sets the spacing above the paragraph. units in twips.
-      # * bottom    0           # sets the spacing below the paragraph. units in twips.
+      # @return [Hash{String => Hash}] Hash with block_level element descriptors as keys and
+      #   paragraph style attributes as values.
+      #   * id        'Heading1'  # sets the internal identifier for the style.
+      #   * name      'heading 1' # sets the friendly name of the style.
+      #   * font      'Palantino' # sets the font family.
+      #   * color     '333333'    # sets the text color. accepts hex RGB.
+      #   * size      28          # sets the font size. units in half points.
+      #   * bold      false       # sets the font weight.
+      #   * italic    false       # sets the font style.
+      #   * underline false       # sets whether or not to underline the text.
+      #   * caps      false       # sets whether or not text should be rendered in all capital letters.
+      #   * align     :left       # sets the alignment. accepts :left, :center, :right, and :both.
+      #   * line      360         # sets the line height. units in twips.
+      #   * top       100         # sets the spacing above the paragraph. units in twips.
+      #   * bottom    0           # sets the spacing below the paragraph. units in twips.
       def self.paragraph_style_mappings
         {
           'header-1' => {
@@ -85,7 +85,7 @@ module Kramdown
 
       # Create a DOCX converter with the given options.
       # @param root [Kramdown::Element]
-      # @param options [Hash, optional]
+      # @param options [Hash{Symbol => Object}]
       def initialize(root, options = {})
         super
         @options = {

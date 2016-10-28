@@ -2,8 +2,7 @@ class Repositext
   class Process
     class Compute
       class SubtitleOperationsForFile
-
-        # Computes Longest Common Subsequence similarity of two strings.
+        # Provides methods related to string computations: Similarity, repetitions, and overlap.
         class StringComputations
 
           # Computes Longest Common Subsequence similarity of strings a and b

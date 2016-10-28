@@ -23,7 +23,7 @@ module Kramdown
 
         # Create an LatexRepositext Document converter with the given options.
         # @param [Kramdown::Element] root
-        # @param [Hash, optional] options
+        # @param [Hash{Symbol => Object}] options
         def initialize(root, options = {})
           super
           # NOTE: kramdown initializes all options with default values. So
@@ -286,7 +286,7 @@ module Kramdown
         end
 
         # Computes the command to be used for page numbers in the page header.
-        # @param is_primary_repo [Boolean]
+        # @param hrules_present [Boolean]
         # @param language_code_3_chars [String]
         # @return [String]
         def compute_page_number_command(hrules_present, language_code_3_chars)
@@ -308,16 +308,18 @@ module Kramdown
         # latex markup. Also any linebreaks are being removed
         #
         # This is how it works:
-        # title_latex:     \emph{word} \emph{and some really long text to get truncation word \textscale{0.7}{word word word} word}
-        # plain text mask:                                                                                         xxxxxxxxx xxxxx
-        # title_plain_text:      word        and some really long text to get truncation word                 word word word  word
-        # trunc_title_pt:        word        and some really long text to get truncation word                 word…
-        # result:          \emph{word} \emph{and some really long text to get truncation word \textscale{0.7}{word…}}
+        #
+        #     title_latex:     \emph{word} \emph{and some really long text to get truncation word \textscale{0.7}{word word word} word}
+        #     plain text mask:                                                                                         xxxxxxxxx xxxxx
+        #     title_plain_text:      word        and some really long text to get truncation word                 word word word  word
+        #     trunc_title_pt:        word        and some really long text to get truncation word                 word…
+        #     result:          \emph{word} \emph{and some really long text to get truncation word \textscale{0.7}{word…}}
         #
         # Three strings we work with:
         #   * title_plain_text (full plain text version of title)
         #   * title_latex (title with latex markup)
         #   * truncated_title_plain_text (truncated plain text version of title)
+        #
         # Types of chars encountered:
         #   * latex_command
         #   * opening_brace
@@ -325,6 +327,7 @@ module Kramdown
         #   * closing_brace
         #   * matching_plain_text_char
         #   * other_char (e.g., latex function argument)
+        #
         # State_variables:
         #   * plain_text_index (current position in plain_text_title)
         #   * brace_nesting_level (to balance braces)

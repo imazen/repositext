@@ -4,8 +4,8 @@ class Repositext
 
     private
 
-      # Copies DOCX imported AT files to content. Also renames files like so:
-      # eng59-0125_0547.docx.at => eng59-0125_0547.at
+      # Copy DOCX imported AT files to content. Also renames files like so:
+      # `eng59-0125_0547.docx.at` => `eng59-0125_0547.at`.
       # @param options [Hash]
       def copy_docx_import_to_content(options)
         input_base_dir = config.compute_base_dir(options['base-dir'] || :docx_import_dir)
@@ -29,8 +29,8 @@ class Repositext
         )
       end
 
-      # Copies HTML imported AT files to content. Also renames files like so:
-      # eng59-0125_0547.html.at => eng59-0125_0547.at
+      # Copy HTML imported AT files to content. Also renames files like so:
+      # `eng59-0125_0547.html.at` => `eng59-0125_0547.at`.
       # @param options [Hash]
       def copy_html_import_to_content(options)
         input_base_dir = config.compute_base_dir(options['base-dir'] || :html_import_dir)
@@ -54,8 +54,8 @@ class Repositext
         )
       end
 
-      # Copies subtitle_marker csv files to content for subtitle import. Also renames files like so:
-      # 59-0125_0547.markers.txt => eng59-0125_0547.subtitle_markers.csv
+      # Copy subtitle_marker csv files to content for subtitle import. Also renames files like so:
+      # `59-0125_0547.markers.txt` => `eng59-0125_0547.subtitle_markers.csv`.
       # @param options [Hash]
       # @option options [String] 'base-dir': (required) one of 'subtitle_tagging_import_dir' or 'subtitle_import_dir'
       # @option options [String] 'file-pattern': defaults to 'txt_files', can be custom pattern
@@ -85,9 +85,9 @@ class Repositext
         )
       end
 
-      # Copies subtitle_marker csv files from content to subtitle export.
+      # Copy subtitle_marker csv files from content to subtitle export.
       # Also renames files like so:
-      # eng59-0125_0547.subtitle_markers.csv => 59-0125_0547.markers.txt
+      # `eng59-0125_0547.subtitle_markers.csv` => `59-0125_0547.markers.txt`.
       def copy_subtitle_marker_csv_files_to_subtitle_export(options)
         input_base_dir = config.compute_base_dir(options['base-dir'] || :content_dir)
         input_file_selector = config.compute_file_selector(options['file-selector'] || :all_files)

@@ -5,14 +5,14 @@ module Kramdown
 
       # Instantiate converter
       # @param [Kramdown::Element] root
-      # @param [Hash] options
+      # @param [Hash{Symbol => Object}] options
       def initialize(root, options)
         super
         @classes_inventory = {}
       end
 
       # @param [Kramdown::Element] el
-      # @return [Hash] all element types, class combinations and their instance count as Hash:
+      # @return [Hash{String => Hash}] all element types, class combinations and their instance count as Hash:
       #   {
       #     'p' => {
       #       ['class1', 'class2'] => 4, # keys are combinations of paragraph classes, values are instance counts

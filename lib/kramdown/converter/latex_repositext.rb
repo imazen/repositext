@@ -363,7 +363,7 @@ module Kramdown
 
       # Returns a complete latex document as string.
       # @param [Kramdown::Element] el the kramdown root element
-      # @param [Hash] opts
+      # @param [Hash{Symbol => Object}] opts
       # @return [String]
       def convert_root(el, opts)
         latex_body = inner(el, opts)

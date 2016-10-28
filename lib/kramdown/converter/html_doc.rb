@@ -12,7 +12,7 @@ module Kramdown
 
       # Create an HtmlDoc converter with the given options.
       # @param [Kramdown::Element] root
-      # @param [Hash, optional] options
+      # @param [Hash{Symbol => Object}] options
       def initialize(root, options = {})
         super
         # NOTE: kramdown initializes all options with default values. So

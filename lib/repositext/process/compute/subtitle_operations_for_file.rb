@@ -49,7 +49,7 @@ Data types used in this file
         # Returns a data structure for all text lines in content_at_file
         # with their subtitles.
         # @param content_at_file [Repositext::RFile::ContentAt]
-        # @param content_at_file [Repositext::RFile::SubtitleMarkersCsv]
+        # @param stm_csv_file [Repositext::RFile::SubtitleMarkersCsv]
         # @return [Array<Hash>] with keys :content, :line_no, :subtitles
         def self.compute_content_at_lines_with_subtitles(content_at_file, stm_csv_file)
           r = []
@@ -66,8 +66,7 @@ Data types used in this file
           r
         end
 
-        # @param content_at_file [Repositext::RFile::ContentAt]
-        # @param stm_csv_file [Repositext::RFile::SubtitleMarkersCsv]
+        # @param content_at_file_to [Repositext::RFile::ContentAt]
         # @param repo_base_dir [String]
         # @param options [Hash] with keys :from_git_commit, :to_git_commit, :prev_last_operation_id
         def initialize(content_at_file_to, repo_base_dir, options)

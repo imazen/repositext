@@ -12,7 +12,7 @@ module Kramdown
 
       # Instantiate converter
       # @param [Kramdown::Element] root
-      # @param [Hash] options
+      # @param [Hash{Symbol => Object}] options
       def initialize(root, options)
         super
         @current_record_number = 0
@@ -72,7 +72,7 @@ module Kramdown
     protected
 
       # Finds any invalid eagles and returns array with issue details
-      # @param records_with_eagles [Hash] with record numbers as keys
+      # @param records_with_eagles [Hash{Integer => Hash}] with record numbers as keys
       #   {
       #     2 => { record_number: 2, record_id: 123, eagle_position: :first },
       #   }

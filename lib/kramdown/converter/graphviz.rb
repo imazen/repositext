@@ -8,7 +8,7 @@ module Kramdown
 
       # Create a Graphviz converter with the given options.
       # @param [Kramdown::Element] root
-      # @param [Hash, optional] options
+      # @param [Hash{Symbol => Object}] options
       def initialize(root, options = {})
         super
         @options = {

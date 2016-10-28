@@ -2,6 +2,7 @@ class Repositext
   class Process
     class Compute
       class SubtitleOperationsForFile
+        # Extracts operations from a file's aligned subtitle pairs.
         class OperationsExtractor
 
           # @param aligned_subtitle_pairs [Array<AlignedSubtitlePair>]
@@ -15,7 +16,6 @@ class Repositext
 
           # Takes all the file's aligned_subtitle_pairs, and extracts subtitle
           # operations.
-          # @param aligned_subtitle_pairs [Array<AlignedSubtitlePair>]
           # @return [Array<Subtitle::Operation>]
           def extract
             init_context
@@ -447,7 +447,6 @@ class Repositext
           end
 
           # Calling this method increments the @operation_index i_var!
-          # @param asp_index [Integer] index of operation in file.
           def compute_next_operation_id!
             @cur_operation_id += 1
           end

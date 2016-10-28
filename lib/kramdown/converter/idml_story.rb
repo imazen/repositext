@@ -13,7 +13,7 @@ module Kramdown
 
       # Instantiate an IDMLStory converter
       # @param [Kramdown::Element] root
-      # @param [Hash] options
+      # @param [Hash{Symbol => Object}] options
       def initialize(root, options)
         super
         @xml = '' # string collector for IDML Story XML
@@ -147,7 +147,7 @@ module Kramdown
       #
       # @param [Kramdown::Element] el
       # @param [String] style 'ParagraphStyle/' is automatically prepended
-      # @param [Hash, optional] attrs
+      # @param [Hash{Symbol => Object}] attrs
       def paragraph_style_range_tag(el, style, attrs = {})
         # Close any open tags that are not CharacterStyleRange or ParagraphStyleRange
         while(
@@ -245,7 +245,7 @@ module Kramdown
       #
       # @param [Kramdown::Element] el
       # @param [String] style 'CharacterStyle/' is automatically prepended
-      # @param [Hash, optional] attrs
+      # @param [Hash{Symbol => Object}] attrs
       def char_st_rng_tag(el, style, attrs = {})
         attrs = attrs.merge("AppliedCharacterStyle" => "CharacterStyle/#{ style }")
 
@@ -314,7 +314,7 @@ module Kramdown
 
       # Emits the start tag +name+ to @xml.
       # @param [String] name the tag name
-      # @param [Hash, optional] attrs the tag's attributes
+      # @param [Hash{Symbol => Object}] attrs the tag's attributes
       # @param [Boolean, optional] is_closed true for self closing tags
       # @param [Boolean, optional] indent true if tag should be indented
       # @param [Boolean, optional] line_break true if \n is to be inserted after

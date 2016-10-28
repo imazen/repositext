@@ -23,7 +23,7 @@ class Repositext
       end
 
       # Returns an array of the contained subtitles
-      # @param [Array<Repositext::Subtitle>]
+      # @return [Array<Repositext::Subtitle>]
       def subtitles
         csv.to_a.map { |row|
           Subtitle.new({

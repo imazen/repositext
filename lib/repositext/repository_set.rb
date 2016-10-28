@@ -98,7 +98,7 @@ class Repositext
     # * They pulled latest from origin
     # @param repo_set_spec [Symbol, Array<String>] A symbol describing a predefined
     #     group of repos, or an Array with specific repo names as strings.
-    # @param block [Proc, optional] will be called for each repo.
+    # @yield [repo_path] will be called for each repo.
     # @return [Hash] with repos that are not ready. Keys are repo paths, values
     #     are arrays with issue messages if any exist.
     def git_ensure_repos_are_ready(repo_set_spec)

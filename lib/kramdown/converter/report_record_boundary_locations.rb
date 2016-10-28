@@ -14,8 +14,8 @@ module Kramdown
     class ReportRecordBoundaryLocations < Base
 
       # Instantiate converter
-      # @param [Kramdown::Element] root
-      # @param [Hash] options
+      # @param root [Kramdown::Element]
+      # @param options [Hash{Symbol => Object}]
       #     Expects key :subtitles with Array<Repositext::Subtitle> for all
       #     subtitles in the current document.
       def initialize(root, options)

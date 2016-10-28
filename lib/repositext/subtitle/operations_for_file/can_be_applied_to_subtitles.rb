@@ -8,7 +8,7 @@ class Repositext
         # Applies operations to existing_subtitles: Adds or removes subtitles as needed.
         # @param existing_subtitles [Array<Hash>]. Each subtitle must have the
         #     `persistent_id` key. All other keys will be preserved.
-        # @return Array<Hash> a copy of the original one with operations applied.
+        # @return [Array<Hash>] a copy of the original one with operations applied.
         def apply_to_subtitles(existing_subtitles)
           updated_subtitles = existing_subtitles.dup
           # First we insert any new subtitles (so that their afterStids are still

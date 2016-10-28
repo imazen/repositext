@@ -2,6 +2,7 @@ class Repositext
   class Process
     class Compute
       class SubtitleOperationsForFile
+        # Namespace for methods related to computing individual subtitles' attributes
         module ComputeSubtitleAttrs
 
           def compute_subtitle_attrs_from(content_at_file_to, from_git_commit)
@@ -36,7 +37,7 @@ class Repositext
         private
 
           # Converts a content AT string into an array of subtitle attrs.
-          # @param conten_at [String]
+          # @param content_at [String]
           # @return [Array<SubtitleAttrs>]
           def convert_content_at_to_subtitle_attrs(content_at)
             doc = Kramdown::Document.new(

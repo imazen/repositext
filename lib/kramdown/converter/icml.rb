@@ -6,8 +6,8 @@ module Kramdown
 
       # Create an ICML converter with the given options.
       # @param [Kramdown::Element] root
-      # @param [Hash, optional] options
-      def initialize(root, options = {})
+      # @param [Hash{Symbol => Object}] options
+      def initialize(root, options={})
         super
         # NOTE: kramdown initializes all options with default values. So
         # :template_file is initialized to Nil. This breaks

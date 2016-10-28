@@ -8,7 +8,7 @@ module Kramdown
 
       # Instantiate a Subtitle converter
       # @param [Kramdown::Element] root
-      # @param [Hash] options
+      # @param [Hash{Symbol => Object}] options
       def initialize(root, options)
         super
         @output = '' # collector for output string

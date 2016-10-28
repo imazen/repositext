@@ -11,9 +11,9 @@ class Repositext
       # are directly adjacent.
       # If % directly follows an elipsis, move to the front of the ellipsis
       # (unless where elipsis and % are between two words like so: word…%word)
-      # @param [String] text
-      # @param [String] filename
-      # @param [Language]
+      # @param text [String]
+      # @param filename [String]
+      # @param language [Language]
       # @return [Outcome]
       def self.fix(text, filename, language)
         new_at = text.dup

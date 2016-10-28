@@ -4,7 +4,7 @@ class Repositext
 
     private
 
-      # Adds the title to the filename
+      # Add the title to the filename.
       def distribute_add_title_to_filename(options)
         Repositext::Cli::Utils.rename_files(
           options[:input_base_dir],

@@ -2,8 +2,7 @@ class Repositext
   class Process
     class Compute
       class SubtitleOperationsForFile
-
-        # Uses the Jaccard similarity to compute the score.
+        # Uses custom similarity computations to compute the score.
         class SubtitleAligner < NeedlemanWunschAligner
 
           # Get score for alignment pair of subtitle attrs.
