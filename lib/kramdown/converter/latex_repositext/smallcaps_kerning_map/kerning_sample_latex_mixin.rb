@@ -149,10 +149,12 @@ This document was rendered at #{ Time.now.to_s }.
                 txt = case character_pair
                 when /[[:upper:]][[:lower:]]/
                   [sample_prefix, ' ', character_pair, sample_suffix].join
-                when /[[:lower:]][^[:alpha:]]/
-                  [sample_prefix, character_pair, ' ', sample_suffix].join
                 when /[[:lower:]][[:upper:]]/
                   [sample_prefix, character_pair, sample_suffix].join
+                when /[[:alpha:]][^[:alpha:]]/
+                  [sample_prefix, character_pair, ' ', sample_suffix].join
+                when /[[^[:alpha:]][[:alpha:]]/
+                  [sample_prefix, ' ', character_pair, sample_suffix].join
                 else
                   raise "Handle this: #{ character_pair.inspect }"
                 end
