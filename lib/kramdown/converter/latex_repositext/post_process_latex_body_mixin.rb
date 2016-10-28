@@ -20,10 +20,11 @@ module Kramdown
         def highlight_gap_marks_in_red!(lb)
           # gap_marks: Skip certain characters and find characters to highlight in red
           gap_mark_complete_regex = Regexp.new(Regexp.escape(tmp_gap_mark_complete))
+          l_ch = @options[:language].chars
           chars_to_skip = [
-            @options[:language].chars[:d_quote_open],
-            @options[:language].chars[:em_dash],
-            @options[:language].chars[:s_quote_open],
+            l_ch[:d_quote_open],
+            l_ch[:em_dash],
+            l_ch[:s_quote_open],
             ' ',
             '(',
             '[',
@@ -41,8 +42,8 @@ module Kramdown
               #{ gap_mark_complete_regex } # find tmp gap mark number and text
               ( # capturing group for first group of characters to be colored red
                 (?: # non capturing group
-                  #{ @options[:language].chars[:elipsis] } # elipsis
-                  (?!#{ @options[:language].chars[:elipsis] }) # not followed by another elipsis so we exclude chinese double elipsis
+                  #{ l_ch[:elipsis] } # elipsis
+                  (?!#{ l_ch[:elipsis] }) # not followed by another elipsis so we exclude chinese double elipsis
                 )? # optional
               )
               ( # capturing group for characters that are not to be colored red
@@ -57,8 +58,8 @@ module Kramdown
                 )* # any of these zero or more times to match nested latex commands
               )
               ( # capturing group for second group of characters to be colored red
-                #{ @options[:language].chars[:elipsis] }? # optional elipsis
-                [[:alpha:][:digit:]’\-\?,]* # words and some punctuation
+                #{ l_ch[:elipsis] }? # optional elipsis
+                [[:alpha:][:digit:]#{ l_ch[:apostrophe] }\-\?,]* # words and some punctuation
               )
             /x,
             # we move the tmp_gap_mark_number to the very beginning so that if we
@@ -77,9 +78,9 @@ module Kramdown
           if !['', nil].include?(tmp_gap_mark_number)
             gap_mark_number_regex = Regexp.new(Regexp.escape(tmp_gap_mark_number))
             chars_to_move_outside_of = [
-              @options[:language].chars[:apostrophe],
-              @options[:language].chars[:d_quote_open],
-              @options[:language].chars[:s_quote_open],
+              l_ch[:apostrophe],
+              l_ch[:d_quote_open],
+              l_ch[:s_quote_open],
               '(',
               '[',
             ].join
@@ -170,22 +171,23 @@ module Kramdown
         # Determines where line breaks are allowed to happen.
         # @param lb [String] latex body, will be modified in place.
         def set_line_break_positions!(lb)
+          l_ch = @options[:language].chars
 
           # Don't break lines between double open quote and apostrophe (via ~)
           lb.gsub!(
-            "#{ @options[:language].chars[:d_quote_open] } #{ @options[:language].chars[:apostrophe] }",
-            "#{ @options[:language].chars[:d_quote_open] }~#{ @options[:language].chars[:apostrophe] }"
+            "#{ l_ch[:d_quote_open] } #{ l_ch[:apostrophe] }",
+            "#{ l_ch[:d_quote_open] }~#{ l_ch[:apostrophe] }"
           )
 
           # Insert zero-width space after all elipses, emdashes, and hyphens.
           # This gives latex the option to break a line after these characters.
           # \hspace{0pt} is the latex equivalent of zero-width space (&#x200B;)
           line_breakable_chars = Regexp.escape(
-            [@options[:language].chars[:elipsis], @options[:language].chars[:em_dash], '-'].join
+            [l_ch[:elipsis], l_ch[:em_dash], '-'].join
           )
           # Exceptions: Don't insert zero-width space if followed by no-break characters:
           no_break_following_chars = Regexp.escape(
-            [@options[:language].chars[:s_quote_close], @options[:language].chars[:d_quote_close], ')?,!'].join
+            [l_ch[:s_quote_close], l_ch[:d_quote_close], ')?,!'].join
           )
           # We only want to allow linebreak _after_ line_breakable_chars but not _before_.
           # We insert a \\nolinebreak to prevent linebreaks _before_.
@@ -225,12 +227,12 @@ module Kramdown
           # by some abbreviations.
           lb.gsub!(
             /
-              #{ @options[:language].chars[:em_dash] }
+              #{ l_ch[:em_dash] }
               (
                 #{ options[:ed_and_trn_abbreviations] }
               )
             /ix,
-            "\\nolinebreak[4]" + @options[:language].chars[:em_dash] + "\\nolinebreak[4]" + '\1'
+            "\\nolinebreak[4]" + l_ch[:em_dash] + "\\nolinebreak[4]" + '\1'
           )
 
           # We don't allow linebreaks before certain numbers
