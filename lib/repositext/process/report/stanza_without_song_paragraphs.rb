@@ -18,13 +18,13 @@ class Repositext
         # @return [Hash]
         # Example:
         # {
-        #   :filename => "/Users/johund/development/vgr-english/content/56/eng56-0603_0335.at",
+        #   :filename => "path/to/content/*.at",
         #   :stanzas_without_song => [
         #     {
         #       :line => 1328,
         #       :para_class_sequence => [
-        #         "stanza: @Oh, It’s dripping with blood…",
-        #         "normal: @That’s it. Raise up your hands."
+        #         "stanza: @word word word…",
+        #         "normal: @word word word."
         #       ]
         #     },
         #     ...

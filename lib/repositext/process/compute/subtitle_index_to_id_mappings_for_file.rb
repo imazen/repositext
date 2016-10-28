@@ -122,11 +122,13 @@ puts
             missing_stid_count += 1  if 'new' == mapping[:stid]
           }
 
-# TODO: This is a shortcut. Handle stids_inventory file properly!
-          stids_inventory_file = File.open(
-            '/Users/johund/development/vgr-english/data/subtitle_ids.txt',
-            'r+'
+          stids_inventory_filepath = File.join(
+            content_at_file.corresponding_primary_file.repository.base_dir,
+            'data',
+            'subtitle_ids.txt'
           )
+
+          stids_inventory_file = File.open(stids_inventory_filepath)
 
           new_stids = Repositext::Subtitle::IdGenerator.new(
             stids_inventory_file
