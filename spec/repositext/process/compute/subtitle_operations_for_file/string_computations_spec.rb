@@ -187,7 +187,6 @@ class Repositext
                   string_a,
                   string_b,
                   0.67,
-                  3,
                   false # set to true for debug output
                 ).must_equal(xpect)
               end

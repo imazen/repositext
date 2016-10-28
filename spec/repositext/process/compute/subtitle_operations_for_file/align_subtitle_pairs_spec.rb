@@ -6,9 +6,11 @@ class Repositext
       class SubtitleOperationsForFile
         describe AlignSubtitlePairs do
 
+          let(:language) { Language::English.new }
+          let(:content_at_file) { RFile::ContentAt.new('_', language, 'filename') }
           let(:default_computer){
             SubtitleOperationsForFile.new(
-              '_content_at_file_to',
+              content_at_file,
               '_repo_base_dir',
               {}
             )
