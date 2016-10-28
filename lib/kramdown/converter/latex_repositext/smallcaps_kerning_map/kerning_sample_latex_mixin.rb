@@ -153,7 +153,7 @@ This document was rendered at #{ Time.now.to_s }.
                   [sample_prefix, character_pair, sample_suffix].join
                 when /[[:alpha:]][^[:alpha:]]/
                   [sample_prefix, character_pair, ' ', sample_suffix].join
-                when /[[^[:alpha:]][[:alpha:]]/
+                when /[^[:alpha:]][[:alpha:]]/
                   [sample_prefix, ' ', character_pair, sample_suffix].join
                 else
                   raise "Handle this: #{ character_pair.inspect }"
