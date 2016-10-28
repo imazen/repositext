@@ -51,7 +51,7 @@ class Repositext
             else
               nil
             end
-            outcome = Repositext::Sync::SubtitleMarkCharacterPositions.sync(
+            outcome = Repositext::Process::Sync::SubtitleMarkCharacterPositions.sync(
               contents,
               previous_stm_csv,
               options['auto-insert-missing-subtitle-marks']

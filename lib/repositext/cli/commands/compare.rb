@@ -114,7 +114,7 @@ class Repositext
           "Reading /compare/content/with_folio_source files",
           options
         ) do |contents_1, filename_1, contents_2, filename_2|
-          outcome = Repositext::Compare::RecordIdAndParagraphAlignment.compare(
+          outcome = Repositext::Process::Compare::RecordIdAndParagraphAlignment.compare(
             contents_1,
             filename_1,
             contents_2,
