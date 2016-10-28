@@ -84,6 +84,11 @@ module Kramdown
             "word Word",
             "\\RtSmCapsEmulation{none}{WORD}{none} W\\RtSmCapsEmulation{none}{ORD}{none}",
           ],
+          [
+            "Cyrillic words",
+            "Чтo пpивлекaет?",
+            "Ч\\RtSmCapsEmulation{none}{ТO}{none} \\RtSmCapsEmulation{none}{ПPИВЛЕКAЕТ}{none}?",
+          ],
         ].each do |desc, test_string, xpect|
           it "handles #{ desc.inspect }" do
             c = LatexRepositext.send(:new, '_', { language: language })
