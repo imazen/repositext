@@ -1,5 +1,6 @@
 module Kramdown
   module Converter
+    # Custom latex converter for PDF web format.
     class LatexRepositextWeb < LatexRepositext
 
       include DocumentMixin

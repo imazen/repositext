@@ -1,6 +1,7 @@
 class Repositext
   class Validation
     class Validator
+      # Validates a kramdown AT string's valid syntax.
       class KramdownSyntaxAt < KramdownSyntax
 
         def self.whitelisted_kramdown_features

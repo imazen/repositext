@@ -1,5 +1,6 @@
 class Repositext
   class Cli
+    # This namespace contains methods related to the init command.
     module Init
 
     private

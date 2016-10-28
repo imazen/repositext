@@ -1,9 +1,9 @@
 class Repositext
   class Fix
+    # Moves :record_marks that are in invalid positions to a position symmetrically
+    # between two paragraphs.
     class AdjustMergedRecordMarkPositions
 
-      # Moves :record_marks that are in invalid positions to a position symmetrically
-      # between two paragraphs.
       # @param [String] text
       # @param [String] filename
       # @return [Outcome]

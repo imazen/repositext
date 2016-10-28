@@ -1,5 +1,6 @@
 class Repositext
   class Validation
+    # Validation to run after a Folio XML import.
     class FolioXmlPostImport < Validation
 
       # Specifies validations to run related to Folio Xml post import.

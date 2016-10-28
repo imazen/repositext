@@ -1,5 +1,6 @@
 class Repositext
   class Validation
+    # Validation to run before accepting spot corrections.
     class SpotSheet < Validation
 
       # Specifies validations to run

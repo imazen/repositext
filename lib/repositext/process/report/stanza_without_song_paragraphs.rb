@@ -4,7 +4,6 @@ class Repositext
     class Report
 
       # Finds .stanza paragraphs that are not followed by .song paragraphs
-      #
       class StanzaWithoutSongParagraphs
 
         # Initialize a new report

@@ -1,10 +1,10 @@
 class Repositext
   class Fix
+    # Normalizes instances of `—Ed.]`. Run this before convert_folio_typographical_chars
+    # We make changes in place for better performance
+    # (using `#gsub!` instead of `#gsub`).
     class NormalizeEditorsNotes
 
-      # Normalizes instances of `—Ed.]`. Run this before convert_folio_typographical_chars
-      # We make changes in place for better performance
-      # (using `#gsub!` instead of `#gsub`).
       # @param [String] text
       # @param [String] filename
       # @param [String, optional] separator_char what character to use as dash.

@@ -1,5 +1,6 @@
 class Repositext
   class Validation
+    # Validation to make sure that subtitle marks are spaced correctly.
     class SubtitleMarkSpacing < Validation
 
       # Specifies validations to run for files in the /content directory

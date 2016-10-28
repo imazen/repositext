@@ -1,6 +1,7 @@
 require 'kramdown/element'
 
 module Kramdown
+  # Patches Kramdown::Element with methods useful for repositext.
   class Element
 
     # Adds class to self. Classes are case insensitive, so we downcase them.

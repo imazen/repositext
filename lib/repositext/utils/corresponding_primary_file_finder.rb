@@ -1,6 +1,8 @@
 # TODO: Delete this once all code is migrated to Repositext::RFile
 class Repositext
   class Utils
+    # Finds a foreign file's corresponding primary file
+    # @deprecated use {Repositext::RFile instead}
     class CorrespondingPrimaryFileFinder
 
       # Finds a foreign file's corresponding primary file

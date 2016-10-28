@@ -1,13 +1,13 @@
 class Repositext
 
-  # Represents a collection of git content repositories.
+  # Represents a collection of git content and code repositories.
   # Assumes that all repositories are siblings in the same folder.
-
+  #
   # Expects current directory to be a repositext content repo root path.
-
+  #
   # Usage example:
-  # repository_set = RepositorySet.new('/repositories/parent/path')
-  # repository_set.git_pull(:all_content_repos)
+  #     repository_set = RepositorySet.new('/repositories/parent/path')
+  #     repository_set.git_pull(:all_content_repos)
   class RepositorySet
 
     attr_reader :repo_set_parent_path

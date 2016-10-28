@@ -3,6 +3,8 @@ class Repositext
   class Process
     class Sync
       class Subtitles
+        # This namespace provides methods related to ensuring that all content repos
+        # are ready for a subtitle sync.
         module EnsureAllContentReposAreReady
 
           extend ActiveSupport::Concern

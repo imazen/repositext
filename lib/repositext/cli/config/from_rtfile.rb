@@ -2,6 +2,7 @@
 class Repositext
   class Cli
     class Config
+      # Loads Cli::Config from an Rtfile.
       class FromRtfile
 
         attr_reader :settings # for testing

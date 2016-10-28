@@ -1,24 +1,7 @@
-# -*- coding: utf-8 -*-
-# TODO: use kramdown's templating
-
-=begin
-
-How to handle variants
-
-PDF type         English                 Foreign
------------------------------------------------------------------
-Plain            use command line flag   Override true
-Translator       use command line flag   Override true
-Recording        use command line flag   use command line flag
-Book  Override   false                   Override false
-Web Override     false                   Override false
-Comprehensive    use command line flag   use command line flag
-
-=end
-
 module Kramdown
   module Converter
     class LatexRepositext
+      # Namespace for methods related to PDF document level methods.
       module DocumentMixin
 
         # Create an LatexRepositext Document converter with the given options.
@@ -34,6 +17,7 @@ module Kramdown
           @options = options
         end
 
+        # Determines if meta_info is included in PDF. Override in subclasses.
         def include_meta_info
           true
         end

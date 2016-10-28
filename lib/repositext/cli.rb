@@ -1,4 +1,5 @@
 class Repositext
+  # Implements the repositext command line interface.
   class Cli < Thor
 
     class RtfileError < RuntimeError; end

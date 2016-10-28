@@ -1,6 +1,7 @@
 # encoding UTF-8
 class Repositext
   class Cli
+    # This namespace provides utility methods.
     module Utils
 
       # Utils module provides methods commonly used by the rt commands

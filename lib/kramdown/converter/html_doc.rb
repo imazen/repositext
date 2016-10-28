@@ -1,13 +1,10 @@
-# -*- coding: utf-8 -*-
-
-# Converts kramdown to complete HTML file, inserting the HTML body into a template.
-# Writes output to an IO object (File or StringIO).
-# Computes title from first :header element.
-
 # TODO: use kramdown's templating
-
 module Kramdown
   module Converter
+    # Converts a kramdown element tree to complete HTML file,
+    # inserting the HTML body into a template.
+    # Writes output to an IO object (File or StringIO).
+    # Computes title from first :header element.
     class HtmlDoc < Base
 
       # Create an HtmlDoc converter with the given options.

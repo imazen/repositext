@@ -1,5 +1,6 @@
 class Repositext
   class Validation
+    # Validation to run before a DOCX import.
     class DocxPreImport < Validation
 
       # Specifies validations to run related to Docx import.

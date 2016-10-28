@@ -2,7 +2,7 @@ class Repositext
   class Subtitle
     class OperationsForFile
 
-      # Implements methods to apply self to subtitles
+      # Implements methods to apply self to subtitles.
       module CanBeAppliedToSubtitles
 
         # Applies operations to existing_subtitles: Adds or removes subtitles as needed.

@@ -1,17 +1,16 @@
 class Repositext
   class Merge
+    # Merges gap_marks and .omit classes from gap_mark_tagging import into content_at.
+    #
+    # General approach:
+    #
+    # * make sure nothing but gap_marks and .omit pargraph classes has changed
+    # * merge gap_marks from gmt_import into content_at
+    #     * using current suspension based approach
+    # * merge .omit classes from gmt_import into content_at
+    #     * use string tools, iterate over paragraphs and update .omit classes
     class GapMarkTaggingImportIntoContentAt
 
-      # Merges gap_marks and .omit classes from gap_mark_tagging import into content_at.
-      #
-      # General approach:
-      #
-      # * make sure nothing but gap_marks and .omit pargraph classes has changed
-      # * merge gap_marks from gmt_import into content_at
-      #     * using current suspension based approach
-      # * merge .omit classes from gmt_import into content_at
-      #     * use string tools, iterate over paragraphs and update .omit classes
-      #
       # @param [String] gap_mark_tagging_import the authority for gap_mark tokens.
       # @param [String] content_at the authority for text and all tokens except gap_marks
       # @return [Outcome] the merged document is returned as #result if successful.

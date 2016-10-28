@@ -1,5 +1,6 @@
 class Repositext
   class Validation
+    # Template for a custom validation.
     class ACustomExample < Validation
 
       # Specify which validations to run.

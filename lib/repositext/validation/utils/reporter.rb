@@ -1,13 +1,13 @@
-# Minitest has a pretty good reporter that I can model this after.
-# https://github.com/seattlerb/minitest/blob/master/lib/minitest.rb#L371
-# cool reporter for Test::Unit https://github.com/TwP/turn
-
 class Repositext
   class Validation
 
     # A Reporter collects data during logger and once the logger is
     # complete, it generates a report from that data. I can then group and
     # summarize the data.
+    #
+    # Minitest has a pretty good reporter that I can model this after.
+    # https://github.com/seattlerb/minitest/blob/master/lib/minitest.rb#L371
+    # cool reporter for Test::Unit https://github.com/TwP/turn
     class Reporter
 
       attr_reader :errors, :warnings, :stats

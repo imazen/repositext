@@ -6,7 +6,6 @@ class Repositext
     # Can be imported from and exported to hash
     #
     # @abstract
-    #
     class Operation
 
       attr_accessor :affectedStids # [Array<Repositext::Subtitle>]

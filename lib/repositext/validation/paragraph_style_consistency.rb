@@ -1,5 +1,6 @@
 class Repositext
   class Validation
+    # Validation to make sure that two files' paragraphs are consistent.
     class ParagraphStyleConsistency < Validation
 
       # Specifies validations to run for paragraph style consistency between

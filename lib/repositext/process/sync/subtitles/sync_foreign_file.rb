@@ -2,6 +2,7 @@ class Repositext
   class Process
     class Sync
       class Subtitles
+        # This namespace provides methods related to syncing subtitles for a foreign file.
         module SyncForeignFile
 
           extend ActiveSupport::Concern

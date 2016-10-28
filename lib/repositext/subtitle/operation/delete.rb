@@ -3,7 +3,6 @@ class Repositext
     class Operation
 
       # Represents a delete subtitle operation.
-      #
       class Delete < Operation
 
         def inverse_operation

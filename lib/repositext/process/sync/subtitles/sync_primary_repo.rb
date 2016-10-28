@@ -3,6 +3,7 @@ class Repositext
   class Process
     class Sync
       class Subtitles
+        # This namespace provides methods related to syncing subtitles for the primary repo.
         module SyncPrimaryRepo
 
           extend ActiveSupport::Concern

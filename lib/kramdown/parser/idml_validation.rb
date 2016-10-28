@@ -1,10 +1,9 @@
-# A customized parser for validation purposes. It has the following modifications
-# from Kramdown::Parser::Idml:
-#
-# * Uses the IdmlStoryValidation parser instead of IdmlStory to parse the main story.
-#
 module Kramdown
   module Parser
+    # A customized parser for validation purposes. It has the following modifications
+    # from Kramdown::Parser::Idml:
+    #
+    # * Uses the IdmlStoryValidation parser instead of IdmlStory to parse the main story.
     class IdmlValidation < Kramdown::Parser::Idml
 
       # @param stories [Array<Story>, optional] the stories to import.

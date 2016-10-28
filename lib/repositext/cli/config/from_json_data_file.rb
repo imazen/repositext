@@ -2,6 +2,7 @@
 class Repositext
   class Cli
     class Config
+      # Loads Cli::Config from a *.json.data file.
       class FromJsonDataFile
 
         # @param json_data_file_path

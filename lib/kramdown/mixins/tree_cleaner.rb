@@ -1,9 +1,7 @@
-# Include this module into any library that wants to clean up a kramdown tree
-
-# NOTE: This requires the tree traversal and manipulation methods defined in
-# Kramdown::ElementRt
-
 module Kramdown
+  # Include this module into any library that wants to clean up a kramdown tree
+  # NOTE: This requires the tree traversal and manipulation methods defined in
+  # Kramdown::ElementRt
   module TreeCleaner
 
     # Recursively cleans up tree under ke

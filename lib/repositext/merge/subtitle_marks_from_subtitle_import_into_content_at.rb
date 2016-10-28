@@ -1,9 +1,9 @@
 class Repositext
   class Merge
+    # Merges subtitle_marks from subtitle/subtitle_tagging import into content_at.
+    # Uses content_at as text authority.
     class SubtitleMarksFromSubtitleImportIntoContentAt
 
-      # Merges subtitle_marks from subtitle/subtitle_tagging import into content_at.
-      # Uses content_at as text authority.
       # @param [String] subtitle_import the authority for subtitle_mark tokens.
       # @param [String] content_at the authority for text and all tokens except subtitle_marks
       # @return [Outcome] the merged document is returned as #result if successful.

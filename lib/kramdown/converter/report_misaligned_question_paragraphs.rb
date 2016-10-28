@@ -1,7 +1,7 @@
-# Returns a list of question paragraphs that are not perfectly aligned with the
-# contained span.
 module Kramdown
   module Converter
+    # Returns a list of question paragraphs that are not perfectly aligned with the
+    # contained span.
     class ReportMisalignedQuestionParagraphs < Base
 
       # Instantiate converter

@@ -1,8 +1,7 @@
-# Adds behavior to Kramdown::Element that is required for Folio XML import (Repositext)
-#
 require 'kramdown/element'
 
 module Kramdown
+  # Adds behavior to Kramdown::Element that is required for Folio XML import (Repositext)
   class ElementRt < Element
 
     attr_accessor :parent # points to parent Kramdown::Element or nil for root

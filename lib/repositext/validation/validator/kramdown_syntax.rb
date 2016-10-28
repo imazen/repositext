@@ -1,6 +1,7 @@
 class Repositext
   class Validation
     class Validator
+      # Validates a kramdown string's valid syntax.
       class KramdownSyntax < Validator
 
         # Returns true if source is valid kramdown

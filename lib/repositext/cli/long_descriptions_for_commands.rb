@@ -1,5 +1,6 @@
 class Repositext
   class Cli
+    # This namespace provides the long descriptions for Thor commandline commands.
     module LongDescriptionsForCommands
 
       def self.included(base)

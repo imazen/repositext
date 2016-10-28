@@ -1,3 +1,4 @@
+# Defines some string constants used throughout repositext.
 class Repositext
 
   # We use this character to delimit sentences, e.g., in Lucene exported plain

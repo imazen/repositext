@@ -1,9 +1,6 @@
-=begin
-
-=end
-
 class Repositext
   class Export
+    # Exports content_at to gap_mark_tagging.
     class GapMarkTagging
 
       # Exports content_at to gap_mark_tagging.

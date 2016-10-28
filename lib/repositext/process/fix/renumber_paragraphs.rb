@@ -1,12 +1,12 @@
 class Repositext
   class Process
     class Fix
+      # Renumbers numbered paragraphs in content_at_file. Works with placeholders
+      # and existing paragraph numbers. Will raise a warning if a paragraph
+      # number contains anything other than digits or placeholders.
+      # Allows subtitle_marks and gap_marks at beginning of line (in that order).
       class RenumberParagraphs
 
-        # Renumbers numbered paragraphs in content_at_file. Works with placeholders
-        # and existing paragraph numbers. Will raise a warning if a paragraph
-        # number contains anything other than digits or placeholders.
-        # Allows subtitle_marks and gap_marks at beginning of line (in that order).
         # @param content_at_contents [String]
         # @return [Outcome] with `{ contents: new_contents }` as result.
         def self.fix(content_at_contents)

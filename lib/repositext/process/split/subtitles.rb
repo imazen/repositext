@@ -1,6 +1,7 @@
 class Repositext
   class Process
     class Split
+      # Splits a foreign_file's subtitles based on subtitles in primary_file.
       class Subtitles
 
         # @param foreign_file [Repositext::RFile::ContentAt]

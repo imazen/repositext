@@ -1,14 +1,16 @@
-# -*- coding: utf-8 -*-
-
 require 'kramdown/converter'
 require 'builder'
 
 module Kramdown
   module Converter
+    # Converts a kramdown element tree to an IDML story XML string.
     class IdmlStory < Base
 
+      # Custom error
       class Exception < RuntimeError; end
+      # Custom error
       class InvalidElementException < Exception; end
+      # Custom error
       class UnsupportedElementException < Exception; end
 
       # Instantiate an IDMLStory converter
@@ -95,6 +97,7 @@ module Kramdown
         character_style_range_tag_for_el(el)
       end
 
+      # @param [Kramdown::Element] el
       def convert_entity(el)
         # Insert entity as decoded character in its own '<content>' tag
         content_tag(Repositext::Utils::EntityEncoder.decode(el.options[:original]))
@@ -269,6 +272,7 @@ module Kramdown
         emit_end_tag(false)
       end
 
+      # Generates a br_tag
       def br_tag
         emit_start_tag('Br', {}, true)
       end

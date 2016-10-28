@@ -1,5 +1,6 @@
 class Repositext
   class RFile
+    # Include this module in any RFile subclass that has a corresponding data.json file.
     module HasCorrespondingDataJsonFile
 
       extend ActiveSupport::Concern

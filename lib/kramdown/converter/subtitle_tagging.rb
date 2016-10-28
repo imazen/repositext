@@ -1,8 +1,6 @@
-# -*- coding: utf-8 -*-
-
-# Converts tree to subtitle tagging
 module Kramdown
   module Converter
+    # Converts kramdown element tree to subtitle tagging.
     class SubtitleTagging < Subtitle
 
     protected

@@ -3,6 +3,8 @@ class Repositext
     class Sync
       class Subtitles
         module SyncForeignFile
+          # This namespace provides methods related to computing subtitle operations
+          # that are relevant for a foreign file.
           module ComputeApplicableStOpsForForeignFile
 
             extend ActiveSupport::Concern

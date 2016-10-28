@@ -1,10 +1,10 @@
 class Repositext
   class Sync
+    # Synchronizes subtitle_mark character lengths from content_at into
+    # content *.subtitle_markers.csv.
+    # Creates the csv file if it doesn't exist already.
     class SubtitleMarkCharacterPositions
 
-      # Synchronizes subtitle_mark character lengths from content_at into
-      # content *.subtitle_markers.csv.
-      # Creates the csv file if it doesn't exist already.
       # @param content_at [String] current content_at text
       # @param existing_stm_csv [String, nil] an existing CSV file, or nil if none exists
       # @param auto_insert_missing_subtitle_marks [Boolean] set to true to

@@ -1,6 +1,7 @@
 module Kramdown
   module Converter
     class LatexRepositext
+      # Namespace for methods related to post processing the latex body string.
       module PostProcessLatexBodyMixin
 
         # @param [String] latex_body

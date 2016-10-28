@@ -3,7 +3,6 @@ class Repositext
     class Operation
 
       # Represents a split subtitle operation.
-      #
       class Split < Operation
 
         def inverse_operation

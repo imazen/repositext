@@ -1,5 +1,6 @@
 class Repositext
   class Utils
+    # Generates a diff of two serialized Arrays.
     class ArrayDiffer
 
       # @param a1 [Array]

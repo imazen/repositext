@@ -1,7 +1,6 @@
-# Include this module into any library that wants to process :em elements with
-# tmp classes for the purpose of breaking out of an italic or bold span.
-
 module Kramdown
+  # Include this module into any library that wants to process :em elements with
+  # tmp classes for the purpose of breaking out of an italic or bold span.
   module TmpEmClassProcessor
 
     # Walks the ke tree, finds any tmp classes that were added to

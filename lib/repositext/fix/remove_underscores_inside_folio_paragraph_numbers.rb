@@ -1,8 +1,8 @@
 class Repositext
   class Fix
+    # Removes underscores inside folio paragraph numbers
     class RemoveUnderscoresInsideFolioParagraphNumbers
 
-      # Removes underscores inside folio paragraph numbers
       # @param [String] text
       # @param [String] filename
       # @return [Outcome]

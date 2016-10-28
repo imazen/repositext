@@ -4,7 +4,6 @@ class Repositext
     class Sync
 
       # Synchronizes subtitles from English to foreign repos.
-      #
       class Subtitles
 
         class ReposNotReadyError < StandardError; end

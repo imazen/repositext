@@ -3,9 +3,11 @@ module Kramdown
   module Converter
 
     # Returns report of any of the following issues:
+    #
     # * No eagle at the beginning of the second record.
     # * No eagle at the end of the last record (before id page if it exists).
     # * Eagle in any record other than the second or last.
+    #
     # Allows exemption of records from the above rules.
     # NOTE: Expects id page to be removed before parsing kramdown document.
     class ReportInvalidEagles < Base

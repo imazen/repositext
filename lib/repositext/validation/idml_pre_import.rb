@@ -1,5 +1,6 @@
 class Repositext
   class Validation
+    # Validation to run before an IDML import.
     class IdmlPreImport < Validation
 
       # Specifies validations to run related to Idml import.

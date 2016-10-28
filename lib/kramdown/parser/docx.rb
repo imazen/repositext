@@ -1,27 +1,18 @@
-=begin
-
-Importing DOCX XML to AT
-========================
-
-Naming conventions
-------------------
-
-* node: refers to a Nokogiri::XML::Node (XML space)
-* element: refers to a Kramdown::Element (kramdown space). Note that we actually
-  use a sub-class named Kramdown::ElementRt
-* ke: l_var that refers to a kramdown element
-* xn: l_var that refers to an XML node
-
-=end
-
-# Converts DOCX to AT kramdown
-#
 require 'kramdown/document'
 
 module Kramdown
   module Parser
 
-    class Docx
+    # Parses DOCX XML string to kramdown AT
+    #
+    # Naming conventions
+    #
+    # * node: refers to a Nokogiri::XML::Node (XML space)
+    # * element: refers to a Kramdown::Element (kramdown space). Note that we actually
+    #   use a sub-class named Kramdown::ElementRt
+    # * ke: l_var that refers to a kramdown element
+    # * xn: l_var that refers to an XML node
+   class Docx
 
       include Kramdown::AdjacentElementMerger
       include Kramdown::ImportWhitespaceSanitizer
@@ -29,18 +20,26 @@ module Kramdown
       include Kramdown::TreeCleaner
       include Kramdown::WhitespaceOutPusher
 
+      # Custom error
       class InvalidElementException < RuntimeError; end
 
-      SUPPORTED_TEXT_RUN_FORMAT_ATTRS = %i[
-        bold
-        italic
-        smcaps
-        subscript
-        superscript
-        underline
-      ].sort
-
+      # Represents a TextRunFormat's attributes.
+      # @attr_reader bold [Boolean]
+      # @attr_reader italic [Boolean]
+      # @attr_reader smcaps [Boolean]
+      # @attr_reader subscript [Boolean]
+      # @attr_reader superscript [Boolean]
+      # @attr_reader underline [Boolean]
       class TextRunFormatAttrs
+
+        SUPPORTED_TEXT_RUN_FORMAT_ATTRS = %i[
+          bold
+          italic
+          smcaps
+          subscript
+          superscript
+          underline
+        ].sort
 
         attr_reader *SUPPORTED_TEXT_RUN_FORMAT_ATTRS
 

@@ -1,5 +1,6 @@
 module Kramdown
   module Converter
+    # Custom latex converter for PDF book format.
     class LatexRepositextBook < LatexRepositext
 
       include DocumentMixin

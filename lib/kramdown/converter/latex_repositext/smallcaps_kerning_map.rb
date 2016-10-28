@@ -1,12 +1,8 @@
-=begin
-
-This file manages the kerning map for smallcaps emulation.
-
-=end
-
 module Kramdown
   module Converter
     class LatexRepositext
+      # Manages the kerning map for smallcaps emulation: Loads map from file and provides
+      # lookup functionality.
       class SmallcapsKerningMap
 
         include KerningSampleLatexMixin

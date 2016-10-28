@@ -2,10 +2,12 @@ module Kramdown
   module Converter
     class LatexRepositext
       class SmallcapsKerningMap
+        # Namespace for methods related to generating a kerning samples PDF document.
         module KerningSampleLatexMixin
 
           extend ActiveSupport::Concern
 
+          # Namespace for class methods
           module ClassMethods
 
             # Returns latex for generating the kerning sample document

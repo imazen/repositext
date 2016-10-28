@@ -1,12 +1,13 @@
 class Repositext
   class Process
     class Convert
+      # Converts a DOCX XML document to kramdown AT string.
       class DocxToAt
 
         # @param document_xml [String] contents of 'word/document.xml' in ZIP archive
+        # @param docx_file [Repositext::RFile::Docx]
         # @param docx_kramdown_parser [Class], e.g., Kramdown::Parser::Docx
         # @param at_kramdown_converter_method [Symbol], e.g., :to_at
-        # @param docx_file [Repositext::RFile::Docx]
         def initialize(document_xml, docx_file, docx_kramdown_parser, at_kramdown_converter_method)
           raise ArgumentError.new("Invalid document_xml")  unless document_xml.is_a?(String)
           raise ArgumentError.new("Invalid docx_file: #{ docx_file.inspect }")  unless docx_file.is_a?(RFile::Docx)

@@ -1,15 +1,17 @@
-# https://github.com/rkh/coder
-# http://www.cl.cam.ac.uk/~mgk25/ucs/examples/UTF-8-test.txt
-# http://www.cl.cam.ac.uk/~mgk25/ucs/examples/quickbrown.txt
-# http://www.columbia.edu/~fdc/utf8/
-# http://stackoverflow.com/a/1319229/130830
-
-# List of character strings in many languages: http://en.wikipedia.org/wiki/List_of_pangrams
-
 class Repositext
   class Validation
     class Validator
       # This validator makes sure that validated text files are UTF8 encoded.
+      #
+      # Resources:
+      #
+      # * https://github.com/rkh/coder
+      # * http://www.cl.cam.ac.uk/~mgk25/ucs/examples/UTF-8-test.txt
+      # * http://www.cl.cam.ac.uk/~mgk25/ucs/examples/quickbrown.txt
+      # * http://www.columbia.edu/~fdc/utf8/
+      # * http://stackoverflow.com/a/1319229/130830
+      #
+      # List of character strings in many languages: http://en.wikipedia.org/wiki/List_of_pangrams
       class Utf8Encoding < Validator
 
         def run

@@ -1,5 +1,7 @@
 class Repositext
   class RFile
+    # Include this module in any RFile subclass that follows the standard file name
+    # convention of date_codes and product_identity_ids.
     module FollowsStandardFilenameConvention
 
       extend ActiveSupport::Concern

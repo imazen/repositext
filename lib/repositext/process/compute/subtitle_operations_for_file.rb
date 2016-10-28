@@ -1,46 +1,40 @@
 class Repositext
   class Process
     class Compute
-
-=begin
-
-Data types used in this file
-----------------------------
-
-* SubtitleAttrs
-      {
-        content: "Word1, 'word2' Word3.",
-        content_sim: "word1 word2 word3",
-        persistent_id: "1234567",
-        record_id: "123123123",
-        para_index: 0,
-        first_in_para: true,
-        last_in_para: false,
-        subtitle_count: 0,
-        index: 23,
-        repetitions: { 'repeated phrase' => [23, 56](start positions) },
-      }
-  Gaps have an empty string as content.
-
-* AlignedSubtitlePair: A hash describing two aligned subtitles in the file.
-      {
-        type: <:left_aligned|:right_aligned|:st_added...>
-        subtitle_object: <# Repositext::Subtitle ...>
-        sim_left: [sim<Float>, conf<Float>]
-        sim_right: [sim<Float>, conf<Float>]
-        sim_abs: [sim<Float>, conf<Float>]
-        content_length_change: <Integer from del to add>
-        subtitle_count_change: <Integer from del to add>
-        from: [SubtitleAttrs]
-        to: [SubtitleAttrs]
-        index: <Integer> index of aligned st pair in file
-        first_in_para: Boolean, true if asp is first in paragraph
-        last_in_para: Boolean, true if aps is last in paragraph
-      }
-
-=end
-
       # Computes subtitle operations for a file and patch.
+      #
+      # Data types used in this file
+      #
+      # * SubtitleAttrs
+      #       {
+      #         content: "Word1, 'word2' Word3.",
+      #         content_sim: "word1 word2 word3",
+      #         persistent_id: "1234567",
+      #         record_id: "123123123",
+      #         para_index: 0,
+      #         first_in_para: true,
+      #         last_in_para: false,
+      #         subtitle_count: 0,
+      #         index: 23,
+      #         repetitions: { 'repeated phrase' => [23, 56](start positions) },
+      #       }
+      #   Gaps have an empty string as content.
+      #
+      # * AlignedSubtitlePair: A hash describing two aligned subtitles in the file.
+      #       {
+      #         type: <:left_aligned|:right_aligned|:st_added...>
+      #         subtitle_object: <# Repositext::Subtitle ...>
+      #         sim_left: [sim<Float>, conf<Float>]
+      #         sim_right: [sim<Float>, conf<Float>]
+      #         sim_abs: [sim<Float>, conf<Float>]
+      #         content_length_change: <Integer from del to add>
+      #         subtitle_count_change: <Integer from del to add>
+      #         from: [SubtitleAttrs]
+      #         to: [SubtitleAttrs]
+      #         index: <Integer> index of aligned st pair in file
+      #         first_in_para: Boolean, true if asp is first in paragraph
+      #         last_in_para: Boolean, true if aps is last in paragraph
+      #       }
       class SubtitleOperationsForFile
 
         include AlignSubtitlePairs

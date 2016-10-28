@@ -1,11 +1,11 @@
 class Repositext
   class Fix
+    # Inserts a single record mark at the beginning of all files that don't
+    # contain any record_marks yet. This is so that we can safely assume
+    # the presence of record_marks in all content AT files.
+    # Uses the first record mark from the corresponding file in the primary_repo
     class InsertRecordMarkIntoAllAtFiles
 
-      # Inserts a single record mark at the beginning of all files that don't
-      # contain any record_marks yet. This is so that we can safely assume
-      # the presence of record_marks in all content AT files.
-      # Uses the first record mark from the corresponding file in the primary_repo
       # @param [String] text
       # @param [String] filename of the file to fix
       # @param [String] corresponding_filename of the source file in primary repo

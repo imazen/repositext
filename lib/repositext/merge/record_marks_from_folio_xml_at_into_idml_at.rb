@@ -1,9 +1,9 @@
 class Repositext
   class Merge
+    # Merges record_marks from at_folio into at_idml. Uses at_idml as text
+    # authority.
     class RecordMarksFromFolioXmlAtIntoIdmlAt
 
-      # Merges record_marks from at_folio into at_idml. Uses at_idml as text
-      # authority.
       # @param [String] at_folio
       # @param [String] at_idml
       # @return [String] at with merged tokens

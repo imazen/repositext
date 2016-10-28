@@ -2,6 +2,7 @@
 
 class Repositext
   class Validation
+    # Validation for content.
     class Content < Validation
 
       # Specifies validations to run for files in the /content directory

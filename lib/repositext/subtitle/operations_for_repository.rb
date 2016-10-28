@@ -5,7 +5,6 @@ class Repositext
     # all files in a repository.
     #
     # Can be serialized to and from a JSON file
-    #
     class OperationsForRepository
 
       ATTR_NAMES = [

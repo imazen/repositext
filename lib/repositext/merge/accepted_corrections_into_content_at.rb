@@ -1,7 +1,7 @@
 class Repositext
   class Merge
 
-    # This class merges spot corrections from a spot sheet into content AT.
+    # Merges spot corrections from a spot sheet into content AT.
     # It does so in two steps:
     #
     # 1. Repositext applies all corrections that can be done automatically

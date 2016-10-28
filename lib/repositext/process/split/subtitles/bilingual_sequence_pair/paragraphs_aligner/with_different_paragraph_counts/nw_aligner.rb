@@ -5,7 +5,7 @@ class Repositext
         class BilingualSequencePair
           class ParagraphsAligner
             class WithDifferentParagraphCounts
-
+              # Custom Needleman Wunch aligner for splitting subtitles
               class NwAligner < ::NeedlemanWunschAligner
 
                 # Get score for alignment pair of records and paragraphs.

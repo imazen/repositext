@@ -5,7 +5,6 @@ class Repositext
     # a single file.
     #
     # Can be serialized to and from a JSON file
-    #
     class OperationsForFile
 
       include CanBeAppliedToForeignContentAt

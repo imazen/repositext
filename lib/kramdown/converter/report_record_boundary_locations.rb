@@ -1,16 +1,8 @@
-# Returns a summary of record boundary locations. This is useful to run on
-# foreign language repos where record boundaries are tied to subtitle_marks.
-
 module Kramdown
   module Converter
 
-    # Returns summary of where record boundaries are located:
-    # * summary of all record boundaries
-    #     * what does it fall inside of:
-    #         * root
-    #         * paragraph
-    #         * span
-    #     * count
+    # Returns a summary of record boundary locations. This is useful to run on
+    # foreign language repos where record boundaries are tied to subtitle_marks.
     class ReportRecordBoundaryLocations < Base
 
       # Instantiate converter

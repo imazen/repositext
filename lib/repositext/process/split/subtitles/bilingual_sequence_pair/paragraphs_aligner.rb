@@ -4,10 +4,9 @@ class Repositext
       class Subtitles
         class BilingualSequencePair
 
-          # Responsibilities
-          # * Align foreign_sequence with primary_sequence
-          # * Estimate positions based on paragraph numbers (no review required) and
-          #   counts (review required) or based on subtitle mark indexes (no review required).
+          # Aligns foreign_sequence with primary_sequence.
+          # Estimates positions based on paragraph numbers (no review required) and
+          # counts (review required) or based on subtitle mark indexes (no review required).
           class ParagraphsAligner
 
             attr_reader :foreign_sequence, :primary_sequence

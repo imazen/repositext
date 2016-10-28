@@ -1,14 +1,14 @@
 module Kramdown
   module Converter
+    # This class is identical to {Docx}, the only difference being
+    # that it doesn't write the file to disc but returns the Caracal::Document
+    # object.
+    #
+    # You can then convert that object into XML strings like so:
+    # Caracal::Renderer::DocumentRenderer.render(docx)
     class DocxObject < Docx
 
-      # This class is identical to Converter::Docx, the only difference being
-      # that it doesn't write the file to disc but returns the Caracal::Document
-      # object.
-
-      # You can then convert that object into XML strings like so:
-      # Caracal::Renderer::DocumentRenderer.render(docx)
-
+      # @param el [Kramdown::Element]
       def convert_root(el)
         Caracal::Document.new(options[:output_file]) do |docx|
           @current_document = docx

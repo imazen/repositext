@@ -1,11 +1,11 @@
 module Kramdown
-
   module Converter
-
-    # Converts an element tree to the kramdown format.
+    # Converts a kramdown element tree to a string of serialized kramdown text.
     class KramdownRepositext < Kramdown
 
       # copied from original converter because the :record_mark element needs to be handled specially
+      # @param el [Kramdown::Element]
+      # @param opts [Hash{Symbol => Object}]
       def convert(el, opts = {:indent => 0})
         res = send("convert_#{el.type}", el, opts)
         if ![:html_element, :li, :dd, :td, :record_mark].include?(el.type) && (ial = ial_for_element(el))
@@ -25,14 +25,20 @@ module Kramdown
       end
 
       # Override Kramdown's method which encodes entities as decimal. We want hex.
+      # @param el [Kramdown::Element]
+      # @param indent [Integer]
       def convert_entity(el, indent)
         sprintf('&#x%04X;', el.value.code_point)
       end
 
+      # @param el [Kramdown::Element]
+      # @param opts [Hash{Symbol => Object}]
       def convert_gap_mark(el, opts)
         @options[:disable_gap_mark] ? "" : "%"
       end
 
+      # @param el [Kramdown::Element]
+      # @param opts [Hash{Symbol => Object}]
       def convert_record_mark(el, opts)
         if @options[:disable_record_mark]
           inner(el, opts)
@@ -42,6 +48,8 @@ module Kramdown
         end
       end
 
+      # @param el [Kramdown::Element]
+      # @param opts [Hash{Symbol => Object}]
       def convert_subtitle_mark(el, opts)
         @options[:disable_subtitle_mark] ? "" : "@"
       end

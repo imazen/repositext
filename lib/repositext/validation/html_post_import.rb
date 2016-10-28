@@ -1,5 +1,6 @@
 class Repositext
   class Validation
+    # Validation to run after an HTML import.
     class HtmlPostImport < Validation
 
       # Specifies validations to run related to HTML import.

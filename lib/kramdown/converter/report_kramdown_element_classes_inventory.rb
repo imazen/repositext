@@ -1,6 +1,6 @@
-# Returns a list of kramdown element class combinations
 module Kramdown
   module Converter
+    # Returns a list of kramdown element class combinations
     class ReportKramdownElementClassesInventory < Base
 
       # Instantiate converter

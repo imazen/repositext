@@ -1,16 +1,16 @@
 class Repositext
   class Fix
+    # Moves gap_marks (%) to the outside of
+    # * asterisks
+    # * quotes (primary or secondary)
+    # * parentheses
+    # * brackets
+    # Those characters may be nested, move % all the way out if those characters
+    # are directly adjacent.
+    # If % directly follows an elipsis, move to the front of the ellipsis
+    # (unless where elipsis and % are between two words like so: word…%word)
     class AdjustGapMarkPositions
 
-      # Move gap_marks (%) to the outside of
-      # * asterisks
-      # * quotes (primary or secondary)
-      # * parentheses
-      # * brackets
-      # Those characters may be nested, move % all the way out if those characters
-      # are directly adjacent.
-      # If % directly follows an elipsis, move to the front of the ellipsis
-      # (unless where elipsis and % are between two words like so: word…%word)
       # @param text [String]
       # @param filename [String]
       # @param language [Language]

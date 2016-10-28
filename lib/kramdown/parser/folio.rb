@@ -1,32 +1,22 @@
-=begin
-
-Importing Folio XML files to AT
-===============================
-
-Naming conventions
-------------------
-
-* node: refers to a Nokogiri::XML::Node (XML space)
-* element: refers to a Kramdown::Element (kramdown space). Note that we actually
-  use a sub-class named Kramdown::ElementRt
-* ke: l_var that refers to a kramdown element
-* xn: l_var that refers to an XML node
-
-NOTE: The Kramdown::Folio parser is an exception in that it returns a set
-of multiple files from the parse method. On other parsers we have
-to call `to_...` to get the output. On this parser it's enough to call the .parse
-method.
-
-=end
-
-# Converts folio per tape XML files to AT kramdown files
-#
 require 'kramdown/document'
 
 module Kramdown
   module Parser
 
     # Open a per tape Folio XML file and parse all record entries to kramdown.
+    #
+    # Naming conventions
+    #
+    # * node: refers to a Nokogiri::XML::Node (XML space)
+    # * element: refers to a Kramdown::Element (kramdown space). Note that we actually
+    #   use a sub-class named Kramdown::ElementRt
+    # * ke: l_var that refers to a kramdown element
+    # * xn: l_var that refers to an XML node
+    #
+    # NOTE: The Kramdown::Folio parser is an exception in that it returns a set
+    # of multiple files from the parse method. On other parsers we have
+    # to call `to_...` to get the output. On this parser it's enough to call the .parse
+    # method.
     class Folio
 
       include Kramdown::AdjacentElementMerger

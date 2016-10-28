@@ -1,10 +1,10 @@
 class Repositext
   class Fix
+    # Converts certain characters in text to proper typographical marks.
+    # We make changes in place for better performance
+    # (using `#gsub!` instead of `#gsub`).
     class ConvertFolioTypographicalChars
 
-      # Converts certain characters in text to proper typographical marks.
-      # We make changes in place for better performance
-      # (using `#gsub!` instead of `#gsub`).
       # @param text [String]
       # @param filename [String]
       # @return [Outcome]

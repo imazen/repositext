@@ -28,11 +28,15 @@ class Array
     end
   end
 
+  # Returns mean of elements.
+  # @return [Float]
   def mean
     return nil  if empty?
     inject(:+).to_f / length
   end
 
+  # Returns median of elements.
+  # @return [Numeric]
   def median
     return nil  if empty?
     sorted = sort

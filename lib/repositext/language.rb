@@ -1,4 +1,6 @@
 class Repositext
+  # Abstract class to represent a language.
+  # @abstract
   class Language
 
     def self.language_code_mappings

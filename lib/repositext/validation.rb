@@ -1,4 +1,6 @@
 class Repositext
+  # Abstract base class for validations.
+  # @abstract
   class Validation
 
     extend Forwardable

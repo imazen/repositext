@@ -1,6 +1,8 @@
 class Repositext
   class Validation
     class Validator
+      # Validates a kramdown PT string's valid syntax.
+      # @deprecated we don't use kramdown PT at all.
       class KramdownSyntaxPt < KramdownSyntax
 
         def run

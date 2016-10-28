@@ -1,8 +1,8 @@
 class Repositext
   class Merge
+    # Merges titles from folio roundtrip compare files into content_at.
     class TitlesFromFolioRoundtripCompareIntoContentAt
 
-      # Merges titles from folio roundtrip compare files into content_at.
       # @param [String] folio_roundtrip_compare the folio roundtrip compare file
       # @param [String] content_at to merge title into
       # @return [Outcome] the merged document is returned as #result if successful.

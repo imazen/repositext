@@ -1,7 +1,6 @@
-# Include this module into any library that wants to merge adjacent kramdown
-# elements if they are of the same type.
-
 module Kramdown
+  # Include this module into any library that wants to merge adjacent kramdown
+  # elements if they are of the same type.
   module AdjacentElementMerger
 
     # Recursively merges adjacent elements of same type.

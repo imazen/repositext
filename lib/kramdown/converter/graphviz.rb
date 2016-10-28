@@ -4,6 +4,8 @@ require 'ruby-graphviz'
 
 module Kramdown
   module Converter
+    # Converts a kramdown element tree to a graphviz output file, illustrating
+    # the kramdown element tree.
     class Graphviz < Base
 
       # Create a Graphviz converter with the given options.
@@ -19,6 +21,7 @@ module Kramdown
         @graph = GraphViz::new('Kramdown Document Tree', { :nodesep => 0.1, :ranksep => 1.0 })
       end
 
+      # @param el [Kramdown::Element]
       def convert(el)
         # Convert all elements to graph
         @obj_counter = 0

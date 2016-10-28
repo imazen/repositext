@@ -3,6 +3,8 @@ class Repositext
     class Sync
       class Subtitles
         module SyncForeignFile
+          # This namespace provides methods related to transferring subtitle operations
+          # to a foreign file.
           module TransferApplicableStOpsToForeignFile
 
             extend ActiveSupport::Concern

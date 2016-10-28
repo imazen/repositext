@@ -1,9 +1,7 @@
-# -*- coding: utf-8 -*-
-
 module Kramdown
   module Converter
 
-    # Converts tree to subtitle text
+    # Converts kramdown element tree to subtitle text.
     class Subtitle < Base
 
       # Instantiate a Subtitle converter

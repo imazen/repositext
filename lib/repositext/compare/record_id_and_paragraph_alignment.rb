@@ -1,5 +1,6 @@
 class Repositext
   class Compare
+      # Compares the alignment of record ids and paragraphs between two content AT files.
     class RecordIdAndParagraphAlignment
 
       # Compares the alignment of record ids and paragraphs between contents_1

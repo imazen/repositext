@@ -1,8 +1,11 @@
 module Kramdown
   module Converter
+    # Converts kramdown element tree to Docx file saved to options[:output_file].
     class Docx < Base
 
+      # Custom error.
       class Exception < RuntimeError; end
+      # Custom error for unhandled kramdown elements.
       class InvalidElementException < Exception; end
 
       # Maps Kramdown block level elements to paragraph styles.
@@ -145,6 +148,7 @@ module Kramdown
         @current_run_text_contents = nil
       end
 
+      # @param [Kramdown::Element] el
       def convert_entity(el)
         # TODO: decide if we want to decode entities
         add_text(Repositext::Utils::EntityEncoder.decode(el.options[:original]))
@@ -292,8 +296,8 @@ module Kramdown
         r
       end
 
+      # Hook to add specialized behavior to convert_p.
       def convert_p_additions(ke)
-        # Hook to add specialized behavior to convert_p.
         # Override in subclasses.
       end
 

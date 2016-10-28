@@ -1,13 +1,17 @@
 module Kramdown
   module Converter
-    # Converts an element tree to Latex. Adds converting of repositext specific
-    # tokens. Returns just latex body. Needs to be wrapped in a complete latex
+    # Converts a kramdown element tree to a Latex body string.
+    # This is used to produce PDF documents.
+    # Adds converting of repositext specific tokens.
+    # Returns just latex body. Needs to be wrapped in a complete latex
     # document.
     class LatexRepositext < Latex
 
       include PostProcessLatexBodyMixin
 
+      # Custom error
       class LeftoverTempGapMarkError < StandardError; end
+      # Custom error
       class LeftoverTempGapMarkNumberError < StandardError; end
 
       # Since our font doesn't have a small caps variant, we have to emulate it
@@ -143,12 +147,15 @@ module Kramdown
         new_string
       end
 
+      # @return [Hash]
       def smallcaps_kerning_map
         @smallcaps_kerning_map ||= SmallcapsKerningMap.new
       end
 
       # Patch this method to handle ems that came via imports:
       # When importing, :ems are used as container to apply a class to a span.
+      # @param el [Kramdown::Element]
+      # @param opts [Hash{Symbol => Object}]
       def convert_em(el, opts)
         # TODO: add mechanism to verify that we have processed all classes
         before = ''
@@ -207,6 +214,8 @@ module Kramdown
 
       # Patch this method because kramdown's doesn't handle some of the
       # characters we need to handle.
+      # @param el [Kramdown::Element]
+      # @param opts [Hash{Symbol => Object}]
       def convert_entity(el, opts)
         # begin patch JH
         entity = el.value # Kramdown::Utils::Entities::Entity
@@ -227,11 +236,15 @@ module Kramdown
       end
 
       # Override this method in any subclasses that render gap_marks
+      # @param el [Kramdown::Element]
+      # @param opts [Hash{Symbol => Object}]
       def convert_gap_mark(el, opts)
         ''
       end
 
       # Patch this method to render headers without using latex title
+      # @param el [Kramdown::Element]
+      # @param opts [Hash{Symbol => Object}]
       def convert_header(el, opts)
         case output_header_level(el.options[:level])
         when 1
@@ -268,6 +281,8 @@ module Kramdown
       end
 
       # Patch this method to handle the various repositext paragraph styles.
+      # @param el [Kramdown::Element]
+      # @param opts [Hash{Symbol => Object}]
       def convert_p(el, opts)
         if el.children.size == 1 && el.children.first.type == :img && !(img = convert_img(el.children.first, opts)).empty?
           convert_standalone_image(el, opts, img)
@@ -357,13 +372,15 @@ module Kramdown
       end
 
       # Override this method in any subclasses that render record_marks
+      # @param el [Kramdown::Element]
+      # @param opts [Hash{Symbol => Object}]
       def convert_record_mark(el, opts)
         inner(el, opts)
       end
 
       # Returns a complete latex document as string.
-      # @param [Kramdown::Element] el the kramdown root element
-      # @param [Hash{Symbol => Object}] opts
+      # @param el [Kramdown::Element]
+      # @param opts [Hash{Symbol => Object}]
       # @return [String]
       def convert_root(el, opts)
         latex_body = inner(el, opts)
@@ -383,17 +400,22 @@ module Kramdown
         r
       end
 
+      # @param el [Kramdown::Element]
+      # @param opts [Hash{Symbol => Object}]
       def convert_strong(el, opts)
         "\\textbf{#{ inner(el, opts) }}"
       end
 
       # Override this method in any subclasses that render subtitle_marks
+      # @param el [Kramdown::Element]
+      # @param opts [Hash{Symbol => Object}]
       def convert_subtitle_mark(el, opts)
         ''
       end
 
     protected
 
+      # Returns boolean to indicate whether song_break_class should be applied.
       def apply_song_break_class
         true
       end
@@ -448,7 +470,5 @@ module Kramdown
       end
 
     end
-
   end
-
 end

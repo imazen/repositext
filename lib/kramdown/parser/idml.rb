@@ -1,9 +1,6 @@
-# -*- coding: utf-8 -*-
-
 module Kramdown
   module Parser
-
-    # Open an IDML file and parse all story files within with the Kramdown::Parser::IdmlStory parser.
+    # Opens an IDML file and parses all story files within with the Kramdown::Parser::IdmlStory parser.
     class Idml
 
       class Exception < RuntimeError; end

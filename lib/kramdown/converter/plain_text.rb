@@ -1,9 +1,7 @@
-# -*- coding: utf-8 -*-
-
-# Converts tree to plain text. Removes all formatting and attributes.
-# This converter can be used, e.g., to get a header's text contents.
 module Kramdown
   module Converter
+    # Converts kramdown element tree to plain text. Removes all formatting and
+    # attributes. This converter can be used, e.g., to get a header's text contents.
     class PlainText < Base
 
       # Instantiate a PlainText converter

@@ -1,7 +1,8 @@
-# Abstract class for all validators. To comply with the Validator interface,
-# sub-classes have to implement the #run_list method.
 class Repositext
   class Validation
+    # Abstract class for all validators. To comply with the Validator interface,
+    # sub-classes have to implement the #run_list method.
+    # @abstract
     class Validator
 
       extend Forwardable
