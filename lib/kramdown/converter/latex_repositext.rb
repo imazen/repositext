@@ -291,24 +291,27 @@ module Kramdown
           after = ''
           inner_text = nil
 
+          # NOTE: We may wrap multiple environments around a single paragraph.
+          # It's important that the latex environments are nested symmetrically.
+          # So we we prepend to the `before` and append to the `after` string.
           if el.has_class?('first_par')
             # render in RtFirstPar environment
-            before << "\\begin{RtFirstPar}\n"
+            before.prepend("\\begin{RtFirstPar}\n")
             after << "\n\\end{RtFirstPar}"
           end
           if el.has_class?('indent_for_eagle')
             # render in RtIndentForEagle environment
-            before << "\\begin{RtIndentForEagle}\n"
+            before.prepend("\\begin{RtIndentForEagle}\n")
             after << "\n\\end{RtIndentForEagle}"
           end
           if el.has_class?('id_paragraph')
             # render in RtIdParagraph environment
-            before << "\\begin{RtIdParagraph}\n"
+            before.prepend("\\begin{RtIdParagraph}\n")
             after << "\n\\end{RtIdParagraph}"
           end
           if el.has_class?('id_title1')
             # render in RtIdTitle1 environment
-            before << "\\begin{RtIdTitle1}\n"
+            before.prepend("\\begin{RtIdTitle1}\n")
             after << "\n\\end{RtIdTitle1}"
             inner_text = inner(el, opts.merge(smallcaps_font_override: @options[:title_font_name]))
             # differentiate between primary and non-primary content_types
@@ -321,50 +324,50 @@ module Kramdown
           end
           if el.has_class?('id_title2')
             # render in RtIdTitle2 environment
-            before << "\\begin{RtIdTitle2}\n"
+            before.prepend("\\begin{RtIdTitle2}\n")
             after << "\n\\end{RtIdTitle2}"
             inner_text = inner(el, opts.merge(smallcaps_font_override: @options[:title_font_name]))
           end
           if el.has_class?('normal')
             # render in RtNormal environment
-            before << "\\begin{RtNormal}\n"
+            before.prepend("\\begin{RtNormal}\n")
             after << "\n\\end{RtNormal}"
           end
           if el.has_class?('normal_pn')
             # render in RtNormal environment
-            before << "\\begin{RtNormal}\n"
+            before.prepend("\\begin{RtNormal}\n")
             after << "\n\\end{RtNormal}"
           end
           if el.has_class?('omit')
             # render in RtOmit environment
             b,a = latex_environment_for_translator_omit
-            before << b
+            before.prepend(b)
             after << a
           end
           if el.has_class?('q')
             # render in RtQuestion environment
-            before << "\\begin{RtQuestion}\n"
+            before.prepend("\\begin{RtQuestion}\n")
             after << "\n\\end{RtQuestion}"
           end
           if el.has_class?('scr')
             # render in RtScr environment
-            before << "\\begin{RtScr}\n"
+            before.prepend("\\begin{RtScr}\n")
             after << "\n\\end{RtScr}"
           end
           if el.has_class?('song')
             # render in RtSong environment
-            before << "\\begin{RtSong}\n"
+            before.prepend("\\begin{RtSong}\n")
             after << "\n\\end{RtSong}"
           end
           if el.has_class?('song_break')
             # render in RtSong(Break) environment
             latex_env = apply_song_break_class ? 'RtSongBreak' : 'RtSong'
-            before << "\\begin{#{ latex_env }}\n"
+            before.prepend("\\begin{#{ latex_env }}\n")
             after << "\n\\end{#{ latex_env }}"
           end
           if el.has_class?('stanza')
            # render in RtStanza environment
-            before << "\\begin{RtStanza}\n"
+            before.prepend("\\begin{RtStanza}\n")
             after << "\n\\end{RtStanza}"
           end
           "#{ before }#{ inner_text || inner(el, opts) }#{ after }\n\n"
