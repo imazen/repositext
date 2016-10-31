@@ -25,7 +25,7 @@ class Repositext
             }
           )
         ) do |contents, filename|
-          outcome = Repositext::Export::GapMarkTagging.export(contents)
+          outcome = Repositext::Process::Export::GapMarkTagging.export(contents)
           if outcome.success?
             [Outcome.new(true, { contents: outcome.result, extension: 'gap_mark_tagging.txt' })]
           else
@@ -112,7 +112,7 @@ class Repositext
       # kerning_samples.pdf
       def export_pdf_kerning_samples(options)
         latex = Kramdown::Converter::LatexRepositext::SmallcapsKerningMap.kerning_sample_latex
-        pdf = Repositext::Convert::LatexToPdf.convert(latex)
+        pdf = Repositext::Process::Convert::LatexToPdf.convert(latex)
         file_path = File.join(
           File.expand_path('..', config.base_dir(:content_type_dir)),
           'kerning_samples.pdf'
@@ -298,7 +298,7 @@ class Repositext
           if options[:post_process_latex_proc]
             latex = options[:post_process_latex_proc].call(latex, options)
           end
-          pdf = Repositext::Convert::LatexToPdf.convert(latex)
+          pdf = Repositext::Process::Convert::LatexToPdf.convert(latex)
 
           [
             Outcome.new(

@@ -78,7 +78,7 @@ class Repositext
           next
         end
         puts " - Cloning #{ repo_name }"
-        clone_command = "git clone git@vgrtr.vgr.local:vgr-text-repository/#{ repo_name }.git"
+        clone_command = git_clone_command(repo_name)
         cmd = %(cd #{ repo_set_parent_path } && #{ clone_command })
         Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
           exit_status = wait_thr.value
@@ -90,6 +90,12 @@ class Repositext
           end
         end
       }
+    end
+
+    # Extracting the git clone command so that it can be overridden in subclasses.
+    # @param repo_name [String]
+    def git_clone_command(repo_name)
+      "git clone <repo clone url>#{ repo_name }.git"
     end
 
     # Makes sure that all content repos are ready for git operations:

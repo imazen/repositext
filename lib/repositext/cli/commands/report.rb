@@ -564,7 +564,7 @@ class Repositext
         # For primary repo we want limited context, and for foreign we want
         # all text from paragraph number
         context_size = config.setting(:is_primary_repo) ? 5 : 0
-        report = Repositext::Report::InvalidTypographicQuotes.new(
+        report = Repositext::Process::Report::InvalidTypographicQuotes.new(
           context_size,
           content_type.language
         )

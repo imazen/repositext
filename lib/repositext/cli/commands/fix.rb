@@ -86,7 +86,7 @@ class Repositext
           "Adjusting :gap_mark positions",
           options
         ) do |contents, filename|
-          outcome = Repositext::Fix::AdjustGapMarkPositions.fix(
+          outcome = Repositext::Process::Fix::AdjustGapMarkPositions.fix(
             contents,
             filename,
             content_type.language
@@ -113,7 +113,7 @@ class Repositext
           "Adjusting merged :record_mark positions",
           options
         ) do |contents, filename|
-          outcome = Repositext::Fix::AdjustMergedRecordMarkPositions.fix(contents, filename)
+          outcome = Repositext::Process::Fix::AdjustMergedRecordMarkPositions.fix(contents, filename)
           [outcome]
         end
       end
@@ -130,7 +130,7 @@ class Repositext
           "Converting abbreviations to lower case",
           options
         ) do |contents, filename|
-          outcome = Repositext::Fix::ConvertAbbreviationsToLowerCase.fix(contents, filename)
+          outcome = Repositext::Process::Fix::ConvertAbbreviationsToLowerCase.fix(contents, filename)
           [outcome]
         end
       end
@@ -147,7 +147,7 @@ class Repositext
           "Changing typographical characters in files",
           options
         ) do |contents, filename|
-          outcome = Repositext::Fix::ConvertFolioTypographicalChars.fix(
+          outcome = Repositext::Process::Fix::ConvertFolioTypographicalChars.fix(
             contents,
             filename,
             content_type.language
@@ -174,7 +174,7 @@ class Repositext
           "Normalizing editors notes",
           options
         ) do |contents, filename|
-          outcome = Repositext::Fix::NormalizeEditorsNotes.fix(contents, filename)
+          outcome = Repositext::Process::Fix::NormalizeEditorsNotes.fix(contents, filename)
           [outcome]
         end
       end
@@ -192,7 +192,7 @@ class Repositext
           "Normalizing subtitle_mark before gap_mark positions.",
           options
         ) do |contents, filename|
-          outcome = Repositext::Fix::NormalizeSubtitleMarkBeforeGapMarkPositions.fix(contents, filename)
+          outcome = Repositext::Process::Fix::NormalizeSubtitleMarkBeforeGapMarkPositions.fix(contents, filename)
           [outcome]
         end
       end
@@ -266,7 +266,7 @@ class Repositext
           "Removing underscores inside folio paragraph numbers",
           options
         ) do |contents, filename|
-          outcome = Repositext::Fix::RemoveUnderscoresInsideFolioParagraphNumbers.fix(contents, filename)
+          outcome = Repositext::Process::Fix::RemoveUnderscoresInsideFolioParagraphNumbers.fix(contents, filename)
           [outcome]
         end
       end

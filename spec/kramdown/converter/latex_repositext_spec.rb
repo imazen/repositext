@@ -137,6 +137,23 @@ module Kramdown
 
       end
 
+      describe "#convert_p" do
+
+        [
+          [
+            "multiple nested environments around single paragraph",
+            "word word word\n{: .normal .indent_for_eagle}\n",
+            "\\begin{RtNormal}\n\\begin{RtIndentForEagle}\nword word word\n\\end{RtIndentForEagle}\n\\end{RtNormal}\n\n"
+          ],
+        ].each do |desc, test_string, xpect|
+          it "handles #{ desc }" do
+            doc = Document.new(test_string, input: 'KramdownRepositext', language: language)
+            doc.to_latex_repositext.must_equal(xpect)
+          end
+        end
+
+      end
+
       describe "#escape_latex_text" do
 
         [

@@ -20,13 +20,13 @@ class Kramdown::Parser::Folio::KeContext
       'distinct_p_referenceline_contents' => Hash.new(0),
       # The current p element
       'p' => nil,
-      # The current record_id (vgr)
+      # The current record_id
       'record_id' => nil,
       # The current record_mark
       'record_mark' => nil,
       # The current tape_id
       'tape_id' => nil,
-      # The current year_id (vgr)
+      # The current year_id
       'year_id' => nil,
     }.merge(attrs)
     @parser = parser

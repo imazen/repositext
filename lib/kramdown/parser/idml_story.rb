@@ -1,6 +1,5 @@
 module Kramdown
   module Parser
-
     # Parses an IDML story to kramdown.
     class IdmlStory < Base
 

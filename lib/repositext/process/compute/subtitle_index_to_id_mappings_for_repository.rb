@@ -11,8 +11,6 @@ class Repositext
         # @param fromGitCommit [String]
         # @param toGitCommit [String]
         def initialize(repository, fromGitCommit, toGitCommit)
-          # repo_root = '/Users/johund/development/vgr-english'
-          # repository = Rugged::Repository.new(repo_root)
           @repository = repository
           @fromGitCommit = fromGitCommit
           @toGitCommit = toGitCommit
