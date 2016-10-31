@@ -239,6 +239,7 @@ class Repositext
           language_code_3_chars: config.setting(:language_code_3_chars),
           language_name: content_type.language.name,
           paragraph_number_font_name: config.setting(:pdf_export_paragraph_number_font_name),
+          # NOTE: We grab pdf_export_font_name from the _PRIMARY_ repo's config
           primary_font_name: primary_config.setting(:pdf_export_font_name),
           version_control_page: options['include-version-control-info'],
         })
