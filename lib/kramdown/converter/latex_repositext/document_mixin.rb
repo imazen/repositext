@@ -149,6 +149,7 @@ module Kramdown
           @include_meta_info = include_meta_info
           @is_primary_repo = @options[:is_primary_repo]
           @language_name = @options[:language_name]
+          @last_eagle_hspace = @options[:last_eagle_hspace]
           @latest_commit_hash = latest_commit.oid[0,8]
           @linebreaklocale = @options[:language_code_2_chars]
           @magnification = magnification
