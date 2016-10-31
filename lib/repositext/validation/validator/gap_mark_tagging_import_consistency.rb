@@ -41,8 +41,8 @@ class Repositext
             # We re-export the existing content_at to gap_mark_tagging
             # and compare the result with gap_mark_tagging_import after removing
             # subtitle_marks and gap_marks in both since we expect them to change.
-            string_1 = Repositext::Merge::GapMarkTaggingImportIntoContentAt.remove_gap_marks_and_omit_classes(tmp_gap_mark_tagging_export)
-            string_2 = Repositext::Merge::GapMarkTaggingImportIntoContentAt.remove_gap_marks_and_omit_classes(gap_mark_tagging_import)
+            string_1 = Repositext::Process::Merge::GapMarkTaggingImportIntoContentAt.remove_gap_marks_and_omit_classes(tmp_gap_mark_tagging_export)
+            string_2 = Repositext::Process::Merge::GapMarkTaggingImportIntoContentAt.remove_gap_marks_and_omit_classes(gap_mark_tagging_import)
             error_message = "\n\nText mismatch between gap_mark_tagging_import and content_at in #{ @file_to_validate.last.path }."
           when 'post_import'
             # We re-export the new content_at to gap_mark_tagging and compare the result
