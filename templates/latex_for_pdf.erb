@@ -26,8 +26,6 @@
 \usepackage{fontspec}
 % turn off ligatures
 \setmainfont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @font_name %>}
-\newfontfamily\increasedwordspacefont[Ligatures={NoRequired,NoCommon,NoContextual},WordSpace=2.0]{<%= @font_name %>}
-\newfontfamily\decreasedwordspacefont[Ligatures={NoRequired,NoCommon,NoContextual},WordSpace=0.75]{<%= @font_name %>}
 % use different font for titles
 \newfontfamily\titlefont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @title_font_name %>}
 \newfontfamily\paragraphnumberfont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @paragraph_number_font_name %>}
@@ -500,25 +498,25 @@
     \par
   }
 
-% environment to render .normal
-\newenvironment{RtIncreasedWordSpace}
-  {%
-    \par
-    \increasedwordspacefont
-  }
-  {%
-    \par
-  }
-
-% environment to render .normal
+% environment to render text with decreased inter word space
 \newenvironment{RtDecreasedWordSpace}
   {%
-    \par
-    \decreasedwordspacefont
+    % I have no idea why we need to add the LetterSpace clause to
+    % limit the scope of the sowrd space adjustement.
+    % I got it from http://tex.stackexchange.com/a/272682
+    \addfontfeature{WordSpace=0.75,LetterSpace=0}%
   }
+  {}
+
+% environment to render text with increased inter word space
+\newenvironment{RtIncreasedWordSpace}
   {%
-    \par
+    % I have no idea why we need to add the LetterSpace clause to
+    % limit the scope of the sowrd space adjustement.
+    % I got it from http://tex.stackexchange.com/a/272682
+    \addfontfeature{WordSpace=1.25,LetterSpace=0}%
   }
+  {}
 
 % environment to render translator omit in green
 \newenvironment{RtOmit}
