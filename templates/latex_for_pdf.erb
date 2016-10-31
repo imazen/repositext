@@ -672,6 +672,12 @@
 % avoid widows and orphans
 \widowpenalty=5000
 \clubpenalty=5000
+% log file will contain only overfull/underfull _hboxes_ above this badness
+% NOTE: We're ok with the default setting
+%\hbadness=10000
+% log file will contain only overfull/underfull _vboxes_ above this badness.
+% 100 is the transition from loose -> underfull
+\vbadness=100
 
 % set rubber value between paras for flushbottom
 \setlength{\parskip}{3pt plus 3pt minus 0.2pt}

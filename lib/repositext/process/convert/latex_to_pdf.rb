@@ -18,6 +18,9 @@ class Repositext
       # * 'Undefined control sequence'
       # * 'Package microtype Error'
       #
+      # Page with good info on warnings:
+      # http://www.eng.fsu.edu/~dommelen/l2h/warnings.html#undervbh
+      #
       # * 'file:line:error style messages enabled.' # don't match on this! find other instances of error
       # * 'No complaints by nag'
       class LatexToPdf
@@ -67,6 +70,7 @@ class Repositext
                 }
                 has_overfull_hboxes = true
               else
+                warn_on_underful_vboxes(log_file_contents)
                 has_overfull_hboxes = false
               end
             end
@@ -166,6 +170,37 @@ class Repositext
             ohb[:offensive_string],
             ohb[:offensive_string].sub(/(\s+)(\S*)\z/, "\\linebreak\n" + '\2')
           )
+        end
+
+        # Prints a warning for any underfull vboxes.
+        # @param log_file_contents [String] latex log file contents
+        def self.warn_on_underful_vboxes(log_file_contents)
+          # We're looking for a log entry like this:
+          #
+          #  [28]
+          # Underfull \vbox (badness 336) has occurred while \output is active []
+          #
+          #  [29]
+
+          # The log file may contain invalid UTF8 byte sequences
+          # so we have to scrub the string before we run regexes on it.
+          #
+          ufvbs = log_file_contents.scrub.scan(
+            /
+              (?:^Underfull\s\\vbox\s\(badness\s) # Start of line
+              (\d+) # badness
+              (?:.*?) # skip any content inbetween
+              (\[\d+\]) # capture page indicator
+            /xm
+          )
+
+          if ufvbs.any?
+            puts "Found pages with large paragraph spacing (underfull vboxes):".color(:red)
+            ufvbs.each { |badness, page_number|
+              puts " - Page #{ page_number }, badness: #{ badness }".color(:red)
+            }
+          end
+          true
         end
 
       end
