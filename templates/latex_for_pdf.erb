@@ -26,11 +26,13 @@
 \usepackage{fontspec}
 % turn off ligatures
 \setmainfont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @font_name %>}
+\newfontfamily\increasedwordspacefont[Ligatures={NoRequired,NoCommon,NoContextual},WordSpace=2.0]{<%= @font_name %>}
+\newfontfamily\decreasedwordspacefont[Ligatures={NoRequired,NoCommon,NoContextual},WordSpace=0.75]{<%= @font_name %>}
 % use different font for titles
 \newfontfamily\titlefont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @title_font_name %>}
 \newfontfamily\paragraphnumberfont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @paragraph_number_font_name %>}
+\DeclareTextFontCommand{\textparagraphnumberfont}{\paragraphnumberfont}
 \newfontfamily\primaryfont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @primary_font_name %>}
-\newfontfamily\rtmainfont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @font_name %>}
 
 <% if @polyglossia_default_language %>
   % This language requires polyglossia for correct font rendering
@@ -345,7 +347,7 @@
 <% if @polyglossia_default_language %>
   {\noindent\makebox[\parindent][l]{\raisebox{0.5ex}{{\textscale{0.655}{#1}}}}}
 <% else %>
-  {\paragraphnumberfont\noindent\makebox[\parindent][l]{\raisebox{0.5ex}{{\textscale{0.655}{#1}}}}\rtmainfont}
+  {\noindent\textparagraphnumberfont{\makebox[\parindent][l]{\raisebox{0.5ex}{{\textscale{0.655}{#1}}}}}}
 <% end %>
 
 % command to render record_mark. Pass rid as param
@@ -495,6 +497,26 @@
     % to a range of 0pt to 260pt. We use `260pt _minus_ 260pt` since the shrink limit is a hard limit
     % versus the stretch limit of `0pt _plus_ 260pt` which can be exceeded.
     \setlength{\parfillskip}{260pt minus 260pt}
+    \par
+  }
+
+% environment to render .normal
+\newenvironment{RtIncreasedWordSpace}
+  {%
+    \par
+    \increasedwordspacefont
+  }
+  {%
+    \par
+  }
+
+% environment to render .normal
+\newenvironment{RtDecreasedWordSpace}
+  {%
+    \par
+    \decreasedwordspacefont
+  }
+  {%
     \par
   }
 

@@ -294,10 +294,20 @@ module Kramdown
           # NOTE: We may wrap multiple environments around a single paragraph.
           # It's important that the latex environments are nested symmetrically.
           # So we we prepend to the `before` and append to the `after` string.
+          if el.has_class?('decreased_word_space')
+            # render in RtDecreasedWordSpace environment
+            before.prepend("\\begin{RtDecreasedWordSpace}\n")
+            after << "\n\\end{RtDecreasedWordSpace}"
+          end
           if el.has_class?('first_par')
             # render in RtFirstPar environment
             before.prepend("\\begin{RtFirstPar}\n")
             after << "\n\\end{RtFirstPar}"
+          end
+          if el.has_class?('increased_word_space')
+            # render in RtIncreasedWordSpace environment
+            before.prepend("\\begin{RtIncreasedWordSpace}\n")
+            after << "\n\\end{RtIncreasedWordSpace}"
           end
           if el.has_class?('indent_for_eagle')
             # render in RtIndentForEagle environment
