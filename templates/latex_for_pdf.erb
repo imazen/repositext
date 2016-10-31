@@ -390,6 +390,7 @@
     <% else %>
       \setlength{\parskip}{2.991pt}
     <% end %>
+    \setlength{\lineskiplimit}{-100pt} % This setting keeps latex from automatically stretching linespacing when characters may overlap.
     \setlength{\parindent}{0pt}
     \begin{spacing}{1.0027}
       \fontsize{8pt}{10.5pt}\selectfont
@@ -421,6 +422,7 @@
     \clearpage % TODO: Make this variable based off of is_primary_repo. English ids should always be on a page by themselves and foreign ids are allowed to be on the same page as content. We need to investigate how to get that to work properly in the foreign. Also set margins to always be a left hand page for primary repo.
     \thispagestyle{RtIdPageStyle}
     \vspace*{\fill}
+    \setlength{\lineskiplimit}{-100pt} % This setting keeps latex from automatically stretching linespacing when characters may overlap.
     \setlength{\parskip}{0pt}
     \setlength{\parindent}{0pt}
     \centering
@@ -439,6 +441,7 @@
     <% else %>
       \setlength{\parskip}{1.467pt}
     <% end %>
+    \setlength{\lineskiplimit}{-100pt} % This setting keeps latex from automatically stretching linespacing when characters may overlap.
     \setlength{\parindent}{0pt}
     \centering
     \titlefont%
@@ -462,6 +465,7 @@
 \newenvironment{RtFirstPar}
   {%
     \par
+    \setlength{\lineskiplimit}{-100pt} % This setting keeps latex from automatically stretching linespacing when characters may overlap.
     \setlength{\parskip}{0pt plus 0pt minus 0pt} % to stop the vert space between title and first paragraph from varying
   }
   {%
@@ -484,6 +488,7 @@
 \newenvironment{RtNormal}
   {%
     \par
+    \setlength{\lineskiplimit}{-100pt} % This setting keeps latex from automatically stretching linespacing when characters may overlap.
   }
   {%
     % Force a minimum length for the last line in a paragraph by limiting parfillskip
@@ -508,6 +513,7 @@
 \newenvironment{RtQuestion}
   {%
     \par
+    \setlength{\lineskiplimit}{-100pt} % This setting keeps latex from automatically stretching linespacing when characters may overlap.
     \noindent
     \hangindent=25pt
     \hangafter=1
@@ -522,6 +528,7 @@
     \par
     \leftskip=20.236pt
     \rightskip=20.236pt
+    \setlength{\lineskiplimit}{-100pt} % This setting keeps latex from automatically stretching linespacing when characters may overlap.
     \setlength{\parindent}{7.95pt}
   }
   {%
@@ -534,6 +541,7 @@
     \par
     \leftskip=60.225pt
     \rightskip=30.112pt
+    \setlength{\lineskiplimit}{-100pt} % This setting keeps latex from automatically stretching linespacing when characters may overlap.
     \setlength{\parindent}{-8pt}
     \nopagebreak
     \setlength{\parskip}{0pt plus 0pt minus 0pt}
@@ -548,6 +556,7 @@
     \par
     \leftskip=60.225pt
     \rightskip=30.112pt
+    \setlength{\lineskiplimit}{-100pt} % This setting keeps latex from automatically stretching linespacing when characters may overlap.
     \setlength{\parindent}{-8pt}
     \pagebreak
     \setlength{\parskip}{0pt plus 0pt minus 0pt}
@@ -573,6 +582,7 @@
     \par
     \leftskip=60.225pt
     \rightskip=30.112pt
+    \setlength{\lineskiplimit}{-100pt} % This setting keeps latex from automatically stretching linespacing when characters may overlap.
     \setlength{\parindent}{-8pt}
   }
   {%
