@@ -122,6 +122,7 @@ module Kramdown
           @footer_title = truncate_plain_text_title(
             @options[:footer_title_english], 43, 3
           ).unicode_upcase
+          @header_font_name = @options[:header_font_name]
           @header_text = compute_header_text_latex(
             @options[:header_text],
             @options[:hrules_present],

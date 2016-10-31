@@ -28,6 +28,7 @@
 \setmainfont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @font_name %>}
 % use different font for titles
 \newfontfamily\titlefont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @title_font_name %>}
+\newfontfamily\headerfont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @header_font_name %>}
 \newfontfamily\paragraphnumberfont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @paragraph_number_font_name %>}
 \DeclareTextFontCommand{\textparagraphnumberfont}{\paragraphnumberfont}
 \newfontfamily\primaryfont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @primary_font_name %>}
@@ -103,8 +104,8 @@
     % no line in footer (default)
   <% end %>
   \fancyhead[EL,OR]{<%= "\\hrule height 0.19\pt \\kern 0.33\pt"  if @hrules_present %><%= @page_number_command %>} % outside
-  \fancyhead[ER]{\addfontfeature{LetterSpace=7.5}<%= @header_text %>} % inside even
-  \fancyhead[OL]{\addfontfeature{LetterSpace=7.5}<%= @header_title %>} % inside odd
+  \fancyhead[ER]{\headerfont\addfontfeature{LetterSpace=7.5}<%= @header_text %>} % inside even
+  \fancyhead[OL]{\headerfont\addfontfeature{LetterSpace=7.5}<%= @header_title %>} % inside odd
   \RtFooterContent
 }
 \pagestyle{RtPageStyle} % apply custom pagestyle
