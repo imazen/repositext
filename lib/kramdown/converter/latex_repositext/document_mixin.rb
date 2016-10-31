@@ -122,6 +122,7 @@ module Kramdown
           @footer_title = truncate_plain_text_title(
             @options[:footer_title_english], 43, 3
           ).unicode_upcase
+          @header_font_name = @options[:header_font_name]
           @header_text = compute_header_text_latex(
             @options[:header_text],
             @options[:hrules_present],
@@ -149,6 +150,7 @@ module Kramdown
           @include_meta_info = include_meta_info
           @is_primary_repo = @options[:is_primary_repo]
           @language_name = @options[:language_name]
+          @last_eagle_hspace = @options[:last_eagle_hspace]
           @latest_commit_hash = latest_commit.oid[0,8]
           @linebreaklocale = @options[:language_code_2_chars]
           @magnification = magnification

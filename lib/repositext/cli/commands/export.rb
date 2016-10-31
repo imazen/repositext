@@ -266,10 +266,12 @@ class Repositext
           options[:font_name] = config.setting(:pdf_export_font_name)
           options[:font_size] = config.setting(:pdf_export_font_size)
           options[:footer_title_english] = primary_titles[content_at_file.extract_product_identity_id(false)]
+          options[:header_font_name] = config.setting(:pdf_export_header_font_name)
           options[:header_text] = config.setting(:pdf_export_header_text)
           options[:hrules_present] = config.setting(:pdf_export_hrules_present)
           options[:id_copyright_year] = config.setting(:erp_id_copyright_year, false)
           options[:id_recording] = config.setting(:pdf_export_id_recording, false)
+          options[:last_eagle_hspace] =config.setting(:pdf_export_last_eagle_hspace, false)
           options[:page_settings_key] = compute_pdf_export_page_settings_key(
             config.setting(:is_primary_repo),
             pdf_export_binding,
