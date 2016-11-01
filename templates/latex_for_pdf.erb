@@ -414,14 +414,20 @@
     \RtIdAddressPrimaryFirst
     \RtIdAddressPrimarySecond
     \RtIdWebMaybePhone
-    \par
+    <% if @is_id_page_needed %>
+      \par
+    <% else %>
+      \clearpage % This clearpage will clear all floats that may have been pushed to the end of the document. This will ensure that no extra vertical space will occur.
+    <% end %>
   }
 
 % environment to render idtitle1 paragraphs
 \newenvironment{RtIdTitle1}
   {%
-    \clearpage % TODO: Make this variable based off of is_primary_repo. English ids should always be on a page by themselves and foreign ids are allowed to be on the same page as content. We need to investigate how to get that to work properly in the foreign. Also set margins to always be a left hand page for primary repo.
-    \thispagestyle{RtIdPageStyle}
+    <% if @is_id_page_needed %>
+      \clearpage % TODO: Set margins to always be a left hand page for primary repo.
+      \thispagestyle{RtIdPageStyle}
+    <% end %>
     \vspace*{\fill}
     \setlength{\lineskiplimit}{-100pt} % This setting keeps latex from automatically stretching linespacing when characters may overlap.
     \setlength{\parskip}{0pt}

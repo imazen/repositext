@@ -148,6 +148,7 @@ module Kramdown
           @id_write_to_primary = @options[:id_write_to_primary]
           @id_write_to_secondary = @options[:id_write_to_secondary]
           @include_meta_info = include_meta_info
+          @is_id_page_needed = @options[:is_id_page_needed]
           @is_primary_repo = @options[:is_primary_repo]
           @language_name = @options[:language_name]
           @last_eagle_hspace = @options[:last_eagle_hspace]
