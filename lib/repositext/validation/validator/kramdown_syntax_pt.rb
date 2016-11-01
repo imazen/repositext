@@ -69,10 +69,12 @@ class Repositext
         def self.whitelisted_class_names
           [
             { :name => 'bold', :allowed_contexts => [:span] },
+            { :name => 'decreased_word_space', :allowed_contexts => [:block] },
             { :name => 'first_par', :allowed_contexts => [:block] },
             { :name => 'id_paragraph', :allowed_contexts => [:block] },
             { :name => 'id_title1', :allowed_contexts => [:block] },
             { :name => 'id_title2', :allowed_contexts => [:block] },
+            { :name => 'increased_word_space', :allowed_contexts => [:block] },
             { :name => 'indent_for_eagle', :allowed_contexts => [:block] },
             { :name => 'italic', :allowed_contexts => [:span] },
             { :name => 'line_break', :allowed_contexts => [:span] },
