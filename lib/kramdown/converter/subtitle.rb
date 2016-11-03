@@ -1,14 +1,12 @@
-# -*- coding: utf-8 -*-
-
 module Kramdown
   module Converter
 
-    # Converts tree to subtitle text
+    # Converts kramdown element tree to subtitle text.
     class Subtitle < Base
 
       # Instantiate a Subtitle converter
       # @param [Kramdown::Element] root
-      # @param [Hash] options
+      # @param [Hash{Symbol => Object}] options
       def initialize(root, options)
         super
         @output = '' # collector for output string

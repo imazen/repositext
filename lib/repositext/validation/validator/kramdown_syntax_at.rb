@@ -1,6 +1,7 @@
 class Repositext
   class Validation
     class Validator
+      # Validates a kramdown AT string's valid syntax.
       class KramdownSyntaxAt < KramdownSyntax
 
         def self.whitelisted_kramdown_features
@@ -185,30 +186,6 @@ class Repositext
                 ]
               )
             end
-          elsif(
-            :em == el.type &&
-            el.has_class?('smcaps') &&
-            (pt = el.to_plain_text) &&
-            pt !~ /
-              \A
-              (
-                [a-z]\z # single letter date code suffix TODO limit to expected suffixes
-                |
-                [A-Z] # capital letter TODO make unicode aware
-              )
-            /x
-          )
-            # .smcaps span that doesn't start with capital letter (or is date code suffix in id)
-            errors << Reportable.error(
-              [
-                @file_to_validate.path,
-                (lo = el.options[:location]) && sprintf("line %5s", lo)
-              ].compact,
-              [
-                ".smcaps span that doesn't start with capital letter",
-                "In text: #{ pt.inspect }"
-              ]
-            )
           elsif(
             :text == el.type &&
             @options['run_options'].include?('kramdown_syntax_at-no_underscore_or_caret')

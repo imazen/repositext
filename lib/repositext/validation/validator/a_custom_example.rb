@@ -1,7 +1,7 @@
-# Use this class as a template for creating custom Validators
 class Repositext
   class Validation
     class Validator
+      # Use this class as a template for creating custom Validators
       class ACustomExample < Validator
 
         # Every validator needs a `run` method. This gets called from the validation.

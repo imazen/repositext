@@ -1,5 +1,6 @@
 class Repositext
   class Cli
+    # This namespace contains methods related to the sync command.
     module Sync
 
     private
@@ -50,7 +51,7 @@ class Repositext
             else
               nil
             end
-            outcome = Repositext::Sync::SubtitleMarkCharacterPositions.sync(
+            outcome = Repositext::Process::Sync::SubtitleMarkCharacterPositions.sync(
               contents,
               previous_stm_csv,
               options['auto-insert-missing-subtitle-marks']
@@ -142,7 +143,7 @@ class Repositext
             'config' => config,
             'file_list' => file_list,
             'is_initial_sync' => true,
-            'next_operation_id' => primary_repo.read_repo_level_data['st_sync_next_operation_id'],
+            'last_operation_id' => primary_repo.read_repo_level_data['st_sync_last_operation_id'],
             'primary_repository' => primary_repo,
             'stids_inventory_file' => stids_inventory_file,
           )

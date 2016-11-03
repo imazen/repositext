@@ -1,10 +1,11 @@
 class Repositext
   class Cli
+    # This namespace contains methods related to the delete command.
     module Delete
 
     private
 
-      # Deletes files that match file specs
+      # Delete files that match file specs.
       # @param options [Hash]
       def delete_files(options)
         if '' == options['base-dir'].to_s

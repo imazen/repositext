@@ -1,9 +1,8 @@
-# -*- coding: utf-8 -*-
-
 require 'kramdown/parser/kramdown'
 
 module Kramdown
   module Parser
+    # Parses a kramdown string to kramdown element tree.
     class KramdownRepositext < Kramdown
 
       # Create a new Kramdown parser object with the given +options+.
@@ -18,7 +17,7 @@ module Kramdown
       end
 
       # @return [Array] array with [root, [warnings]]
-      def parse #:nodoc:
+      def parse
         configure_parser
         parse_blocks(@root, adapt_source(source))
         update_tree(@root)

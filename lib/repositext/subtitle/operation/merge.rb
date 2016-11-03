@@ -3,7 +3,6 @@ class Repositext
     class Operation
 
       # Represents a merge subtitle operation.
-      #
       class Merge < Operation
 
         def inverse_operation

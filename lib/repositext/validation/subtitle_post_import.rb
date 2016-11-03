@@ -1,5 +1,6 @@
 class Repositext
   class Validation
+    # Validation to run after a subtitle import.
     class SubtitlePostImport < Validation
 
       # Specifies validations to run after subtitle/subtitle_tagging import.

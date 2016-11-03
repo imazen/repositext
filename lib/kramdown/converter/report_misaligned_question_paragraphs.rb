@@ -1,12 +1,12 @@
-# Returns a list of question paragraphs that are not perfectly aligned with the
-# contained span.
 module Kramdown
   module Converter
+    # Returns a list of question paragraphs that are not perfectly aligned with the
+    # contained span.
     class ReportMisalignedQuestionParagraphs < Base
 
       # Instantiate converter
       # @param [Kramdown::Element] root
-      # @param [Hash] options
+      # @param [Hash{Symbol => Object}] options
       def initialize(root, options)
         super
         @misaligned_question_paragraphs = []

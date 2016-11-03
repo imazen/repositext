@@ -1,11 +1,6 @@
-# -*- coding: utf-8 -*-
-
-# Added validation hooks
-# Added position information to each Element's options [:line, :story]
-
 module Kramdown
   module Parser
-
+    # Parses an IDML story to kramdown.
     class IdmlStory < Base
 
       include ::Kramdown::AdjacentElementMerger

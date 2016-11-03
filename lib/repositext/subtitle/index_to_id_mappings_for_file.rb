@@ -5,7 +5,6 @@ class Repositext
     # diff for a single file.
     #
     # Can be serialized to and from a JSON file
-    #
     class IndexToIdMappingsForFile
 
       ATTR_NAMES = [:comments, :fromGitCommit, :toGitCommit]

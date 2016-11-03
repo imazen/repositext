@@ -2,15 +2,14 @@
 module Kramdown
   module Converter
 
-    # Responsibilities
-    # * Converts kramdown tree to block level objects that can be used for
-    #   paragraph alignment (headers, paragraphs with and without numbers).
+    # Converts kramdown tree to block level objects that can be used for
+    # paragraph alignment (headers, paragraphs with and without numbers).
     # Returns an array of Block elements
     class ParagraphAlignmentObjects < KramdownRepositext
 
       # Instantiate a converter
       # @param [Kramdown::Element] root
-      # @param [Hash] options
+      # @param [Hash{Symbol => Object}] options
       def initialize(root, options)
         super
         @block_elements = [] # collector for block level objects

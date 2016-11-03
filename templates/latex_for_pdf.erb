@@ -22,15 +22,16 @@
 % sets the language specific linebreaking
 \XeTeXlinebreaklocale "<%= @linebreaklocale %>"
 
-% fontspec to use custom fonts
-\usepackage{fontspec}
+% fontspec to use custom fonts, silence doesn't add any font warnings to the log file to reduce noise.
+\usepackage[silent]{fontspec}
 % turn off ligatures
 \setmainfont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @font_name %>}
 % use different font for titles
 \newfontfamily\titlefont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @title_font_name %>}
+\newfontfamily\headerfont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @header_font_name %>}
 \newfontfamily\paragraphnumberfont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @paragraph_number_font_name %>}
+\DeclareTextFontCommand{\textparagraphnumberfont}{\paragraphnumberfont}
 \newfontfamily\primaryfont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @primary_font_name %>}
-\newfontfamily\rtmainfont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @font_name %>}
 
 <% if @polyglossia_default_language %>
   % This language requires polyglossia for correct font rendering
@@ -103,8 +104,8 @@
     % no line in footer (default)
   <% end %>
   \fancyhead[EL,OR]{<%= "\\hrule height 0.19\pt \\kern 0.33\pt"  if @hrules_present %><%= @page_number_command %>} % outside
-  \fancyhead[ER]{<%= @header_text %>} % inside even
-  \fancyhead[OL]{<%= @header_title %>} % inside odd
+  \fancyhead[ER]{\headerfont\addfontfeature{LetterSpace=7.5}<%= @header_text %>} % inside even
+  \fancyhead[OL]{\headerfont\addfontfeature{LetterSpace=7.5}<%= @header_title %>} % inside odd
   \RtFooterContent
 }
 \pagestyle{RtPageStyle} % apply custom pagestyle
@@ -345,7 +346,7 @@
 <% if @polyglossia_default_language %>
   {\noindent\makebox[\parindent][l]{\raisebox{0.5ex}{{\textscale{0.655}{#1}}}}}
 <% else %>
-  {\paragraphnumberfont\noindent\makebox[\parindent][l]{\raisebox{0.5ex}{{\textscale{0.655}{#1}}}}\rtmainfont}
+  {\noindent\textparagraphnumberfont{\makebox[\parindent][l]{\raisebox{0.5ex}{{\textscale{0.655}{#1}}}}}}
 <% end %>
 
 % command to render record_mark. Pass rid as param
@@ -372,6 +373,10 @@
 % command to render last eagle
 \newcommand{\RtLastEagle}
   {~\hspace{\fill}~\mbox{\raisebox{-0.5ex}}\flushright}
+% command to render last eagle at right margin if it is located inside a song paragraph.
+\newcommand{\RtLastEagleInsideSong}
+  {~\hspace{\fill}~\rlap{\hspace{<%= @last_eagle_hspace %>pt}\raisebox{-0.5ex}{}}}
+
 
 % enviroment to render first eagle
 \newenvironment{RtFirstEagle}
@@ -386,6 +391,7 @@
     <% else %>
       \setlength{\parskip}{2.991pt}
     <% end %>
+    \setlength{\lineskiplimit}{-100pt} % This setting keeps latex from automatically stretching linespacing when characters may overlap.
     \setlength{\parindent}{0pt}
     \begin{spacing}{1.0027}
       \fontsize{8pt}{10.5pt}\selectfont
@@ -408,15 +414,22 @@
     \RtIdAddressPrimaryFirst
     \RtIdAddressPrimarySecond
     \RtIdWebMaybePhone
-    \par
+    <% if @is_id_page_needed %>
+      \par
+    <% else %>
+      \clearpage % This clearpage will clear all floats that may have been pushed to the end of the document. This will ensure that no extra vertical space will occur.
+    <% end %>
   }
 
 % environment to render idtitle1 paragraphs
 \newenvironment{RtIdTitle1}
   {%
-    \clearpage % TODO: Make this variable based off of is_primary_repo. English ids should always be on a page by themselves and foreign ids are allowed to be on the same page as content. We need to investigate how to get that to work properly in the foreign. Also set margins to always be a left hand page for primary repo.
-    \thispagestyle{RtIdPageStyle}
+    <% if @is_id_page_needed %>
+      \clearpage % TODO: Set margins to always be a left hand page for primary repo.
+      \thispagestyle{RtIdPageStyle}
+    <% end %>
     \vspace*{\fill}
+    \setlength{\lineskiplimit}{-100pt} % This setting keeps latex from automatically stretching linespacing when characters may overlap.
     \setlength{\parskip}{0pt}
     \setlength{\parindent}{0pt}
     \centering
@@ -435,6 +448,7 @@
     <% else %>
       \setlength{\parskip}{1.467pt}
     <% end %>
+    \setlength{\lineskiplimit}{-100pt} % This setting keeps latex from automatically stretching linespacing when characters may overlap.
     \setlength{\parindent}{0pt}
     \centering
     \titlefont%
@@ -458,6 +472,7 @@
 \newenvironment{RtFirstPar}
   {%
     \par
+    \setlength{\lineskiplimit}{-100pt} % This setting keeps latex from automatically stretching linespacing when characters may overlap.
     \setlength{\parskip}{0pt plus 0pt minus 0pt} % to stop the vert space between title and first paragraph from varying
   }
   {%
@@ -480,6 +495,7 @@
 \newenvironment{RtNormal}
   {%
     \par
+    \setlength{\lineskiplimit}{-100pt} % This setting keeps latex from automatically stretching linespacing when characters may overlap.
   }
   {%
     % Force a minimum length for the last line in a paragraph by limiting parfillskip
@@ -488,6 +504,26 @@
     \setlength{\parfillskip}{260pt minus 260pt}
     \par
   }
+
+% environment to render text with decreased inter word space
+\newenvironment{RtDecreasedWordSpace}
+  {%
+    % I have no idea why we need to add the LetterSpace clause to
+    % limit the scope of the sowrd space adjustement.
+    % I got it from http://tex.stackexchange.com/a/272682
+    \addfontfeature{WordSpace=0.75,LetterSpace=0}%
+  }
+  {}
+
+% environment to render text with increased inter word space
+\newenvironment{RtIncreasedWordSpace}
+  {%
+    % I have no idea why we need to add the LetterSpace clause to
+    % limit the scope of the sowrd space adjustement.
+    % I got it from http://tex.stackexchange.com/a/272682
+    \addfontfeature{WordSpace=1.25,LetterSpace=0.1}%
+  }
+  {}
 
 % environment to render translator omit in green
 \newenvironment{RtOmit}
@@ -504,6 +540,7 @@
 \newenvironment{RtQuestion}
   {%
     \par
+    \setlength{\lineskiplimit}{-100pt} % This setting keeps latex from automatically stretching linespacing when characters may overlap.
     \noindent
     \hangindent=25pt
     \hangafter=1
@@ -518,6 +555,7 @@
     \par
     \leftskip=20.236pt
     \rightskip=20.236pt
+    \setlength{\lineskiplimit}{-100pt} % This setting keeps latex from automatically stretching linespacing when characters may overlap.
     \setlength{\parindent}{7.95pt}
   }
   {%
@@ -530,6 +568,7 @@
     \par
     \leftskip=60.225pt
     \rightskip=30.112pt
+    \setlength{\lineskiplimit}{-100pt} % This setting keeps latex from automatically stretching linespacing when characters may overlap.
     \setlength{\parindent}{-8pt}
     \nopagebreak
     \setlength{\parskip}{0pt plus 0pt minus 0pt}
@@ -544,6 +583,7 @@
     \par
     \leftskip=60.225pt
     \rightskip=30.112pt
+    \setlength{\lineskiplimit}{-100pt} % This setting keeps latex from automatically stretching linespacing when characters may overlap.
     \setlength{\parindent}{-8pt}
     \pagebreak
     \setlength{\parskip}{0pt plus 0pt minus 0pt}
@@ -569,6 +609,7 @@
     \par
     \leftskip=60.225pt
     \rightskip=30.112pt
+    \setlength{\lineskiplimit}{-100pt} % This setting keeps latex from automatically stretching linespacing when characters may overlap.
     \setlength{\parindent}{-8pt}
   }
   {%
@@ -638,9 +679,15 @@
 % avoid widows and orphans
 \widowpenalty=5000
 \clubpenalty=5000
+% log file will contain only overfull/underfull _hboxes_ above this badness
+% NOTE: We're ok with the default setting
+%\hbadness=10000
+% log file will contain only overfull/underfull _vboxes_ above this badness.
+% 100 is the transition from loose -> underfull
+\vbadness=300
 
 % set rubber value between paras for flushbottom
-\setlength{\parskip}{3pt plus 3pt minus 0.2pt}
+\setlength{\parskip}{3pt plus 4pt minus 0.2pt}
 \setlength{\parindent}{18pt}
 \setlength{\emergencystretch}{15pt} % to prevent lines from sticking out on the right
 \setlength{\topskip}{0pt}

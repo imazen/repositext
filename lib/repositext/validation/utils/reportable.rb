@@ -1,6 +1,6 @@
-# Represents an issue that should be reported in a validation (errors or warnings).
 class Repositext
   class Validation
+    # Represents an issue that should be reported in a validation (errors or warnings).
     class Reportable
 
       attr_accessor :location, :details, :level

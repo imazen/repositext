@@ -1,9 +1,8 @@
 class Repositext
   class Process
     class Fix
+      # Moves :subtitle_marks to nearby sentence boundaries.
       class MoveSubtitleMarksToNearbySentenceBoundaries
-
-        # Moves :subtitle_marks to nearby sentence boundaries.
 
         attr_reader :contents, :language
 

@@ -5,6 +5,7 @@ class Repositext
         class BilingualSequencePair
           class ParagraphsAligner
 
+            # This aligner uses the Needleman-Wunsch sequence alignment algorithm.
             class WithIdenticalParagraphCounts
 
               def initialize(structural_similarity, primary_sequence, foreign_sequence)

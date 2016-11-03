@@ -1,4 +1,5 @@
 module Kramdown
+  # Include this module in Kramdown XML parsers for advanced XML noe context features.
   module KeContextMixin
 
     include ::Kramdown::RawTextParser

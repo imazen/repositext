@@ -1,21 +1,22 @@
 class Repositext
   class Cli
+    # This namespace contains methods related to the compare command.
     module Compare
 
     private
 
-      # Override this method stub to run file comparisons of various Folio
+      # Override this method stub to compare various Folio
       # related files, e.g., after Folio XML import.
       def compare_folio(options)
       end
 
-      # Override this method stub to run file comparisons of various IDML
+      # Override this method stub to compare various IDML
       # related files, e.g., after IDML import.
       def compare_idml(options)
       end
 
       # Generates a diff view of folio source vs. /content where record ids
-      # and paragraph alignment is analyzed.
+      # and paragraph alignment are analyzed.
       def compare_record_id_and_paragraph_alignment(options)
         $stderr.puts ''
         $stderr.puts '-' * 80
@@ -113,7 +114,7 @@ class Repositext
           "Reading /compare/content/with_folio_source files",
           options
         ) do |contents_1, filename_1, contents_2, filename_2|
-          outcome = Repositext::Compare::RecordIdAndParagraphAlignment.compare(
+          outcome = Repositext::Process::Compare::RecordIdAndParagraphAlignment.compare(
             contents_1,
             filename_1,
             contents_2,

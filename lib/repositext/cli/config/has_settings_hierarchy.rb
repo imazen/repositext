@@ -1,6 +1,7 @@
 class Repositext
   class Cli
     class Config
+      # This namespace provides methods related to the settings hierarchy.
       module HasSettingsHierarchy
 
         # @param rtfile_path [String] absolute path to content_type level Rtfile

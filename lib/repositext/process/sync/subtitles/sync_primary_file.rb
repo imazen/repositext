@@ -2,12 +2,13 @@ class Repositext
   class Process
     class Sync
       class Subtitles
+        # This namespace provides methods related to syncing subtitles for a primary file.
         module SyncPrimaryFile
 
           extend ActiveSupport::Concern
 
           # Syncronizes subtitle operations in the primary file
-          # @param content_at_file_to [RFile::ContentAt] current version of file
+          # @param content_at_file [RFile::ContentAt] current version of file
           # @param st_ops_for_repo [Repositext::Subtitle::OperationsForRepository]
           def sync_primary_file(content_at_file, st_ops_for_repo)
             puts "     - process #{ content_at_file.repo_relative_path }"

@@ -12,7 +12,7 @@ gem 'suspension', path: '../suspension'
 # NOTE: You need to check out the 'gemfile' branch to make it work.
 gem 'kramdown', path: '../kramdown'
 
-
 gem 'alignment', git: 'https://github.com/bloomrain/alignment'
 
+# These are for gem development only
 gem 'yard', git: 'https://github.com/lsegal/yard.git'

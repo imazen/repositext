@@ -1,7 +1,7 @@
-# Manages configuration of Cli instance (via Rtfile)
 class Repositext
   class Cli
 
+    # Manages configuration of Cli instance (via Rtfile and *.data.json files)
     # Config is loaded from a number of places (in hierarchical order).
     class Config
 

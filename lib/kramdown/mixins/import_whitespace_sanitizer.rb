@@ -1,9 +1,7 @@
-# Include this module into any library that wants to sanitize whitespace during import.
-
-# Preferrably call it after whitespace has been pushed out so that we can also
-# handle leading whitespace in the first :em inside a :p
-
 module Kramdown
+  # Include this module into any library that wants to sanitize whitespace during import.
+  # Preferrably call it after whitespace has been pushed out so that we can also
+  # handle leading whitespace in the first :em inside a :p
   module ImportWhitespaceSanitizer
 
     # Recursively remove leading whitespace

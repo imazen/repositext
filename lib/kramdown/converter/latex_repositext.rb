@@ -1,13 +1,17 @@
 module Kramdown
   module Converter
-    # Converts an element tree to Latex. Adds converting of repositext specific
-    # tokens. Returns just latex body. Needs to be wrapped in a complete latex
+    # Converts a kramdown element tree to a Latex body string.
+    # This is used to produce PDF documents.
+    # Adds converting of repositext specific tokens.
+    # Returns just latex body. Needs to be wrapped in a complete latex
     # document.
     class LatexRepositext < Latex
 
       include PostProcessLatexBodyMixin
 
+      # Custom error
       class LeftoverTempGapMarkError < StandardError; end
+      # Custom error
       class LeftoverTempGapMarkNumberError < StandardError; end
 
       # Since our font doesn't have a small caps variant, we have to emulate it
@@ -18,15 +22,15 @@ module Kramdown
       #
       # * Find any pairs of adjacent letters with transition from upper to lower
       #   case.
-      # * Capture upper case character as fullcaps char (fc_char).
-      # * Capture all lower case characters (sc_chars).
-      # * Look up leading custom kerning for fc_char/sc_chars.first (leading_ck).
+      # * Capture upper case character as fullcaps char (fullcaps_char).
+      # * Capture all lower case characters (smallcaps_chars).
+      # * Look up leading custom kerning for fullcaps_char/smallcaps_chars.first (leading_ck).
       # * Capture optional trailing character (either upper case letter or
-      #   punctuation [.,?!:]) following immediately after sc_chars for custom
+      #   punctuation [.,?!:]) following immediately after smallcaps_chars for custom
       #   kerning (trailing_ck_char).
       # * If trailing_ck_char ? look up trailing custom kerning for
-      #   sc_chars.last/trailing_ck_char (trailing_ck).
-      # * Upcase and wrap sc_chars in RtSmCapsEmulation with leading_ck and
+      #   smallcaps_chars.last/trailing_ck_char (trailing_ck).
+      # * Upcase and wrap smallcaps_chars in RtSmCapsEmulation with leading_ck and
       #   optional trailing_ck arguments.
       #
       # @param txt [String] the text inside the em.smcaps.
@@ -39,63 +43,81 @@ module Kramdown
           return %(\\RtSmCapsEmulation{none}{#{ txt.unicode_upcase }}{none})
         end
 
-        r = txt.dup
+        new_string = ""
         font_attrs = font_attrs.compact.sort.join(' ')
         str_sc = StringScanner.new(txt)
-        str_sc_state = :idle
-        fc_char = nil
-        sc_chars = nil
+
+        str_sc_state = :capture_non_letter_chars # take care of any leading non-letter chars
+        fullcaps_char = nil
+        smallcaps_chars = nil
         trailing_ck_char = nil
         keep_scanning = true
 
         while keep_scanning do
           case str_sc_state
+          when :capture_non_letter_chars
+            if str_sc.scan(/[^[:alpha:]]*/)
+              # capture any leading non-letter chars
+              new_string << str_sc.matched
+            end
+            str_sc_state = :idle
           when :idle
-            fc_char = nil
-            sc_chars = nil
+            fullcaps_char = nil
+            smallcaps_chars = nil
             trailing_ck_char = nil
-            if(str_sc.skip_until(/(?=[[:upper:]][[:lower:]])/))
-              str_sc_state = :capture_fc_char
+            if(str_sc.check(/(?=[[:upper:]][[:lower:]])/))
+              str_sc_state = :capture_fullcaps_char
+            elsif(str_sc.check(/(?=[[:lower:]])/))
+              str_sc_state = :capture_smallcaps_chars
+            elsif(str_sc.scan(/[[:upper:]][^[:lower:]]*/))
+              # Capture upper case not followed by lower case
+              new_string << str_sc.matched
             else
               keep_scanning = false
             end
-          when :capture_fc_char
+          when :capture_fullcaps_char
             if(str_sc.scan(/[[:upper:]](?=[[:lower:]])/))
-              fc_char = str_sc.matched
-              str_sc_state = :capture_sc_chars
+              fullcaps_char = str_sc.matched
+              str_sc_state = :capture_smallcaps_chars
             else
               raise "Handle this!"
             end
-          when :capture_sc_chars
+          when :capture_smallcaps_chars
             if(str_sc.scan(/[[:lower:]]+/))
-              sc_chars = str_sc.matched
-              str_sc_state = :maybe_capture_trailing_ck_char
+              # lowercase characters
+              smallcaps_chars = str_sc.matched
+              str_sc_state = :maybe_detect_trailing_ck_char
             else
               raise "Handle this!"
             end
-          when :maybe_capture_trailing_ck_char
+          when :maybe_detect_trailing_ck_char
             if(str_sc.check(/[[:upper:]\.\,\?\!\:]/))
               trailing_ck_char = str_sc.matched
             end
-            str_sc_state = :finalize_capture
-          when :finalize_capture
-            # Determine leading custom kerning
-            leading_character_pair = [fc_char, sc_chars[0]].join
-            leading_kerning_value = smallcaps_kerning_map.lookup_kerning(
-              font_name,
-              font_attrs,
-              leading_character_pair
-            )
-            if leading_kerning_value
-              # We have a value, add `em` unit
-              leading_kerning_value = "#{ leading_kerning_value }em"
+            str_sc_state = :finalize_smcaps_run
+          when :finalize_smcaps_run
+            if fullcaps_char
+              # Determine leading custom kerning
+              leading_character_pair = [fullcaps_char, smallcaps_chars[0]].join
+              leading_kerning_value = smallcaps_kerning_map.lookup_kerning(
+                font_name,
+                font_attrs,
+                leading_character_pair
+              )
+              if leading_kerning_value
+                # We have a value, add `em` unit
+                leading_kerning_value = "#{ leading_kerning_value }em"
+              else
+                # No kerning value, print out warning
+                puts "Unhandled Kerning for font #{ font_name.inspect }, font_attrs #{ font_attrs.inspect } and character pair #{ leading_character_pair.inspect }, ".color(:red)
+              end
+              new_string << fullcaps_char
             else
-              # No kerning value, print out warning
-              puts "Unhandled Kerning for font #{ font_name.inspect }, font_attrs #{ font_attrs.inspect } and character pair #{ leading_character_pair.inspect }, ".color(:red)
+              leading_kerning_value = nil
             end
             # Determine trailing custom kerning
             if trailing_ck_char
-              trailing_character_pair = [sc_chars[-1], trailing_ck_char].join
+              trailing_character_pair = [smallcaps_chars[-1], trailing_ck_char].join
               trailing_kerning_value = smallcaps_kerning_map.lookup_kerning(
                 font_name,
                 font_attrs,
@@ -111,24 +133,29 @@ module Kramdown
             else
               trailing_kerning_value = nil
             end
-            r.sub!(
-              /(?<=#{ fc_char })#{ sc_chars }/,
-              %(\\RtSmCapsEmulation{#{ leading_kerning_value || 'none' }}{#{ sc_chars.unicode_upcase }}{#{ trailing_kerning_value || 'none' }})
-            )
-            str_sc_state = :idle
+            new_string << [
+              %(\\RtSmCapsEmulation), # latex command
+              %({#{ leading_kerning_value || 'none' }}), # leading custom kerning argument
+              %({#{ smallcaps_chars.unicode_upcase }}), # text in smallcaps
+              %({#{ trailing_kerning_value || 'none' }}), # trailing custom kerning argument
+            ].join
+            str_sc_state = :capture_non_letter_chars
           else
             raise "Handle this: #{ str_sc_state.inspect }"
           end
         end
-        r
+        new_string
       end
 
+      # @return [Hash]
       def smallcaps_kerning_map
         @smallcaps_kerning_map ||= SmallcapsKerningMap.new
       end
 
       # Patch this method to handle ems that came via imports:
       # When importing, :ems are used as container to apply a class to a span.
+      # @param el [Kramdown::Element]
+      # @param opts [Hash{Symbol => Object}]
       def convert_em(el, opts)
         # TODO: add mechanism to verify that we have processed all classes
         before = ''
@@ -187,6 +214,8 @@ module Kramdown
 
       # Patch this method because kramdown's doesn't handle some of the
       # characters we need to handle.
+      # @param el [Kramdown::Element]
+      # @param opts [Hash{Symbol => Object}]
       def convert_entity(el, opts)
         # begin patch JH
         entity = el.value # Kramdown::Utils::Entities::Entity
@@ -207,11 +236,15 @@ module Kramdown
       end
 
       # Override this method in any subclasses that render gap_marks
+      # @param el [Kramdown::Element]
+      # @param opts [Hash{Symbol => Object}]
       def convert_gap_mark(el, opts)
         ''
       end
 
       # Patch this method to render headers without using latex title
+      # @param el [Kramdown::Element]
+      # @param opts [Hash{Symbol => Object}]
       def convert_header(el, opts)
         case output_header_level(el.options[:level])
         when 1
@@ -248,6 +281,8 @@ module Kramdown
       end
 
       # Patch this method to handle the various repositext paragraph styles.
+      # @param el [Kramdown::Element]
+      # @param opts [Hash{Symbol => Object}]
       def convert_p(el, opts)
         if el.children.size == 1 && el.children.first.type == :img && !(img = convert_img(el.children.first, opts)).empty?
           convert_standalone_image(el, opts, img)
@@ -256,80 +291,93 @@ module Kramdown
           after = ''
           inner_text = nil
 
+          # NOTE: We may wrap multiple environments around a single paragraph.
+          # It's important that the latex environments are nested symmetrically.
+          # So we we prepend to the `before` and append to the `after` string.
+          if el.has_class?('decreased_word_space')
+            # render in RtDecreasedWordSpace environment
+            before.prepend("\\begin{RtDecreasedWordSpace}\n")
+            after << "\n\\end{RtDecreasedWordSpace}"
+          end
           if el.has_class?('first_par')
             # render in RtFirstPar environment
-            before << "\\begin{RtFirstPar}\n"
+            before.prepend("\\begin{RtFirstPar}\n")
             after << "\n\\end{RtFirstPar}"
+          end
+          if el.has_class?('increased_word_space')
+            # render in RtIncreasedWordSpace environment
+            before.prepend("\\begin{RtIncreasedWordSpace}\n")
+            after << "\n\\end{RtIncreasedWordSpace}"
           end
           if el.has_class?('indent_for_eagle')
             # render in RtIndentForEagle environment
-            before << "\\begin{RtIndentForEagle}\n"
+            before.prepend("\\begin{RtIndentForEagle}\n")
             after << "\n\\end{RtIndentForEagle}"
           end
           if el.has_class?('id_paragraph')
             # render in RtIdParagraph environment
-            before << "\\begin{RtIdParagraph}\n"
+            before.prepend("\\begin{RtIdParagraph}\n")
             after << "\n\\end{RtIdParagraph}"
           end
           if el.has_class?('id_title1')
             # render in RtIdTitle1 environment
-            before << "\\begin{RtIdTitle1}\n"
+            before.prepend("\\begin{RtIdTitle1}\n")
             after << "\n\\end{RtIdTitle1}"
             inner_text = inner(el, opts.merge(smallcaps_font_override: @options[:title_font_name]))
             # differentiate between primary and non-primary content_types
             if !@options[:is_primary_repo]
               # add space between title and date code
-              inner_text.gsub!(/ [[:alpha:]]{3}\d{2}\-\d{4}/, "\\" + 'hspace{2 mm}\0')
+              inner_text.gsub!(/ ([[:alpha:]]{3}\d{2}\-\d{4})/, "\\" + 'hspace{2 mm}\1')
               # make date code smaller
-              inner_text.gsub!(/(?<= )[[:alpha:]]{3}\d{2}\-\d{4}.*/, "\\" + 'textscale{0.8}{\0}')
+              inner_text.gsub!(/[[:alpha:]]{3}\d{2}\-\d{4}.*/, "\\" + 'textscale{0.8}{\0}')
             end
           end
           if el.has_class?('id_title2')
             # render in RtIdTitle2 environment
-            before << "\\begin{RtIdTitle2}\n"
+            before.prepend("\\begin{RtIdTitle2}\n")
             after << "\n\\end{RtIdTitle2}"
             inner_text = inner(el, opts.merge(smallcaps_font_override: @options[:title_font_name]))
           end
           if el.has_class?('normal')
             # render in RtNormal environment
-            before << "\\begin{RtNormal}\n"
+            before.prepend("\\begin{RtNormal}\n")
             after << "\n\\end{RtNormal}"
           end
           if el.has_class?('normal_pn')
             # render in RtNormal environment
-            before << "\\begin{RtNormal}\n"
+            before.prepend("\\begin{RtNormal}\n")
             after << "\n\\end{RtNormal}"
           end
           if el.has_class?('omit')
             # render in RtOmit environment
             b,a = latex_environment_for_translator_omit
-            before << b
+            before.prepend(b)
             after << a
           end
           if el.has_class?('q')
             # render in RtQuestion environment
-            before << "\\begin{RtQuestion}\n"
+            before.prepend("\\begin{RtQuestion}\n")
             after << "\n\\end{RtQuestion}"
           end
           if el.has_class?('scr')
             # render in RtScr environment
-            before << "\\begin{RtScr}\n"
+            before.prepend("\\begin{RtScr}\n")
             after << "\n\\end{RtScr}"
           end
           if el.has_class?('song')
             # render in RtSong environment
-            before << "\\begin{RtSong}\n"
+            before.prepend("\\begin{RtSong}\n")
             after << "\n\\end{RtSong}"
           end
           if el.has_class?('song_break')
             # render in RtSong(Break) environment
             latex_env = apply_song_break_class ? 'RtSongBreak' : 'RtSong'
-            before << "\\begin{#{ latex_env }}\n"
+            before.prepend("\\begin{#{ latex_env }}\n")
             after << "\n\\end{#{ latex_env }}"
           end
           if el.has_class?('stanza')
            # render in RtStanza environment
-            before << "\\begin{RtStanza}\n"
+            before.prepend("\\begin{RtStanza}\n")
             after << "\n\\end{RtStanza}"
           end
           "#{ before }#{ inner_text || inner(el, opts) }#{ after }\n\n"
@@ -337,13 +385,15 @@ module Kramdown
       end
 
       # Override this method in any subclasses that render record_marks
+      # @param el [Kramdown::Element]
+      # @param opts [Hash{Symbol => Object}]
       def convert_record_mark(el, opts)
         inner(el, opts)
       end
 
       # Returns a complete latex document as string.
-      # @param [Kramdown::Element] el the kramdown root element
-      # @param [Hash] opts
+      # @param el [Kramdown::Element]
+      # @param opts [Hash{Symbol => Object}]
       # @return [String]
       def convert_root(el, opts)
         latex_body = inner(el, opts)
@@ -363,17 +413,22 @@ module Kramdown
         r
       end
 
+      # @param el [Kramdown::Element]
+      # @param opts [Hash{Symbol => Object}]
       def convert_strong(el, opts)
         "\\textbf{#{ inner(el, opts) }}"
       end
 
       # Override this method in any subclasses that render subtitle_marks
+      # @param el [Kramdown::Element]
+      # @param opts [Hash{Symbol => Object}]
       def convert_subtitle_mark(el, opts)
         ''
       end
 
     protected
 
+      # Returns boolean to indicate whether song_break_class should be applied.
       def apply_song_break_class
         true
       end
@@ -428,7 +483,5 @@ module Kramdown
       end
 
     end
-
   end
-
 end

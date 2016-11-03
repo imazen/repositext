@@ -1,4 +1,5 @@
 class Repositext
+  # Implements the repositext command line interface.
   class Cli < Thor
 
     class RtfileError < RuntimeError; end
@@ -174,7 +175,7 @@ class Repositext
       if command_spec
         invoke_repositext_command('init', command_spec, options)
       else
-        generate_rtfile(options)
+        init_rtfile(options)
       end
     end
 

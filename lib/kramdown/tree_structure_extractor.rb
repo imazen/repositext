@@ -1,10 +1,6 @@
-# -*- coding: utf-8 -*-
 module Kramdown
 
-  # Responsibilities
-  # * Extracts kramdown_doc's structure (records, paragraphs, subtitles, etc.)
-  # Collaborators
-  # * Kramdown::Document
+  # Extracts kramdown_doc's structure (records, paragraphs, subtitles, etc.)
   class TreeStructureExtractor
 
     # @param kramdown_doc [Kramdown::Document]

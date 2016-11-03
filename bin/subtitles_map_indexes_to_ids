@@ -3,9 +3,11 @@
 # This script generates the mapping of subtitle indexes to ids.
 # NOTE: It is still work in progress and not functional yet.
 
+# TODO: Run this script in the primary repo root directory.
+
 require 'repositext'
 
-repo_root = '/Users/johund/development/vgr-english'
+repo_root = Dir.pwd
 repository = Repositext::Repository::Content.new(repo_root)
 
 from_sha1 = '39caa44953e06c07f7e6595c483587143317d41f' # Jan 14, 2016

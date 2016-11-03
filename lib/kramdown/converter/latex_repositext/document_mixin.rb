@@ -1,29 +1,12 @@
-# -*- coding: utf-8 -*-
-# TODO: use kramdown's templating
-
-=begin
-
-How to handle variants
-
-PDF type         English                 Foreign
------------------------------------------------------------------
-Plain            use command line flag   Override true
-Translator       use command line flag   Override true
-Recording        use command line flag   use command line flag
-Book  Override   false                   Override false
-Web Override     false                   Override false
-Comprehensive    use command line flag   use command line flag
-
-=end
-
 module Kramdown
   module Converter
     class LatexRepositext
+      # Namespace for methods related to PDF document level methods.
       module DocumentMixin
 
         # Create an LatexRepositext Document converter with the given options.
         # @param [Kramdown::Element] root
-        # @param [Hash, optional] options
+        # @param [Hash{Symbol => Object}] options
         def initialize(root, options = {})
           super
           # NOTE: kramdown initializes all options with default values. So
@@ -34,6 +17,7 @@ module Kramdown
           @options = options
         end
 
+        # Determines if meta_info is included in PDF. Override in subclasses.
         def include_meta_info
           true
         end
@@ -138,6 +122,7 @@ module Kramdown
           @footer_title = truncate_plain_text_title(
             @options[:footer_title_english], 43, 3
           ).unicode_upcase
+          @header_font_name = @options[:header_font_name]
           @header_text = compute_header_text_latex(
             @options[:header_text],
             @options[:hrules_present],
@@ -163,8 +148,10 @@ module Kramdown
           @id_write_to_primary = @options[:id_write_to_primary]
           @id_write_to_secondary = @options[:id_write_to_secondary]
           @include_meta_info = include_meta_info
+          @is_id_page_needed = @options[:is_id_page_needed]
           @is_primary_repo = @options[:is_primary_repo]
           @language_name = @options[:language_name]
+          @last_eagle_hspace = @options[:last_eagle_hspace]
           @latest_commit_hash = latest_commit.oid[0,8]
           @linebreaklocale = @options[:language_code_2_chars]
           @magnification = magnification
@@ -286,7 +273,7 @@ module Kramdown
         end
 
         # Computes the command to be used for page numbers in the page header.
-        # @param is_primary_repo [Boolean]
+        # @param hrules_present [Boolean]
         # @param language_code_3_chars [String]
         # @return [String]
         def compute_page_number_command(hrules_present, language_code_3_chars)
@@ -308,16 +295,18 @@ module Kramdown
         # latex markup. Also any linebreaks are being removed
         #
         # This is how it works:
-        # title_latex:     \emph{word} \emph{and some really long text to get truncation word \textscale{0.7}{word word word} word}
-        # plain text mask:                                                                                         xxxxxxxxx xxxxx
-        # title_plain_text:      word        and some really long text to get truncation word                 word word word  word
-        # trunc_title_pt:        word        and some really long text to get truncation word                 word…
-        # result:          \emph{word} \emph{and some really long text to get truncation word \textscale{0.7}{word…}}
+        #
+        #     title_latex:     \emph{word} \emph{and some really long text to get truncation word \textscale{0.7}{word word word} word}
+        #     plain text mask:                                                                                         xxxxxxxxx xxxxx
+        #     title_plain_text:      word        and some really long text to get truncation word                 word word word  word
+        #     trunc_title_pt:        word        and some really long text to get truncation word                 word…
+        #     result:          \emph{word} \emph{and some really long text to get truncation word \textscale{0.7}{word…}}
         #
         # Three strings we work with:
         #   * title_plain_text (full plain text version of title)
         #   * title_latex (title with latex markup)
         #   * truncated_title_plain_text (truncated plain text version of title)
+        #
         # Types of chars encountered:
         #   * latex_command
         #   * opening_brace
@@ -325,6 +314,7 @@ module Kramdown
         #   * closing_brace
         #   * matching_plain_text_char
         #   * other_char (e.g., latex function argument)
+        #
         # State_variables:
         #   * plain_text_index (current position in plain_text_title)
         #   * brace_nesting_level (to balance braces)
@@ -344,7 +334,7 @@ module Kramdown
           return l_title_latex  if l_title_plain_text.length <= max_len
 
           if 0 != min_length_of_last_word
-            # A non-zero value indicates that there is no truncation override for this file
+            # A non-zero value indicates that there is no truncation override for this file.
             # We want to know of any titles that require truncation so that we can review
             # and set truncation point for best results.
             puts "Truncating text without having truncation override! Please add setting `pdf_export_truncated_header_title_length` to file's data.json file (under settings): #{ title_plain_text }".color(:red)
@@ -365,6 +355,7 @@ module Kramdown
           back_to_back_braces_regex = /\}\{/
           closing_brace_regex = /\}/
           latex_command_regex = /\\[a-z]+/i
+          latex_kerning_argument_regex = /\}?\{(?:-?[\d\.]+em|none)\}/
 
           s = StringScanner.new(l_title_latex)
           while !s.eos? do
@@ -372,6 +363,11 @@ module Kramdown
             if (latex_cmd = s.scan(latex_command_regex))
               # latex command, capture, leave brace_nesting_level unchanged
               new_title_latex << latex_cmd
+            elsif (latex_kerning_argument = s.scan(latex_kerning_argument_regex))
+              # pos or neg kerning argument for RtSmCapsEmulation,
+              # e.g., {-0.3em}, {0.2em}, or {none}
+              # leave brace_nesting_level unchanged
+              new_title_latex << latex_kerning_argument
             elsif (back_to_back_braces = s.scan(back_to_back_braces_regex))
               # back to back braces, capture, leave brace_nesting_level unchanged
               new_title_latex << back_to_back_braces
@@ -410,7 +406,6 @@ module Kramdown
                   # No letter match, this is probably an ellipsis
                   new_title_latex << truncated_title_plain_text[plain_text_index]
                 end
-
               end
               plain_text_index += 1
               # detect whether we've reached truncation length

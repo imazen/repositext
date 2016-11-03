@@ -1,6 +1,7 @@
 require 'kramdown/element'
 
 module Kramdown
+  # Patches Kramdown::Element with methods useful for repositext.
   class Element
 
     # Adds class to self. Classes are case insensitive, so we downcase them.
@@ -28,7 +29,7 @@ module Kramdown
 
     # Prints a summary of self on a single line
     # @param [Integer, optional] _indent_level
-    # @param [Hash, optional] _options
+    # @param [Hash{Symbol => Object}] _options
     # @return [String]
     def element_summary(_indent_level = 0, _options = {})
       el_options = {
@@ -78,7 +79,7 @@ module Kramdown
     #   * includes attr and options if present
     # @param [String, optional] output all output is collected recursively into this string
     # @param [Integer, optional] _indent_level used for recursion
-    # @param [Hash, optional] _options
+    # @param [Hash{Symbol => Object}] _options
     #   * max_value_length - Any text longer than this will be truncated in the middle.
     #   * indent - Characters used for indentation.
     # @return [String] the tree representation
@@ -119,7 +120,7 @@ module Kramdown
     # Compares self recursively with other_ke
     # @param [Kramdown::Element] other_ke
     # @param [Array, optional] diffs a collector that is used during recursion to collect diffs
-    # @param [Hash, optional] options
+    # @param [Hash{Symbol => Object}] options
     # @return [Array<String>] an array with differences between the two
     def compare_with(other_ke, diffs = [], options = {})
       options = {

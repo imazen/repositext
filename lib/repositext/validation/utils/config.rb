@@ -1,6 +1,6 @@
-# Holds configuration
 class Repositext
   class Validation
+    # Holds configuration
     class Config
 
       # Array of code points that are considered invalid in all of Repositext::Validation.

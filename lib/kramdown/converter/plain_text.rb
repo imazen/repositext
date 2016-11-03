@@ -1,14 +1,12 @@
-# -*- coding: utf-8 -*-
-
-# Converts tree to plain text. Removes all formatting and attributes.
-# This converter can be used, e.g., to get a header's text contents.
 module Kramdown
   module Converter
+    # Converts kramdown element tree to plain text. Removes all formatting and
+    # attributes. This converter can be used, e.g., to get a header's text contents.
     class PlainText < Base
 
       # Instantiate a PlainText converter
       # @param [Kramdown::Element] root
-      # @param [Hash] options
+      # @param [Hash{Symbol => Object}] options
       def initialize(root, options)
         super
         @plain_text = '' # collector for plain text string
@@ -70,7 +68,7 @@ module Kramdown
 
       # Extracts plain text from tree
       # @param [Kramdown::Element] el
-      # @param options [Hash, optional]
+      # @param options [Hash{Symbol => Object}]
       # @return [String] the plain text
       def convert(el, options = {})
         options = {

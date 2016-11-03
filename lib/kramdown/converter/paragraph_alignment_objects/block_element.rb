@@ -1,10 +1,10 @@
 module Kramdown
   module Converter
     class ParagraphAlignmentObjects
-
       # Represents a block element for the purpose of aligning paragraphs
       class BlockElement
 
+        # Names of attr_accessors
         ATTRIBUTE_NAMES = %i[
           contents
           ke_attrs

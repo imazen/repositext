@@ -3,6 +3,8 @@ class Repositext
     class Sync
       class Subtitles
         module SyncForeignFile
+          # This namespace provides methods related to computing the `from_git_commit`
+          # for a foreign file.
           module ComputeFromGitCommitForForeignFile
 
             extend ActiveSupport::Concern

@@ -2,7 +2,7 @@ class Repositext
   class Subtitle
     class OperationsForFile
 
-      # Implements methods to apply self to foreign content AT
+      # Implements methods to apply self to foreign content AT.
       module CanBeAppliedToForeignContentAt
 
         # Applies operations to foreign content_at file. Returns new contents

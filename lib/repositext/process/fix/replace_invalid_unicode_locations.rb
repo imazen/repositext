@@ -1,9 +1,9 @@
 class Repositext
   class Process
     class Fix
+      # Replaces invalid unicode locations using unicode_replacement_mappings
       class ReplaceInvalidUnicodeLocations
 
-        # Replaces invalid unicode locations using unicode_replacement_mappings
         # @param [String] text
         # @return [String]
         def self.fix(text)

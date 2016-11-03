@@ -5,7 +5,6 @@ class Repositext
     # a single file.
     #
     # Can be serialized to and from a JSON file
-    #
     class OperationsForFile
 
       include CanBeAppliedToForeignContentAt
@@ -93,6 +92,14 @@ class Repositext
 
       def lang_code_3_chars
         @content_at_file.lang_code_3
+      end
+
+      def last_operation_id
+        if (last_op = operations.last)
+          last_op.operationId
+        else
+          nil
+        end
       end
 
       def product_identity_id

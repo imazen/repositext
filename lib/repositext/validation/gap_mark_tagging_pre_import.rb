@@ -1,5 +1,6 @@
 class Repositext
   class Validation
+    # Validation to run before a gap mark tagging import.
     class GapMarkTaggingPreImport < Validation
 
       # Specifies validations to run before gap_mark_tagging_import.

@@ -3,6 +3,7 @@ class Repositext
   class Process
     class Sync
       class Subtitles
+        # This namespace provides methods related to syncing subtitles for the primary repo.
         module SyncPrimaryRepo
 
           extend ActiveSupport::Concern
@@ -47,7 +48,7 @@ class Repositext
               sync_primary_file(content_at_file, st_ops_for_repo)
             end
 
-            update_primary_repo_level_st_sync_data(st_ops_for_repo.next_operation_id)
+            update_primary_repo_level_st_sync_data(st_ops_for_repo.last_operation_id)
           end
 
         private
@@ -65,7 +66,8 @@ class Repositext
               @from_git_commit,
               @to_git_commit,
               @file_list,
-              @is_initial_sync
+              @is_initial_sync,
+              @last_operation_id
             ).compute
 
             puts "   - Assign new subtitle ids"
@@ -90,13 +92,13 @@ class Repositext
             )
           end
 
-          # @param next_operation_id [Integer]
-          def update_primary_repo_level_st_sync_data(next_operation_id)
+          # @param last_operation_id [Integer]
+          def update_primary_repo_level_st_sync_data(last_operation_id)
             # Record git_to_commit at primary repo level
             @primary_repository.update_repo_level_data(
               'st_sync_commit' => @to_git_commit,
               'st_sync_required' => nil,
-              'st_sync_next_operation_id' => next_operation_id,
+              'st_sync_last_operation_id' => last_operation_id,
             )
           end
 

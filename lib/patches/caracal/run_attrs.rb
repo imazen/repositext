@@ -1,7 +1,7 @@
-# This patch adds smallCaps and vertAlign text run attributes.
 module Caracal
 
-  # Patches to file caracal/core/models/text_model.rb
+  # This patch adds smallCaps and vertAlign text run attributes to
+  # `caracal/core/models/text_model.rb`
   module Core
     module Models
       class TextModel
@@ -55,7 +55,8 @@ module Caracal
     end
   end
 
-  # Patches to file caracal/renderers/document_renderer.rb
+  # This patch adds smallCaps and vertAlign text run attributes to
+  # `caracal/renderers/document_renderer.rb`
   module Renderers
     class DocumentRenderer
 

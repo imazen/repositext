@@ -3,7 +3,6 @@ class Repositext
     class Operation
 
       # Represents a content change operation (not really a subtitle operation!)
-      #
       class ContentChange < Operation
 
         def inverse_operation

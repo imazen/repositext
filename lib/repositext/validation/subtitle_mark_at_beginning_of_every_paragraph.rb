@@ -1,5 +1,6 @@
 class Repositext
   class Validation
+    # Validation to make sure that every paragraph starts with a subtitle mark.
     class SubtitleMarkAtBeginningOfEveryParagraph < Validation
 
       # Specifies validations to run for files in the /content directory

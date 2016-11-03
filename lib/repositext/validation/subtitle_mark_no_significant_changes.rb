@@ -1,5 +1,6 @@
 class Repositext
   class Validation
+    # Validation to make sure that no subtitle marks were moved significantly.
     class SubtitleMarkNoSignificantChanges < Validation
 
       # Specifies validations to run for files in the /content directory

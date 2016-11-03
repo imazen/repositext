@@ -1,5 +1,6 @@
 class Repositext
   class Validation
+    # Validation to make sure no content was changed during IDML import.
     class IdmlImportConsistency < Validation
 
       # Specifies validations to run related to Idml import consistency.

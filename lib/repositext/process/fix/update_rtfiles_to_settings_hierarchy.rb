@@ -1,12 +1,12 @@
 class Repositext
   class Process
     class Fix
+      # Updates Rtfiles for settings hierarchy:
+      # * Renames some setting names in Rtfile
+      # * Moves some settings to repositext and repository data.json files
       class UpdateRtfilesToSettingsHierarchy
 
-        # Updates Rtfiles for settings hierarchy:
-        # * Renames some setting names in Rtfile
-        # * Moves some settings to repositext and repository data.json files
-        # @param config [Repositext::Cli::Config] based on Rtfile to be updated
+        # @param old_config [Repositext::Cli::Config] based on Rtfile to be updated
         def self.fix(old_config)
           if old_config.base_dir(:content_type_dir)
             puts "     - has already been updated. Skipping."

@@ -3,7 +3,6 @@ class Repositext
     class Operation
 
       # Represents a move left subtitle operation.
-      #
       class MoveLeft < Operation
 
         def inverse_operation

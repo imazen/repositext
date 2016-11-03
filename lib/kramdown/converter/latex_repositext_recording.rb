@@ -1,5 +1,6 @@
 module Kramdown
   module Converter
+    # Custom latex converter for PDF recording format.
     class LatexRepositextRecording < LatexRepositext
 
       include DocumentMixin

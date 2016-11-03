@@ -1,12 +1,13 @@
 class Repositext
   class Cli
+    # This namespace contains methods related to the init command.
     module Init
 
     private
 
       # Generates a default Rtfile in the current working directory
       # @param [Hash] options
-      def generate_rtfile(options)
+      def init_rtfile(options)
         rtfile_path = File.join(Dir.getwd, "Rtfile")
         if !File.exist?(rtfile_path) || options['force']
           template('../../templates/Rtfile', rtfile_path)

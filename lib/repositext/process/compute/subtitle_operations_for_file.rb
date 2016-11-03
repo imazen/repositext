@@ -1,46 +1,40 @@
 class Repositext
   class Process
     class Compute
-
-=begin
-
-Data types used in this file
-----------------------------
-
-* SubtitleAttrs
-      {
-        content: "Word1, 'word2' Word3.",
-        content_sim: "word1 word2 word3",
-        persistent_id: "1234567",
-        record_id: "123123123",
-        para_index: 0,
-        first_in_para: true,
-        last_in_para: false,
-        subtitle_count: 0,
-        index: 23,
-        repetitions: { 'repeated phrase' => [23, 56](start positions) },
-      }
-  Gaps have an empty string as content.
-
-* AlignedSubtitlePair: A hash describing two aligned subtitles in the file.
-      {
-        type: <:left_aligned|:right_aligned|:st_added...>
-        subtitle_object: <# Repositext::Subtitle ...>
-        sim_left: [sim<Float>, conf<Float>]
-        sim_right: [sim<Float>, conf<Float>]
-        sim_abs: [sim<Float>, conf<Float>]
-        content_length_change: <Integer from del to add>
-        subtitle_count_change: <Integer from del to add>
-        from: [SubtitleAttrs]
-        to: [SubtitleAttrs]
-        index: <Integer> index of aligned st pair in file
-        first_in_para: Boolean, true if asp is first in paragraph
-        last_in_para: Boolean, true if aps is last in paragraph
-      }
-
-=end
-
       # Computes subtitle operations for a file and patch.
+      #
+      # Data types used in this file
+      #
+      # * SubtitleAttrs
+      #       {
+      #         content: "Word1, 'word2' Word3.",
+      #         content_sim: "word1 word2 word3",
+      #         persistent_id: "1234567",
+      #         record_id: "123123123",
+      #         para_index: 0,
+      #         first_in_para: true,
+      #         last_in_para: false,
+      #         subtitle_count: 0,
+      #         index: 23,
+      #         repetitions: { 'repeated phrase' => [23, 56](start positions) },
+      #       }
+      #   Gaps have an empty string as content.
+      #
+      # * AlignedSubtitlePair: A hash describing two aligned subtitles in the file.
+      #       {
+      #         type: <:left_aligned|:right_aligned|:st_added...>
+      #         subtitle_object: <# Repositext::Subtitle ...>
+      #         sim_left: [sim<Float>, conf<Float>]
+      #         sim_right: [sim<Float>, conf<Float>]
+      #         sim_abs: [sim<Float>, conf<Float>]
+      #         content_length_change: <Integer from del to add>
+      #         subtitle_count_change: <Integer from del to add>
+      #         from: [SubtitleAttrs]
+      #         to: [SubtitleAttrs]
+      #         index: <Integer> index of aligned st pair in file
+      #         first_in_para: Boolean, true if asp is first in paragraph
+      #         last_in_para: Boolean, true if aps is last in paragraph
+      #       }
       class SubtitleOperationsForFile
 
         include AlignSubtitlePairs
@@ -49,7 +43,7 @@ Data types used in this file
         # Returns a data structure for all text lines in content_at_file
         # with their subtitles.
         # @param content_at_file [Repositext::RFile::ContentAt]
-        # @param content_at_file [Repositext::RFile::SubtitleMarkersCsv]
+        # @param stm_csv_file [Repositext::RFile::SubtitleMarkersCsv]
         # @return [Array<Hash>] with keys :content, :line_no, :subtitles
         def self.compute_content_at_lines_with_subtitles(content_at_file, stm_csv_file)
           r = []
@@ -66,12 +60,12 @@ Data types used in this file
           r
         end
 
-        # @param content_at_file [Repositext::RFile::ContentAt]
-        # @param stm_csv_file [Repositext::RFile::SubtitleMarkersCsv]
+        # @param content_at_file_to [Repositext::RFile::ContentAt]
         # @param repo_base_dir [String]
-        # @param options [Hash] with keys :from_git_commit and :to_git_commit
+        # @param options [Hash] with keys :from_git_commit, :to_git_commit, :prev_last_operation_id
         def initialize(content_at_file_to, repo_base_dir, options)
           @content_at_file_to = content_at_file_to
+          @file_date_code = @content_at_file_to.extract_date_code
           @repo_base_dir = repo_base_dir
           @options = options
         end
@@ -122,7 +116,8 @@ Data types used in this file
           puts " - extract ops"
           operations = OperationsExtractor.new(
             aligned_subtitle_pairs,
-            @content_at_file_to.extract_date_code
+            @file_date_code,
+            @options[:prev_last_operation_id]
           ).extract
           if debug
             puts ('-' * 80).color(:red)

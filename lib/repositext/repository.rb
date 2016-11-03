@@ -1,6 +1,6 @@
 class Repositext
 
-  # Represents a git content repository
+  # Represents a generic git repository.
   class Repository
 
     delegate :diff, to: :@repo

@@ -1,10 +1,11 @@
 class Repositext
   class Cli
+    # This namespace contains methods related to the convert command.
     module Convert
 
     private
 
-      # Convert DOCX files in /import_docx to AT
+      # Convert DOCX files in `/import_docx` to AT.
       def convert_docx_to_at(options)
         Repositext::Cli::Utils.convert_files(
           config.compute_glob_pattern(
@@ -31,6 +32,7 @@ class Repositext
         end
       end
 
+      # Convert Folio files in `/import_folio` to AT.
       def convert_folio_xml_to_at(options)
         Repositext::Cli::Utils.convert_files(
           config.compute_glob_pattern(
@@ -55,7 +57,7 @@ class Repositext
         end
       end
 
-      # Convert IDML files in /import_idml to AT
+      # Convert IDML files in `/import_idml` to AT.
       def convert_idml_to_at(options)
         Repositext::Cli::Utils.convert_files(
           config.compute_glob_pattern(

@@ -1,12 +1,8 @@
-=begin
-
-This file manages the kerning map for smallcaps emulation.
-
-=end
-
 module Kramdown
   module Converter
     class LatexRepositext
+      # Manages the kerning map for smallcaps emulation: Loads map from file and provides
+      # lookup functionality.
       class SmallcapsKerningMap
 
         include KerningSampleLatexMixin
@@ -74,7 +70,7 @@ module Kramdown
         # only contains upper case chars, so we have to do some upper/lowercase
         # conversion to get the right mappint.
         # @param character_pair [String]
-        # @param character_mappings [Hash]
+        # @param character_mappings [Hash{String => String}]
         # @return [String]
         def sanitize_character_pair(character_pair, character_mappings)
           # Map special characters to their mappings

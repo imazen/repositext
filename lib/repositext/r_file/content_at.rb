@@ -101,8 +101,8 @@ class Repositext
         subtitles.any?
       end
 
-      # @param options [Hash, optional]
-      def kramdown_doc(options = {})
+      # @param options [Hash]
+      def kramdown_doc(options={})
         options = {
           is_primary_repositext_file: is_primary?,
           input: kramdown_parser,

@@ -1,5 +1,6 @@
 class Repositext
   class Cli
+    # This namespace contains methods related to the fix command.
     module Fix
 
     private
@@ -132,7 +133,7 @@ class Repositext
           options
         ) do |contents, filename|
           corresponding_primary_filename = filename_proc.call(filename)
-          outcome = Repositext::Fix::InsertRecordMarkIntoAllAtFiles.fix(
+          outcome = Repositext::Process::Fix::InsertRecordMarkIntoAllAtFiles.fix(
             contents,
             filename,
             corresponding_primary_filename

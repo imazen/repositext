@@ -3,6 +3,7 @@ class Repositext
   class Process
     class Sync
       class Subtitles
+        # This namespace provides methods related to finalizing a subtitle sync.
         module FinalizeSyncOperation
 
           extend ActiveSupport::Concern

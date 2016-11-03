@@ -1,13 +1,12 @@
-# -*- coding: utf-8 -*-
-
 module Kramdown
   module Converter
+    # Converts a kramdown element tree to an ICML XML string.
     class Icml < Base
 
       # Create an ICML converter with the given options.
       # @param [Kramdown::Element] root
-      # @param [Hash, optional] options
-      def initialize(root, options = {})
+      # @param [Hash{Symbol => Object}] options
+      def initialize(root, options={})
         super
         # NOTE: kramdown initializes all options with default values. So
         # :template_file is initialized to Nil. This breaks
@@ -19,14 +18,20 @@ module Kramdown
         @options = options
       end
 
+      # Returns the class of the IDML story convert
+      # This method is meant to be overridden in sub classes.
       def idml_story_converter
         ::Kramdown::Converter::IdmlStory
       end
 
+      # Returns names of all available paragraph styles.
+      # This method is meant to be overridden in sub classes.
       def paragraph_style_names
         ::Kramdown::Parser::IdmlStory.paragraph_style_mappings.keys
       end
 
+      # Returns names of all available character styles.
+      # This method is meant to be overridden in sub classes.
       def character_style_names
         ::Kramdown::Parser::IdmlStory::HANDLED_CHARACTER_STYLES.map { |e|
           e.gsub('CharacterStyle/', '')

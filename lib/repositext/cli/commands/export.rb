@@ -1,10 +1,11 @@
 class Repositext
   class Cli
+    # This namespace contains methods related to the export command.
     module Export
 
     private
 
-      # Export Gap mark Tagging files
+      # Export AT files in `/content` for Gap mark tagging.
       def export_gap_mark_tagging(options)
         input_base_dir = config.compute_base_dir(options['base-dir'] || :content_dir)
         input_file_selector = config.compute_file_selector(options['file-selector'] || :all_files)
@@ -24,7 +25,7 @@ class Repositext
             }
           )
         ) do |contents, filename|
-          outcome = Repositext::Export::GapMarkTagging.export(contents)
+          outcome = Repositext::Process::Export::GapMarkTagging.export(contents)
           if outcome.success?
             [Outcome.new(true, { contents: outcome.result, extension: 'gap_mark_tagging.txt' })]
           else
@@ -33,7 +34,7 @@ class Repositext
         end
       end
 
-      # Export AT files in /content to ICML
+      # Export AT files in `/content` to ICML.
       def export_icml(options)
         input_base_dir = config.compute_base_dir(options['base-dir'] || :content_dir)
         input_file_selector = config.compute_file_selector(options['file-selector'] || :all_files)
@@ -64,6 +65,7 @@ class Repositext
         end
       end
 
+      # Export AT files in `/content` to PDF agapao variant.
       def export_pdf_agapao(options)
         export_pdf_base(
           'pdf_translator',
@@ -76,12 +78,14 @@ class Repositext
         )
       end
 
+      # Export AT files in `/content` to all PDF variants.
       def export_pdf_all(options)
         export_pdf_variants.each do |variant|
           self.send("export_#{ variant }", options)
         end
       end
 
+      # Export AT files in `/content` to PDF book variant.
       def export_pdf_book(options)
         export_pdf_base(
           'pdf_book',
@@ -92,6 +96,7 @@ class Repositext
         )
       end
 
+      # Export AT files in `/content` to PDF comprehensive variant.
       def export_pdf_comprehensive(options)
         # Contains everything
         export_pdf_base(
@@ -102,12 +107,12 @@ class Repositext
         )
       end
 
-      # This command exports a sample PDF with all kerning pairs.
+      # Export a PDF with text samples of all kerning pairs.
       # The file is exported to the current language repo's root as
       # kerning_samples.pdf
       def export_pdf_kerning_samples(options)
         latex = Kramdown::Converter::LatexRepositext::SmallcapsKerningMap.kerning_sample_latex
-        pdf = Repositext::Convert::LatexToPdf.convert(latex)
+        pdf = Repositext::Process::Convert::LatexToPdf.convert(latex)
         file_path = File.join(
           File.expand_path('..', config.base_dir(:content_type_dir)),
           'kerning_samples.pdf'
@@ -115,6 +120,7 @@ class Repositext
         File.binwrite(file_path, pdf)
       end
 
+      # Export AT files in `/content` to PDF plain variant.
       def export_pdf_plain(options)
         # contains all formatting, no AT specific tokens
         export_pdf_base(
@@ -125,6 +131,7 @@ class Repositext
         )
       end
 
+      # Export AT files in `/content` to PDF recording variant.
       def export_pdf_recording(options)
         # Skip files that don't contain gap_marks
         skip_file_proc = Proc.new { |contents, filename| !contents.index('%') }
@@ -140,6 +147,7 @@ class Repositext
         )
       end
 
+      # Export AT files in `/content` to PDF recording merged (bilingual) variant.
       def export_pdf_recording_merged(options)
         # Skip files that don't contain gap_marks
         skip_file_proc = Proc.new { |contents, filename| !contents.index('%') }
@@ -178,6 +186,7 @@ class Repositext
         )
       end
 
+      # Export AT files in `/content` to PDF translator variant.
       def export_pdf_translator(options)
         export_pdf_base(
           'pdf_translator',
@@ -188,6 +197,7 @@ class Repositext
         )
       end
 
+      # Export AT files in `/content` to PDF web variant.
       def export_pdf_web(options)
         export_pdf_base(
           'pdf_web',
@@ -198,6 +208,7 @@ class Repositext
         )
       end
 
+      # Shared code for all PDF variants.
       # @param [String] variant one of 'pdf_plain', 'pdf_recording', 'pdf_translator'
       def export_pdf_base(variant, options)
         if !export_pdf_variants.include?(variant)
@@ -223,10 +234,12 @@ class Repositext
           id_write_to_primary: config.setting(:pdf_export_id_write_to_primary,false),
           id_write_to_secondary: config.setting(:pdf_export_id_write_to_secondary,false),
           is_primary_repo: config.setting(:is_primary_repo),
+          language: content_type.language,
           language_code_2_chars: config.setting(:language_code_2_chars),
           language_code_3_chars: config.setting(:language_code_3_chars),
           language_name: content_type.language.name,
           paragraph_number_font_name: config.setting(:pdf_export_paragraph_number_font_name),
+          # NOTE: We grab pdf_export_font_name from the _PRIMARY_ repo's config
           primary_font_name: primary_config.setting(:pdf_export_font_name),
           version_control_page: options['include-version-control-info'],
         })
@@ -253,10 +266,13 @@ class Repositext
           options[:font_name] = config.setting(:pdf_export_font_name)
           options[:font_size] = config.setting(:pdf_export_font_size)
           options[:footer_title_english] = primary_titles[content_at_file.extract_product_identity_id(false)]
+          options[:header_font_name] = config.setting(:pdf_export_header_font_name)
           options[:header_text] = config.setting(:pdf_export_header_text)
           options[:hrules_present] = config.setting(:pdf_export_hrules_present)
           options[:id_copyright_year] = config.setting(:erp_id_copyright_year, false)
           options[:id_recording] = config.setting(:pdf_export_id_recording, false)
+          options[:is_id_page_needed] = config.setting(:pdf_export_is_id_page_needed)
+          options[:last_eagle_hspace] =config.setting(:pdf_export_last_eagle_hspace)
           options[:page_settings_key] = compute_pdf_export_page_settings_key(
             config.setting(:is_primary_repo),
             pdf_export_binding,
@@ -286,7 +302,7 @@ class Repositext
           if options[:post_process_latex_proc]
             latex = options[:post_process_latex_proc].call(latex, options)
           end
-          pdf = Repositext::Convert::LatexToPdf.convert(latex)
+          pdf = Repositext::Process::Convert::LatexToPdf.convert(latex)
 
           [
             Outcome.new(
@@ -339,7 +355,7 @@ class Repositext
         end
       end
 
-      # Export AT files in /content to plain kramdown (no record_marks,
+      # Export AT files in `/content` to plain kramdown (no record_marks,
       # subtitle_marks, or gap_marks)
       def export_plain_kramdown(options)
         input_base_dir = config.compute_base_dir(options['base-dir'] || :content_dir)
@@ -361,7 +377,7 @@ class Repositext
       end
 
 
-      # Export AT files in /content to plain text
+      # Export AT files in `/content` to plain text
       def export_plain_text(options)
         input_base_dir = config.compute_base_dir(options['base-dir'] || :content_dir)
         input_file_selector = config.compute_file_selector(options['file-selector'] || :all_files)
@@ -488,7 +504,7 @@ class Repositext
         end
       end
 
-      # This command exports test files for st-ops extraction end-to-end test:
+      # Export test files for st-ops extraction end-to-end test:
       # We apply an st-ops file's operations to the `from` plain text with
       # subtitles and expect the outcome to be identical to the `to` plain text
       # with subtitles. This applies previously extracted subtitle operations
@@ -505,7 +521,7 @@ class Repositext
       # * Produce `from` version
       #     * git checkout <from_git_commit>
       #     * empty the `subtitle_export` directory
-      #     * run this command `rt export subtitle_for_st_ops_test -g`
+      #     * run this command `rt export subtitle_for_st_ops_extraction_test -g`
       #     * take entire `subtitle_export` directory, rename to
       #       `plain_text_and_stm_csv_files-<from_git_commit> and store in
       #       staging area.
@@ -513,7 +529,6 @@ class Repositext
       # * Produce `to` version
       #     * repeat steps in `from` version, replace <from_git_commit> with
       #       <to_git_commit>
-      #     * Remove any STM CSV files.
       # * Add st-ops file to the staging area
       # * ZIP compress the entire staging area
       def export_subtitle_for_st_ops_extraction_test(options)

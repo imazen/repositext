@@ -1,6 +1,7 @@
 module Kramdown
   module Converter
     class LatexRepositext
+      # Namespace for methods related to post processing the latex body string.
       module PostProcessLatexBodyMixin
 
         # @param [String] latex_body
@@ -20,10 +21,11 @@ module Kramdown
         def highlight_gap_marks_in_red!(lb)
           # gap_marks: Skip certain characters and find characters to highlight in red
           gap_mark_complete_regex = Regexp.new(Regexp.escape(tmp_gap_mark_complete))
+          l_ch = @options[:language].chars
           chars_to_skip = [
-            Repositext::D_QUOTE_OPEN,
-            Repositext::EM_DASH,
-            Repositext::S_QUOTE_OPEN,
+            l_ch[:d_quote_open],
+            l_ch[:em_dash],
+            l_ch[:s_quote_open],
             ' ',
             '(',
             '[',
@@ -41,8 +43,8 @@ module Kramdown
               #{ gap_mark_complete_regex } # find tmp gap mark number and text
               ( # capturing group for first group of characters to be colored red
                 (?: # non capturing group
-                  #{ Repositext::ELIPSIS } # elipsis
-                  (?!#{ Repositext::ELIPSIS }) # not followed by another elipsis so we exclude chinese double elipsis
+                  #{ l_ch[:elipsis] } # elipsis
+                  (?!#{ l_ch[:elipsis] }) # not followed by another elipsis so we exclude chinese double elipsis
                 )? # optional
               )
               ( # capturing group for characters that are not to be colored red
@@ -57,8 +59,8 @@ module Kramdown
                 )* # any of these zero or more times to match nested latex commands
               )
               ( # capturing group for second group of characters to be colored red
-                #{ Repositext::ELIPSIS }? # optional elipsis
-                [[:alpha:][:digit:]’\-\?,]* # words and some punctuation
+                #{ l_ch[:elipsis] }? # optional elipsis
+                [[:alpha:][:digit:]#{ l_ch[:apostrophe] }\-\?,]* # words and some punctuation
               )
             /x,
             # we move the tmp_gap_mark_number to the very beginning so that if we
@@ -77,9 +79,9 @@ module Kramdown
           if !['', nil].include?(tmp_gap_mark_number)
             gap_mark_number_regex = Regexp.new(Regexp.escape(tmp_gap_mark_number))
             chars_to_move_outside_of = [
-              Repositext::APOSTROPHE,
-              Repositext::D_QUOTE_OPEN,
-              Repositext::S_QUOTE_OPEN,
+              l_ch[:apostrophe],
+              l_ch[:d_quote_open],
+              l_ch[:s_quote_open],
               '(',
               '[',
             ].join
@@ -118,6 +120,7 @@ module Kramdown
         # custom formatting.
         # @param lb [String] latex body, will be modified in place.
         def format_leading_and_trailing_eagles!(lb)
+          # Replace leading eagle with RtFirstEagle
           lb.gsub!(
             /
               ^ # beginning of line
@@ -130,6 +133,7 @@ module Kramdown
             /x,
             "\\RtFirstEagle " + '\1' # we use an environment for first eagle
           )
+          # Replace trailing eagle with RtLastEagle
           lb.gsub!(
             /
               (?!<^) # not preceded by line start
@@ -145,6 +149,18 @@ module Kramdown
             /x,
             '\1' + "\\RtLastEagle{}" + '\2' # we use a command for last eagle
           )
+          # Handle RtLastEagle inside of .song para: Songs have a wider
+          # right margin than regular text, so the eagle is not as
+          # close to the right margin as expected.
+          # In order to push the trailing eagle further to the right
+          # than the song paragraphs right margin, we move the
+          # eagle into a new paragraph where it is positioned
+          # further to the right, and shifted back up to be aligned
+          # with the previous line of text.
+          lb.gsub!(
+            /\\RtLastEagle(\{\}\n\\end\{(?:RtSong|RtStanza)\})/,
+            "\\RtLastEagleInsideSong" + '\1'
+          )
         end
 
         # Removes space after paragraph number to avoid fluctuations in indent.
@@ -156,21 +172,23 @@ module Kramdown
         # Determines where line breaks are allowed to happen.
         # @param lb [String] latex body, will be modified in place.
         def set_line_break_positions!(lb)
+          l_ch = @options[:language].chars
+
           # Don't break lines between double open quote and apostrophe (via ~)
           lb.gsub!(
-            "#{ Repositext::D_QUOTE_OPEN } #{ Repositext::APOSTROPHE }",
-            "#{ Repositext::D_QUOTE_OPEN }~#{ Repositext::APOSTROPHE }"
+            "#{ l_ch[:d_quote_open] } #{ l_ch[:apostrophe] }",
+            "#{ l_ch[:d_quote_open] }~#{ l_ch[:apostrophe] }"
           )
 
           # Insert zero-width space after all elipses, emdashes, and hyphens.
           # This gives latex the option to break a line after these characters.
           # \hspace{0pt} is the latex equivalent of zero-width space (&#x200B;)
           line_breakable_chars = Regexp.escape(
-            [Repositext::ELIPSIS, Repositext::EM_DASH, '-'].join
+            [l_ch[:elipsis], l_ch[:em_dash], '-'].join
           )
           # Exceptions: Don't insert zero-width space if followed by no-break characters:
           no_break_following_chars = Regexp.escape(
-            [Repositext::S_QUOTE_CLOSE, Repositext::D_QUOTE_CLOSE, ')?,!'].join
+            [l_ch[:s_quote_close], l_ch[:d_quote_close], ')?,!'].join
           )
           # We only want to allow linebreak _after_ line_breakable_chars but not _before_.
           # We insert a \\nolinebreak to prevent linebreaks _before_.
@@ -210,12 +228,12 @@ module Kramdown
           # by some abbreviations.
           lb.gsub!(
             /
-              #{ Repositext::EM_DASH }
+              #{ l_ch[:em_dash] }
               (
                 #{ options[:ed_and_trn_abbreviations] }
               )
             /ix,
-            "\\nolinebreak[4]" + Repositext::EM_DASH + "\\nolinebreak[4]" + '\1'
+            "\\nolinebreak[4]" + l_ch[:em_dash] + "\\nolinebreak[4]" + '\1'
           )
 
           # We don't allow linebreaks before certain numbers
@@ -224,7 +242,10 @@ module Kramdown
           # We don't allow linebreaks between period and numbers, e.g., "word .22"
           lb.gsub!(/( \.)(\d)/, '\1' + "\\nolinebreak[4]" + '\2')
 
-          # Convert any zero-width spaces to latex equivelant
+          # We don't allow linebreaks before \RtSmCapsEmulation inside words
+          lb.gsub!(/(?<=[[:alpha:]])(?=\\RtSmCapsEmulation)/, "\\nolinebreak[4]")
+
+          # Convert any zero-width spaces to latex equivalent
           lb.gsub!(/\u200B/, "\\hspace{0pt}")
         end
 

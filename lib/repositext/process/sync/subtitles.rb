@@ -4,7 +4,6 @@ class Repositext
     class Sync
 
       # Synchronizes subtitles from English to foreign repos.
-      #
       class Subtitles
 
         class ReposNotReadyError < StandardError; end
@@ -30,7 +29,7 @@ class Repositext
         def initialize(options)
           @config = options['config']
           @file_list = options['file_list']
-          @next_operation_id = options['next_operation_id']
+          @last_operation_id = options['last_operation_id']
           @from_git_commit = options['from-commit']
           @primary_repository = options['primary_repository']
           @stids_inventory_file = options['stids_inventory_file']

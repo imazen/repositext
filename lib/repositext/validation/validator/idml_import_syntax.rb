@@ -1,6 +1,7 @@
 class Repositext
   class Validation
     class Validator
+      # Validates correct syntax of IDML import file.
       class IdmlImportSyntax < Validator
 
         def run

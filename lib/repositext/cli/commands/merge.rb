@@ -1,5 +1,6 @@
 class Repositext
   class Cli
+    # This namespace contains methods related to the merge command.
     module Merge
 
     private
@@ -55,7 +56,7 @@ class Repositext
 
           begin
             # First apply all corrections that can be done automatically
-            outcome = Repositext::Merge::AcceptedCorrectionsIntoContentAt.merge_auto(
+            outcome = Repositext::Process::Merge::AcceptedCorrectionsIntoContentAt.merge_auto(
               File.read(accepted_corrections_file_name),
               File.read(content_at_file_name),
               content_at_file_name,
@@ -74,7 +75,7 @@ class Repositext
             end
 
             # Second apply manual corrections.
-            outcome = Repositext::Merge::AcceptedCorrectionsIntoContentAt.merge_manually(
+            outcome = Repositext::Process::Merge::AcceptedCorrectionsIntoContentAt.merge_manually(
               File.read(accepted_corrections_file_name),
               File.read(content_at_file_name),
               content_at_file_name,
@@ -140,7 +141,7 @@ class Repositext
           output_file_name = content_at_file_name
 
           begin
-            outcome = Repositext::Merge::GapMarkTaggingImportIntoContentAt.merge(
+            outcome = Repositext::Process::Merge::GapMarkTaggingImportIntoContentAt.merge(
               File.read(gap_mark_tagging_import_file_name),
               File.read(content_at_file_name),
             )
@@ -217,7 +218,7 @@ class Repositext
             begin
               at_folio = File.read(at_folio_file_name)
               at_idml = File.read(at_idml_file_name)
-              at_with_merged_tokens = Repositext::Merge::RecordMarksFromFolioXmlAtIntoIdmlAt.merge(
+              at_with_merged_tokens = Repositext::Process::Merge::RecordMarksFromFolioXmlAtIntoIdmlAt.merge(
                 at_folio, at_idml
               )
               # write to file
@@ -347,7 +348,7 @@ class Repositext
           )
           output_file_name = content_at_file_name
           begin
-            outcome = Repositext::Merge::TitlesFromFolioRoundtripCompareIntoContentAt.merge(
+            outcome = Repositext::Process::Merge::TitlesFromFolioRoundtripCompareIntoContentAt.merge(
               File.read(folio_roundtrip_compare_file_name),
               File.read(content_at_file_name),
             )
@@ -503,7 +504,7 @@ class Repositext
           output_file_name = content_at_file_name
 
           begin
-            outcome = Repositext::Merge::SubtitleMarksFromSubtitleImportIntoContentAt.merge(
+            outcome = Repositext::Process::Merge::SubtitleMarksFromSubtitleImportIntoContentAt.merge(
               File.read(subtitle_import_file_name),
               content_at_file.contents,
             )

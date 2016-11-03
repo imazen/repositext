@@ -1,5 +1,6 @@
 class Repositext
   class Repository
+    # Include this module in any Repository that has a data.json file.
     module HasDataJsonFile
 
       extend ActiveSupport::Concern

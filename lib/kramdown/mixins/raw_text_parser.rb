@@ -1,5 +1,5 @@
-# Include this module into any library that parses raw text during import.
 module Kramdown
+  # Include this module into any library that parses raw text during import.
   module RawTextParser
 
       include ::Kramdown::Utils::Entities

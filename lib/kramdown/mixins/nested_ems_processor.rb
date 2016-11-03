@@ -1,7 +1,6 @@
-# Include this module into any library that wants to process :em elements that
-# are nested inside other :em elements.
-
 module Kramdown
+  # Include this module into any library that wants to process :em elements that
+  # are nested inside other :em elements.
   module NestedEmsProcessor
 
     # Walks the ke tree, finds any ems nested inside other ems and processes them.

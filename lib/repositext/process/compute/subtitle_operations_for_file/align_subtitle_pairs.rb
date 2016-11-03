@@ -2,6 +2,7 @@ class Repositext
   class Process
     class Compute
       class SubtitleOperationsForFile
+        # Namespace for methods related to aligning subtitle pairs.
         module AlignSubtitlePairs
 
           # Aligns subtitle pairs.

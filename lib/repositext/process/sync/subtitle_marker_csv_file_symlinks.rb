@@ -4,7 +4,6 @@ class Repositext
     class Sync
 
       # Manages symlinks for subtitle marker csv files.
-      #
       class SubtitleMarkerCsvFileSymlinks
 
         # Initialize a new file sync process

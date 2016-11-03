@@ -1,10 +1,6 @@
-# -*- coding: utf-8 -*-
 module Kramdown
 
-  # Responsibilities
-  # * Computes the structural similarity of two kramdown trees
-  # Collaborators
-  # * Kramdown::Document
+  # Computes the structural similarity of two kramdown trees.
   class TreeStructuralSimilarity
 
     # @param ref_doc [Kramdown::Document]
@@ -14,7 +10,7 @@ module Kramdown
       @other_doc = other_doc
     end
 
-    # Returns
+    # @return [Hash{Symbol: Float}]
     def compute
       @ref_structure = TreeStructureExtractor.new(@ref_doc).extract
       @other_structure = TreeStructureExtractor.new(@other_doc).extract

@@ -1,18 +1,15 @@
-# -*- coding: utf-8 -*-
-
-# Converts kramdown to complete HTML file, inserting the HTML body into a template.
-# Writes output to an IO object (File or StringIO).
-# Computes title from first :header element.
-
 # TODO: use kramdown's templating
-
 module Kramdown
   module Converter
+    # Converts a kramdown element tree to complete HTML file,
+    # inserting the HTML body into a template.
+    # Writes output to an IO object (File or StringIO).
+    # Computes title from first :header element.
     class HtmlDoc < Base
 
       # Create an HtmlDoc converter with the given options.
       # @param [Kramdown::Element] root
-      # @param [Hash, optional] options
+      # @param [Hash{Symbol => Object}] options
       def initialize(root, options = {})
         super
         # NOTE: kramdown initializes all options with default values. So

@@ -5,7 +5,6 @@ class Repositext
       # Represents a record_id change operation (not really a subtitle operation!)
       # We need to track record id changes as operations so that we can update
       # record_ids in the STM CSV file via the st-ops file.
-      #
       class RecordIdChange < Operation
 
         def inverse_operation

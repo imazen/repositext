@@ -1,13 +1,13 @@
 class Repositext
 
-  # Represents a collection of git content repositories.
+  # Represents a collection of git content and code repositories.
   # Assumes that all repositories are siblings in the same folder.
-
+  #
   # Expects current directory to be a repositext content repo root path.
-
+  #
   # Usage example:
-  # repository_set = RepositorySet.new('/repositories/parent/path')
-  # repository_set.git_pull(:all_content_repos)
+  #     repository_set = RepositorySet.new('/repositories/parent/path')
+  #     repository_set.git_pull(:all_content_repos)
   class RepositorySet
 
     attr_reader :repo_set_parent_path
@@ -78,7 +78,7 @@ class Repositext
           next
         end
         puts " - Cloning #{ repo_name }"
-        clone_command = "git clone git@vgrtr.vgr.local:vgr-text-repository/#{ repo_name }.git"
+        clone_command = git_clone_command(repo_name)
         cmd = %(cd #{ repo_set_parent_path } && #{ clone_command })
         Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
           exit_status = wait_thr.value
@@ -92,13 +92,19 @@ class Repositext
       }
     end
 
+    # Extracting the git clone command so that it can be overridden in subclasses.
+    # @param repo_name [String]
+    def git_clone_command(repo_name)
+      "git clone <repo clone url>#{ repo_name }.git"
+    end
+
     # Makes sure that all content repos are ready for git operations:
     # * They are on master branch
     # * They have no uncommitted changes
     # * They pulled latest from origin
     # @param repo_set_spec [Symbol, Array<String>] A symbol describing a predefined
     #     group of repos, or an Array with specific repo names as strings.
-    # @param block [Proc, optional] will be called for each repo.
+    # @yield [repo_path] will be called for each repo.
     # @return [Hash] with repos that are not ready. Keys are repo paths, values
     #     are arrays with issue messages if any exist.
     def git_ensure_repos_are_ready(repo_set_spec)

@@ -89,7 +89,6 @@ class Repositext
     end
 
     # Returns corresponding primary content_type.
-    # @param content_type [String] the name of the content_type, e.g., 'general'
     # @return [ContentType]
     def corresponding_primary_content_type
       return self  if is_primary_repo

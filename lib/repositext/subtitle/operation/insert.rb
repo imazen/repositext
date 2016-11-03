@@ -3,7 +3,6 @@ class Repositext
     class Operation
 
       # Represents an insert subtitle operation.
-      #
       class Insert < Operation
 
         def inverse_operation
