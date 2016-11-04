@@ -156,7 +156,11 @@ module Kramdown
             ],
             [
               "Word \\RtSmCapsEmulation{none}{A}{-0.1em}.\\RtSmCapsEmulation{none}{D}{-0.1em}.",
-              "Word \\RtSmCapsEmulation{none}{A}{-0.1em}.\\RtSmCapsEmulation{none}{D}{-0.1em}."
+              "Word \\RtSmCapsEmulation{none}{A}{-0.1em}\\nolinebreak[4].\\RtSmCapsEmulation{none}{D}{-0.1em}\\nolinebreak[4]."
+            ],
+            [
+              "Word \\RtGapMarkText{Word}. Word",
+              "Word \\RtGapMarkText{Word}\\nolinebreak[4]. Word"
             ],
           ].each do |test_string, xpect|
             it "handles #{ test_string.inspect }" do
