@@ -245,8 +245,8 @@ module Kramdown
           # We don't allow linebreaks before \RtSmCapsEmulation inside words
           lb.gsub!(/(?<=[[:alpha:]])(?=\\RtSmCapsEmulation)/, "\\nolinebreak[4]")
 
-          # We don't allow linebreaks between then in of a control sequence and a period
-          lb.gsub!(/(?<=[[:alpha:]]})(?=\.)/, "\\nolinebreak[4]")
+          # We don't allow linebreaks between the end of a control sequence and a period
+          lb.gsub!("}.", "}\\nolinebreak[4].")
 
           # Convert any zero-width spaces to latex equivalent
           lb.gsub!(/\u200B/, "\\hspace{0pt}")
