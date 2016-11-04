@@ -8,6 +8,28 @@ class Repositext
 
       module ClassMethods
 
+        # Finds an RFile given date_code and a content_type
+        # @param date_code [String]
+        # @param extension [String]
+        # @param content_type [ContentType]
+        # @return [RFile, Nil]
+        def find_by_date_code(date_code, extension, content_type)
+          file_path = Dir.glob(
+            File.join(
+              content_type.base_dir,
+              "content/**/*#{ date_code }_*.*"
+            )
+          ).first
+          return nil  if file_path.nil?
+          # create new instance of class (determined by which class this method is called on)
+          new(
+            File.read(file_path),
+            content_type.language,
+            file_path,
+            content_type
+          )
+        end
+
         # Finds an RFile given product_identity_id and a content_type
         # @param product_identity_id [String]
         # @param content_type [ContentType]

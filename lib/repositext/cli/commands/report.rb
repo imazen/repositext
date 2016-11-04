@@ -783,6 +783,46 @@ class Repositext
         }
       end
 
+      # This report produces a list of discrepancies between the quote of the day
+      # content and content AT.
+      # In order to run this report, put the qotd test file into the following
+      # location: <repo>/data/qotd_data.txt
+      def report_quote_of_the_day_discrepancies(options)
+        # NOTE: The original test files contained Unicode BOM. I'm removing
+        # that in the File.read.
+        qotd_data_file_contents = File.read(
+          File.join(config.base_dir(:data_dir), 'qotd_data.txt'),
+          :encoding => 'bom|utf-8'
+        )
+        qotd_records = qotd_data_file_contents.lines.map { |line|
+          date_code, posting_date_time, content = line.split("\t")
+          {
+            date_code: date_code.strip,
+            posting_date_time: posting_date_time.strip,
+            content: content.strip
+          }
+        }
+
+        discrepancies = Repositext::Process::Report::QuoteOfTheDayDiscrepancies.new(
+          qotd_records,
+          content_type,
+          content_type.language
+        ).report
+
+        $stderr.puts "Quote Of The Day discrepancies"
+        $stderr.puts "-" * 40
+        discrepancies.each { |qotd_record|
+          $stderr.puts
+          $stderr.puts " - #{ qotd_record[:date_code] }, #{ qotd_record[:posting_date_time] }:".color(:blue)
+          $stderr.puts "   - QOTD:".color(:blue)
+          $stderr.puts "     #{ qotd_record[:qotd_content] }"
+          $stderr.puts "   - Repositext:".color(:blue)
+          $stderr.puts "     #{ qotd_record[:content_at_content] }"
+        }
+        $stderr.puts "-" * 40
+        $stderr.puts "Found #{ discrepancies.count } discrepancies"
+      end
+
       def report_quotes_details(options)
         output_lines = []
         ["'", '"'].each { |quote_char|
