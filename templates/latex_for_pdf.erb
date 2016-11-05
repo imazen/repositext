@@ -26,12 +26,17 @@
 \usepackage[silent]{fontspec}
 % turn off ligatures
 \setmainfont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @font_name %>}
-% use different font for titles
-\newfontfamily\titlefont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @title_font_name %>}
+% use different font for headers
 \newfontfamily\headerfont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @header_font_name %>}
+% use different font for id titles
+\newfontfamily\idtitlefont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @id_title_font_name %>}
+% use different font for paragraph numbers
 \newfontfamily\paragraphnumberfont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @paragraph_number_font_name %>}
 \DeclareTextFontCommand{\textparagraphnumberfont}{\paragraphnumberfont}
+% set primary font
 \newfontfamily\primaryfont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @primary_font_name %>}
+% use different font for titles
+\newfontfamily\titlefont[Ligatures={NoRequired,NoCommon,NoContextual}]{<%= @title_font_name %>}
 
 <% if @polyglossia_default_language %>
   % This language requires polyglossia for correct font rendering
@@ -391,7 +396,7 @@
   <%= @first_eagle %>
   {}
 
-% environment to render idparagraph paragraphs
+% environment to render idparagraph paragraphs when multiples occur
 \newenvironment{RtIdMultiParagraph}
   {%
     <% if @is_primary_repo %>
@@ -459,8 +464,22 @@
     \setlength{\parskip}{0pt}
     \setlength{\parindent}{0pt}
     \centering
-    \titlefont%
-    \fontsize{10pt}{10.5pt}\selectfont
+    \idtitlefont%
+    \fontsize{<%= @id_title_1_font_size %>pt}{10.5pt}\selectfont
+  }
+  {%
+    \par
+  }
+
+% environment to render idtitle1 paragraphs when multiples occur
+\newenvironment{RtIdMultiTitle1}
+  {%
+    \setlength{\lineskiplimit}{-100pt} % This setting keeps latex from automatically stretching linespacing when characters may overlap.
+    \setlength{\parskip}{8pt}
+    \setlength{\parindent}{0pt}
+    \centering
+    \idtitlefont%
+    \fontsize{<%= @id_title_1_font_size %>pt}{10.5pt}\selectfont
   }
   {%
     \par
@@ -477,7 +496,7 @@
     \setlength{\lineskiplimit}{-100pt} % This setting keeps latex from automatically stretching linespacing when characters may overlap.
     \setlength{\parindent}{0pt}
     \centering
-    \titlefont%
+    \idtitlefont%
     \fontsize{8pt}{10.5pt}\selectfont
   }
   {%
