@@ -145,6 +145,7 @@ module Kramdown
           @id_copyright_year = @options[:id_copyright_year]
           @id_extra_language_info = @options[:id_extra_language_info]
           @id_recording = @options[:id_recording]  if @options[:include_id_recording]
+          @id_series = @options[:id_series]
           @id_write_to_primary = @options[:id_write_to_primary]
           @id_write_to_secondary = @options[:id_write_to_secondary]
           @include_meta_info = include_meta_info

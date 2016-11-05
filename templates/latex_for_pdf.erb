@@ -327,6 +327,14 @@
     <% end %>
   }
 
+% command to render series id
+\newcommand{\RtIdSeries}
+  {%
+    <% if @id_series %>
+      <%= @id_series %>
+    <% end %>
+  }
+
 % command to render gap mark. Pass the text to be highlighted as argument.
 \newcommand{\RtGapMarkText}[1]
   {\textcolor{red}{#1}}
@@ -382,6 +390,24 @@
 \newenvironment{RtFirstEagle}
   <%= @first_eagle %>
   {}
+
+% environment to render idparagraph paragraphs
+\newenvironment{RtIdMultiParagraph}
+  {%
+    <% if @is_primary_repo %>
+      \setlength{\parskip}{4.022pt}
+    <% else %>
+      \setlength{\parskip}{2.991pt}
+    <% end %>
+    \setlength{\lineskiplimit}{-100pt} % This setting keeps latex from automatically stretching linespacing when characters may overlap.
+    \setlength{\parindent}{0pt}
+    \begin{spacing}{1.0027}
+      \fontsize{8pt}{10.5pt}\selectfont
+  }
+  {%
+    \end{spacing}
+    \par
+  }
 
 % environment to render idparagraph paragraphs
 \newenvironment{RtIdParagraph}
@@ -703,6 +729,7 @@
 
   <%= @body %>
   \RtIdRecording
+  \RtIdSeries
   <%= @meta_info %>
   <%= @version_control_page %>
 
