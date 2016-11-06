@@ -283,6 +283,7 @@ class Repositext
           )
           options[:source_filename] = filename
           options[:title_font_name] = config.setting(:pdf_export_title_font_name)
+          options[:title_font_size] = config.setting(:pdf_export_title_font_size)
           options[:title_vspace] = config.setting(:pdf_export_title_vspace)
           options[:truncated_header_title_length] = config.setting(:pdf_export_truncated_header_title_length, false)
           if options[:pre_process_content_proc]
