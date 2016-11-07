@@ -271,6 +271,9 @@ class Repositext
           options[:hrules_present] = config.setting(:pdf_export_hrules_present)
           options[:id_copyright_year] = config.setting(:erp_id_copyright_year, false)
           options[:id_recording] = config.setting(:pdf_export_id_recording, false)
+          options[:id_series] = config.setting(:pdf_export_id_series, false)
+          options[:id_title_1_font_size] = config.setting(:pdf_export_id_title_1_font_size, false)
+          options[:id_title_font_name] = config.setting(:pdf_export_id_title_font_name, false)
           options[:is_id_page_needed] = config.setting(:pdf_export_is_id_page_needed)
           options[:last_eagle_hspace] =config.setting(:pdf_export_last_eagle_hspace)
           options[:page_settings_key] = compute_pdf_export_page_settings_key(
@@ -280,6 +283,7 @@ class Repositext
           )
           options[:source_filename] = filename
           options[:title_font_name] = config.setting(:pdf_export_title_font_name)
+          options[:title_font_size] = config.setting(:pdf_export_title_font_size)
           options[:title_vspace] = config.setting(:pdf_export_title_vspace)
           options[:truncated_header_title_length] = config.setting(:pdf_export_truncated_header_title_length, false)
           if options[:pre_process_content_proc]

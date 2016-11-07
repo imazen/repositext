@@ -145,6 +145,9 @@ module Kramdown
           @id_copyright_year = @options[:id_copyright_year]
           @id_extra_language_info = @options[:id_extra_language_info]
           @id_recording = @options[:id_recording]  if @options[:include_id_recording]
+          @id_series = @options[:id_series]
+          @id_title_1_font_size = @options[:id_title_1_font_size]
+          @id_title_font_name = @options[:id_title_font_name]
           @id_write_to_primary = @options[:id_write_to_primary]
           @id_write_to_secondary = @options[:id_write_to_secondary]
           @include_meta_info = include_meta_info
@@ -165,6 +168,7 @@ module Kramdown
           @polyglossia_default_language = polyglossia_default_language(@options[:language_code_3_chars])
           @primary_font_name = @options[:primary_font_name]
           @title_font_name = @options[:title_font_name]
+          @title_font_size = @options[:title_font_size]
           @title_vspace = @options[:title_vspace] # space to be inserted above title to align with body text
           @use_cjk_package = ['chn','cnt'].include?(@options[:language_code_3_chars])
           @version_control_page = if @options[:version_control_page]
