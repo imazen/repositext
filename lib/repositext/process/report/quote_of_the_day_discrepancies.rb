@@ -59,9 +59,13 @@ class Repositext
           # replace three periods with elipsis
           # replace all para boundaries with newline.
           # replace two hyphens with emdash
+          # remove leading or trailing elipses
+          # strip surrounding whitespace
           qotd_content.gsub('...', "…")
                       .gsub(/\s*<br \/>\s*|\s{2,}/, "\n")
                       .gsub("--", "—")
+                      .gsub(/\A…/, '')
+                      .gsub(/…\z/, '')
                       .strip
         end
 
@@ -133,13 +137,30 @@ class Repositext
           )
           content_at_diff = []
           qotd_diff = []
-          diffs.map { |type, frag, context|
+          # pad diffs with nil before and after so that we can detect first and
+          # last diff using each_cons.
+          diffs.unshift(nil)
+          diffs.push(nil)
+          diffs.each_cons(3) { |prev, cur, nxt|
+            type, frag, context = cur
             case type
             when 0
               qotd_diff << frag
               content_at_diff << frag
             when 1
-              content_at_diff << frag.color(:black).background(:green)
+              # check for partial qotd at beginning and end of quote
+              if prev.nil? && 0 == nxt[0]
+                # This is an insertion at the beginning of qotd, and following
+                # fragment is identical. We assume that this is caused by
+                # qotd starting in the middle of content AT line. Ignore this insertion.
+              elsif nxt.nil? && 0 == prev[0]
+                # This is an insertion at the end of qotd, and previous
+                # fragment is identical. We assume that this is caused by
+                # qotd ending before end of content AT line. Ignore this insertion.
+              else
+                # regular insertion, capture
+                content_at_diff << frag.color(:black).background(:green)
+              end
             when -1
               qotd_diff << frag.color(:black).background(:red)
             else

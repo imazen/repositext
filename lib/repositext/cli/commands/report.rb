@@ -821,6 +821,23 @@ class Repositext
         }
         $stderr.puts "-" * 40
         $stderr.puts "Found #{ discrepancies.count } discrepancies"
+        # Write date codes and posting_times to report file
+        report_file_path = File.join(config.base_dir(:reports_dir), 'quote_of_the_day_discrepancies.txt')
+        File.open(report_file_path, 'w') { |f|
+          f.write "QOTD discrepancies\n"
+          f.write '-' * 40
+          f.write "\n"
+          discrepancies.each do |d|
+            f.write d[:date_code]
+            f.write "\t"
+            f.write d[:posting_date_time]
+            f.write "\n"
+          end
+          f.write '-' * 40
+          f.write "\n"
+          f.write "Found #{ discrepancies.length } discrepancies in #{ qotd_records.length } QOTDs at #{ Time.now.to_s }.\n\n"
+          f.write "Command to generate this file: `repositext report quote_of_the_day_discrepancies`\n"
+        }
       end
 
       def report_quotes_details(options)
