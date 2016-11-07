@@ -20,8 +20,10 @@ class Repositext
           @qotd_records = qotd_records
           @content_type = content_type
           @language = language
-          @double_quotes = [:d_quote_close, :d_quote_open].map { |e| @language.chars[e] }.join
-          @single_quotes = [:s_quote_close, :s_quote_open].map { |e| @language.chars[e] }.join
+          @double_opening_quote = @language.chars[:d_quote_open]
+          @double_closing_quote = @language.chars[:d_quote_close]
+          @single_opening_quote = @language.chars[:s_quote_open]
+          @single_closing_quote = @language.chars[:s_quote_close]
         end
 
         # Returns an outcome with a report of discrepancies
@@ -56,14 +58,22 @@ class Repositext
 
         # @param qotd_content [String]
         def sanitize_qotd_content(qotd_content)
-          # replace three periods with elipsis
-          # replace all para boundaries with newline.
-          # replace two hyphens with emdash
+          # remove surrounding <p> tags
+          # replace html entities with chars
+          # replace &nbsp; with space
+          # replace br tags with newline.
           # remove leading or trailing elipses
           # strip surrounding whitespace
-          qotd_content.gsub('...', "…")
-                      .gsub(/\s*<br \/>\s*|\s{2,}/, "\n")
-                      .gsub("--", "—")
+          qotd_content.sub(/\A<p>/, '')
+                      .sub(/<\/p>\z/, '')
+                      .gsub('&ldquo;', @double_opening_quote)
+                      .gsub('&rdquo;', @double_closing_quote)
+                      .gsub('&lsquo;', @single_opening_quote)
+                      .gsub('&rsquo;', @single_closing_quote)
+                      .gsub('&hellip;', '…')
+                      .gsub('&nbsp;', ' ')
+                      .gsub('&mdash;', '—')
+                      .gsub(/\s*<br \/>\s*/, "\n")
                       .gsub(/\A…/, '')
                       .gsub(/…\z/, '')
                       .strip
@@ -71,11 +81,9 @@ class Repositext
 
         # @param content_at_plain_text [String]
         def sanitize_content_at_plain_text(content_at_plain_text)
-          # replace typographic quotes with straight ones
           # remove paragraph numbers
-          content_at_plain_text.gsub(/[#{ @double_quotes }]/, '"')
-                               .gsub(/[#{ @single_quotes }]/, "'")
-                               .gsub(/^\d+ /, '')
+          # strip surrounding whitespace
+          content_at_plain_text.gsub(/^\d+ /, '')
                                .strip
         end
 
