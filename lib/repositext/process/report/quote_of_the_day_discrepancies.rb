@@ -107,9 +107,14 @@ class Repositext
           )
           if perfect_content_match
             # content is identical, check for subtitle alignment
-            matching_subtitles_txt = matching_content_at_fragment.split('@').find_all { |e|
-              qotd_txt.index(e.strip)
-            }.join.strip
+            matching_subtitles_txt = remove_trailing_punctuation_from_content_at(
+              matching_content_at_fragment.split('@').find_all { |e|
+                qotd_txt.index(
+                  remove_trailing_punctuation_from_content_at(e.strip)
+                )
+              }.join.strip
+            )
+
             if qotd_txt != matching_subtitles_txt
               # qotd is not aligned with subtitles, report as discrepancy
               qotd_diff, content_at_diff, diff_tokens = compute_diffs(
@@ -139,6 +144,15 @@ class Repositext
             }
           end
           true
+        end
+
+        # For subtitle comparison, we need to remove some punctuation from
+        # content AT in case it was removed from qotd. These differences are
+        # ok and should be ignored.
+        # @param txt [String]
+        # @return [String]
+        def remove_trailing_punctuation_from_content_at(txt)
+          txt.sub(/[;,…]+\z/, '')
         end
 
         # Finds subtitle misalignments between qotd_txt and content_at_txt, adds diffs to collector.
