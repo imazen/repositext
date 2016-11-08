@@ -63,13 +63,18 @@ class Repositext
           [
             [
               "doesn't change simple string",
-              "word word",
-              "word word",
+              "@word word",
+              "@word word",
             ],
             [
               "removes paragraph numbers",
               "123 word word",
               "word word",
+            ],
+            [
+              "removes paragraph numbers with subtitle marks",
+              "@123 word word",
+              "@word word",
             ],
             [
               "strips surrounding whitespace",
@@ -108,14 +113,14 @@ class Repositext
             ],
             [
               "ignores isolated insertion at beginning of qotd",
-                    "word2 word3 word4",
-              "word1 word2 word3 word4",
+                      "word2 word3 word4",
+              "@word1 @word2 word3 word4",
               [],
             ],
             [
               "ignores isolated insertion at end of qotd",
               "word1 word2 word3",
-              "word1 word2 word3 word4",
+              "word1 word2 word3 @word4",
               [],
             ],
             [
@@ -247,6 +252,11 @@ class Repositext
               "handles single non-style token",
               style_tokens + ['a'],
               :content,
+            ],
+            [
+              "handles subtitle token",
+              ['@'],
+              :subtitle,
             ],
           ].each do |desc, diff_tokens, xpect|
             it desc do

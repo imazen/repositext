@@ -40,9 +40,11 @@ class Repositext
               "at",
               @content_type
             )
+
             sanitized_content_at_plain_text = sanitize_content_at_plain_text(
-              corresponding_content_at_file.plain_text_contents({})
+              corresponding_content_at_file.plain_text_with_subtitles_contents({})
             )
+
             find_diffs_between_qotd_and_content_at(
               qotd_record[:date_code],
               qotd_record[:posting_date_time],
@@ -86,7 +88,7 @@ class Repositext
         def sanitize_content_at_plain_text(content_at_plain_text)
           # remove paragraph numbers
           # strip surrounding whitespace
-          content_at_plain_text.gsub(/^\d+ /, '')
+          content_at_plain_text.gsub(/(@?)\d+ /, '\1')
                                .strip
         end
 
@@ -94,19 +96,39 @@ class Repositext
         # @param date_code [String]
         # @param posting_date_time [String]
         # @param qotd_txt [String]
-        # @param content_at_txt [String]
+        # @param content_at_txt [String] plain text with subtitle_marks
         # @param collector [Array]
         def find_diffs_between_qotd_and_content_at(date_code, posting_date_time, qotd_txt, content_at_txt, collector)
-          match = content_at_txt.index(qotd_txt)
-          if !match
-            matching_content_at_fragment = find_matching_content_at_fragment(
-              qotd_txt,
-              content_at_txt
-            )
-
+          content_at_txt_without_subtitles = content_at_txt.delete('@')
+          perfect_content_match = content_at_txt_without_subtitles.index(qotd_txt)
+          matching_content_at_fragment = find_matching_content_at_fragment(
+            qotd_txt,
+            content_at_txt
+          )
+          if perfect_content_match
+            # content is identical, check for subtitle alignment
+            matching_subtitles_txt = matching_content_at_fragment.split('@').find_all { |e|
+              qotd_txt.index(e.strip)
+            }.join.strip
+            if qotd_txt != matching_subtitles_txt
+              # qotd is not aligned with subtitles, report as discrepancy
+              qotd_diff, content_at_diff, diff_tokens = compute_diffs(
+                qotd_txt,
+                matching_subtitles_txt
+              )
+              collector << {
+                date_code: date_code,
+                posting_date_time: posting_date_time,
+                qotd_content: qotd_diff,
+                content_at_content: content_at_diff,
+                diff_tokens: ['@'],
+              }
+            end
+          else
+            # some kind of content or style mismatch
             qotd_diff, content_at_diff, diff_tokens = compute_diffs(
               qotd_txt,
-              matching_content_at_fragment
+              matching_content_at_fragment.delete('@')
             )
             collector << {
               date_code: date_code,
@@ -117,6 +139,15 @@ class Repositext
             }
           end
           true
+        end
+
+        # Finds subtitle misalignments between qotd_txt and content_at_txt, adds diffs to collector.
+        # @param date_code [String]
+        # @param posting_date_time [String]
+        # @param qotd_txt [String]
+        # @param content_at_txt [String] plain text with subtitle_marks
+        # @param collector [Array]
+        def find_subtitle_misalignments_between_qotd_and_content_at(date_code, posting_date_time, qotd_txt, content_at_txt, collector)
         end
 
         # @param qotd_txt [String] the entire qotd text
@@ -208,6 +239,8 @@ class Repositext
               # contains only quotes, hyphens, emdashes, and elipses,
               # considered a :style diff
               :style
+            elsif ['@'] == qotd_record[:diff_tokens]
+              :subtitle
             else
               :content
             end

@@ -809,32 +809,36 @@ class Repositext
           content_type.language
         ).report
 
-        style_discrepancies, content_discrepancies = discrepancies.partition{ |e|
-          :style == e[:type]
-        }
-
+        discrepancy_groups = [
+          ['Content', discrepancies.find_all { |e| :content == e[:type] }],
+          ['Style', discrepancies.find_all { |e| :style == e[:type] }],
+          ['Subtitle', discrepancies.find_all { |e| :subtitle == e[:type] }],
+        ]
+        group_counts = discrepancy_groups.map { |heading, discrepancies|
+          [discrepancies.count, heading].join(' ')
+        }.join(', ')
         $stderr.puts "Quote Of The Day discrepancies"
         $stderr.puts "-" * 40
-        discrepancies.each { |qotd_record|
-          $stderr.puts
-          $stderr.puts " - #{ qotd_record[:date_code] }, #{ qotd_record[:posting_date_time] }, #{ qotd_record[:type] }:".color(:blue)
-          $stderr.puts "   - QOTD:".color(:blue)
-          $stderr.puts "     #{ qotd_record[:qotd_content] }"
-          $stderr.puts "   - Repositext:".color(:blue)
-          $stderr.puts "     #{ qotd_record[:content_at_content] }"
-        }
+        discrepancy_groups.each do |heading, discrepancies|
+          $stderr.puts "#{ heading } discrepancies:".color(:blue)
+          discrepancies.each { |qotd_record|
+            $stderr.puts
+            $stderr.puts " - #{ qotd_record[:date_code] }, #{ qotd_record[:posting_date_time] }, #{ qotd_record[:type] }:".color(:blue)
+            $stderr.puts "   - QOTD:".color(:blue)
+            $stderr.puts "     #{ qotd_record[:qotd_content] }"
+            $stderr.puts "   - Repositext:".color(:blue)
+            $stderr.puts "     #{ qotd_record[:content_at_content] }"
+          }
+        end
         $stderr.puts "-" * 40
-        $stderr.puts "Found #{ content_discrepancies.count } content and #{ style_discrepancies.count } style discrepancies in #{ qotd_records.length } QOTDs."
+        $stderr.puts "Found #{ group_counts } discrepancies in #{ qotd_records.length } QOTDs."
         # Write date codes and posting_times to report file
         report_file_path = File.join(config.base_dir(:reports_dir), 'quote_of_the_day_discrepancies.txt')
         File.open(report_file_path, 'w') { |f|
           f.write "QOTD discrepancies\n"
           f.write '-' * 40
           f.write "\n"
-          [
-            ['Content', content_discrepancies],
-            ['Style', style_discrepancies],
-          ].each do |heading, discrepancies|
+          discrepancy_groups.each do |heading, discrepancies|
             f.write "\n#{ heading }:\n\n"
             discrepancies.each do |d|
               f.write d[:date_code]
@@ -845,7 +849,10 @@ class Repositext
           end
           f.write '-' * 40
           f.write "\n"
-          f.write "Found #{ content_discrepancies.count } content and #{ style_discrepancies.count } style discrepancies in #{ qotd_records.length } QOTDs."
+          group_counts = discrepancy_groups.map { |heading, discrepancies|
+            [discrepancies.count, heading].join(' ')
+          }.join(', ')
+          f.write "Found #{ group_counts } discrepancies in #{ qotd_records.length } QOTDs.\n"
           f.write "Command to generate this file: `repositext report quote_of_the_day_discrepancies`\n"
         }
       end
