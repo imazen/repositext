@@ -10,9 +10,10 @@ class Repositext
         # @param qotd_records [Array<{:symbol => {:symbol => Object}}>]
         #   Example record:
         #       {
-        #         date_code: "55-1115",
-        #         posting_date_time: "2017-01-15 00:00:00.000",
-        #         content: "the content...",
+        #         pageid: 19848,
+        #         title: "47-0412",
+        #         publishdate: "2017-02-26T00:00:00",
+        #         contents: "word word"
         #       }
         # @param content_type [ContentType]
         # @param language [Language]
@@ -33,10 +34,10 @@ class Repositext
           # in the corresponding content AT file.
           discrepancies = []
           @qotd_records.each { |qotd_record|
-            puts " - processing #{ qotd_record[:date_code] }"
-            sanitized_qotd_content = sanitize_qotd_content(qotd_record[:content])
+            puts " - processing #{ qotd_record[:title] }"
+            sanitized_qotd_content = sanitize_qotd_content(qotd_record[:contents])
             corresponding_content_at_file = RFile::ContentAt.find_by_date_code(
-              qotd_record[:date_code],
+              qotd_record[:title],
               "at",
               @content_type
             )
@@ -46,8 +47,8 @@ class Repositext
             )
 
             find_diffs_between_qotd_and_content_at(
-              qotd_record[:date_code],
-              qotd_record[:posting_date_time],
+              qotd_record[:title],
+              qotd_record[:publishdate],
               sanitized_qotd_content,
               sanitized_content_at_plain_text,
               discrepancies
@@ -68,6 +69,7 @@ class Repositext
           # replace br tags with newline.
           # remove leading or trailing elipses
           # strip surrounding whitespace
+          # NOTE: We temporarily ignore quotemark, elipsis and emdash differences
           qotd_content.sub(/\A<p>/, '')
                       .sub(/<\/p>\z/, '')
                       .gsub('&ldquo;', @double_opening_quote)
@@ -79,17 +81,24 @@ class Repositext
                       .gsub('&mdash;', '—')
                       .gsub(/<\/?em>/, '')
                       .gsub(/\s*<br \/>\s*/, "\n")
+                      .strip
+                      .gsub(/[#{ @double_opening_quote }#{ @double_closing_quote }]+/, '"')
+                      .gsub(/[#{ @single_opening_quote }#{ @single_closing_quote }]+/, "'")
+                      .gsub('...', '…')
+                      .gsub('--', '—')
                       .gsub(/\A…/, '')
                       .gsub(/…\z/, '')
-                      .strip
         end
 
         # @param content_at_plain_text [String]
         def sanitize_content_at_plain_text(content_at_plain_text)
           # remove paragraph numbers
           # strip surrounding whitespace
+          # NOTE: We temporarily ignore quotemark differences
           content_at_plain_text.gsub(/(@?)\d+ /, '\1')
                                .strip
+                               .gsub(/[#{ @double_opening_quote }#{ @double_closing_quote }]+/, '"')
+                               .gsub(/[#{ @single_opening_quote }#{ @single_closing_quote }]+/, "'")
         end
 
         # Finds diffs between qotd_txt and content_at_txt, adds diffs to collector.

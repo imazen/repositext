@@ -786,22 +786,22 @@ class Repositext
       # This report produces a list of discrepancies between the quote of the day
       # content and content AT.
       # In order to run this report, put the qotd test file into the following
-      # location: <repo>/data/qotd_data.txt
+      # location: <repo>/data/qotd_data.json
       def report_quote_of_the_day_discrepancies(options)
         # NOTE: The original test files contained Unicode BOM. I'm removing
         # that in the File.read.
-        qotd_data_file_contents = File.read(
-          File.join(config.base_dir(:data_dir), 'qotd_data.txt'),
-          :encoding => 'bom|utf-8'
+        # Returns JSON with the following keys:
+        # * pageid: 19848,
+        # * title: "47-0412",
+        # * publishdate: "2017-02-26T00:00:00",
+        # * contents: "word word"
+        qotd_records = JSON.parse(
+          File.read(
+            File.join(config.base_dir(:data_dir), 'qotd_data.json'),
+            :encoding => 'bom|utf-8'
+          ),
+          symbolize_names: true
         )
-        qotd_records = qotd_data_file_contents.lines.map { |line|
-          date_code, posting_date_time, content = line.split("\t")
-          {
-            date_code: date_code.strip,
-            posting_date_time: posting_date_time.strip,
-            content: content.strip
-          }
-        }
 
         discrepancies = Repositext::Process::Report::QuoteOfTheDayDiscrepancies.new(
           qotd_records,
@@ -841,9 +841,9 @@ class Repositext
           discrepancy_groups.each do |heading, discrepancies|
             f.write "\n#{ heading }:\n\n"
             discrepancies.each do |d|
-              f.write d[:date_code]
+              f.write d[:title]
               f.write "\t"
-              f.write d[:posting_date_time]
+              f.write d[:publishdate]
               f.write "\n"
             end
           end
