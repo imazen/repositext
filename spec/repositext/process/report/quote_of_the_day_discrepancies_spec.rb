@@ -15,9 +15,19 @@ class Repositext
               "word word",
             ],
             [
-              "replaces three periods with elipsis",
-              "word ...word",
-              "word …word",
+              "removes surrounding <p> tags",
+              "<p>word <p>word</p>",
+              "word <p>word",
+            ],
+            [
+              "replaces html entities",
+              "&ldquo; &rdquo; &lsquo; &rsquo; &hellip; &nbsp; &mdash;",
+              "“ ” ‘ ’ …   —",
+            ],
+            [
+              "removes <em> tags",
+              "word <em>word</em> word",
+              "word word word",
             ],
             [
               "replaces <br /> tag with newline",
@@ -25,14 +35,14 @@ class Repositext
               "word\nword",
             ],
             [
-              "replaces two spaces with newline",
-              "word  word",
-              "word\nword",
+              "removes leading elipsis",
+              "…word word",
+              "word word",
             ],
             [
-              "replaces two hyphens with emdash",
-              "word--word",
-              "word—word",
+              "removes trailing elipsis",
+              "word word…",
+              "word word",
             ],
             [
               "strips surrounding whitespace",
@@ -55,16 +65,6 @@ class Repositext
               "doesn't change simple string",
               "word word",
               "word word",
-            ],
-            [
-              "replaces typographic double quotes with straight ones",
-              "word “word” word",
-              'word "word" word',
-            ],
-            [
-              "replaces typographic single quotes with straight ones",
-              "word ‘word’ word",
-              "word 'word' word",
             ],
             [
               "removes paragraph numbers",
@@ -96,12 +96,37 @@ class Repositext
             ],
             [
               "finds diff for different strings",
-              "word1 word",
-              "word word2",
+              "word1 word2 word3 word4",
+              "word1 word3 word2 word4",
               [
                 {
-                  :qotd_content=>"word\e[30m\e[41m1\e[0m word",
-                  :content_at_content=>"word word\e[30m\e[42m2\e[0m"
+                  :qotd_content=>"word1 word\e[30m\e[41m2\e[0m word\e[30m\e[41m3\e[0m word4",
+                  :content_at_content=>"word1 word\e[30m\e[42m3\e[0m word\e[30m\e[42m2\e[0m word4",
+                  :diff_tokens=>["2", "3"],
+                }
+              ]
+            ],
+            [
+              "ignores isolated insertion at beginning of qotd",
+                    "word2 word3 word4",
+              "word1 word2 word3 word4",
+              [],
+            ],
+            [
+              "ignores isolated insertion at end of qotd",
+              "word1 word2 word3",
+              "word1 word2 word3 word4",
+              [],
+            ],
+            [
+              "captures connected insertion at end of qotd",
+              "word1 word2",
+              "word1 abcx",
+              [
+                {
+                  :qotd_content=>"word1 \e[30m\e[41mword2\e[0m",
+                  :content_at_content=>"word1 \e[30m\e[42mabcx\e[0m",
+                  :diff_tokens=>["2", "a", "b", "c", "d", "o", "r", "w", "x"],
                 }
               ],
             ],
@@ -155,27 +180,36 @@ class Repositext
               "handles identical strings",
               "word3 word4\nword5 word6",
               "word3 word4\nword5 word6",
-              ['', ''],
+              ['', '', []],
             ],
             [
               "handles insert",
-              "word1 word2",
+              "word1 word2 word2b word3",
               "word1 word2 word3",
-              ["word1 word2", "word1 word2\e[30m\e[42m word3\e[0m"],
+              [
+                "word1 word2 word\e[30m\e[41m2b word\e[0m3",
+                "word1 word2 word3",
+                [" ", "2", "b", "d", "o", "r", "w"],
+              ],
             ],
             [
               "handles delete",
               "word1 word2 word3",
               "word1 word2",
-              ["word1 word2\e[30m\e[41m word3\e[0m", "word1 word2"],
+              [
+                "word1 word2\e[30m\e[41m word3\e[0m",
+                "word1 word2",
+                [" ", "3", "d", "o", "r", "w"],
+              ],
             ],
             [
               "handles insert and delete",
-                    "word2 word3 word4",
-              "word1 word2 word3",
+              "word1 word1b word2 word3 word4",
+              "word1 word2 word3 word3b word4",
               [
-                "word\e[30m\e[41m2\e[0m word\e[30m\e[41m3\e[0m word\e[30m\e[41m4\e[0m",
-                "word\e[30m\e[42m1\e[0m word\e[30m\e[42m2\e[0m word\e[30m\e[42m3\e[0m"
+                "word1 word\e[30m\e[41m1b\e[0m word\e[30m\e[41m2\e[0m word3 word4",
+                "word1 word\e[30m\e[42m2\e[0m word\e[30m\e[42m3\e[0m word3\e[30m\e[42mb\e[0m word4",
+                ["1", "2", "3", "b"],
               ],
             ],
           ].each do |desc, qotd, content_at, xpect|
@@ -185,6 +219,43 @@ class Repositext
                 qotd,
                 content_at
               ).must_equal(xpect)
+            end
+          end
+        end
+
+        describe "#assign_discrepancy_types" do
+          language = Language::English.new
+          style_tokens = [
+            language.chars[:d_quote_open],
+            language.chars[:d_quote_close],
+            language.chars[:s_quote_open],
+            language.chars[:s_quote_close],
+            '"',
+            "'",
+            "…",
+            "...",
+            "--",
+            "—",
+          ]
+          [
+            [
+              "handles all style tokens",
+              style_tokens,
+              :style,
+            ],
+            [
+              "handles single non-style token",
+              style_tokens + ['a'],
+              :content,
+            ],
+          ].each do |desc, diff_tokens, xpect|
+            it desc do
+              r = { diff_tokens: diff_tokens }
+              report.send(
+                :assign_discrepancy_types,
+                [r]
+              )
+              r[:type].must_equal(xpect)
             end
           end
         end

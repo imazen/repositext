@@ -51,6 +51,7 @@ class Repositext
               discrepancies
             )
           }
+          assign_discrepancy_types(discrepancies)
           discrepancies
         end
 
@@ -61,6 +62,7 @@ class Repositext
           # remove surrounding <p> tags
           # replace html entities with chars
           # replace &nbsp; with space
+          # remove <em> tags
           # replace br tags with newline.
           # remove leading or trailing elipses
           # strip surrounding whitespace
@@ -73,6 +75,7 @@ class Repositext
                       .gsub('&hellip;', '…')
                       .gsub('&nbsp;', ' ')
                       .gsub('&mdash;', '—')
+                      .gsub(/<\/?em>/, '')
                       .gsub(/\s*<br \/>\s*/, "\n")
                       .gsub(/\A…/, '')
                       .gsub(/…\z/, '')
@@ -101,16 +104,16 @@ class Repositext
               content_at_txt
             )
 
-            qotd_diff, content_at_diff = compute_diffs(
+            qotd_diff, content_at_diff, diff_tokens = compute_diffs(
               qotd_txt,
               matching_content_at_fragment
             )
-
             collector << {
               date_code: date_code,
               posting_date_time: posting_date_time,
               qotd_content: qotd_diff,
               content_at_content: content_at_diff,
+              diff_tokens: diff_tokens
             }
           end
           true
@@ -135,7 +138,10 @@ class Repositext
 
         # @param qotd_txt [String]
         # @param matching_content_at_fragment [String]
-        # @return [Array<String>] tuple of qotd diff line and content_at diff line
+        # @return [Array<String, Array>] tuple of qotd diff line, content_at diff
+        #   line and array of all chars that are different.
+        #   We treat double hyphens and three elipises as single tokens, i.e. we
+        #   don't break them up into individual chars.
         def compute_diffs(qotd_txt, matching_content_at_fragment)
           diffs = Suspension::StringComparer.compare(
             qotd_txt,
@@ -149,6 +155,7 @@ class Repositext
           # last diff using each_cons.
           diffs.unshift(nil)
           diffs.push(nil)
+          diff_tokens = []
           diffs.each_cons(3) { |prev, cur, nxt|
             type, frag, context = cur
             case type
@@ -168,14 +175,59 @@ class Repositext
               else
                 # regular insertion, capture
                 content_at_diff << frag.color(:black).background(:green)
+                capture_diff_tokens(frag, diff_tokens)
               end
             when -1
               qotd_diff << frag.color(:black).background(:red)
+              capture_diff_tokens(frag, diff_tokens)
             else
               raise "Handle this: #{ [type, frag, context] }"
             end
           }
-          [qotd_diff.join, content_at_diff.join]
+          [qotd_diff.join, content_at_diff.join, diff_tokens.uniq.sort]
+        end
+
+        # Determines for all discrepancies whether they are of type :style or
+        # :content. Stores results in discrepancies under :type key.
+        # @param discrepancies [Array<{Symbol => Object}>]
+        def assign_discrepancy_types(discrepancies)
+          style_tokens = [
+            @double_opening_quote,
+            @double_closing_quote,
+            @single_opening_quote,
+            @single_closing_quote,
+            '"',
+            "'",
+            "…",
+            "...",
+            "--",
+            "—",
+          ].compact
+          discrepancies.each { |qotd_record|
+            qotd_record[:type] = if [] == qotd_record[:diff_tokens] - style_tokens
+              # contains only quotes, hyphens, emdashes, and elipses,
+              # considered a :style diff
+              :style
+            else
+              :content
+            end
+          }
+        end
+
+        # Extracts diff tokens from frag and adds them to coll
+        # @param frag [String]
+        # @param coll [Array]
+        def capture_diff_tokens(frag, coll)
+          frag_dup = frag.dup
+          special_tokens = ['...', '--']
+          # extract three periods and double hyphens as single tokens
+          special_tokens.each { |token|
+            if frag_dup.index(token)
+              coll << token
+              frag_dup.gsub!(token, '')
+            end
+          }
+          coll.concat(frag_dup.chars)
         end
 
       end

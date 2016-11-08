@@ -809,33 +809,43 @@ class Repositext
           content_type.language
         ).report
 
+        style_discrepancies, content_discrepancies = discrepancies.partition{ |e|
+          :style == e[:type]
+        }
+
         $stderr.puts "Quote Of The Day discrepancies"
         $stderr.puts "-" * 40
         discrepancies.each { |qotd_record|
           $stderr.puts
-          $stderr.puts " - #{ qotd_record[:date_code] }, #{ qotd_record[:posting_date_time] }:".color(:blue)
+          $stderr.puts " - #{ qotd_record[:date_code] }, #{ qotd_record[:posting_date_time] }, #{ qotd_record[:type] }:".color(:blue)
           $stderr.puts "   - QOTD:".color(:blue)
           $stderr.puts "     #{ qotd_record[:qotd_content] }"
           $stderr.puts "   - Repositext:".color(:blue)
           $stderr.puts "     #{ qotd_record[:content_at_content] }"
         }
         $stderr.puts "-" * 40
-        $stderr.puts "Found #{ discrepancies.count } discrepancies"
+        $stderr.puts "Found #{ content_discrepancies.count } content and #{ style_discrepancies.count } style discrepancies in #{ qotd_records.length } QOTDs."
         # Write date codes and posting_times to report file
         report_file_path = File.join(config.base_dir(:reports_dir), 'quote_of_the_day_discrepancies.txt')
         File.open(report_file_path, 'w') { |f|
           f.write "QOTD discrepancies\n"
           f.write '-' * 40
           f.write "\n"
-          discrepancies.each do |d|
-            f.write d[:date_code]
-            f.write "\t"
-            f.write d[:posting_date_time]
-            f.write "\n"
+          [
+            ['Content', content_discrepancies],
+            ['Style', style_discrepancies],
+          ].each do |heading, discrepancies|
+            f.write "\n#{ heading }:\n\n"
+            discrepancies.each do |d|
+              f.write d[:date_code]
+              f.write "\t"
+              f.write d[:posting_date_time]
+              f.write "\n"
+            end
           end
           f.write '-' * 40
           f.write "\n"
-          f.write "Found #{ discrepancies.length } discrepancies in #{ qotd_records.length } QOTDs at #{ Time.now.to_s }.\n\n"
+          f.write "Found #{ content_discrepancies.count } content and #{ style_discrepancies.count } style discrepancies in #{ qotd_records.length } QOTDs."
           f.write "Command to generate this file: `repositext report quote_of_the_day_discrepancies`\n"
         }
       end
