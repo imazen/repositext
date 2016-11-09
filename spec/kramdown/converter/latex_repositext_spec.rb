@@ -89,6 +89,11 @@ module Kramdown
             "Чтo пpивлекaет?",
             "Ч\\RtSmCapsEmulation{none}{ТO}{none} \\RtSmCapsEmulation{none}{ПPИВЛЕКAЕТ}{none}?",
           ],
+          [
+            "Apostrophe inside word, followed by upper case char",
+            "Word#{ language.chars[:apostrophe] }Word",
+            "W\\RtSmCapsEmulation{none}{ORD}{none}#{ language.chars[:apostrophe] }W\\RtSmCapsEmulation{none}{ORD}{none}",
+          ],
         ].each do |desc, test_string, xpect|
           it "handles #{ desc.inspect }" do
             c = LatexRepositext.send(:new, '_', { language: language })

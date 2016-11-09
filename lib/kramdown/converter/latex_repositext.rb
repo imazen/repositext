@@ -91,7 +91,7 @@ module Kramdown
               raise "Handle this!"
             end
           when :maybe_detect_trailing_ck_char
-            if(str_sc.check(/[[:upper:]\.\,\?\!\:]/))
+            if(str_sc.check(/[[:upper:]\.\,\?\!\:#{ @options[:language].chars[:apostrophe] }]/))
               trailing_ck_char = str_sc.matched
             end
             str_sc_state = :finalize_smcaps_run
