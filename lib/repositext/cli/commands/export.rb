@@ -350,7 +350,7 @@ class Repositext
           distribute_add_title_to_filename(
             {
               :input_base_dir => config.compute_base_dir(:pdf_export_dir),
-              :input_file_selector => config.compute_file_selector(options['file-selector']),
+              :input_file_selector => config.compute_file_selector(options['file-selector'] || :all_files),
               :input_file_extension => options[:rename_file_extension_filter],
               :file_rename_proc => file_rename_proc,
               'file_filter' => options['file_filter'] || /\A((?!.--).)*\z/, # doesn't contain title already
