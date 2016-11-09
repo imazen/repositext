@@ -810,9 +810,24 @@ class Repositext
         ).report
 
         discrepancy_groups = [
-          ['Content', discrepancies.find_all { |e| :content == e[:type] }],
-          ['Style', discrepancies.find_all { |e| :style == e[:type] }],
-          ['Subtitle', discrepancies.find_all { |e| :subtitle == e[:type] }],
+          [
+            'Content',
+            discrepancies.find_all { |e| :content == e[:type] }.sort { |a,b|
+              a[:posting_date_time] <=> b[:posting_date_time]
+            }
+          ],
+          [
+            'Style',
+            discrepancies.find_all { |e| :style == e[:type] }.sort { |a,b|
+              a[:posting_date_time] <=> b[:posting_date_time]
+            }
+          ],
+          [
+            'Subtitle',
+            discrepancies.find_all { |e| :subtitle == e[:type] }.sort { |a,b|
+              a[:posting_date_time] <=> b[:posting_date_time]
+            }
+          ],
         ]
         group_counts = discrepancy_groups.map { |heading, discrepancies|
           [discrepancies.count, heading].join(' ')
@@ -841,9 +856,9 @@ class Repositext
           discrepancy_groups.each do |heading, discrepancies|
             f.write "\n#{ heading }:\n\n"
             discrepancies.each do |d|
-              f.write d[:title]
+              f.write d[:date_code]
               f.write "\t"
-              f.write d[:publishdate]
+              f.write d[:posting_date_time]
               f.write "\n"
             end
           end
