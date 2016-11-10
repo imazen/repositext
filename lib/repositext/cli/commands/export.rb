@@ -118,6 +118,7 @@ class Repositext
           'kerning_samples.pdf'
         )
         File.binwrite(file_path, pdf)
+        puts "Wrote kerning samples file to #{ file_path }"
       end
 
       # Export AT files in `/content` to PDF plain variant.
