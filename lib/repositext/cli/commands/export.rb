@@ -220,6 +220,9 @@ class Repositext
         input_file_extension = config.compute_file_extension(options['file-extension'] || :at_extension)
         output_base_dir = options['output'] || config.base_dir(:pdf_export_dir)
         primary_config = content_type.corresponding_primary_content_type.config
+        # Options in this section get loaded once before the command is executed.
+        # All settings down to the content_type will be considered.
+        # NOTE: Put any options that should not be overridable at a file level here.
         options = options.merge({
           additional_footer_text: options['additional-footer-text'],
           company_long_name: config.setting(:company_long_name),
@@ -261,6 +264,7 @@ class Repositext
           filename = content_at_file.filename
           config.update_for_file(filename.gsub(/\.at\z/, '.data.json'))
           pdf_export_binding = config.setting(:pdf_export_binding)
+          # Options in this section get updated on a per-file basis.
           options[:ed_and_trn_abbreviations] = config.setting(:pdf_export_ed_and_trn_abbreviations)
           options[:first_eagle] = config.setting(:pdf_export_first_eagle)
           options[:font_leading] = config.setting(:pdf_export_font_leading)
