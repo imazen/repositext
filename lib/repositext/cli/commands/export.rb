@@ -277,6 +277,7 @@ class Repositext
           options[:is_id_page_needed] = config.setting(:pdf_export_is_id_page_needed)
           options[:last_eagle_hspace] =config.setting(:pdf_export_last_eagle_hspace)
           options[:page_settings_key] = compute_pdf_export_page_settings_key(
+            config.setting(:pdf_export_page_settings_key_override, false)
             config.setting(:is_primary_repo),
             pdf_export_binding,
             options['pdf_export_size']
@@ -624,11 +625,16 @@ class Repositext
     private
 
       # Returns the page_settings_key to use
+      # @param page_settings_key_override [Symbol, String, nil]
       # @param is_primary_repo [Boolean]
       # @param binding [String] 'stitched' or 'bound'
       # @param size [String] 'book' or 'enlarged'
       # @return [Symbol], e.g., :english_stitched, or :foreign_bound
-      def compute_pdf_export_page_settings_key(is_primary_repo, binding, size)
+      def compute_pdf_export_page_settings_key(page_settings_key_override, is_primary_repo, binding, size)
+        if '' != page_settings_key_override.to_s.strip
+          # santize override and return it
+          return page_settings_key_override.to_sym
+        end
         if !%w[bound stitched].include?(binding)
           raise ArgumentError.new("Invalid binding: #{ binding.inspect }")
         end
