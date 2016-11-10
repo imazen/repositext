@@ -153,8 +153,6 @@ module Kramdown
           @id_write_to_secondary = @options[:id_write_to_secondary]
           @include_meta_info = include_meta_info
           @is_primary_repo = @options[:is_primary_repo]
-          @vspace_above_title1_required = @options[:vspace_above_title1_required]
-          @vspace_below_title1_required = @options[:vspace_below_title1_required]
           @language_name = @options[:language_name]
           @last_eagle_hspace = @options[:last_eagle_hspace]
           @latest_commit_hash = latest_commit.oid[0,8]
@@ -169,6 +167,8 @@ module Kramdown
           @paragraph_number_font_name = @options[:paragraph_number_font_name]
           @polyglossia_default_language = polyglossia_default_language(@options[:language_code_3_chars])
           @primary_font_name = @options[:primary_font_name]
+          @song_leftskip = @options[:song_leftskip]
+          @song_rightskip = @options[:song_rightskip]
           @title_font_name = @options[:title_font_name]
           @title_font_size = @options[:title_font_size]
           @title_vspace = @options[:title_vspace] # space to be inserted above title to align with body text
@@ -178,6 +178,8 @@ module Kramdown
           else
             ''
           end
+          @vspace_above_title1_required = @options[:vspace_above_title1_required]
+          @vspace_below_title1_required = @options[:vspace_below_title1_required]
 
           # dependency boundary
           @meta_info = include_meta_info ? compute_meta_info(git_repo, latest_commit) : ''
