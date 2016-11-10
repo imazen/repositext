@@ -266,6 +266,7 @@ class Repositext
           options[:font_name] = config.setting(:pdf_export_font_name)
           options[:font_size] = config.setting(:pdf_export_font_size)
           options[:footer_title_english] = primary_titles[content_at_file.extract_product_identity_id(false)]
+          options[:has_id_page] = config.setting(:pdf_export_has_id_page)
           options[:header_font_name] = config.setting(:pdf_export_header_font_name)
           options[:header_text] = config.setting(:pdf_export_header_text)
           options[:hrules_present] = config.setting(:pdf_export_hrules_present)
@@ -274,9 +275,6 @@ class Repositext
           options[:id_series] = config.setting(:pdf_export_id_series, false)
           options[:id_title_1_font_size] = config.setting(:pdf_export_id_title_1_font_size, false)
           options[:id_title_font_name] = config.setting(:pdf_export_id_title_font_name, false)
-          options[:is_id_page_needed] = config.setting(:pdf_export_is_id_page_needed)
-          options[:is_vspace_above_title1_needed] = config.setting(:pdf_export_is_vspace_above_title1_needed)
-          options[:is_vspace_below_title1_needed] = config.setting(:pdf_export_is_vspace_below_title1_needed)
           options[:last_eagle_hspace] =config.setting(:pdf_export_last_eagle_hspace)
           options[:page_settings_key] = compute_pdf_export_page_settings_key(
             config.setting(:pdf_export_page_settings_key_override, false),
@@ -289,6 +287,8 @@ class Repositext
           options[:title_font_size] = config.setting(:pdf_export_title_font_size)
           options[:title_vspace] = config.setting(:pdf_export_title_vspace)
           options[:truncated_header_title_length] = config.setting(:pdf_export_truncated_header_title_length, false)
+          options[:vspace_above_title1_required] = config.setting(:pdf_export_vspace_above_title1_required)
+          options[:vspace_below_title1_required] = config.setting(:pdf_export_vspace_below_title1_required)
           if options[:pre_process_content_proc]
             contents = options[:pre_process_content_proc].call(contents, filename, options)
           end

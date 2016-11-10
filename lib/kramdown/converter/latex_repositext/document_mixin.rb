@@ -122,6 +122,7 @@ module Kramdown
           @footer_title = truncate_plain_text_title(
             @options[:footer_title_english], 43, 3
           ).unicode_upcase
+          @has_id_page = @options[:has_id_page]
           @header_font_name = @options[:header_font_name]
           @header_text = compute_header_text_latex(
             @options[:header_text],
@@ -151,10 +152,9 @@ module Kramdown
           @id_write_to_primary = @options[:id_write_to_primary]
           @id_write_to_secondary = @options[:id_write_to_secondary]
           @include_meta_info = include_meta_info
-          @is_id_page_needed = @options[:is_id_page_needed]
           @is_primary_repo = @options[:is_primary_repo]
-          @is_vspace_above_title1_needed = @options[:is_vspace_above_title1_needed]
-          @is_vspace_below_title1_needed = @options[:is_vspace_below_title1_needed]
+          @vspace_above_title1_required = @options[:vspace_above_title1_required]
+          @vspace_below_title1_required = @options[:vspace_below_title1_required]
           @language_name = @options[:language_name]
           @last_eagle_hspace = @options[:last_eagle_hspace]
           @latest_commit_hash = latest_commit.oid[0,8]
