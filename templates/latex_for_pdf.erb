@@ -611,8 +611,8 @@
 \newenvironment{RtSong}
   {%
     \par
-    \leftskip=60.225pt
-    \rightskip=30.112pt
+    \leftskip=<%= @song_leftskip %>pt
+    \rightskip=<%= @song_rightskip %>pt
     \setlength{\lineskiplimit}{-100pt} % This setting keeps latex from automatically stretching linespacing when characters may overlap.
     \setlength{\parindent}{-8pt}
     \nopagebreak
@@ -626,8 +626,8 @@
 \newenvironment{RtSongBreak}
   {%
     \par
-    \leftskip=60.225pt
-    \rightskip=30.112pt
+    \leftskip=<%= @song_leftskip %>pt
+    \rightskip=<%= @song_rightskip %>pt
     \setlength{\lineskiplimit}{-100pt} % This setting keeps latex from automatically stretching linespacing when characters may overlap.
     \setlength{\parindent}{-8pt}
     \pagebreak
@@ -652,8 +652,8 @@
 \newenvironment{RtStanza}
   {%
     \par
-    \leftskip=60.225pt
-    \rightskip=30.112pt
+    \leftskip=<%= @song_leftskip %>pt
+    \rightskip=<%= @song_rightskip %>pt
     \setlength{\lineskiplimit}{-100pt} % This setting keeps latex from automatically stretching linespacing when characters may overlap.
     \setlength{\parindent}{-8pt}
   }

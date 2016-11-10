@@ -229,13 +229,18 @@ class Repositext
           company_phone_number: config.setting(:company_phone_number),
           company_short_name: config.setting(:company_short_name),
           company_web_address: config.setting(:company_web_address),
+          # Contains the content for all lines of the primary address in the id.
           id_address_primary_latex_1: config.setting(:pdf_export_id_address_primary_latex_1,false),
           id_address_primary_latex_2: config.setting(:pdf_export_id_address_primary_latex_2,false),
+          # Contains the content for all lines of the secondary address in the id.
           id_address_secondary_latex_1: config.setting(:pdf_export_id_address_secondary_latex_1,false),
           id_address_secondary_latex_2: config.setting(:pdf_export_id_address_secondary_latex_2,false),
           id_address_secondary_latex_3: config.setting(:pdf_export_id_address_secondary_latex_3,false),
+          # Adds the text provided as a paragraph below 'RtIdParagraph'.
           id_extra_language_info: config.setting(:pdf_export_id_extra_language_info,false),
+          # Adds write to instructions above the primary address.
           id_write_to_primary: config.setting(:pdf_export_id_write_to_primary,false),
+          # Adds write to instructions above the secondary address.
           id_write_to_secondary: config.setting(:pdf_export_id_write_to_secondary,false),
           is_primary_repo: config.setting(:is_primary_repo),
           language: content_type.language,
@@ -245,6 +250,11 @@ class Repositext
           paragraph_number_font_name: config.setting(:pdf_export_paragraph_number_font_name),
           # NOTE: We grab pdf_export_font_name from the _PRIMARY_ repo's config
           primary_font_name: primary_config.setting(:pdf_export_font_name),
+          # Do not move the 'song_leftskip' and 'song_rightskip' settings to the file specific settings.
+          # We do not want to set these at a file level.
+          # This sets the right and left margin for 'RtSong', 'RtSongBreak' and 'RtStanza'.
+          song_leftskip: config.setting(:pdf_export_song_leftskip),
+          song_rightskip: config.setting(:pdf_export_song_rightskip),
           version_control_page: options['include-version-control-info'],
         })
         primary_titles = options[:primary_titles_override] || compute_primary_titles # hash with product indentity ids as keys and primary titles as values
