@@ -679,7 +679,9 @@
     \begin{minipage}{\textwidth}
       \par
       \begingroup
-        \vspace*{-3.262pt}% sets the location of the top hrule.
+        <% if @is_vspace_above_title1_needed %>
+          \vspace*{-3.262pt}% sets the location of the top hrule.
+        <% end %>
         {%
           \color{<%= @hrules_present ? 'black' : 'white' %>}
           \hrule width \hsize height 0.201pt
@@ -702,7 +704,9 @@
             \setstretch{0}
           \end{spacing}
         \end{center}
-        \vspace*{<%= @title_vspace %>pt}% sets the spacing between the bottom hrule and start of the content.
+        <% if @is_vspace_below_title1_needed %>
+          \vspace*{<%= @title_vspace %>pt}% sets the spacing between the bottom hrule and start of the content.
+        <% end %>
       \endgroup
     \end{minipage}
   }

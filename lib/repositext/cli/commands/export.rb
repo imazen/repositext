@@ -275,6 +275,8 @@ class Repositext
           options[:id_title_1_font_size] = config.setting(:pdf_export_id_title_1_font_size, false)
           options[:id_title_font_name] = config.setting(:pdf_export_id_title_font_name, false)
           options[:is_id_page_needed] = config.setting(:pdf_export_is_id_page_needed)
+          options[:is_vspace_above_title1_needed] = config.setting(:pdf_export_is_vspace_above_title1_needed)
+          options[:is_vspace_below_title1_needed] = config.setting(:pdf_export_is_vspace_below_title1_needed)
           options[:last_eagle_hspace] =config.setting(:pdf_export_last_eagle_hspace)
           options[:page_settings_key] = compute_pdf_export_page_settings_key(
             config.setting(:pdf_export_page_settings_key_override, false)
