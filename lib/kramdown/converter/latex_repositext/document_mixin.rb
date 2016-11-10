@@ -153,6 +153,8 @@ module Kramdown
           @include_meta_info = include_meta_info
           @is_id_page_needed = @options[:is_id_page_needed]
           @is_primary_repo = @options[:is_primary_repo]
+          @is_vspace_above_title1_needed = @options[:is_vspace_above_title1_needed]
+          @is_vspace_below_title1_needed = @options[:is_vspace_below_title1_needed]
           @language_name = @options[:language_name]
           @last_eagle_hspace = @options[:last_eagle_hspace]
           @latest_commit_hash = latest_commit.oid[0,8]
