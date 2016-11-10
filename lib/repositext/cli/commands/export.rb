@@ -279,7 +279,7 @@ class Repositext
           options[:is_vspace_below_title1_needed] = config.setting(:pdf_export_is_vspace_below_title1_needed)
           options[:last_eagle_hspace] =config.setting(:pdf_export_last_eagle_hspace)
           options[:page_settings_key] = compute_pdf_export_page_settings_key(
-            config.setting(:pdf_export_page_settings_key_override, false)
+            config.setting(:pdf_export_page_settings_key_override, false),
             config.setting(:is_primary_repo),
             pdf_export_binding,
             options['pdf_export_size']
