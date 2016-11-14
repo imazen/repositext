@@ -76,8 +76,13 @@ module Kramdown
           ],
           [
             "Handles standalone upper case chars",
-            "Word A Word",
-            "W\\RtSmCapsEmulation{none}{ORD}{none} A W\\RtSmCapsEmulation{none}{ORD}{none}",
+            "Water A Water",
+            "W\\RtSmCapsEmulation{-0.1em}{ATER}{none} A W\\RtSmCapsEmulation{-0.1em}{ATER}{none}",
+          ],
+          [
+            "Handles adjacent upper case chars",
+            "Water AWater",
+            "W\\RtSmCapsEmulation{-0.1em}{ATER}{none} AW\\RtSmCapsEmulation{-0.1em}{ATER}{none}",
           ],
           [
             "Handles a word that starts with lower case letter",

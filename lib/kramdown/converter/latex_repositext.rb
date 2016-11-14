@@ -69,8 +69,8 @@ module Kramdown
               str_sc_state = :capture_fullcaps_char
             elsif(str_sc.check(/(?=[[:lower:]])/))
               str_sc_state = :capture_smallcaps_chars
-            elsif(str_sc.scan(/[[:upper:]][^[:lower:]]*/))
-              # Capture upper case not followed by lower case
+            elsif(str_sc.scan(/[[:upper:]][^[:alnum:]]*/))
+              # Standalone upper case
               new_string << str_sc.matched
             else
               keep_scanning = false
