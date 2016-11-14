@@ -109,8 +109,8 @@
     % no line in footer (default)
   <% end %>
   \fancyhead[EL,OR]{<%= "\\hrule height 0.19\pt \\kern 0.33\pt"  if @hrules_present %><%= @page_number_command %>} % outside
-  \fancyhead[ER]{\headerfont\addfontfeature{LetterSpace=7.5}<%= @header_text %>} % inside even
-  \fancyhead[OL]{\headerfont\addfontfeature{LetterSpace=7.5}<%= @header_title %>} % inside odd
+  \fancyhead[ER]{<%= @polyglossia_default_language ? '' : '\headerfont' %><%= @polyglossia_default_language ? '' : '\addfontfeature{LetterSpace=7.5}' %><%= @header_text %>} % inside even
+  \fancyhead[OL]{<%= @polyglossia_default_language ? '' : '\headerfont' %><%= @polyglossia_default_language ? '' : '\addfontfeature{LetterSpace=7.5}' %><%= @header_title %>} % inside odd
   \RtFooterContent
 }
 \pagestyle{RtPageStyle} % apply custom pagestyle
