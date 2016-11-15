@@ -38,6 +38,7 @@ class Repositext
             ["paragraph followed by three newlines\n{: .normal}\n\n\nnext para", false],
             ["paragraph followed by ten newlines\n{: .normal}\n\n\n\n\n\n\n\n\n\nnext para", false],
             ["line break inside a paragraph\nparagraph continued", false],
+            ["line break at end of file }\n", true],
           ].each do |test_string, xpect|
             it "handles #{ test_string.inspect }" do
               validator, logger, reporter = build_validator_logger_and_reporter(

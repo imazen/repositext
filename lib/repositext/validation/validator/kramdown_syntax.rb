@@ -103,7 +103,7 @@ class Repositext
           # Detect unexpected line breaks
           str_sc.reset
           while !str_sc.eos? do
-            if (match = str_sc.scan_until(/[^\n]\n(?!(\n|\{:))/))
+            if (match = str_sc.scan_until(/[^\n]\n(?!(\n|\{:|\z))/))
               errors << Reportable.error(
                 [
                   @file_to_validate.path,
