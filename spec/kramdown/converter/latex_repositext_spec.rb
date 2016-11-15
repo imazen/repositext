@@ -99,6 +99,11 @@ module Kramdown
             "Word#{ language.chars[:apostrophe] }Word",
             "W\\RtSmCapsEmulation{none}{ORD}{none}#{ language.chars[:apostrophe] }W\\RtSmCapsEmulation{none}{ORD}{none}",
           ],
+          [
+            "Inter-word pairing of two lowercase chars",
+            "Word word",
+            "W\\RtSmCapsEmulation{none}{ORD}{0.2em} \\RtSmCapsEmulation{none}{WORD}{none}",
+          ],
         ].each do |desc, test_string, xpect|
           it "handles #{ desc.inspect }" do
             c = LatexRepositext.send(:new, '_', { language: language })
