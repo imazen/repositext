@@ -37,6 +37,7 @@ class Repositext
             ["paragraph followed by two newlines\n{: .normal}\n\nnext para", true],
             ["paragraph followed by three newlines\n{: .normal}\n\n\nnext para", false],
             ["paragraph followed by ten newlines\n{: .normal}\n\n\n\n\n\n\n\n\n\nnext para", false],
+            ["line break inside a paragraph\nparagraph continued", false],
           ].each do |test_string, xpect|
             it "handles #{ test_string.inspect }" do
               validator, logger, reporter = build_validator_logger_and_reporter(
@@ -92,7 +93,7 @@ class Repositext
             ["subtitle_mark at invalid position (after opening bracket) [@word", 1],
             ["subtitle_mark NOT at invalid position (if followed by …?…) word@…?…", 0],
             ["subtitle_mark NOT at invalid position (if preced by …*) …*@word", 0],
-            ["Paragraph not followed by exactly two newlines \n{: .normal}\nNext para", 1],
+            ["Paragraph not followed by exactly two newlines \n{: .normal}\nNext para", 2],
             ["Paragraph not followed by exactly two newlines \n{: .normal}\n\n", 0],
             ["Paragraph not followed by exactly two newlines \n{: .normal}\n\n\n", 1],
             ["Multiple adjacent  spaces", 1],

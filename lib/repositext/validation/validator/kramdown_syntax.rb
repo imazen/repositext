@@ -100,6 +100,21 @@ class Repositext
               break
             end
           end
+          # Detect unexpected line breaks
+          str_sc.reset
+          while !str_sc.eos? do
+            if (match = str_sc.scan_until(/[^\n]\n(?!(\n|\{:))/))
+              errors << Reportable.error(
+                [
+                  @file_to_validate.path,
+                  sprintf("line %5s", str_sc.current_line_number)
+                ],
+                ['Unexpected line break']
+              )
+            else
+              break
+            end
+          end
           # Detect multiple adjacent spaces
           str_sc.reset
           while !str_sc.eos? do
