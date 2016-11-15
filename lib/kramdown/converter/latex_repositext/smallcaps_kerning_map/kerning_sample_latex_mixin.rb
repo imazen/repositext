@@ -53,6 +53,9 @@ module Kramdown
 % make sure there is no page break in id paragraphs at the end
 \\usepackage{needspace}
 
+% for coloring text
+\\usepackage[svgnames]{xcolor}
+
 % package and command dependency boundary
 
 % command to emulate lower-case small-caps chars
@@ -168,7 +171,8 @@ This document was rendered at #{ Time.now.to_s }.
                   txt,
                   font_name,
                   font_attrs.split(' ')
-                )
+                ).sub(sample_prefix.upcase, "\\textcolor{gray}{#{ sample_prefix.upcase }}")
+                 .sub(sample_suffix.upcase, "\\textcolor{gray}{#{ sample_suffix.upcase }}")
                 [
                   "\\begin{KerningSample}{\\#{ key_for_font_name(font_name) }}",
                   "\\rule[-.3\\baselineskip]{0pt}{\\baselineskip}%", # Insert strut to avoid inconsistent vertical spacing caused by different height characters.
