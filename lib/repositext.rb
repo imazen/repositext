@@ -340,6 +340,7 @@ require 'repositext/process/sync/subtitles/sync_primary_repo'
 # Dependency boundary
 
 require 'repositext/cli/commands/export'
+require 'repositext/cli/commands/export_pdf'
 require 'repositext/cli/commands/import'
 require 'repositext/process/sync/subtitles'
 
