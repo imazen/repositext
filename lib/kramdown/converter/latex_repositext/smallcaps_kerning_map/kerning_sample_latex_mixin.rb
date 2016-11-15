@@ -160,6 +160,8 @@ This document was rendered at #{ Time.now.to_s }.
                   [sample_prefix, character_pair, sample_suffix].join
                 when /[[:lower:]][[:lower:]]/
                   [sample_prefix, character_pair, sample_suffix].join
+                when /[[:upper:]][[:upper:]]/
+                  [sample_prefix, ' ', character_pair, sample_suffix].join
                 when /[[:alpha:]][^[:alpha:]]/
                   [sample_prefix, character_pair, ' ', sample_suffix].join
                 when /[^[:alpha:]][[:alpha:]]/
