@@ -22,7 +22,7 @@ module Kramdown
           [
             "Two regular words",
             "Water Water",
-            "W\\RtSmCapsEmulation{-0.1em}{ATER}{none} W\\RtSmCapsEmulation{-0.1em}{ATER}{none}",
+            "W\\RtSmCapsEmulation{-0.1em}{ATER}{-0.4em} W\\RtSmCapsEmulation{-0.1em}{ATER}{none}",
           ],
           [
             "Applies custom kerning between smallcaps and questionmark, doesn't scale down questionmark",
@@ -52,12 +52,12 @@ module Kramdown
           [
             "With accented character mapping",
             "Wáter Wáter",
-            "W\\RtSmCapsEmulation{-0.1em}{ÁTER}{none} W\\RtSmCapsEmulation{-0.1em}{ÁTER}{none}",
+            "W\\RtSmCapsEmulation{-0.1em}{ÁTER}{-0.4em} W\\RtSmCapsEmulation{-0.1em}{ÁTER}{none}",
           ],
           [
             "Handles fullcaps inside a word",
             "WaterWater Word",
-            "W\\RtSmCapsEmulation{-0.1em}{ATER}{-0.4em}W\\RtSmCapsEmulation{-0.1em}{ATER}{none} W\\RtSmCapsEmulation{none}{ORD}{none}",
+            "W\\RtSmCapsEmulation{-0.1em}{ATER}{-0.4em}W\\RtSmCapsEmulation{-0.1em}{ATER}{-0.4em} W\\RtSmCapsEmulation{none}{ORD}{none}",
           ],
           [
             "Handles leading punctuation character",
@@ -77,7 +77,7 @@ module Kramdown
           [
             "Handles standalone upper case chars",
             "Water A Water",
-            "W\\RtSmCapsEmulation{-0.1em}{ATER}{none} A W\\RtSmCapsEmulation{-0.1em}{ATER}{none}",
+            "W\\RtSmCapsEmulation{-0.1em}{ATER}{none} A\\RtSmCapsEmulation{-0.1em}{}{none} W\\RtSmCapsEmulation{-0.1em}{ATER}{none}",
           ],
           [
             "Handles adjacent upper case chars",
