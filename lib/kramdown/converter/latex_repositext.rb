@@ -17,23 +17,9 @@ module Kramdown
       # Since our font doesn't have a small caps variant, we have to emulate it
       # for latex.
       # We wrap all groups of lower case characters in the \RtSmCapsEmulation command.
-      #
-      # Strategy:
-      #
-      # * Find any pairs of adjacent letters with transition from upper to lower
-      #   case.
-      # * Capture upper case characters as fullcaps chars (fullcaps_chars).
-      # * Capture all lower case characters (smallcaps_chars).
-      # * Look up leading custom kerning for fullcaps_chars.last/smallcaps_chars.first (leading_ck).
-      # * Capture optional trailing character (either upper case letter or
-      #   punctuation [.,?!:]) following immediately after smallcaps_chars for custom
-      #   kerning (trailing_ck_char).
-      # * If trailing_ck_char ? look up trailing custom kerning for
-      #   smallcaps_chars.last/trailing_ck_char (trailing_ck).
-      # * Else look at first character of next word and apply custom kerning
-      #   for last char in current word and first char in next word.
-      # * Upcase and wrap smallcaps_chars in RtSmCapsEmulation with leading_ck and
-      #   optional trailing_ck arguments.
+      # We apply custom kerning at the beginning and end of each smallcaps
+      # emulated span since Latex' regular kerning doesn't work there.
+      # We even apply inter-word kerning to characters that are separated by a space.
       #
       # @param txt [String] the text inside the em.smcaps.
       # @param font_name [String]
@@ -57,118 +43,104 @@ module Kramdown
         font_attrs = font_attrs.compact.sort.join(' ')
         str_sc = StringScanner.new(txt)
 
-        str_sc_state = :capture_non_letter_chars
-        fullcaps_chars = nil
-        smallcaps_chars = nil
-        trailing_ck_char = nil
+        str_sc_state = :start
         keep_scanning = true
 
         while keep_scanning do
-          puts(str_sc_state.inspect)  if debug
+          puts("#{ str_sc_state.inspect } - #{ str_sc.rest.inspect }")  if debug
           case str_sc_state
-          when :capture_non_letter_chars
-            # take care of any leading non-letter chars
-            if str_sc.scan(/[^[:alpha:]]+/)
+          when :start
+            leading_chars = nil
+            smallcaps_chars = nil
+            following_char = nil
+
+            leading_kerning_value = nil
+            trailing_kerning_value = nil
+
+            str_sc_state = :capture_leading_chars
+          when :capture_leading_chars
+            if str_sc.scan(/\s+/)
+              # Consume leading space chars.
               new_string << str_sc.matched
               puts("  #{ str_sc.matched.inspect }")  if debug
+            elsif str_sc.scan(/[^[:lower:]\s]+/)
+              # Capture leading non-lowercase chars.
+              leading_chars = str_sc.matched
+              new_string << leading_chars
+              puts("  #{ leading_chars.inspect }")  if debug
             end
-            str_sc_state = :maybe_start_word
-          when :maybe_start_word
-            fullcaps_chars = nil
-            smallcaps_chars = nil
-            trailing_ck_char = nil
-            if(str_sc.scan(/[[:upper:]]+/))
-              fullcaps_chars = str_sc.matched
-              str_sc_state = :maybe_capture_smallcaps_chars
-              puts("  #{ str_sc.matched.inspect }")  if debug
-            elsif(str_sc.check(/(?=[[:lower:]])/))
-              str_sc_state = :maybe_capture_smallcaps_chars
-            else
-              keep_scanning = false
-            end
-          when :maybe_capture_smallcaps_chars
+            str_sc_state = :capture_smallcaps_chars
+          when :capture_smallcaps_chars
+            # Capture lowercase chars for smallcaps emulation.
             if(str_sc.scan(/[[:lower:]]+/))
-              # lowercase characters
               smallcaps_chars = str_sc.matched
-              puts("  #{ str_sc.matched.inspect }")  if debug
+              puts("  #{ smallcaps_chars.inspect }")  if debug
             end
-            str_sc_state = :maybe_detect_trailing_ck_char
-          when :maybe_detect_trailing_ck_char
-            if(str_sc.check(/[[:upper:]\.\,\?\!\:#{ @options[:language].chars[:apostrophe] }]/))
-              trailing_ck_char = str_sc.matched
-              puts("  #{ str_sc.matched.inspect }")  if debug
+            str_sc_state = :detect_following_char
+          when :detect_following_char
+            # Peek at the following char (even if separated by space).
+            if(str_sc.check(/\s?./))
+              following_char = str_sc.matched.sub(' ', '')
+              puts("  #{ following_char.inspect }")  if debug
             end
             str_sc_state = :finalize_smcaps_run
           when :finalize_smcaps_run
-            if fullcaps_chars
+            # Process the string: apply custom kernings and wrap in smallcaps emulation command
+            prev_char = (leading_chars || '')[-1]
+            if prev_char && smallcaps_chars
               # Determine leading custom kerning
-              if smallcaps_chars
-                leading_character_pair = [fullcaps_chars[-1], smallcaps_chars[0]].join
-                leading_kerning_value = smallcaps_kerning_map.lookup_kerning(
-                  font_name,
-                  font_attrs,
-                  leading_character_pair
-                )
-                if leading_kerning_value
-                  # We have a value, add `em` unit
-                  leading_kerning_value = "#{ leading_kerning_value }em"
-                else
-                  # No kerning value, print out warning
-                  puts "Unhandled Kerning for font #{ font_name.inspect }, font_attrs #{ font_attrs.inspect } and character pair #{ leading_character_pair.inspect }, ".color(:red)
-                end
+              leading_character_pair = [prev_char, smallcaps_chars[0]].join
+              puts("  leading character pair: #{ leading_character_pair.inspect }")  if debug
+              leading_kerning_value = smallcaps_kerning_map.lookup_kerning(
+                font_name,
+                font_attrs,
+                leading_character_pair
+              )
+              if leading_kerning_value
+                # We have a value, add `em` unit
+                leading_kerning_value = "#{ leading_kerning_value }em"
+              else
+                # No kerning value, print out warning
+                puts "Unhandled Kerning for font #{ font_name.inspect }, font_attrs #{ font_attrs.inspect } and character pair #{ leading_character_pair.inspect }, ".color(:red)
               end
-              new_string << fullcaps_chars
-            else
-              leading_kerning_value = nil
             end
             # Determine trailing custom kerning
-            if trailing_ck_char
-              if smallcaps_chars
-                trailing_character_pair = [smallcaps_chars[-1], trailing_ck_char].join
-                trailing_kerning_value = smallcaps_kerning_map.lookup_kerning(
-                  font_name,
-                  font_attrs,
-                  trailing_character_pair
-                )
-                if trailing_kerning_value
-                  # We have a value, add `em` unit
-                  trailing_kerning_value = "#{ trailing_kerning_value }em"
-                else
-                  # No kerning value, print out warning
-                  puts "Unhandled Kerning for font #{ font_name.inspect }, font_attrs #{ font_attrs.inspect } and character pair #{ trailing_character_pair.inspect }, ".color(:red)
-                end
-              end
-            elsif(prev_char = (smallcaps_chars || fullcaps_chars || "").last) && str_sc.check(/\s[[:alpha:]]/)
-              # Determine inter-word kerning
-              next_word_start = str_sc.matched
-              inter_word_character_pair = [prev_char, next_word_start.delete(' ')].join
+            end_char = (smallcaps_chars || leading_chars || '')[-1]
+            if end_char && following_char
+              trailing_character_pair = [end_char, following_char].join
+              puts("  trailing character pair: #{ trailing_character_pair.inspect }")  if debug
               trailing_kerning_value = smallcaps_kerning_map.lookup_kerning(
                 font_name,
                 font_attrs,
-                inter_word_character_pair
+                trailing_character_pair
               )
               if trailing_kerning_value
                 # We have a value, add `em` unit
                 trailing_kerning_value = "#{ trailing_kerning_value }em"
               else
                 # No kerning value, print out warning
-                puts "Unhandled Kerning for font #{ font_name.inspect }, font_attrs #{ font_attrs.inspect } and character pair #{ inter_word_character_pair.inspect }, ".color(:red)
+                puts "Unhandled Kerning for font #{ font_name.inspect }, font_attrs #{ font_attrs.inspect } and character pair #{ trailing_character_pair.inspect }, ".color(:red)
               end
-              puts("  inter_word_kerning pair: #{ inter_word_character_pair.inspect }") if debug
-            else
-              trailing_kerning_value = nil
             end
-            new_string << [
-              %(\\RtSmCapsEmulation), # latex command
-              %({#{ leading_kerning_value || 'none' }}), # leading custom kerning argument
-              %({#{ (smallcaps_chars || '').unicode_upcase }}), # text in smallcaps
-              %({#{ trailing_kerning_value || 'none' }}), # trailing custom kerning argument
-            ].join
-            str_sc_state = :capture_non_letter_chars
+
+            if smallcaps_chars || leading_kerning_value || trailing_kerning_value
+              new_string << [
+                %(\\RtSmCapsEmulation), # latex command
+                %({#{ leading_kerning_value || 'none' }}), # leading custom kerning argument
+                %({#{ (smallcaps_chars || '').unicode_upcase }}), # text in smallcaps
+                %({#{ trailing_kerning_value || 'none' }}), # trailing custom kerning argument
+              ].join
+            end
+            if str_sc.eos?
+              keep_scanning = false
+            else
+              str_sc_state = :start
+            end
           else
             raise "Handle this: #{ str_sc_state.inspect }"
           end
         end
+        p new_string  if debug
         new_string
       end
 

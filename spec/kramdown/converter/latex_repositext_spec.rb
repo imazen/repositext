@@ -67,7 +67,7 @@ module Kramdown
           [
             "Upper cases character after apostrophe",
             "Word#{ language.chars[:apostrophe] }s Word",
-            "W\\RtSmCapsEmulation{none}{ORD}{none}#{ language.chars[:apostrophe] }\\RtSmCapsEmulation{none}{S}{none} W\\RtSmCapsEmulation{none}{ORD}{none}",
+            "W\\RtSmCapsEmulation{none}{ORD}{none}#{ language.chars[:apostrophe] }\\RtSmCapsEmulation{0.1em}{S}{none} W\\RtSmCapsEmulation{none}{ORD}{none}",
           ],
           [
             "Upper cases A.D., not scaling down the periods inbetween",
@@ -77,12 +77,12 @@ module Kramdown
           [
             "Handles standalone upper case chars",
             "Water A Water",
-            "W\\RtSmCapsEmulation{-0.1em}{ATER}{none} A\\RtSmCapsEmulation{-0.1em}{}{none} W\\RtSmCapsEmulation{-0.1em}{ATER}{none}",
+            "W\\RtSmCapsEmulation{-0.1em}{ATER}{-0.6em} A\\RtSmCapsEmulation{none}{}{-0.5em} W\\RtSmCapsEmulation{-0.1em}{ATER}{none}",
           ],
           [
             "Handles adjacent upper case chars",
             "Water AWater",
-            "W\\RtSmCapsEmulation{-0.1em}{ATER}{none} AW\\RtSmCapsEmulation{-0.1em}{ATER}{none}",
+            "W\\RtSmCapsEmulation{-0.1em}{ATER}{-0.6em} AW\\RtSmCapsEmulation{-0.1em}{ATER}{none}",
           ],
           [
             "Handles a word that starts with lower case letter",
@@ -103,6 +103,11 @@ module Kramdown
             "Inter-word pairing of two lowercase chars",
             "Word word",
             "W\\RtSmCapsEmulation{none}{ORD}{0.2em} \\RtSmCapsEmulation{none}{WORD}{none}",
+          ],
+          [
+            "smallcaps with single fullcaps char (occurs in kerning samples PDF)",
+            "waterWater",
+            "\\RtSmCapsEmulation{none}{WATER}{-0.4em}W\\RtSmCapsEmulation{-0.1em}{ATER}{none}",
           ],
         ].each do |desc, test_string, xpect|
           it "handles #{ desc.inspect }" do
