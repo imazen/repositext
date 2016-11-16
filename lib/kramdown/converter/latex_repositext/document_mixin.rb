@@ -116,6 +116,8 @@ module Kramdown
           @date_code = date_code.capitalize
           # Applies the settings for the first eagle indent and drop cap.
           @first_eagle = @options[:first_eagle]
+          # Sets the starting page number.
+          @first_page_number = @options[:first_page_number]
           @font_leading = @options[:font_leading]
           @font_name = @options[:font_name]
           @font_size = @options[:font_size]
