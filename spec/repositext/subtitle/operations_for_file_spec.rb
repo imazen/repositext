@@ -14,14 +14,14 @@ class Repositext
       let(:default_json) {
 %({
   "file_path": null,
-  "productIdentityId": "1234",
+  "product_identity_id": "1234",
   "language": "eng",
   "operations": [
     {
-      "operationId": "0-1",
-      "operationType": "split",
-      "afterStid": null,
-      "affectedStids": [
+      "operation_id": "0-1",
+      "operation_type": "split",
+      "after_stid": null,
+      "affected_stids": [
         {
           "stid": "4329043",
           "record_id": null,
@@ -37,10 +37,10 @@ class Repositext
       ]
     },
     {
-      "operationId": "0-2",
-      "operationType": "move_right",
-      "afterStid": null,
-      "affectedStids": [
+      "operation_id": "0-2",
+      "operation_type": "move_right",
+      "after_stid": null,
+      "affected_stids": [
         {
           "stid": "1250739",
           "record_id": null,
@@ -56,10 +56,10 @@ class Repositext
       ]
     },
     {
-      "operationId": "2-4",
-      "operationType": "merge",
-      "afterStid": null,
-      "affectedStids": [
+      "operation_id": "2-4",
+      "operation_type": "merge",
+      "after_stid": null,
+      "affected_stids": [
         {
           "stid": "6303325",
           "record_id": null,

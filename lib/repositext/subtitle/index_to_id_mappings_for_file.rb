@@ -7,7 +7,7 @@ class Repositext
     # Can be serialized to and from a JSON file
     class IndexToIdMappingsForFile
 
-      ATTR_NAMES = [:comments, :fromGitCommit, :toGitCommit]
+      ATTR_NAMES = [:comments, :from_git_commit, :to_git_commit]
 
       attr_accessor :content_at_file, :mappings
       attr_accessor *ATTR_NAMES
@@ -27,10 +27,10 @@ class Repositext
         new(attrs, ops)
       end
 
-      # @param content_at_file [Repositext::RFile::ContentAt] at :fromGitCommit
+      # @param content_at_file [Repositext::RFile::ContentAt] at :from_git_commit
       # @param attrs [Hash] with keys
-      # @option attrs [String] :fromGitCommit
-      # @option attrs [String] :toGitCommit
+      # @option attrs [String] :from_git_commit
+      # @option attrs [String] :to_git_commit
       # @option attrs [String] :comments for documentation
       # @param mappings [Array<Hash>]
       def initialize(content_at_file, attrs, mappings)
@@ -38,7 +38,7 @@ class Repositext
         ATTR_NAMES.each do |attr_name|
           self.send("#{ attr_name }=", attrs[attr_name])
         end
-        # TODO Check for presence of fromGitCommit and toGitCommit
+        # TODO Check for presence of from_git_commit and to_git_commit
         if mappings.nil?
           raise(ArgumentError.new("Nil mappings given"))
         end
@@ -67,7 +67,7 @@ class Repositext
           m[e] = self.send(e)
           m
         }
-        r[:productIdentityId] = product_identity_id
+        r[:product_identity_id] = product_identity_id
         r[:langcode] = lang_code_3_chars
         r[:mappings] = mappings
         r

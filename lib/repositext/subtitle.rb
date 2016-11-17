@@ -85,7 +85,7 @@ class Repositext
         after: tmp_attrs[:after],
       }
       h[:index] = tmp_attrs[:index]  if tmp_attrs[:index]
-      h[:afterStid] = tmp_attrs[:afterStid]  if tmp_attrs[:afterStid]
+      h[:after_stid] = tmp_attrs[:after_stid]  if tmp_attrs[:after_stid]
       h
     end
 

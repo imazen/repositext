@@ -6,7 +6,7 @@ class Repositext
 
       let(:deleteDefaultAttrs){
         {
-          affectedStids: [
+          affected_stids: [
             {
               stid: "1234567",
               record_id: nil,
@@ -14,14 +14,14 @@ class Repositext
               after: nil,
             },
           ],
-          afterStid: nil,
-          operationId: '123',
-          operationType: :delete,
+          after_stid: nil,
+          operation_id: '123',
+          operation_type: :delete,
         }
       }
       let(:insertDefaultAttrs){
         {
-          affectedStids: [
+          affected_stids: [
             {
               stid: "1234567",
               record_id: nil,
@@ -29,14 +29,14 @@ class Repositext
               after: "@word3 word4 word5",
             },
           ],
-          afterStid: "4567890",
-          operationId: '123',
-          operationType: :insert,
+          after_stid: "4567890",
+          operation_id: '123',
+          operation_type: :insert,
         }
       }
       let(:mergeDefaultAttrs){
         {
-          affectedStids: [
+          affected_stids: [
             {
               stid: "2345678",
               record_id: nil,
@@ -50,14 +50,14 @@ class Repositext
               after: nil,
             },
           ],
-          afterStid: nil,
-          operationId: '123',
-          operationType: :merge,
+          after_stid: nil,
+          operation_id: '123',
+          operation_type: :merge,
         }
       }
       let(:moveLeftDefaultAttrs){
         {
-          affectedStids: [
+          affected_stids: [
             {
               stid: "8901234",
               record_id: nil,
@@ -71,14 +71,14 @@ class Repositext
               after: "@word2 word3 word4",
             },
           ],
-          afterStid: nil,
-          operationId: '123',
-          operationType: :move_left,
+          after_stid: nil,
+          operation_id: '123',
+          operation_type: :move_left,
         }
       }
       let(:moveRightDefaultAttrs){
         {
-          affectedStids: [
+          affected_stids: [
             {
               stid: "8901234",
               record_id: nil,
@@ -92,14 +92,14 @@ class Repositext
               after: "@word4",
             },
           ],
-          afterStid: nil,
-          operationId: '123',
-          operationType: :move_left,
+          after_stid: nil,
+          operation_id: '123',
+          operation_type: :move_left,
         }
       }
       let(:splitDefaultAttrs){
         {
-          affectedStids: [
+          affected_stids: [
             {
               stid: "9012345",
               record_id: nil,
@@ -113,9 +113,9 @@ class Repositext
               after: "@word3 word4",
             },
           ],
-          afterStid: nil,
-          operationId: '123',
-          operationType: :split,
+          after_stid: nil,
+          operation_id: '123',
+          operation_type: :split,
         }
       }
 

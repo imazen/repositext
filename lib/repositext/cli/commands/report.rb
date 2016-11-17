@@ -1030,9 +1030,9 @@ class Repositext
           # Record ops_type_signatures
           st_ops_for_file.operations.each do |st_op|
             r[:st_ops_count] += 1
-            type_signature = st_op.operationType.to_sym
+            type_signature = st_op.operation_type.to_sym
             r[:ops_type_counts][type_signature] += 1
-            ins_del_signature = st_op.affectedStids.map { |e|
+            ins_del_signature = st_op.affected_stids.map { |e|
               # Mark unchanged/existing st as :noc, added as :add, and deleted as :del
               case ['' == e.tmp_attrs[:before], '' == e.tmp_attrs[:after]]
               when [false, false]
@@ -1126,7 +1126,7 @@ class Repositext
       # Output format:
       #     {
       #       "comments": "productId: 62-0211",
-      #       "productIdentityId": "831",
+      #       "product_identity_id": "831",
       #       "language": "eng",
       #       "from": {
       #         "gitCommit": "f54aac",
@@ -1136,15 +1136,15 @@ class Repositext
       #       },
       #       "operations": [
       #         {
-      #           "operationType": "delete",
-      #           "operationId": "0-1", # hunk index + subtitle pair index
-      #           "affectedStids": [
+      #           "operation_type": "delete",
+      #           "operation_id": "0-1", # hunk index + subtitle pair index
+      #           "affected_stids": [
       #             {
       #               "comments": "stIndex: 17",
       #               "stid": "1234567",
       #               "before": "@word1",
       #               "after": null
-      #               "afterStid": "2345678",
+      #               "after_stid": "2345678",
       #             }
       #           ]
       #         },
@@ -1182,8 +1182,8 @@ class Repositext
         st_ops_json_string = File.read(latest_st_ops_file_path)
 
         operations = Hash.new(0)
-        # Match lines like `      "operationType": "content_change",`
-        st_ops_json_string.scan(/^\s+"operationType": "([^"]+)"/) { |match|
+        # Match lines like `      "operation_type": "content_change",`
+        st_ops_json_string.scan(/^\s+"operation_type": "([^"]+)"/) { |match|
           # match example: ["insert"]
           operations[match.first] += 1
         }

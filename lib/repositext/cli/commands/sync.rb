@@ -143,7 +143,7 @@ class Repositext
             'config' => config,
             'file_list' => file_list,
             'is_initial_sync' => true,
-            'last_operation_id' => primary_repo.read_repo_level_data['st_sync_lastest_operation_id'],
+            'last_operation_id' => primary_repo.read_repo_level_data['st_sync_last_operation_id'],
             'primary_repository' => primary_repo,
             'stids_inventory_file' => stids_inventory_file,
           )

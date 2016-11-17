@@ -87,7 +87,7 @@ class Repositext
         end
 
         # Computes new subtitle char_lengths for all subtitles in content_at.
-        # @param content_at_file [RFile::ContentAt] needs to be at toGitCommit
+        # @param content_at_file [RFile::ContentAt] needs to be at to_git_commit
         # @return [Array<Integer>]
         def compute_new_char_lengths(content_at_file)
           Repositext::Utils::SubtitleMarkTools.extract_captions(

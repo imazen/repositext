@@ -8,20 +8,20 @@ class Repositext
     # @abstract
     class Operation
 
-      attr_accessor :affectedStids # [Array<Repositext::Subtitle>]
+      attr_accessor :affected_stids # [Array<Repositext::Subtitle>]
 
-      ATTR_NAMES = [:afterStid, :operationId, :operationType]
+      ATTR_NAMES = [:after_stid, :operation_id, :operation_type]
       attr_accessor *ATTR_NAMES
 
       # Instantiates a new instance of self from a Hash
       # @param attrs [Hash]
-      # @option attrs [String] :operationType
-      # @option attrs [String] :operationId
-      # @option attrs [Array<Hash>] :affectedStids
+      # @option attrs [String] :operation_type
+      # @option attrs [String] :operation_id
+      # @option attrs [Array<Hash>] :affected_stids
       # @return [Operation]
       def self.new_from_hash(attrs)
         new_attrs = attrs.dup
-        class_name = case new_attrs[:operationType].to_sym
+        class_name = case new_attrs[:operation_type].to_sym
         when :content_change
           'ContentChange'
         when :delete
@@ -39,9 +39,9 @@ class Repositext
         when :split
           'Split'
         else
-          raise "Invalid operationType: #{ new_attrs[:operationType.inspect] }"
+          raise "Invalid operation_type: #{ new_attrs[:operation_type.inspect] }"
         end
-        new_attrs[:affectedStids] = new_attrs[:affectedStids].map { |hash_or_subtitle|
+        new_attrs[:affected_stids] = new_attrs[:affected_stids].map { |hash_or_subtitle|
           case hash_or_subtitle
           when Hash
             Repositext::Subtitle.from_hash(hash_or_subtitle)
@@ -57,25 +57,25 @@ class Repositext
       end
 
       # @param attrs [Hash] with keys
-      # @option attrs [Array<Repositext::Subtitle>] :affectedStids
-      # @option attrs [String] :operationId
-      # @option attrs [Array<Hash>] :operationType
+      # @option attrs [Array<Repositext::Subtitle>] :affected_stids
+      # @option attrs [String] :operation_id
+      # @option attrs [Array<Hash>] :operation_type
       def initialize(attrs)
-        if(astid = attrs[:affectedStids].first) && !astid.is_a?(Repositext::Subtitle)
+        if(astid = attrs[:affected_stids].first) && !astid.is_a?(Repositext::Subtitle)
           raise ArgumentError.new("Invalid first affectedStid: #{ astid.inspect }")
         end
         ATTR_NAMES.each { |attr_name|
           self.send("#{ attr_name }=", attrs[attr_name])
         }
-        self.affectedStids = attrs[:affectedStids]
+        self.affected_stids = attrs[:affected_stids]
       end
 
-      # Returns true if other_obj has the same class, operationId, and affectedStids.
+      # Returns true if other_obj has the same class, operation_id, and affected_stids.
       # @param other_obj [Object]
       def ==(other_obj)
         other_obj.class == self.class &&
-        other_obj.operationId == operationId &&
-        other_obj.affectedStids == affectedStids
+        other_obj.operation_id == operation_id &&
+        other_obj.affected_stids == affected_stids
       end
 
       # Returns persistent ids of added subtitles. Temporary stids are combined
@@ -87,8 +87,8 @@ class Repositext
       # This would result in incorrect counts.
       # @return [Array<String>]
       def added_subtitle_ids
-        return []  unless %w[insert split].include?(operationType)
-        r = affectedStids.inject([]) { |m,e|
+        return []  unless %w[insert split].include?(operation_type)
+        r = affected_stids.inject([]) { |m,e|
           before = e.tmp_before.to_s.strip
           pers_id = e.persistent_id.to_s
           if '' == before || before =~ /\A\^\^\^ {: \.rid/
@@ -107,14 +107,14 @@ class Repositext
 
       # Returns true if self is an insert or delete
       def adds_or_removes_subtitle?
-        %w[insert split delete merge].include?(operationType)
+        %w[insert split delete merge].include?(operation_type)
       end
 
       # Returns persistent ids of deleted subtitles
       # @return [Array<String>]
       def deleted_subtitle_ids
-        return []  unless %w[delete merge].include?(operationType)
-        r = affectedStids.inject([]) { |m,e|
+        return []  unless %w[delete merge].include?(operation_type)
+        r = affected_stids.inject([]) { |m,e|
           after = e.tmp_after.to_s.strip
           pers_id = e.persistent_id.to_s
           if '' == after || after =~ /\A\^\^\^ {: \.rid/
@@ -137,7 +137,7 @@ class Repositext
       def hunk_index
         # Get first part of '5-3' (first number is hunk index in file, second
         # number is subtitle index in hunk).
-        operationId.split('-').first
+        operation_id.split('-').first
       end
 
       # Returns the inverse operation of self
@@ -156,10 +156,10 @@ class Repositext
       # @return [Subtitle]
       def salient_subtitle
         # TODO: handle deletes and inserts!
-        if 'merge' == operationType
-          affectedStids.first
+        if 'merge' == operation_type
+          affected_stids.first
         else
-          affectedStids.last
+          affected_stids.last
         end
       end
 
@@ -170,7 +170,7 @@ class Repositext
           m[e] = self.send(e)
           m
         }
-        r[:affectedStids] = affectedStids.map { |e| e.to_hash }
+        r[:affected_stids] = affected_stids.map { |e| e.to_hash }
         r
       end
     end

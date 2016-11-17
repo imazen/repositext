@@ -146,8 +146,8 @@ puts
           Repositext::Subtitle::IndexToIdMappingsForFile.new(
             @content_at_file,
             {
-              fromGitCommit: nil,
-              toGitCommit: nil,
+              from_git_commit: nil,
+              to_git_commit: nil,
               comments: "File: #{ @content_at_file.basename }",
             },
             mappings_for_all_hunks

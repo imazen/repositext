@@ -7,15 +7,15 @@ class Repositext
 
         def inverse_operation
           Subtitle::Operation.new_from_hash(
-            affectedStids: inverse_affected_stids,
-            operationId: '',
-            operationType: :merge,
+            affected_stids: inverse_affected_stids,
+            operation_id: '',
+            operation_type: :merge,
           )
         end
 
         # Returns affected stids for inverse operation
         def inverse_affected_stids
-          affectedStids.map { |e|
+          affected_stids.map { |e|
             before, after = e.tmp_attrs[:after], e.tmp_attrs[:before]
             e.tmp_attrs[:before] = before
             e.tmp_attrs[:after] = after
