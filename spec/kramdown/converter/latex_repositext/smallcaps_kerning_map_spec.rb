@@ -17,16 +17,17 @@ module Kramdown
           {
             "Arial" => {
               "bold" => {
-                "Wa" => -0.1,
+                "Wa" => 1,
               },
               "bold italic" => {
-                "Wa" => -0.1,
+                "Wa" => 2,
               },
               "italic" => {
-                "Wa" => -0.1,
+                "Wa" => 3,
               },
               "regular" => {
-                "Wa" => -0.1,
+                "Wa" => 4,
+                "wa" => 5,
               }
             }
           }
@@ -44,7 +45,7 @@ module Kramdown
         describe "#initialize" do
 
           it "Loads kerning_map from default file location" do
-            SmallcapsKerningMap.new.lookup_kerning("Arial", "regular", "Wa").must_equal(-0.1)
+            SmallcapsKerningMap.new.lookup_kerning("Arial", "regular", "Wa").must_equal(17) # From mapping file!
           end
 
         end
@@ -52,11 +53,13 @@ module Kramdown
         describe "#lookup_kerning" do
 
           [
-            ["Arial", "regular", "Wa", -0.1],
+            ["Arial", "regular", "Wa", 4],
             ["Arial", "regular", "Wä", nil],
-            ["Arial", "regular", "Wá", -0.1],
+            ["Arial", "regular", "Wá", 4],
             ["Unhandled font", "regular", "Wa", nil],
             ["Arial", "regular", "unhandled", nil],
+            ["Arial", "regular", "wa", 5],
+            ["Arial", "regular", "ot", 0],
           ].each do |font_name, font_attribute, character_pair, xpect|
             it "looks up #{ [font_name, character_pair].inspect }" do
               default_kerning_map.lookup_kerning(
