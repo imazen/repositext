@@ -263,7 +263,6 @@ class Repositext
           language_code_2_chars: config.setting(:language_code_2_chars),
           language_code_3_chars: config.setting(:language_code_3_chars),
           language_name: content_type.language.name,
-          paragraph_number_font_name: config.setting(:pdf_export_paragraph_number_font_name),
           # NOTE: We grab pdf_export_font_name from the _PRIMARY_ repo's config
           primary_font_name: primary_config.setting(:pdf_export_font_name),
           # Do not move the 'song_leftskip' and 'song_rightskip' settings to the file specific settings.
@@ -293,6 +292,8 @@ class Repositext
           # Options in this section get updated on a per-file basis.
           options[:ed_and_trn_abbreviations] = config.setting(:pdf_export_ed_and_trn_abbreviations)
           options[:first_eagle] = config.setting(:pdf_export_first_eagle)
+          # Sets the starting page number.
+          options[:first_page_number] = config.setting(:pdf_export_first_page_number)
           options[:font_leading] = config.setting(:pdf_export_font_leading)
           options[:font_name] = config.setting(:pdf_export_font_name)
           options[:font_size] = config.setting(:pdf_export_font_size)
@@ -306,13 +307,14 @@ class Repositext
           options[:id_series] = config.setting(:pdf_export_id_series, false)
           options[:id_title_1_font_size] = config.setting(:pdf_export_id_title_1_font_size, false)
           options[:id_title_font_name] = config.setting(:pdf_export_id_title_font_name, false)
-          options[:last_eagle_hspace] =config.setting(:pdf_export_last_eagle_hspace)
+          options[:last_eagle_hspace] = config.setting(:pdf_export_last_eagle_hspace)
           options[:page_settings_key] = compute_pdf_export_page_settings_key(
             config.setting(:pdf_export_page_settings_key_override, false),
             config.setting(:is_primary_repo),
             pdf_export_binding,
             options['pdf_export_size']
           )
+          options[:paragraph_number_font_name] = config.setting(:pdf_export_paragraph_number_font_name)
           options[:source_filename] = filename
           options[:title_font_name] = config.setting(:pdf_export_title_font_name)
           options[:title_font_size] = config.setting(:pdf_export_title_font_size)
