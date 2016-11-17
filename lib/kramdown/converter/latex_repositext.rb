@@ -361,7 +361,7 @@ module Kramdown
           # Same for primary and foreign languages.
           # Reduce font size from 22pt to 9.5pt (0.432).
           # Raise so that top of a superscript `1` is top aligned with top of smallcaps chars.
-          before << "{\\raisebox{0.4ex}{{\\textscale{0.432}{"
+          before << "{\\raisebox{0.39ex}{{\\textscale{0.432}{"
           after << "}}}}"
         elsif kramdown_element_stack.inside_id_title1?
           # Same for primary and foreign languages.
@@ -373,7 +373,7 @@ module Kramdown
           # Not applicable to primary language.
           # Reduce font size from 8pt to 5pt (0.625).
           # Raise so that top of a superscript `1` is top aligned with top of upper case chars.
-          before << "{\\raisebox{0.4ex}{{\\textscale{0.625}{"
+          before << "{\\raisebox{0.59ex}{{\\textscale{0.625}{"
           after << "}}}}"
         else
           # Use latex' superscript macro.
