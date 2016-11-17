@@ -84,7 +84,7 @@ class Repositext
         before: tmp_attrs[:before],
         after: tmp_attrs[:after],
       }
-      # h[:comments] = "st_index: #{ tmp_attrs[:index] }"  if tmp_attrs[:index]
+      h[:index] = tmp_attrs[:index]  if tmp_attrs[:index]
       h[:afterStid] = tmp_attrs[:afterStid]  if tmp_attrs[:afterStid]
       h
     end
