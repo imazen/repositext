@@ -130,92 +130,77 @@ class Repositext
       # Exports a PDF test document to make sure all our Latex customizations
       # work as expected.
       def export_pdf_test(options)
-        # Options in this section get loaded once before the command is executed.
-        # All settings down to the content_type will be considered.
-        # NOTE: Put any options that should not be overridable at a file level here.
-
-=begin
-        options = options.merge({
-          additional_footer_text: options['additional-footer-text'],
-          company_long_name: config.setting(:company_long_name),
-          company_phone_number: config.setting(:company_phone_number),
-          company_short_name: config.setting(:company_short_name),
-          company_web_address: config.setting(:company_web_address),
-          # Contains the content for all lines of the primary address in the id.
-          id_address_primary_latex_1: config.setting(:pdf_export_id_address_primary_latex_1,false),
-          id_address_primary_latex_2: config.setting(:pdf_export_id_address_primary_latex_2,false),
-          # Contains the content for all lines of the secondary address in the id.
-          id_address_secondary_latex_1: config.setting(:pdf_export_id_address_secondary_latex_1,false),
-          id_address_secondary_latex_2: config.setting(:pdf_export_id_address_secondary_latex_2,false),
-          id_address_secondary_latex_3: config.setting(:pdf_export_id_address_secondary_latex_3,false),
-          # Adds the text provided as a paragraph below 'RtIdParagraph'.
-          id_extra_language_info: config.setting(:pdf_export_id_extra_language_info,false),
-          # Adds write to instructions above the primary address.
-          id_write_to_primary: config.setting(:pdf_export_id_write_to_primary,false),
-          # Adds write to instructions above the secondary address.
-          id_write_to_secondary: config.setting(:pdf_export_id_write_to_secondary,false),
-          is_primary_repo: config.setting(:is_primary_repo),
-          language: content_type.language,
-          language_code_2_chars: config.setting(:language_code_2_chars),
-          language_code_3_chars: config.setting(:language_code_3_chars),
-          language_name: content_type.language.name,
-          paragraph_number_font_name: config.setting(:pdf_export_paragraph_number_font_name),
-          # NOTE: We grab pdf_export_font_name from the _PRIMARY_ repo's config
-          primary_font_name: primary_config.setting(:pdf_export_font_name),
-          # Do not move the 'song_leftskip' and 'song_rightskip' settings to the file specific settings.
-          # We do not want to set these at a file level.
-          # This sets the right and left margin for 'RtSong', 'RtSongBreak' and 'RtStanza'.
-          song_leftskip: config.setting(:pdf_export_song_leftskip),
-          song_rightskip: config.setting(:pdf_export_song_rightskip),
-          version_control_page: options['include-version-control-info'],
-
-          options[:ed_and_trn_abbreviations] = config.setting(:pdf_export_ed_and_trn_abbreviations)
-          options[:first_eagle] = config.setting(:pdf_export_first_eagle)
-          options[:font_leading] = config.setting(:pdf_export_font_leading)
-          options[:font_name] = config.setting(:pdf_export_font_name)
-          options[:font_size] = config.setting(:pdf_export_font_size)
-          options[:footer_title_english] = primary_titles[content_at_file.extract_product_identity_id(false)]
-          options[:has_id_page] = config.setting(:pdf_export_has_id_page)
-          options[:header_font_name] = config.setting(:pdf_export_header_font_name)
-          options[:header_text] = config.setting(:pdf_export_header_text)
-          options[:hrules_present] = config.setting(:pdf_export_hrules_present)
-          options[:id_copyright_year] = config.setting(:erp_id_copyright_year, false)
-          options[:id_recording] = config.setting(:pdf_export_id_recording, false)
-          options[:id_series] = config.setting(:pdf_export_id_series, false)
-          options[:id_title_1_font_size] = config.setting(:pdf_export_id_title_1_font_size, false)
-          options[:id_title_font_name] = config.setting(:pdf_export_id_title_font_name, false)
-          options[:last_eagle_hspace] =config.setting(:pdf_export_last_eagle_hspace)
-          options[:page_settings_key] = compute_pdf_export_page_settings_key(
-            config.setting(:pdf_export_page_settings_key_override, false),
-            config.setting(:is_primary_repo),
-            pdf_export_binding,
-            options['pdf_export_size']
+        language = Language::English.new
+        font_name = ""
+        source_filename = Dir.glob(
+          File.join(
+            config.compute_base_dir(:content_dir),
+            '**/*.at'
           )
-          options[:source_filename] = filename
-          options[:title_font_name] = config.setting(:pdf_export_title_font_name)
-          options[:title_font_size] = config.setting(:pdf_export_title_font_size)
-          options[:title_vspace] = config.setting(:pdf_export_title_vspace)
-          options[:truncated_header_title_length] = config.setting(:pdf_export_truncated_header_title_length, false)
-          options[:vspace_above_title1_required] = config.setting(:pdf_export_vspace_above_title1_required)
-          options[:vspace_below_title1_required] = config.setting(:pdf_export_vspace_below_title1_required)
-          if options[:pre_process_content_proc]
-            contents = options[:pre_process_content_proc].call(contents, filename, options)
-          end
-          if options[:skip_file_proc] && options[:skip_file_proc].call(contents, filename)
-            $stderr.puts " - Skipping #{ filename } - matches options[:skip_file_proc]"
-            next([Outcome.new(true, { contents: nil })])
-          end
+        ).first
+
+        options = options.merge({
+          additional_footer_text: nil,
+          company_long_name: "Company Long Name",
+          company_phone_number: "123-456-7890",
+          company_short_name: "CSN",
+          company_web_address: "www.thecompany.com",
+          ed_and_trn_abbreviations: "ed\\.",
+          first_eagle: "{\\lettrine[lines=2,lraise=0.355,findent=8.3pt,nindent=0pt]{\\textscale{0.465}}{}}",
+          font_leading: 10.5,
+          font_name: "V-Excelsior LT Std",
+          font_size: 10,
+          footer_title_english: "Footer title English",
+          has_id_page: false,
+          header_font_name: "V-Excelsior LT Std",
+          header_text: "header text",
+          hrules_present: false,
+          id_address_primary_latex_1: "ID address primary 1",
+          id_address_primary_latex_2: "ID address primary 2",
+          id_address_secondary_latex_1: "ID address secondary 1",
+          id_address_secondary_latex_2: "ID address secondary 2",
+          id_address_secondary_latex_3: "ID address secondary 3",
+          id_copyright_year: Time.now.year.to_s,
+          id_extra_language_info: "Extra language info",
+          id_recording: "ID recording",
+          id_series: "ID series",
+          id_title_1_font_size: 10,
+          id_title_font_name: "V-Calisto-St",
+          id_write_to_primary: "Write to primary",
+          id_write_to_secondary: "Write to secondary",
+          is_primary_repo: true,
+          language: language,
+          language_code_2_chars: language.code_2_chars,
+          language_code_3_chars: language.code_3_chars,
+          language_name: language.name,
+          last_eagle_hspace: 16.5,
+          page_settings_key: :english_stitched,
+          paragraph_number_font_name: "V-Excelsior LT Std",
+          primary_font_name: font_name,
+          song_leftskip: "60.225",
+          song_rightskip: "30.112",
+          source_filename: source_filename,
+          title_font_name: "V-Calisto-St",
+          title_font_size: 22,
+          title_vspace: 7.9675,
+          truncated_header_title_length: 20,
+          version_control_page: true,
+          vspace_above_title1_required: true,
+          vspace_below_title1_required: true,
         })
 
-        latex = Kramdown::Converter::LatexRepositext::SmallcapsKerningMap.kerning_sample_latex
+        root, warnings = config.kramdown_parser(:kramdown).parse(pdf_test_contents)
+        kramdown_doc = Kramdown::Document.new('', options)
+        kramdown_doc.root = root
+        latex = kramdown_doc.send(:to_latex_repositext_book)
+
         pdf = Repositext::Process::Convert::LatexToPdf.convert(latex)
         file_path = File.join(
           File.expand_path('..', config.base_dir(:content_type_dir)),
           'pdf_export_test.pdf'
         )
         File.binwrite(file_path, pdf)
-        puts "Wrote kerning samples file to #{ file_path }"
-=end
+        puts "Wrote PDF export test file to #{ file_path }"
       end
 
       # Export AT files in `/content` to PDF translator variant.
@@ -453,6 +438,21 @@ class Repositext
       # Returns a hash with English titles as values and date code as keys
       def compute_primary_titles
         raise "Implement me in sub-class"
+      end
+
+      def pdf_test_contents
+        %(^^^ {: .rid #rid-12345678}
+
+# *The Title*{: .italic .smcaps}
+
+^^^ {: .rid #rid-12345679}
+
+@% This is the first paragraph.
+{: .first_par .normal}
+
+@*2*{: .pn} This is the second paragraph.
+{: .normal_pn}
+)
       end
 
     end
