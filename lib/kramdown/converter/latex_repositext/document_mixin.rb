@@ -238,7 +238,15 @@ module Kramdown
             )
             # re-apply superscript to any trailing digits
             if truncated =~ /\d+\}\z/
-              truncated.gsub!(/\d+\}\z/, "\\textsuperscript{" + '\0' + "}")
+              truncated.gsub!(
+                /\d+\}\z/,
+                [
+                  "{\\raisebox{#{ @options[:header_superscript_raise] }ex}",
+                  "{\\textscale{#{ @options[:header_superscript_scale] }ex}{",
+                  '\0',
+                  "}}}",
+                ].join
+              )
             end
             "\\textscale{#{ 0.909091 }}{\\textbf{#{ truncated }}}"
           else
@@ -251,7 +259,15 @@ module Kramdown
             r = "\\textscale{#{ 0.7 }}{#{ truncated.unicode_upcase }}"
             # re-apply superscript to any trailing digits
             if r =~ /\d+\}\z/
-              r.gsub!(/\d+\}\z/, "\\textsuperscript{" + '\0' + "}")
+              r.gsub!(
+                /\d+\}\z/,
+                [
+                  "{\\raisebox{#{ @options[:header_superscript_raise] }ex}",
+                  "{\\textscale{#{ @options[:header_superscript_scale] }}{",
+                  '\0',
+                  "}}}",
+                ].join
+              )
             end
             if 'chn' == language_code_3_chars
               r = "\\textbf{#{ r }}"

@@ -300,6 +300,8 @@ class Repositext
           options[:footer_title_english] = primary_titles[content_at_file.extract_product_identity_id(false)]
           options[:has_id_page] = config.setting(:pdf_export_has_id_page)
           options[:header_font_name] = config.setting(:pdf_export_header_font_name)
+          options[:header_superscript_scale] = config.setting(:pdf_export_header_superscript_scale)
+          options[:header_superscript_raise] = config.setting(:pdf_export_header_superscript_raise)
           options[:header_text] = config.setting(:pdf_export_header_text)
           options[:hrules_present] = config.setting(:pdf_export_hrules_present)
           options[:id_copyright_year] = config.setting(:erp_id_copyright_year, false)

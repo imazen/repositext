@@ -129,24 +129,12 @@ module Kramdown
             # capture first level 1 header as document title
             @document_title_plain_text ||= el.to_plain_text
             @document_title_latex ||= l_title
-            # Fix issue where superscript fontsize in RtTitle is not scaled down
-            # Convert "\textsuperscript{1}"
-            # To "\textsuperscript{\textscale{0.7}{1}}"
-            l_title = l_title.gsub(
-              /(?<=\\textsuperscript\{)([^\}]+)(?=\})/, "\\textscale{0.7}{" + '\1}'
-            )
             # NOTE: We insert a percent sign immediately after l_title to prevent trailing whitespace
             # which would break the centering of the text.
             "\\begin{RtTitle}%\n#{ l_title }%\n\\end{RtTitle}"
           when 2
             # render in RtTitle2 environment
             l_title = inner(el, opts.merge(smallcaps_font_override: opts[:title_font_name]))
-            # Fix issue where superscript fontsize in RtTitle is not scaled down
-            # Convert "\textsuperscript{1}"
-            # To "\textsuperscript{\textscale{0.7}{1}}"
-            l_title = l_title.gsub(
-              /(?<=\\textsuperscript\{)([^\}]+)(?=\})/, "\\textscale{0.7}{" + '\1}'
-            )
             "\\begin{RtTitle2}\n#{ l_title }\n\\end{RtTitle2}"
           when 3
             # render in RtSubTitle environment
@@ -352,6 +340,8 @@ module Kramdown
       end
 
       # Handles the various kinds of superscript, depending on el's ancestry.
+      # NOTE: The superscript in page header is handled separately in method
+      # #compute_header_title_latex.
       # @param el [Kramdown::Element] the span with class .superscript
       # @param before [String] collector for `before` text, modified in place.
       # @param after [String] collector for `after` text, modified in place.
@@ -361,20 +351,20 @@ module Kramdown
           # Same for primary and foreign languages.
           # Reduce font size from 22pt to 9.5pt (0.432).
           # Raise so that top of a superscript `1` is top aligned with top of smallcaps chars.
-          before << "{\\raisebox{0.4ex}{{\\textscale{0.432}{"
-          after << "}}}}"
+          before << "{\\raisebox{0.4ex}{\\textscale{0.432}{"
+          after << "}}}"
         elsif kramdown_element_stack.inside_id_title1?
           # Same for primary and foreign languages.
           # Reduce font size from 10pt to 5.6pt (0.560).
           # Raise so that top of a superscript `1` is top aligned with top of smallcaps chars
-          before << "{\\raisebox{0.15ex}{{\\textscale{0.560}{"
-          after << "}}}}"
+          before << "{\\raisebox{0.15ex}{\\textscale{0.560}{"
+          after << "}}}"
         elsif kramdown_element_stack.inside_id_title2?
           # Not applicable to primary language.
           # Reduce font size from 8pt to 5pt (0.625).
           # Raise so that top of a superscript `1` is top aligned with top of upper case chars.
-          before << "{\\raisebox{0.4ex}{{\\textscale{0.625}{"
-          after << "}}}}"
+          before << "{\\raisebox{0.4ex}{\\textscale{0.625}{"
+          after << "}}}"
         else
           # Use latex' superscript macro.
           before << '\\textsuperscript{'
