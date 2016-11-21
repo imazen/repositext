@@ -235,12 +235,19 @@ class Repositext
     def replace_text(filename, &block)
     end
 
+    # Run `report content_sources` in all repositories
     def report_content_sources(repo_set_spec, content_type)
       run_repositext_command(repo_set_spec, "rt #{ content_type.name } report content_sources")
     end
-
+    
+    # Run `report quotes_details` in all repositories
     def report_quotes_details(repo_set_spec, content_type)
       run_repositext_command(repo_set_spec, "rt #{ content_type.name } report quotes_details")
+    end
+
+    # Run `export pdf_book` in all repositories
+    def export_pdf_book(repo_set_spec, content_type)
+      run_repositext_command(repo_set_spec, "rt #{ content_type.name } export pdf_book")
     end
 
     # Allows running of any command (e.g., export, fix, report, validate) on
