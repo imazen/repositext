@@ -247,9 +247,6 @@ module Kramdown
           # We don't allow linebreaks between period and numbers, e.g., "word .22"
           lb.gsub!(/( \.)(\d)/, '\1' + "\\nolinebreak[4]" + '\2')
 
-          # We don't allow linebreaks before \RtSmCapsEmulation inside words
-          lb.gsub!(/(?<=[[:alpha:]])(?=\\RtSmCapsEmulation)/, "\\nolinebreak[4]")
-
           # We don't allow linebreaks between the end of a control sequence and a period
           lb.gsub!("}.", "}\\nolinebreak[4].")
 

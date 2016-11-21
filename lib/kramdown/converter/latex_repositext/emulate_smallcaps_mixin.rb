@@ -37,12 +37,14 @@ module Kramdown
           keep_scanning = true
 
           while keep_scanning do
+            puts  if :start == str_sc_state && debug
             puts("#{ str_sc_state.inspect } - #{ str_sc.rest.inspect }")  if debug
             case str_sc_state
             when :start
               leading_chars = nil
               smallcaps_chars = nil
-              following_char = nil
+              immediately_following_char = nil
+              squeezed_following_char = nil
 
               leading_kerning_value = nil
               trailing_kerning_value = nil
@@ -70,8 +72,12 @@ module Kramdown
             when :detect_following_char
               # Peek at the following char (even if separated by space).
               if(str_sc.check(/\s?./))
-                following_char = str_sc.matched.sub(' ', '')
-                puts("  #{ following_char.inspect }")  if debug
+                immediately_following_char = str_sc.matched.first.strip[0] # nil or other char
+                squeezed_following_char = str_sc.matched.strip # other char
+                if debug
+                  puts "  immediately_following_char: #{ immediately_following_char.inspect }"
+                  puts("  squeezed_following_char: #{ squeezed_following_char.inspect }")
+                end
               end
               str_sc_state = :finalize_smcaps_run
             when :finalize_smcaps_run
@@ -96,8 +102,8 @@ module Kramdown
               end
               # Determine trailing custom kerning
               end_char = (smallcaps_chars || leading_chars || '')[-1]
-              if end_char && following_char
-                trailing_character_pair = [end_char, following_char].join
+              if end_char && squeezed_following_char
+                trailing_character_pair = [end_char, squeezed_following_char].join
                 puts("  trailing character pair: #{ trailing_character_pair.inspect }")  if debug
                 trailing_kerning_value = smallcaps_kerning_map.lookup_kerning(
                   font_name,
@@ -114,23 +120,31 @@ module Kramdown
               end
 
               if smallcaps_chars || leading_kerning_value || trailing_kerning_value
+                if leading_chars && smallcaps_chars
+                  # prevent linebreak between leading_chars and smallcaps_chars
+                  new_string << "\\nolinebreak[4]"
+                end
                 new_string << [
                   %(\\RtSmCapsEmulation), # latex command
                   %({#{ leading_kerning_value || 'none' }}), # leading custom kerning argument
                   %({#{ (smallcaps_chars || '').unicode_upcase }}), # text in smallcaps
                   %({#{ trailing_kerning_value || 'none' }}), # trailing custom kerning argument
                 ].join
+                if immediately_following_char
+                  # prevent linebreak between smallcaps_chars and immediately following char
+                  new_string << "\\nolinebreak[4]"
+                end
               end
               if str_sc.eos?
                 keep_scanning = false
               else
                 str_sc_state = :start
               end
+              puts("  new string: #{ new_string.inspect }")  if debug
             else
               raise "Handle this: #{ str_sc_state.inspect }"
             end
           end
-          p new_string  if debug
           new_string
         end
 
