@@ -127,7 +127,7 @@ module Kramdown
             # render in RtTitle environment
             l_title = inner(el, opts.merge(smallcaps_font_override: @options[:title_font_name]))
             # capture first level 1 header as document title
-            @document_title_plain_text ||= el.to_plain_text
+            @document_title_plain_text ||= el.to_plain_text.strip
             @document_title_latex ||= l_title
             # NOTE: We insert a percent sign immediately after l_title to prevent trailing whitespace
             # which would break the centering of the text.
@@ -135,10 +135,17 @@ module Kramdown
           when 2
             # render in RtTitle2 environment
             l_title = inner(el, opts.merge(smallcaps_font_override: opts[:title_font_name]))
-            "\\begin{RtTitle2}\n#{ l_title }\n\\end{RtTitle2}"
+            # capture any level 2 header and append to document title
+            @document_title_plain_text << " #{ @options[:language].chars[:em_dash] } #{ el.to_plain_text }"
+            @document_title_latex << " #{ @options[:language].chars[:em_dash] } #{ l_title }"
+            # NOTE: We insert a percent sign immediately after l_title to prevent trailing whitespace
+            # which would break the centering of the text.
+            "\\begin{RtTitle2}%\n#{ l_title }%\n\\end{RtTitle2}"
           when 3
             # render in RtSubTitle environment
-            "\\begin{RtSubTitle}\n#{ inner(el, opts) }\n\\end{RtSubTitle}"
+            # NOTE: We insert a percent sign immediately after l_title to prevent trailing whitespace
+            # which would break the centering of the text.
+            "\\begin{RtSubTitle}%\n#{ inner(el, opts) }%\n\\end{RtSubTitle}"
           else
             raise "Unhandled header type: #{ el.inspect }"
           end

@@ -41,6 +41,56 @@ module Kramdown
 
       end
 
+      describe "#convert_header" do
+
+        [
+          [
+            "level 1 header",
+            "# header level 1\n\n",
+            "\\begin{RtTitle}%\nheader level~1%\n\\end{RtTitle}\n"
+          ],
+          [
+            "level 2 header (must be preceded by level 1)",
+            "# header level 1\n\n## header level 2\n\n",
+            "\\begin{RtTitle}%\nheader level~1%\n\\end{RtTitle}\n\\begin{RtTitle2}%\nheader level~2%\n\\end{RtTitle2}\n"
+          ],
+        ].each do |desc, test_string, xpect|
+          it "handles #{ desc }" do
+            doc = Document.new(test_string, input: 'KramdownRepositext', language: language)
+            doc.to_latex_repositext.must_equal(xpect)
+          end
+        end
+
+        it "captures level 1 header text into i_var" do
+          c = LatexRepositext.send(:new, '_', { header_offset: 0 })
+          txt_el = Element.new(:text, "header level 1")
+          header_el = Element.new(:header, nil, nil, level: 1)
+          header_el.children << txt_el
+          c.send(
+            :convert_header,
+            header_el,
+            {}
+          )
+          c.instance_variable_get(:@document_title_latex).must_equal('header level 1')
+          c.instance_variable_get(:@document_title_plain_text).must_equal("header level 1")
+        end
+
+        it "captures level 1 and level 2 header text into i_var" do
+          c = LatexRepositext.send(:new, '_', { header_offset: 0, language: language })
+          txt_el_1 = Element.new(:text, "header level 1")
+          header_el_1 = Element.new(:header, nil, nil, level: 1)
+          header_el_1.children << txt_el_1
+          txt_el_2 = Element.new(:text, "header level 2")
+          header_el_2 = Element.new(:header, nil, nil, level: 2)
+          header_el_2.children << txt_el_2
+          c.send(:convert_header, header_el_1, {})
+          c.send(:convert_header, header_el_2, {})
+          c.instance_variable_get(:@document_title_latex).must_equal('header level 1 — header level 2')
+          c.instance_variable_get(:@document_title_plain_text).must_equal("header level 1 — header level 2\n")
+        end
+
+      end
+
       describe "#convert_p" do
 
         [
