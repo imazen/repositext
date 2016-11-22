@@ -87,6 +87,32 @@
   <% end %>
 }
 
+% define our own \nolinebreak version that works with both negative and positive hspace.
+% If the original latex \nolinebreak command is preceded by an \hspace, that
+% space is removed, the penalty is issued and the space is reinserted.
+% However, this only happens for positive values of hspace. For our custom kerning
+% we have a number of negative hspaces, and those were just silently dropped.
+% So we create our custom command which is identical to nolinebreak, except it
+% works the same for negative and positive values.
+% The original macro has this conditional:
+%   \ifdim\@tempskipa >\z@   (\z@ is zero)
+%     \hskip\@tempskipa\ignorespaces
+%   \fi
+\makeatletter
+\newcommand{\RtNoLineBreak}{%
+  \ifvmode
+    \@nolnerr
+  \else
+    \@tempskipa\lastskip
+    \unskip
+    \penalty 10000
+    \hskip\@tempskipa
+    \ignorespaces
+  \fi}
+}
+\makeatother
+
+
 % redefine fancyhdr's headrule command to insert negative \vspace before \hrule
 % to bring lower hrule closer to header text.
 \makeatletter

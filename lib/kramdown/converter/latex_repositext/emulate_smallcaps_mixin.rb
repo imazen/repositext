@@ -122,7 +122,7 @@ module Kramdown
               if smallcaps_chars || leading_kerning_value || trailing_kerning_value
                 if leading_chars && smallcaps_chars
                   # prevent linebreak between leading_chars and smallcaps_chars
-                  new_string << "\\nolinebreak[4]"
+                  new_string << "\\RtNoLineBreak{}"
                 end
                 new_string << [
                   %(\\RtSmCapsEmulation), # latex command
@@ -132,7 +132,7 @@ module Kramdown
                 ].join
                 if immediately_following_char
                   # prevent linebreak between smallcaps_chars and immediately following char
-                  new_string << "\\nolinebreak[4]"
+                  new_string << "\\RtNoLineBreak{}"
                 end
               end
               if str_sc.eos?
