@@ -226,7 +226,7 @@ module Kramdown
         #        title to be truncated to this many chars, ignoring word boundaries.
         # @return [String]
         def compute_header_title_latex(document_title_plain_text, document_title_latex, hrules_present, language_code_3_chars, title_length_override)
-          if hrules_present
+          if hrules_present # this means we're in primary repo
             # bold, italic, small caps and large font
             # NOTE: All titles are wrapped in <em> and .smcaps, so that will
             # take care of the italics and smallcaps.
@@ -251,8 +251,13 @@ module Kramdown
             "\\textscale{#{ 0.909091 }}{\\textbf{#{ truncated }}}"
           else
             # regular, all caps and small font
-            truncated = truncate_plain_text_title(
+            # We use same method as for primary (with hrules_present),
+            # except we pass plain text as document_title_latex.
+            # This is so that we get newline removal and warnings on titles
+            # that get truncated without a length override.
+            truncated = compute_truncated_title(
               document_title_plain_text,
+              document_title_plain_text, # Pass plain text as latex
               title_length_override || 54,
               title_length_override ? 0 : 3
             )
