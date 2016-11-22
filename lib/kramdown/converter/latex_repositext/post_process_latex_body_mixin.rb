@@ -200,7 +200,7 @@ module Kramdown
           # Excpetions: no_break_following_chars or ed_and_trn_abbreviations
           lb.gsub!(
             /
-              (
+              (?<lbc> # named capture group
                 [#{ line_breakable_chars }]
               )
               (?! # not followed by one of the following options
@@ -213,7 +213,7 @@ module Kramdown
                 )
               )
             /ix,
-            "\\nolinebreak[4]" + '\1' + "\\hspace{0pt}"
+            "\\nolinebreak[4]\\k<lbc>\\hspace{0pt}"
           )
 
           # When we adjust kerning in smallcaps emulation, the previous gsub!
