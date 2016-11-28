@@ -4,18 +4,23 @@ class Repositext
       # Exports content_at to gap_mark_tagging.
       class GapMarkTagging
 
+        # Initializes a new exporter.
+        # @param [String] content_at
+        def initialize(content_at)
+          @content_at = content_at
+        end
+
         # Exports content_at to gap_mark_tagging.
         # Uses Suspension to remove everything but:
         #  * gap_marks
         #  * paragraph IALs
         #  * headers
-        # @param [String] content_at
         # @return [Outcome] where result is gap_mark_tagging text
-        def self.export(content_at)
+        def export
           # NOTE: In order to preserve sub-title text (which may contain gap_marks,
           # we need to retain them and remove the hash marks in post-processing)
           # Remove all tokens but :subtitle_mark from content_at
-          gmt = content_at.dup
+          gmt = @content_at.dup
           gmt = pre_process(gmt)
           gmt = suspend_unwanted_tokens(gmt)
           gmt = post_process(gmt)
@@ -24,7 +29,7 @@ class Repositext
 
       protected
 
-        def self.pre_process(txt)
+        def pre_process(txt)
           gmt = txt.dup
           # temporarily replace underscores in IALs, otherwise they'd be removed
           # by Suspension as :emphasis tokens
@@ -32,7 +37,7 @@ class Repositext
           gmt
         end
 
-        def self.suspend_unwanted_tokens(txt)
+        def suspend_unwanted_tokens(txt)
           gmt = Suspension::TokenRemover.new(
             txt,
             Suspension::REPOSITEXT_TOKENS.find_all { |e|
@@ -46,7 +51,7 @@ class Repositext
           ).remove
         end
 
-        def self.post_process(txt)
+        def post_process(txt)
           gmt = txt.dup
           gmt.gsub!(/(?<!\n)\{[^\}]+\}/, '') # remove inline IALs
           gmt.gsub!('(underscore placeholder)', '_') # convert underscore placeholders to underscores

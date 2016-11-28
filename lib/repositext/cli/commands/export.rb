@@ -25,7 +25,7 @@ class Repositext
             }
           )
         ) do |contents, filename|
-          outcome = Repositext::Process::Export::GapMarkTagging.export(contents)
+          outcome = Repositext::Process::Export::GapMarkTagging.new(contents).export
           if outcome.success?
             [Outcome.new(true, { contents: outcome.result, extension: 'gap_mark_tagging.txt' })]
           else
