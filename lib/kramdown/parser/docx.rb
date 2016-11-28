@@ -1,3 +1,4 @@
+# TODO: Add .first_par class to first paragraph
 require 'kramdown/document'
 
 module Kramdown
