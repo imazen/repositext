@@ -35,7 +35,7 @@ class Repositext
         # @return [Outcome] true if no invalid changes are found
         def self.ensure_no_invalid_changes(gap_mark_tagging_import, content_at)
           # Export content_at to gap_mark_tagging
-          tmp_gap_mark_tagging_export = Repositext::Process::Export::GapMarkTagging.export(content_at).result
+          tmp_gap_mark_tagging_export = Repositext::Process::Export::GapMarkTagging.new(content_at).export.result
           # Strip gap_marks and .omit classes from both import and tmp_export
           tmp_gap_mark_tagging_export = remove_gap_marks_and_omit_classes(tmp_gap_mark_tagging_export)
           gap_mark_tagging_import = remove_gap_marks_and_omit_classes(gap_mark_tagging_import)
