@@ -324,12 +324,15 @@
 \newcommand{\RtIdWriteToPrimary}
   {%
     <% if @id_write_to_primary %>
+      \vspace*{4.6pt}%
       \setlength{\parskip}{0pt}
       \setlength{\parindent}{0pt}
       <%= @polyglossia_default_language ? '' : '\titlefont' %>%
       \fontsize{8pt}{10.5pt}\selectfont
       <%= @id_write_to_primary %>
+      \raggedright
       \par
+      \vspace*{5.8pt}%
     <% end %>
   }
 
@@ -337,12 +340,15 @@
 \newcommand{\RtIdWriteToSecondary}
   {%
     <% if @id_write_to_secondary %>
+      \vspace*{8.5pt}%
       \setlength{\parskip}{0pt}
       \setlength{\parindent}{0pt}
       <%= @polyglossia_default_language ? '' : '\titlefont' %>%
       \fontsize{8pt}{10.5pt}\selectfont
       <%= @id_write_to_secondary %>
+      \raggedright
       \par
+      \vspace*{1.7pt}%
     <% end %>
   }
 
