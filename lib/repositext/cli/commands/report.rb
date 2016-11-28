@@ -783,6 +783,95 @@ class Repositext
         }
       end
 
+      # This report produces a list of discrepancies between the quote of the day
+      # content and content AT.
+      # In order to run this report, put the qotd test file into the following
+      # location: <repo>/data/qotd_data.json
+      def report_quote_of_the_day_discrepancies(options)
+        # NOTE: The original test files contained Unicode BOM. I'm removing
+        # that in the File.read.
+        # Returns JSON with the following keys:
+        # * pageid: 19848,
+        # * title: "47-0412",
+        # * publishdate: "2017-02-26T00:00:00",
+        # * contents: "word word"
+        qotd_records = JSON.parse(
+          File.read(
+            File.join(config.base_dir(:data_dir), 'qotd_data.json'),
+            :encoding => 'bom|utf-8'
+          ),
+          symbolize_names: true
+        )
+
+        discrepancies = Repositext::Process::Report::QuoteOfTheDayDiscrepancies.new(
+          qotd_records,
+          content_type,
+          content_type.language
+        ).report
+
+        discrepancy_groups = [
+          [
+            'Content',
+            discrepancies.find_all { |e| :content == e[:type] }.sort { |a,b|
+              a[:posting_date_time] <=> b[:posting_date_time]
+            }
+          ],
+          [
+            'Style',
+            discrepancies.find_all { |e| :style == e[:type] }.sort { |a,b|
+              a[:posting_date_time] <=> b[:posting_date_time]
+            }
+          ],
+          [
+            'Subtitle',
+            discrepancies.find_all { |e| :subtitle == e[:type] }.sort { |a,b|
+              a[:posting_date_time] <=> b[:posting_date_time]
+            }
+          ],
+        ]
+        group_counts = discrepancy_groups.map { |heading, discrepancies|
+          [discrepancies.count, heading].join(' ')
+        }.join(', ')
+        $stderr.puts "Quote Of The Day discrepancies"
+        $stderr.puts "-" * 40
+        discrepancy_groups.each do |heading, discrepancies|
+          $stderr.puts "#{ heading } discrepancies:".color(:blue)
+          discrepancies.each { |qotd_record|
+            $stderr.puts
+            $stderr.puts " - #{ qotd_record[:date_code] }, #{ qotd_record[:posting_date_time] }, #{ qotd_record[:type] }:".color(:blue)
+            $stderr.puts "   - QOTD:".color(:blue)
+            $stderr.puts "     #{ qotd_record[:qotd_content] }"
+            $stderr.puts "   - Repositext:".color(:blue)
+            $stderr.puts "     #{ qotd_record[:content_at_content] }"
+          }
+        end
+        $stderr.puts "-" * 40
+        $stderr.puts "Found #{ group_counts } discrepancies in #{ qotd_records.length } QOTDs."
+        # Write date codes and posting_times to report file
+        report_file_path = File.join(config.base_dir(:reports_dir), 'quote_of_the_day_discrepancies.txt')
+        File.open(report_file_path, 'w') { |f|
+          f.write "QOTD discrepancies\n"
+          f.write '-' * 40
+          f.write "\n"
+          discrepancy_groups.each do |heading, discrepancies|
+            f.write "\n#{ heading }:\n\n"
+            discrepancies.each do |d|
+              f.write d[:date_code]
+              f.write "\t"
+              f.write d[:posting_date_time]
+              f.write "\n"
+            end
+          end
+          f.write '-' * 40
+          f.write "\n"
+          group_counts = discrepancy_groups.map { |heading, discrepancies|
+            [discrepancies.count, heading].join(' ')
+          }.join(', ')
+          f.write "Found #{ group_counts } discrepancies in #{ qotd_records.length } QOTDs.\n"
+          f.write "Command to generate this file: `repositext report quote_of_the_day_discrepancies`\n"
+        }
+      end
+
       def report_quotes_details(options)
         output_lines = []
         ["'", '"'].each { |quote_char|
@@ -941,9 +1030,9 @@ class Repositext
           # Record ops_type_signatures
           st_ops_for_file.operations.each do |st_op|
             r[:st_ops_count] += 1
-            type_signature = st_op.operationType.to_sym
+            type_signature = st_op.operation_type.to_sym
             r[:ops_type_counts][type_signature] += 1
-            ins_del_signature = st_op.affectedStids.map { |e|
+            ins_del_signature = st_op.affected_stids.map { |e|
               # Mark unchanged/existing st as :noc, added as :add, and deleted as :del
               case ['' == e.tmp_attrs[:before], '' == e.tmp_attrs[:after]]
               when [false, false]
@@ -1037,7 +1126,7 @@ class Repositext
       # Output format:
       #     {
       #       "comments": "productId: 62-0211",
-      #       "productIdentityId": "831",
+      #       "product_identity_id": "831",
       #       "language": "eng",
       #       "from": {
       #         "gitCommit": "f54aac",
@@ -1047,15 +1136,15 @@ class Repositext
       #       },
       #       "operations": [
       #         {
-      #           "operationType": "delete",
-      #           "operationId": "0-1", # hunk index + subtitle pair index
-      #           "affectedStids": [
+      #           "operation_type": "delete",
+      #           "operation_id": "0-1", # hunk index + subtitle pair index
+      #           "affected_stids": [
       #             {
       #               "comments": "stIndex: 17",
       #               "stid": "1234567",
       #               "before": "@word1",
       #               "after": null
-      #               "afterStid": "2345678",
+      #               "after_stid": "2345678",
       #             }
       #           ]
       #         },
@@ -1093,8 +1182,8 @@ class Repositext
         st_ops_json_string = File.read(latest_st_ops_file_path)
 
         operations = Hash.new(0)
-        # Match lines like `      "operationType": "content_change",`
-        st_ops_json_string.scan(/^\s+"operationType": "([^"]+)"/) { |match|
+        # Match lines like `      "operation_type": "content_change",`
+        st_ops_json_string.scan(/^\s+"operation_type": "([^"]+)"/) { |match|
           # match example: ["insert"]
           operations[match.first] += 1
         }

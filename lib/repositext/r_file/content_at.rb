@@ -119,6 +119,10 @@ class Repositext
         kramdown_doc(options).to_plain_text
       end
 
+      def plain_text_with_subtitles_contents(options)
+        kramdown_doc(options).to_plain_text_with_subtitles
+      end
+
       # Returns count of subtitle_marks in self's content.
       # NOTE: This can return different results than #subtitles.count for foreign
       # files who don't have a symlink to the STM CSV file yet.

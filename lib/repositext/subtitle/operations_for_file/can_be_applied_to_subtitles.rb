@@ -11,7 +11,7 @@ class Repositext
         # @return [Array<Hash>] a copy of the original one with operations applied.
         def apply_to_subtitles(existing_subtitles)
           updated_subtitles = existing_subtitles.dup
-          # First we insert any new subtitles (so that their afterStids are still
+          # First we insert any new subtitles (so that their after_stids are still
           # all there as some may get deleted.)
           insert_new_subtitles!(updated_subtitles)
           # Update record_ids for any subtitles that moved to a different record
@@ -19,7 +19,7 @@ class Repositext
           # are present.
           update_record_ids!(updated_subtitles)
           # Next we handle deletions of subtitles (after inserts have been made
-          # that may refer to deleted afterStids)
+          # that may refer to deleted after_stids)
           delete_subtitles!(updated_subtitles)
 
           updated_subtitles
@@ -32,7 +32,7 @@ class Repositext
           insert_and_split_ops.each do |op|
             insert_at_index = compute_insert_at_index(op, subtitles_container)
             # Get all the inserted subtitle ids
-            inserted_stids = op.affectedStids.find_all { |e|
+            inserted_stids = op.affected_stids.find_all { |e|
               '' == e.tmp_attrs[:before].to_s and '' != e.tmp_attrs[:after].to_s
             }.map(&:persistent_id)
             # Insert subtitle ids into subtitles_container, starting with last
@@ -50,7 +50,7 @@ class Repositext
         def delete_subtitles!(subtitles_container)
           delete_and_merge_ops.each do |op|
             # Remove subtitle
-            op.affectedStids.each { |aff_st|
+            op.affected_stids.each { |aff_st|
               next  unless '' == aff_st.tmp_attrs[:after]
               subtitles_container.delete_if { |new_st|
                 new_st[:persistent_id] == aff_st.persistent_id
@@ -65,10 +65,10 @@ class Repositext
         # (in place)
         # @param subtitles_container [Array<Hash>]
         def update_record_ids!(subtitles_container)
-          # We iterate over all operations, find the affectedStids' corresponding
+          # We iterate over all operations, find the affected_stids' corresponding
           # subtitle and update the record id.
           operations.each do |op|
-            op.affectedStids.each { |aff_st|
+            op.affected_stids.each { |aff_st|
               # Find matching st in subtitles_container
               matching_st = subtitles_container.detect { |st| st[:persistent_id] == aff_st.persistent_id }
               if matching_st
@@ -86,18 +86,18 @@ class Repositext
         # @param updated_subtitles [Array<Hash>]
         # @return [Integer] insert_at_index
         def compute_insert_at_index(op, updated_subtitles)
-          insert_at_index = case op.operationType
+          insert_at_index = case op.operation_type
           when 'insert'
-            # No matter if op has one or more affectedStids, we only need the
-            # first index. All affectedStids will be inserted here in the
+            # No matter if op has one or more affected_stids, we only need the
+            # first index. All affected_stids will be inserted here in the
             # correct order.
             compute_insert_at_index_given_after_stid(
-              op.afterStid,
+              op.after_stid,
               updated_subtitles
             )
           when 'split'
-            first_st = op.affectedStids.first
-            rest_sts = op.affectedStids[1..-1]
+            first_st = op.affected_stids.first
+            rest_sts = op.affected_stids[1..-1]
             signature_computer = ->(st) {
               '' == st.tmp_attrs[:before] ? :blank : :present
             }
@@ -111,7 +111,7 @@ class Repositext
               # This is a regular split where the original subtitle comes first.
               # Insert new subtitle after original subtitle
               compute_insert_at_index_given_after_stid(
-                op.affectedStids.first.persistent_id,
+                op.affected_stids.first.persistent_id,
                 updated_subtitles
               )
             else

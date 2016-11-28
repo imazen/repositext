@@ -14,6 +14,8 @@ class Repositext
       # List of character strings in many languages: http://en.wikipedia.org/wiki/List_of_pangrams
       class Utf8Encoding < Validator
 
+# TODO: make sure they don't contain BOM
+
         def run
           document_to_validate = @file_to_validate.read
           outcome = utf8_encoded?(document_to_validate)

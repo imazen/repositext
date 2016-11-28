@@ -116,12 +116,15 @@ module Kramdown
           @date_code = date_code.capitalize
           # Applies the settings for the first eagle indent and drop cap.
           @first_eagle = @options[:first_eagle]
+          # Sets the starting page number.
+          @first_page_number = @options[:first_page_number]
           @font_leading = @options[:font_leading]
           @font_name = @options[:font_name]
           @font_size = @options[:font_size]
           @footer_title = truncate_plain_text_title(
             @options[:footer_title_english], 43, 3
           ).unicode_upcase
+          @has_id_page = @options[:has_id_page]
           @header_font_name = @options[:header_font_name]
           @header_text = compute_header_text_latex(
             @options[:header_text],
@@ -145,10 +148,12 @@ module Kramdown
           @id_copyright_year = @options[:id_copyright_year]
           @id_extra_language_info = @options[:id_extra_language_info]
           @id_recording = @options[:id_recording]  if @options[:include_id_recording]
+          @id_series = @options[:id_series]
+          @id_title_1_font_size = @options[:id_title_1_font_size]
+          @id_title_font_name = @options[:id_title_font_name]
           @id_write_to_primary = @options[:id_write_to_primary]
           @id_write_to_secondary = @options[:id_write_to_secondary]
           @include_meta_info = include_meta_info
-          @is_id_page_needed = @options[:is_id_page_needed]
           @is_primary_repo = @options[:is_primary_repo]
           @language_name = @options[:language_name]
           @last_eagle_hspace = @options[:last_eagle_hspace]
@@ -164,7 +169,10 @@ module Kramdown
           @paragraph_number_font_name = @options[:paragraph_number_font_name]
           @polyglossia_default_language = polyglossia_default_language(@options[:language_code_3_chars])
           @primary_font_name = @options[:primary_font_name]
+          @song_leftskip = @options[:song_leftskip]
+          @song_rightskip = @options[:song_rightskip]
           @title_font_name = @options[:title_font_name]
+          @title_font_size = @options[:title_font_size]
           @title_vspace = @options[:title_vspace] # space to be inserted above title to align with body text
           @use_cjk_package = ['chn','cnt'].include?(@options[:language_code_3_chars])
           @version_control_page = if @options[:version_control_page]
@@ -172,6 +180,8 @@ module Kramdown
           else
             ''
           end
+          @vspace_above_title1_required = @options[:vspace_above_title1_required]
+          @vspace_below_title1_required = @options[:vspace_below_title1_required]
 
           # dependency boundary
           @meta_info = include_meta_info ? compute_meta_info(git_repo, latest_commit) : ''
@@ -216,7 +226,7 @@ module Kramdown
         #        title to be truncated to this many chars, ignoring word boundaries.
         # @return [String]
         def compute_header_title_latex(document_title_plain_text, document_title_latex, hrules_present, language_code_3_chars, title_length_override)
-          if hrules_present
+          if hrules_present # this means we're in primary repo
             # bold, italic, small caps and large font
             # NOTE: All titles are wrapped in <em> and .smcaps, so that will
             # take care of the italics and smallcaps.
@@ -228,20 +238,41 @@ module Kramdown
             )
             # re-apply superscript to any trailing digits
             if truncated =~ /\d+\}\z/
-              truncated.gsub!(/\d+\}\z/, "\\textsuperscript{" + '\0' + "}")
+              truncated.gsub!(
+                /\d+\}\z/,
+                [
+                  "{\\raisebox{#{ @options[:header_superscript_raise] }ex}",
+                  "{\\textscale{#{ @options[:header_superscript_scale] }ex}{",
+                  '\0',
+                  "}}}",
+                ].join
+              )
             end
             "\\textscale{#{ 0.909091 }}{\\textbf{#{ truncated }}}"
           else
             # regular, all caps and small font
-            truncated = truncate_plain_text_title(
+            # We use same method as for primary (with hrules_present),
+            # except we pass plain text as document_title_latex.
+            # This is so that we get newline removal and warnings on titles
+            # that get truncated without a length override.
+            truncated = compute_truncated_title(
               document_title_plain_text,
+              document_title_plain_text, # Pass plain text as latex
               title_length_override || 54,
               title_length_override ? 0 : 3
             )
             r = "\\textscale{#{ 0.7 }}{#{ truncated.unicode_upcase }}"
             # re-apply superscript to any trailing digits
             if r =~ /\d+\}\z/
-              r.gsub!(/\d+\}\z/, "\\textsuperscript{" + '\0' + "}")
+              r.gsub!(
+                /\d+\}\z/,
+                [
+                  "{\\raisebox{#{ @options[:header_superscript_raise] }ex}",
+                  "{\\textscale{#{ @options[:header_superscript_scale] }}{",
+                  '\0',
+                  "}}}",
+                ].join
+              )
             end
             if 'chn' == language_code_3_chars
               r = "\\textbf{#{ r }}"

@@ -24,6 +24,20 @@ class Repositext
           )
           corresponding_content_at_file = pdf_file_stub.corresponding_content_at_file
 
+          if(
+            @options[:skip_file_proc] &&
+            ccafn = pdf_file_stub.corresponding_content_at_filename &&
+            @options[:skip_file_proc].call(
+              corresponding_content_at_file.contents,
+              ccafn
+            )
+          )
+            # When exporting PDF recording, we only export files that contain
+            # gap_marks. So we need to check in the validation as well...
+            $stderr.puts " - Skipping #{ filename } - matches options[:skip_file_proc]"
+            return [Outcome.new(true, nil, [])]
+          end
+
           pdf_raw_text = extract_pdf_raw_text(
             pdf_file_name,
             @options['extract_text_from_pdf_service'],

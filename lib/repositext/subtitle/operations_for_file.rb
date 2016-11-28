@@ -73,14 +73,14 @@ class Repositext
       # Returns all delete and merge operations for self
       def delete_and_merge_ops
         operations.find_all{ |op|
-          %w[delete merge].include?(op.operationType)
+          %w[delete merge].include?(op.operation_type)
         }
       end
 
       # Returns all insert and split operations for self
       def insert_and_split_ops
         operations.find_all{ |op|
-          %w[insert split].include?(op.operationType)
+          %w[insert split].include?(op.operation_type)
         }
       end
 
@@ -96,7 +96,7 @@ class Repositext
 
       def last_operation_id
         if (last_op = operations.last)
-          last_op.operationId
+          last_op.operation_id
         else
           nil
         end
@@ -126,8 +126,8 @@ class Repositext
       # @return [Hash] with stids as keys and operation type as value
       def subtitles_that_require_review
         operations.inject({}) { |m,op|
-          op.affectedStids.each { |subtitle|
-            m[subtitle.persistent_id] = op.operationType
+          op.affected_stids.each { |subtitle|
+            m[subtitle.persistent_id] = op.operation_type
           }
           m
         }
@@ -140,7 +140,7 @@ class Repositext
           m[e] = self.send(e)
           m
         }
-        r[:productIdentityId] = product_identity_id
+        r[:product_identity_id] = product_identity_id
         r[:language] = lang_code_3_chars
         r[:operations] = operations.map { |e| e.to_hash }
         r

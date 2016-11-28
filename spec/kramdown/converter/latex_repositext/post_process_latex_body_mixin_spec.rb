@@ -149,14 +149,16 @@ module Kramdown
               "word .22 word",
               "word .\\nolinebreak[4]22 word"
             ],
-            # No linebreaks before \RtSmCapsEmulation inside words
+            # No linebreak between end of latex control sequence and period.
             [
-              "Word W\\RtSmCapsEmulation{none}{ORD}{-0.1em}",
-              "Word W\\nolinebreak[4]\\RtSmCapsEmulation{none}{ORD}{-0.1em}"
+              # Word a.d.
+              "Word \\RtSmCapsEmulation{none}{A}{-0.1em}.\\RtSmCapsEmulation{none}{D}{-0.1em}.",
+              "Word \\RtSmCapsEmulation{none}{A}{-0.1em}\\nolinebreak[4].\\RtSmCapsEmulation{none}{D}{-0.1em}\\nolinebreak[4]."
             ],
             [
-              "Word \\RtSmCapsEmulation{none}{A}{-0.1em}.\\RtSmCapsEmulation{none}{D}{-0.1em}.",
-              "Word \\RtSmCapsEmulation{none}{A}{-0.1em}.\\RtSmCapsEmulation{none}{D}{-0.1em}."
+              # Word Word. Word
+              "Word \\RtGapMarkText{Word}. Word",
+              "Word \\RtGapMarkText{Word}\\nolinebreak[4]. Word"
             ],
           ].each do |test_string, xpect|
             it "handles #{ test_string.inspect }" do

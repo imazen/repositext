@@ -3,22 +3,22 @@ class Repositext
     class Compute
 
       # Computes mappings of subtitle indexes to persistent ids for an entire
-      # repository. Going from git commit `fromGitCommit` to git commit `toGitCommit`.
+      # repository. Going from git commit `from_git_commit` to git commit `to_git_commit`.
       class SubtitleIndexToIdMappingsForRepository
 
         # Initializes a new instance from high level objects.
         # @param repository [Repositext::Repository]
-        # @param fromGitCommit [String]
-        # @param toGitCommit [String]
-        def initialize(repository, fromGitCommit, toGitCommit)
+        # @param from_git_commit [String]
+        # @param to_git_commit [String]
+        def initialize(repository, from_git_commit, to_git_commit)
           @repository = repository
-          @fromGitCommit = fromGitCommit
-          @toGitCommit = toGitCommit
+          @from_git_commit = from_git_commit
+          @to_git_commit = to_git_commit
         end
 
         # @return [Repositext::Subtitle::OperationsForRepository]
         def compute
-          diff = @repository.diff(@fromGitCommit, @toGitCommit, context_lines: 0)
+          diff = @repository.diff(@from_git_commit, @to_git_commit, context_lines: 0)
           mappings_for_all_files = diff.patches.map { |patch|
             file_name = patch.delta.old_file[:path]
 next nil  unless file_name =~ /\/eng64-0212/
@@ -39,8 +39,8 @@ next nil  unless file_name =~ /\/eng64-0212/
           Repositext::Subtitle::IndexToIdMappingsForRepository.new(
             {
               repository: @repository.name,
-              fromGitCommit: @fromGitCommit,
-              toGitCommit: @toGitCommit,
+              from_git_commit: @from_git_commit,
+              to_git_commit: @to_git_commit,
             },
             mappings_for_all_files
           )

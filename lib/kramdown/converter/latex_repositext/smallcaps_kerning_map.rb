@@ -53,7 +53,12 @@ module Kramdown
           end
           cp_kerning = font_attribute_map[sanitize_character_pair(character_pair, @kerning_map['character_mappings'])]
           if cp_kerning.nil?
-            if raise_unhandled_exceptions
+            if character_pair =~ /\A[[:lower:]]{2}\z/
+              # Most lower case character pairs should have zero kerning, so we
+              # fall back to that if we don't find an entry in the map for pairs
+              # that require kerning other than zero.
+              return 0.0
+            elsif raise_unhandled_exceptions
               raise UnhandledCharacterPairError.new(
                 "Unhandled character pair: #{ character_pair.inspect } for font #{ font_name.inspect } and attribute #{ font_attribute.inspect }."
               )

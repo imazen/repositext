@@ -133,34 +133,39 @@ module Kramdown
             /x,
             "\\RtFirstEagle " + '\1' # we use an environment for first eagle
           )
-          # Replace trailing eagle with RtLastEagle
-          lb.gsub!(
-            /
-              (?!<^) # not preceded by line start
-              ( # first capture group
-                [^]{10,} # at least ten non eagle chars
-              )
-              \s # a single whitespace char
-               # eagle
-              ( # second capture group
-                [^]{,3} # up to three non eagle chars
-                $ # end of line
-              )
-            /x,
-            '\1' + "\\RtLastEagle{}" + '\2' # we use a command for last eagle
-          )
-          # Handle RtLastEagle inside of .song para: Songs have a wider
-          # right margin than regular text, so the eagle is not as
-          # close to the right margin as expected.
-          # In order to push the trailing eagle further to the right
-          # than the song paragraphs right margin, we move the
-          # eagle into a new paragraph where it is positioned
-          # further to the right, and shifted back up to be aligned
-          # with the previous line of text.
-          lb.gsub!(
-            /\\RtLastEagle(\{\}\n\\end\{(?:RtSong|RtStanza)\})/,
-            "\\RtLastEagleInsideSong" + '\1'
-          )
+          # NOTE: We've had issues where PDF export hung forever on files that
+          # didn't have a trailing eagle. So we run this processing step only
+          # if at least one more eagle is present in lb.
+          if lb.index('')
+            # Replace trailing eagle with RtLastEagle
+            lb.gsub!(
+              /
+                (?!<^) # not preceded by line start
+                ( # first capture group
+                  [^]{10,} # at least ten non eagle chars
+                )
+                \s # a single whitespace char
+                 # eagle
+                ( # second capture group
+                  [^]{,3} # up to three non eagle chars
+                  $ # end of line
+                )
+              /x,
+              '\1' + "\\RtLastEagle{}" + '\2' # we use a command for last eagle
+            )
+            # Handle RtLastEagle inside of .song para: Songs have a wider
+            # right margin than regular text, so the eagle is not as
+            # close to the right margin as expected.
+            # In order to push the trailing eagle further to the right
+            # than the song paragraphs right margin, we move the
+            # eagle into a new paragraph where it is positioned
+            # further to the right, and shifted back up to be aligned
+            # with the previous line of text.
+            lb.gsub!(
+              /\\RtLastEagle(\{\}\n\\end\{(?:RtSong|RtStanza)\})/,
+              "\\RtLastEagleInsideSong" + '\1'
+            )
+          end
         end
 
         # Removes space after paragraph number to avoid fluctuations in indent.
@@ -195,7 +200,7 @@ module Kramdown
           # Excpetions: no_break_following_chars or ed_and_trn_abbreviations
           lb.gsub!(
             /
-              (
+              (?<lbc> # named capture group
                 [#{ line_breakable_chars }]
               )
               (?! # not followed by one of the following options
@@ -208,7 +213,7 @@ module Kramdown
                 )
               )
             /ix,
-            "\\nolinebreak[4]" + '\1' + "\\hspace{0pt}"
+            "\\nolinebreak[4]\\k<lbc>\\hspace{0pt}"
           )
 
           # When we adjust kerning in smallcaps emulation, the previous gsub!
@@ -242,8 +247,8 @@ module Kramdown
           # We don't allow linebreaks between period and numbers, e.g., "word .22"
           lb.gsub!(/( \.)(\d)/, '\1' + "\\nolinebreak[4]" + '\2')
 
-          # We don't allow linebreaks before \RtSmCapsEmulation inside words
-          lb.gsub!(/(?<=[[:alpha:]])(?=\\RtSmCapsEmulation)/, "\\nolinebreak[4]")
+          # We don't allow linebreaks between the end of a control sequence and a period
+          lb.gsub!("}.", "}\\nolinebreak[4].")
 
           # Convert any zero-width spaces to latex equivalent
           lb.gsub!(/\u200B/, "\\hspace{0pt}")

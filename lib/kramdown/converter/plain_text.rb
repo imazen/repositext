@@ -53,7 +53,8 @@ module Kramdown
         when :strong
           # nothing to do
         when :subtitle_mark
-          # nothing to do
+          # Delegate to method for overridability
+          subtitle_mark_output
         when :text
           # capture value of all :text elements
           if convert_to_upper_case
@@ -64,6 +65,11 @@ module Kramdown
         else
           raise "Handle this element: #{ el.inspect }"
         end
+      end
+
+      # Override this in subclass to include subtitles in plain_text export
+      def self.subtitle_mark_output
+        nil
       end
 
       # Extracts plain text from tree

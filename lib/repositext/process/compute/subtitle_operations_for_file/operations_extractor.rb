@@ -146,7 +146,7 @@ class Repositext
                 capture_op(compute_move_direction)
                 reset_current_capture_group
               when :st_added
-                if :st_added == @prev_asp[:type] && :insert == @ops_in_group.last.operationType
+                if :st_added == @prev_asp[:type] && :insert == @ops_in_group.last.operation_type
                   # This is a subsequent :insert
                   capture_op(:insert)
                 else
@@ -159,7 +159,7 @@ class Repositext
                   reset_current_capture_group
                 end
               when :st_removed
-                if :st_removed == @prev_asp[:type] && :delete == @ops_in_group.last.operationType
+                if :st_removed == @prev_asp[:type] && :delete == @ops_in_group.last.operation_type
                   # This is a subsequent :delete
                   capture_op(:delete)
                 else
@@ -336,92 +336,92 @@ class Repositext
             op = case op_type
             when :content_change
               Subtitle::Operation.new_from_hash(
-                affectedStids: [@current_asp[:subtitle_object]],
-                operationId: compute_next_operation_id!,
-                operationType: :content_change,
+                affected_stids: [@current_asp[:subtitle_object]],
+                operation_id: compute_next_operation_id!,
+                operation_type: :content_change,
               )
             when :delete
-              if(prev_op = @ops_in_group.last) && :merge == prev_op.operationType
+              if(prev_op = @ops_in_group.last) && :merge == prev_op.operation_type
                 # Don't record separate :delete operation, just add @current_asp
-                # to affectedStids.
-                prev_op.affectedStids << @current_asp[:subtitle_object]
+                # to affected_stids.
+                prev_op.affected_stids << @current_asp[:subtitle_object]
                 reported_op_type = :merge_combo
                 nil
               else
                 Subtitle::Operation.new_from_hash(
-                  affectedStids: [@current_asp[:subtitle_object]],
-                  operationId: compute_next_operation_id!,
-                  operationType: :delete,
+                  affected_stids: [@current_asp[:subtitle_object]],
+                  operation_id: compute_next_operation_id!,
+                  operation_type: :delete,
                 )
               end
             when :insert
-              if(prev_op = @ops_in_group.last) && :split == prev_op.operationType
+              if(prev_op = @ops_in_group.last) && :split == prev_op.operation_type
                 # Don't record separate :insert operation, just add @current_asp
-                # to affectedStids.
-                prev_op.affectedStids << @current_asp[:subtitle_object]
+                # to affected_stids.
+                prev_op.affected_stids << @current_asp[:subtitle_object]
                 reported_op_type = :split_combo
                 nil
               else
                 Subtitle::Operation.new_from_hash(
-                  affectedStids: [@current_asp[:subtitle_object]],
-                  operationId: compute_next_operation_id!,
-                  operationType: :insert,
-                  afterStid: @prev_stid,
+                  affected_stids: [@current_asp[:subtitle_object]],
+                  operation_id: compute_next_operation_id!,
+                  operation_type: :insert,
+                  after_stid: @prev_stid,
                 )
               end
             when :merge
-              if(prev_op = @ops_in_group.last) && :merge == prev_op.operationType
+              if(prev_op = @ops_in_group.last) && :merge == prev_op.operation_type
                 # Don't record separate operation, just add @current_asp to
-                # affectedStids
-                prev_op.affectedStids << @current_asp[:subtitle_object]
+                # affected_stids
+                prev_op.affected_stids << @current_asp[:subtitle_object]
                 reported_op_type = :merge_combo
                 nil
               else
                 # record new operation
                 Subtitle::Operation.new_from_hash(
-                  affectedStids: [@prev_asp, @current_asp].map { |e| e[:subtitle_object] },
-                  operationId: compute_next_operation_id!,
-                  operationType: :merge,
+                  affected_stids: [@prev_asp, @current_asp].map { |e| e[:subtitle_object] },
+                  operation_id: compute_next_operation_id!,
+                  operation_type: :merge,
                 )
               end
             when :move_left
               Subtitle::Operation.new_from_hash(
-                affectedStids: [@prev_asp, @current_asp].map { |e| e[:subtitle_object] },
-                operationId: compute_next_operation_id!,
-                operationType: :move_left,
+                affected_stids: [@prev_asp, @current_asp].map { |e| e[:subtitle_object] },
+                operation_id: compute_next_operation_id!,
+                operation_type: :move_left,
               )
             when :move_right
               Subtitle::Operation.new_from_hash(
-                affectedStids: [@prev_asp, @current_asp].map { |e| e[:subtitle_object] },
-                operationId: compute_next_operation_id!,
-                operationType: :move_right,
+                affected_stids: [@prev_asp, @current_asp].map { |e| e[:subtitle_object] },
+                operation_id: compute_next_operation_id!,
+                operation_type: :move_right,
               )
             when :no_op
               if @current_asp[:from][:record_id] != @current_asp[:to][:record_id]
                 # This subtitle was moved to a different record. Need to record
                 # new record_id so that we can update it in STM CSV file in a later step.
                 Subtitle::Operation.new_from_hash(
-                  affectedStids: [@current_asp[:subtitle_object]],
-                  operationId: compute_next_operation_id!,
-                  operationType: :record_id_change,
+                  affected_stids: [@current_asp[:subtitle_object]],
+                  operation_id: compute_next_operation_id!,
+                  operation_type: :record_id_change,
                 )
               else
                 # Nothing to do
                 nil
               end
             when :split
-              if(prev_op = @ops_in_group.last) && :split == prev_op.operationType
+              if(prev_op = @ops_in_group.last) && :split == prev_op.operation_type
                 # Don't record separate operation, just add @current_asp to
-                # affectedStids
-                prev_op.affectedStids << @current_asp[:subtitle_object]
+                # affected_stids
+                prev_op.affected_stids << @current_asp[:subtitle_object]
                 reported_op_type = :split_combo
                 nil
               else
                 # record new operation
                 Subtitle::Operation.new_from_hash(
-                  affectedStids: [@prev_asp, @current_asp].map { |e| e[:subtitle_object] },
-                  operationId: compute_next_operation_id!,
-                  operationType: :split,
+                  affected_stids: [@prev_asp, @current_asp].map { |e| e[:subtitle_object] },
+                  operation_id: compute_next_operation_id!,
+                  operation_type: :split,
                 )
               end
             else

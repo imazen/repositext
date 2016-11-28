@@ -14,7 +14,7 @@ class Repositext
             ],
           ].each do |txt, xpect|
             it "handles #{ txt.inspect }" do
-              GapMarkTagging.export(txt).result.must_equal(xpect)
+              GapMarkTagging.new(txt).export.result.must_equal(xpect)
             end
           end
         end
@@ -31,7 +31,7 @@ class Repositext
             ["%gap marks are preserved", "%gap marks are preserved"],
           ].each do |txt, xpect|
             it "handles #{ txt.inspect }" do
-              GapMarkTagging.post_process(txt).must_equal(xpect)
+              GapMarkTagging.new('_').send(:post_process,  txt).must_equal(xpect)
             end
           end
         end
@@ -42,7 +42,7 @@ class Repositext
             ["para\n{: .normal_pn}", "para\n{: .normal(underscore placeholder)pn}"],
           ].each do |txt, xpect|
             it "handles #{ txt.inspect }" do
-              GapMarkTagging.pre_process(txt).must_equal(xpect)
+              GapMarkTagging.new('_').send(:pre_process, txt).must_equal(xpect)
             end
           end
         end
@@ -59,7 +59,7 @@ class Repositext
             ["*ems* are _removed_", "ems are removed"],
           ].each do |txt, xpect|
             it "handles #{ txt.inspect }" do
-              GapMarkTagging.suspend_unwanted_tokens(txt).must_equal(xpect)
+              GapMarkTagging.new('_').send(:suspend_unwanted_tokens, txt).must_equal(xpect)
             end
           end
         end

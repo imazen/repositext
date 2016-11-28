@@ -35,7 +35,7 @@ class Repositext
         def contents_match?(content_at, gap_mark_tagging_import)
           # We have to export content_at in both cases to a temporary gap_mark_tagging_export
           # so that we can compare it with the gap_mark_tagging_import
-          tmp_gap_mark_tagging_export = Repositext::Process::Export::GapMarkTagging.export(content_at).result
+          tmp_gap_mark_tagging_export = Repositext::Process::Export::GapMarkTagging.new(content_at).export.result
           case @options[:gap_mark_tagging_import_consistency_compare_mode]
           when 'pre_import'
             # We re-export the existing content_at to gap_mark_tagging

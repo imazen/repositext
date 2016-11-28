@@ -16,7 +16,11 @@ module Kramdown
               kerning_values_map = kerning_map['kerning_values']
               font_names = kerning_values_map.keys
               character_mappings = kerning_map['character_mappings']
-              smcaps_emulator = LatexRepositext.send(:new, '_', {})
+              smcaps_emulator = LatexRepositext.send(
+                :new,
+                '_',
+                language: Repositext::Language::English.new
+              )
               latex = render_latex_prefix(font_names)
               latex << render_latex_body(kerning_values_map, character_mappings, smcaps_emulator)
               latex << render_latex_suffix
@@ -48,6 +52,9 @@ module Kramdown
 
 % make sure there is no page break in id paragraphs at the end
 \\usepackage{needspace}
+
+% for coloring text
+\\usepackage[svgnames]{xcolor}
 
 % package and command dependency boundary
 
@@ -151,6 +158,13 @@ This document was rendered at #{ Time.now.to_s }.
                   [sample_prefix, ' ', character_pair, sample_suffix].join
                 when /[[:lower:]][[:upper:]]/
                   [sample_prefix, character_pair, sample_suffix].join
+                when /[[:lower:]][[:lower:]]/
+                  [sample_prefix, character_pair, sample_suffix].join
+                when /[[:upper:]][[:upper:]]/
+                  [sample_prefix, ' ', character_pair, sample_suffix].join
+                when /[\,][[:alpha:]]/
+                  # Insert sapce inside character pair to trigger custom kerning.
+                  [sample_prefix, character_pair.first,' ', character_pair.last,' ', sample_suffix].join
                 when /[[:alpha:]][^[:alpha:]]/
                   [sample_prefix, character_pair, ' ', sample_suffix].join
                 when /[^[:alpha:]][[:alpha:]]/
@@ -162,7 +176,8 @@ This document was rendered at #{ Time.now.to_s }.
                   txt,
                   font_name,
                   font_attrs.split(' ')
-                )
+                ).sub(sample_prefix.upcase, "\\textcolor{gray}{#{ sample_prefix.upcase }}")
+                 .sub(sample_suffix.upcase, "\\textcolor{gray}{#{ sample_suffix.upcase }}")
                 [
                   "\\begin{KerningSample}{\\#{ key_for_font_name(font_name) }}",
                   "\\rule[-.3\\baselineskip]{0pt}{\\baselineskip}%", # Insert strut to avoid inconsistent vertical spacing caused by different height characters.

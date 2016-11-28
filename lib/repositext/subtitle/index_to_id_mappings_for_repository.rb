@@ -7,7 +7,7 @@ class Repositext
     # Can be serialized to and from a JSON file
     class IndexToIdMappingsForRepository
 
-      ATTR_NAMES = [:fromGitCommit, :repository, :toGitCommit]
+      ATTR_NAMES = [:from_git_commit, :repository, :to_git_commit]
 
       attr_accessor :mappings_for_files
       attr_accessor *ATTR_NAMES
@@ -15,8 +15,8 @@ class Repositext
       # @param attrs [Hash]
       #   {
       #     repository: 'english',
-      #     fromGitCommit: '1234',
-      #     toGitCommit: '2345',
+      #     from_git_commit: '1234',
+      #     to_git_commit: '2345',
       #   }
       # @param mappings_for_files [Array<Repositext::Subtitle::IndexToIdMappingsForFile>]
       def initialize(attrs, mappings_for_files)

@@ -16,6 +16,15 @@ class Repositext
         RepositorySet.new(repos_parent_path).git_clone_missing_repos(:all_content_repos)
       end
 
+      # Runs `rt export pdf_book` on all content repos
+      def git_repo_export_pdf_book_all(options)
+        repos_parent_path = File.expand_path('..', Dir.pwd)
+        RepositorySet.new(repos_parent_path).export_pdf_book(
+          :all_content_repos,
+          content_type
+        )
+      end
+
       # Runs `rt fix normalize_trailing_newlines` on all content repos
       def git_repo_fix_normalize_trailing_newlines(options)
         repos_parent_path = File.expand_path('..', Dir.pwd)

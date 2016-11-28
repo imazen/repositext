@@ -73,6 +73,10 @@ class Repositext
                  :type => :string,
                  :required => true,
                  :desc => 'Specifies which content type to operate on.'
+    class_option :'date-code',
+                 :aliases => "--dc",
+                 :type => :string,
+                 :desc => 'Gets rewritten as file selector for date codes.'
     class_option :debug,
                  :type => :boolean,
                  :default => false,
@@ -304,6 +308,11 @@ class Repositext
     # @param [String] command_spec
     def invoke_repositext_command(main_command, command_spec, options)
       method_name = "#{ main_command }_#{ command_spec }"
+      if '' != (dc = options['date-code'].to_s.strip)
+        # Rewrite dc option to file-selector
+        options['file-selector'] = "**/*{#{ dc }}_*"
+      end
+
       if respond_to?(method_name, true)
         with_timer do
           self.send(method_name, options)

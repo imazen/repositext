@@ -43,6 +43,7 @@ class Repositext
             prev_st_index_to = 0
             r = aligned_subtitles_from.map { |st_from|
               st_to = aligned_subtitles_to.shift
+              # Fill in :index for gaps
               prev_st_index_from = (st_from[:index] ||= prev_st_index_from)
               prev_st_index_to = (st_to[:index] ||= prev_st_index_to)
               alignment_offset = (st_to[:index] - st_from[:index]).abs
@@ -66,7 +67,7 @@ class Repositext
             most_recent_existing_subtitle_id = nil # to create temp subtitle ids
             temp_subtitle_offset = 0
             # Compute truncation length for sim_left and sim_right. We only
-            # consider the first/last 30 chars. This length is aligned with
+            # consider the first/last N chars. This length is aligned with
             # max_conf_at_char_length in `StringComputations.similarity`.
             half_truncation_length = 15
 
@@ -90,7 +91,7 @@ class Repositext
                 # NOTE: We use record_id from `to`!
                 most_recent_existing_subtitle_id = asp[:from][:persistent_id]
                 ::Repositext::Subtitle.new(
-                  persistent_id: asp[:from][:persistent_id],
+                  persistent_id: most_recent_existing_subtitle_id,
                   record_id: asp[:to][:record_id],
                   tmp_attrs: { index: st_index },
                 )
@@ -188,10 +189,7 @@ class Repositext
             end
 
             # Handle second issue
-            if(
-              :unaligned != cur[:type] ||
-              !cur[:has_repetitions]
-            )
+            if !(:unaligned == cur[:type] && cur[:has_repetitions])
               # Irrelevant alignment or no repetitions, nothing to do.
               return true
             end
@@ -213,7 +211,7 @@ class Repositext
               asp_joined_content_sim = [:from, :to].map { |e| asp[e][:content_sim] }.join(' ')
 
               if asp[:has_repetitions]
-                # ASP has repetitions, however they are balanced.
+                # ASP has repetitions. Return true if they are balanced.
                 asp[:from][:repetitions].values.length == asp[:to][:repetitions].values.length
               else
                 # ASP doesn't have repetitions and both :from and :to contain
