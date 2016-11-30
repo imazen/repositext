@@ -149,6 +149,11 @@ module Kramdown
               "word .22 word",
               "word .\\nolinebreak[4]22 word"
             ],
+            # No linebreak between chinese period and closing bracket
+            [
+              "word。] word",
+              "word。\\nolinebreak[4]] word"
+            ],
             # No linebreak between end of latex control sequence and period.
             [
               # Word a.d.
