@@ -43,6 +43,7 @@ class Repositext
         0x001F, # information separator one (unit separator)
       # 0x0020 space
         0x0027, # apostrophe
+        0x007E, # ~ tilde
         0x007F, # delete
         0x0080, # <control>
         0x0081, # <control>
