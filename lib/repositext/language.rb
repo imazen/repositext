@@ -39,6 +39,8 @@ class Repositext
       ].map { |e| chars[e] }
     end
 
+    # TODO: Remove this hack and make all methods on Language class either class
+    # or instance methods!
     def chars
       self.class.chars
     end
