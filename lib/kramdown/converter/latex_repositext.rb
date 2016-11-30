@@ -20,6 +20,7 @@ module Kramdown
       # @param options [Hash{Symbol => Object}]
       def initialize(root, options = {})
         super
+        @previous_question_number_of_digits = 1
         @element_ancestors_stack = ElementStack.new
       end
 
@@ -315,6 +316,49 @@ module Kramdown
       # Returns boolean to indicate whether song_break_class should be applied.
       def apply_song_break_class
         true
+      end
+
+      # Computes before, inner_text, and after for question paragraph els.
+      # Sets indent based on the number of digits in the question's number.
+      # Wraps question numbers in command. Applies same indent as previous
+      # question to questions without numbers.
+      # @param el [Kramdown::Element]
+      # @param opts [Hash{Symbol => Object}]
+      # @return [Array<String>] tuple of before, inner_text, after
+      def compute_question_paragraph_parts(el, opts)
+        inner_plain_text = el.to_plain_text
+        inner_text_latex = inner(el, opts)
+        question_num = inner_plain_text.match(/\A\d+(?=\.)/).to_s # "213" or ""
+        has_number = ('' != question_num)
+        if has_number
+          num_digits = question_num.length
+          @previous_question_number_of_digits = num_digits
+        else
+          # Use previous number of digits
+          num_digits = @previous_question_number_of_digits
+        end
+        indent = @options["question#{ num_digits }_indent".to_sym]
+
+        # wrap question number in command for consistent indentation of following
+        # text. Consume space between number and following text. Has to work
+        # even if number is wrapped in bold span.
+        if has_number
+          inner_text_latex.sub!(
+            /
+              (#{ question_num }\.) # first capture group number and period
+              (\}?) # second capture group maybe a closing brace from textbf
+              \s # followed by a space
+            /x,
+            "\\RtQuestionNumber{#{ indent }}{\\1}\\2"
+          )
+        end
+
+        latex_env_name = "RtQuestion#{ num_digits }#{ has_number ? "With" : "No" }Number"
+        [
+          "\\begin{#{ latex_env_name }}\n",
+          inner_text_latex,
+          "\n\\end{#{ latex_env_name }}",
+        ]
       end
 
       # Temporary placeholder for gap_mark number and text

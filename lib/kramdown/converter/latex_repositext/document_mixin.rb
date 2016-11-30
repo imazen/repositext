@@ -169,6 +169,9 @@ module Kramdown
           @paragraph_number_font_name = @options[:paragraph_number_font_name]
           @polyglossia_default_language = polyglossia_default_language(@options[:language_code_3_chars])
           @primary_font_name = @options[:primary_font_name]
+          @question1_indent = @options[:question1_indent]
+          @question2_indent = @options[:question2_indent]
+          @question3_indent = @options[:question3_indent]
           @song_leftskip = @options[:song_leftskip]
           @song_rightskip = @options[:song_rightskip]
           @title_font_name = @options[:title_font_name]

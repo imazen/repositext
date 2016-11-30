@@ -394,6 +394,16 @@
   {\noindent\textparagraphnumberfont{\makebox[\parindent][l]{\raisebox{0.5ex}{{\textscale{0.655}{#1}}}}}}
 <% end %>
 
+% command to render question number.
+% First argument: The width of the mbox (same as indent)
+% Second argument: the question number
+\newcommand{\RtQuestionNumber}[2]
+<% if @polyglossia_default_language %>
+  {\noindent\makebox[#1][l]{#2}}
+<% else %>
+  {\noindent\textparagraphnumberfont{\makebox[#1][l]{#2}}}
+<% end %>
+
 % command to render record_mark. Pass rid as param
 \newcommand{\RtRecordMark}[1]
   {\noindent\colorbox{LightGrey}{Record#1}\par}
@@ -613,8 +623,83 @@
   {\primaryfont}
   {}
 
-% environment to render questions
-\newenvironment{RtQuestion}
+% environment to render questions with single digit numbers
+\newenvironment{RtQuestion1WithNumber}
+  {%
+    \par
+    \setlength{\lineskiplimit}{-100pt} % This setting keeps latex from automatically stretching linespacing when characters may overlap.
+    \noindent
+    \hangindent=<%= @question1_indent %>
+    \hangafter=1%
+  }
+  {%
+    \par
+  }
+
+% environment to render questions with single digit number equivalent left indent
+\newenvironment{RtQuestion1NoNumber}
+  {%
+    \par
+    \setlength{\lineskiplimit}{-100pt} % This setting keeps latex from automatically stretching linespacing when characters may overlap.
+    \leftskip=<%= @question1_indent %>
+    \setlength{\parindent}{0}%
+  }
+  {%
+    \par
+  }
+
+% environment to render questions with double digit numbers
+\newenvironment{RtQuestion2WithNumber}
+  {%
+    \par
+    \setlength{\lineskiplimit}{-100pt} % This setting keeps latex from automatically stretching linespacing when characters may overlap.
+    \noindent
+    \hangindent=<%= @question2_indent %>
+    \hangafter=1%
+  }
+  {%
+    \par
+  }
+
+% environment to render questions with double digit number equivalent left indent
+\newenvironment{RtQuestion2NoNumber}
+  {%
+    \par
+    \setlength{\lineskiplimit}{-100pt} % This setting keeps latex from automatically stretching linespacing when characters may overlap.
+    \leftskip=<%= @question2_indent %>
+    \setlength{\parindent}{0}%
+  }
+  {%
+    \par
+  }
+
+% environment to render questions with triple digit numbers
+\newenvironment{RtQuestion3WithNumber}
+  {%
+    \par
+    \setlength{\lineskiplimit}{-100pt} % This setting keeps latex from automatically stretching linespacing when characters may overlap.
+    \noindent
+    \hangindent=<%= @question3_indent %>
+    \hangafter=1%
+  }
+  {%
+    \par
+  }
+
+% environment to render questions with triple digit number equivalent left indent
+\newenvironment{RtQuestion3NoNumber}
+  {%
+    \par
+    \setlength{\lineskiplimit}{-100pt} % This setting keeps latex from automatically stretching linespacing when characters may overlap.
+    \leftskip=<%= @question3_indent %>
+    \setlength{\parindent}{0}%
+  }
+  {%
+    \par
+  }
+
+% environment to render readings
+\newenvironment{RtReading}
   {%
     \par
     \setlength{\lineskiplimit}{-100pt} % This setting keeps latex from automatically stretching linespacing when characters may overlap.

@@ -318,6 +318,9 @@ class Repositext
             options['pdf_export_size']
           )
           options[:paragraph_number_font_name] = config.setting(:pdf_export_paragraph_number_font_name)
+          options[:question1_indent] = config.setting(:pdf_export_question1_indent)
+          options[:question2_indent] = config.setting(:pdf_export_question2_indent)
+          options[:question3_indent] = config.setting(:pdf_export_question3_indent)
           options[:source_filename] = filename
           options[:title_font_name] = config.setting(:pdf_export_title_font_name)
           options[:title_font_size] = config.setting(:pdf_export_title_font_size)
