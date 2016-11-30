@@ -160,13 +160,69 @@ module Kramdown
           if el.children.size == 1 && el.children.first.type == :img && !(img = convert_img(el.children.first, opts)).empty?
             convert_standalone_image(el, opts, img)
           else
+            # NOTE: We may wrap multiple environments around a single paragraph.
+            # It's important that the latex environments are nested symmetrically.
+            # So we we prepend to the `before` and append to the `after` string.
             before = ''
             after = ''
             inner_text = nil
 
-            # NOTE: We may wrap multiple environments around a single paragraph.
-            # It's important that the latex environments are nested symmetrically.
-            # So we we prepend to the `before` and append to the `after` string.
+            # Handle required classes, make sure p has one of them
+            if el.has_class?('id_paragraph')
+              # render in RtIdParagraph environment
+              before.prepend("\\begin{RtIdParagraph}\n")
+              after << "\n\\end{RtIdParagraph}"
+            elsif el.has_class?('id_title1')
+              # render in RtIdTitle1 environment
+              before.prepend("\\begin{RtIdTitle1}\n")
+              after << "\n\\end{RtIdTitle1}"
+              inner_text = inner(el, opts.merge(smallcaps_font_override: @options[:title_font_name]))
+              # differentiate between primary and non-primary content_types
+              if !@options[:is_primary_repo]
+                # add space between title and date code
+                inner_text.gsub!(/ ([[:alpha:]]{3}\d{2}\-\d{4})/, "\\" + 'hspace{2 mm}\1')
+                # make date code smaller
+                inner_text.gsub!(/[[:alpha:]]{3}\d{2}\-\d{4}.*/, "\\" + 'textscale{0.8}{\0}')
+              end
+            elsif el.has_class?('id_title2')
+              # render in RtIdTitle2 environment
+              before.prepend("\\begin{RtIdTitle2}\n")
+              after << "\n\\end{RtIdTitle2}"
+              inner_text = inner(el, opts.merge(smallcaps_font_override: @options[:title_font_name]))
+            elsif el.has_class?('normal')
+              # render in RtNormal environment
+              before.prepend("\\begin{RtNormal}\n")
+              after << "\n\\end{RtNormal}"
+            elsif el.has_class?('normal_pn')
+              # render in RtNormal environment
+              before.prepend("\\begin{RtNormal}\n")
+              after << "\n\\end{RtNormal}"
+            elsif el.has_class?('q')
+              # render in RtQuestion environment
+              b, inner_text, a = compute_question_paragraph_parts(el, opts)
+              before.prepend(b)
+              after << a
+            elsif el.has_class?('reading')
+              # render in RtReading environment
+              before.prepend("\\begin{RtReading}\n")
+              after << "\n\\end{RtReading}"
+            elsif el.has_class?('scr')
+              # render in RtScr environment
+              before.prepend("\\begin{RtScr}\n")
+              after << "\n\\end{RtScr}"
+            elsif el.has_class?('song')
+              # render in RtSong environment
+              before.prepend("\\begin{RtSong}\n")
+              after << "\n\\end{RtSong}"
+            elsif el.has_class?('stanza')
+             # render in RtStanza environment
+              before.prepend("\\begin{RtStanza}\n")
+              after << "\n\\end{RtStanza}"
+            else
+              raise "Unexpected class for p element: #{ el.inspect }"
+            end
+
+            # Handle zero or more optional classes
             if el.has_class?('decreased_word_space')
               # render in RtDecreasedWordSpace environment
               before.prepend("\\begin{RtDecreasedWordSpace}\n")
@@ -187,60 +243,11 @@ module Kramdown
               before.prepend("\\begin{RtIndentForEagle}\n")
               after << "\n\\end{RtIndentForEagle}"
             end
-            if el.has_class?('id_paragraph')
-              # render in RtIdParagraph environment
-              before.prepend("\\begin{RtIdParagraph}\n")
-              after << "\n\\end{RtIdParagraph}"
-            end
-            if el.has_class?('id_title1')
-              # render in RtIdTitle1 environment
-              before.prepend("\\begin{RtIdTitle1}\n")
-              after << "\n\\end{RtIdTitle1}"
-              inner_text = inner(el, opts.merge(smallcaps_font_override: @options[:title_font_name]))
-              # differentiate between primary and non-primary content_types
-              if !@options[:is_primary_repo]
-                # add space between title and date code
-                inner_text.gsub!(/ ([[:alpha:]]{3}\d{2}\-\d{4})/, "\\" + 'hspace{2 mm}\1')
-                # make date code smaller
-                inner_text.gsub!(/[[:alpha:]]{3}\d{2}\-\d{4}.*/, "\\" + 'textscale{0.8}{\0}')
-              end
-            end
-            if el.has_class?('id_title2')
-              # render in RtIdTitle2 environment
-              before.prepend("\\begin{RtIdTitle2}\n")
-              after << "\n\\end{RtIdTitle2}"
-              inner_text = inner(el, opts.merge(smallcaps_font_override: @options[:title_font_name]))
-            end
-            if el.has_class?('normal')
-              # render in RtNormal environment
-              before.prepend("\\begin{RtNormal}\n")
-              after << "\n\\end{RtNormal}"
-            end
-            if el.has_class?('normal_pn')
-              # render in RtNormal environment
-              before.prepend("\\begin{RtNormal}\n")
-              after << "\n\\end{RtNormal}"
-            end
             if el.has_class?('omit')
               # render in RtOmit environment
               b,a = latex_environment_for_translator_omit
               before.prepend(b)
               after << a
-            end
-            if el.has_class?('q')
-              # render in RtQuestion environment
-              before.prepend("\\begin{RtQuestion}\n")
-              after << "\n\\end{RtQuestion}"
-            end
-            if el.has_class?('scr')
-              # render in RtScr environment
-              before.prepend("\\begin{RtScr}\n")
-              after << "\n\\end{RtScr}"
-            end
-            if el.has_class?('song')
-              # render in RtSong environment
-              before.prepend("\\begin{RtSong}\n")
-              after << "\n\\end{RtSong}"
             end
             if el.has_class?('song_break')
               # render in RtSong(Break) environment
@@ -248,11 +255,8 @@ module Kramdown
               before.prepend("\\begin{#{ latex_env }}\n")
               after << "\n\\end{#{ latex_env }}"
             end
-            if el.has_class?('stanza')
-             # render in RtStanza environment
-              before.prepend("\\begin{RtStanza}\n")
-              after << "\n\\end{RtStanza}"
-            end
+
+            # Put it all together
             "#{ before }#{ inner_text || inner(el, opts) }#{ after }\n\n"
           end
         end
