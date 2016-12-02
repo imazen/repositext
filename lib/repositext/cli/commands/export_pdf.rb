@@ -361,8 +361,12 @@ class Repositext
             )
           ]
         end
-        # Run pdf export validation after PDFs have been exported
-        validate_pdf_export(options)
+
+        if config.setting(:pdf_export_skip_validation)
+          $stderr.puts "Skipping PDF export validation for all files"
+        else
+          validate_pdf_export(options)
+        end
 
         # Add title to filename after validations have run (validations require
         # conventional filenames)
