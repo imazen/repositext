@@ -153,6 +153,10 @@ module Kramdown
         end
       end
 
+      def convert_hr(el, opts)
+        @options[:hrule_latex]
+      end
+
       # Patch this method to handle the various repositext paragraph styles.
       # @param el [Kramdown::Element]
       # @param opts [Hash{Symbol => Object}]

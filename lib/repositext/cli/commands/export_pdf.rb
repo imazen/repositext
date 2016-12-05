@@ -305,6 +305,7 @@ class Repositext
           options[:header_superscript_raise] = config.setting(:pdf_export_header_superscript_raise)
           options[:header_text] = config.setting(:pdf_export_header_text)
           options[:header_footer_rules_present] = config.setting(:pdf_export_header_footer_rules_present)
+          options[:hrule_latex] = config.setting(:pdf_export_hrule_latex)
           options[:id_copyright_year] = config.setting(:erp_id_copyright_year, false)
           options[:id_recording] = config.setting(:pdf_export_id_recording, false)
           options[:id_series] = config.setting(:pdf_export_id_series, false)
