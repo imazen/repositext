@@ -81,6 +81,7 @@ class Repositext
             ["gap_mark at invalid position (after quote) ’%word", 1],
             ["gap_mark at invalid position (after parens) (%word", 1],
             ["gap_mark at invalid position (after opening bracket) [%word", 1],
+            ["gap_mark NOT at invalid position (if followed by …?…) word%…?…", 0],
             ["subtitle_mark at invalid position (inside word) word@word", 1],
             ["subtitle_mark at invalid position (after asterisk) *@word", 1],
             ["subtitle_mark at invalid position (after quote) *@word", 1],
