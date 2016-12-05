@@ -214,14 +214,14 @@ class Repositext
         end
       end
 
-      # Export test files for st-ops extraction end-to-end test:
-      # We apply an st-ops file's operations to the `from` plain text with
+      # Export test files for st-ops extraction end-to-end test where we apply
+      # an st-ops file's operations to the `from` plain text with
       # subtitles and expect the outcome to be identical to the `to` plain text
       # with subtitles. This applies previously extracted subtitle operations
       # to the repo. The following files are required for this test:
       #
       # * Plain text versions (with subtitles) of all files at both `from` and `to` git commit.
-      # * All subtitle marker CSV files at `from` git commit (to be able to address subtitles by stids)
+      # * Subtitle marker CSV files at `from` and `to` git commit (to be able to address subtitles by stids)
       # * A single st-ops file for `from` and `to` git commits.
       #
       # Steps to prepare the files:
