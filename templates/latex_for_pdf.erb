@@ -433,10 +433,19 @@
   {~\hspace{\fill}~\rlap{\hspace{<%= @last_eagle_hspace %>pt}\raisebox{-0.5ex}{}}}
 
 
-% enviroment to render first eagle
+% environment to render first eagle
 \newenvironment{RtFirstEagle}
   <%= @first_eagle %>
   {}
+
+% environment to set centering for horizontal rules
+\newenvironment{RtHorizontalRule}
+  {%
+    \centering
+  }
+  {%
+    \par
+  }
 
 % environment to render idparagraph paragraphs when multiples occur
 \newenvironment{RtIdMultiParagraph}
