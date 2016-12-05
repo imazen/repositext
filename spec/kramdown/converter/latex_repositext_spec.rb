@@ -9,11 +9,11 @@ module Kramdown
       describe "#convert_entity" do
 
         [
-          ["word &amp; word", "word \\&{} word\n\n"],
-          ["word &#x2011; word", "word \u2011 word\n\n"],
-          ["word &#x2028; word", "word \u2028 word\n\n"],
-          ["word &#x202F; word", "word \u202F word\n\n"],
-          ["word &#xFEFF; word", "word \uFEFF word\n\n"],
+          ["word &amp; word\n{: .normal}", "\\begin{RtNormal}\nword \\&{} word\n\\end{RtNormal}\n\n"],
+          ["word &#x2011; word\n{: .normal}", "\\begin{RtNormal}\nword \u2011 word\n\\end{RtNormal}\n\n"],
+          ["word &#x2028; word\n{: .normal}", "\\begin{RtNormal}\nword \u2028 word\n\\end{RtNormal}\n\n"],
+          ["word &#x202F; word\n{: .normal}", "\\begin{RtNormal}\nword \u202F word\n\\end{RtNormal}\n\n"],
+          ["word &#xFEFF; word\n{: .normal}", "\\begin{RtNormal}\nword \uFEFF word\n\\end{RtNormal}\n\n"],
         ].each do |test_string, xpect|
           it "decodes valid encoded entity #{ test_string.inspect }" do
             doc = Document.new(test_string, input: 'KramdownRepositext', language: language)
@@ -22,7 +22,7 @@ module Kramdown
         end
 
         [
-          ["word &#x2012; word", "word  word\n\n"],
+          ["word &#x2012; word\n{: .normal}", "\\begin{RtNormal}\nword  word\n\\end{RtNormal}\n\n"],
         ].each do |test_string, xpect|
           it "doesn't decode invalid encoded entity #{ test_string.inspect }" do
             doc = Document.new(test_string, input: 'KramdownRepositext', language: language)
@@ -31,7 +31,7 @@ module Kramdown
         end
 
         [
-          ["word &#x391; word", "word $A${} word\n\n"], # decimal 913
+          ["word &#x391; word\n{: .normal}", "\\begin{RtNormal}\nword $A${} word\n\\end{RtNormal}\n\n"], # decimal 913
         ].each do |test_string, xpect|
           it "decodes kramdown built in entity #{ test_string.inspect }" do
             doc = Document.new(test_string, input: 'KramdownRepositext', language: language)
@@ -91,13 +91,29 @@ module Kramdown
 
       end
 
+      describe "#convert_hr" do
+
+        it "uses setting to render horizontal rules" do
+          doc = Document.new(
+            "word\n{: .normal}\n\n* * *",
+            input: 'KramdownRepositext',
+            language: language,
+            hrule_latex: 'hrule-latex'
+          )
+          doc.to_latex_repositext.must_equal(
+            "\\begin{RtNormal}\nword\n\\end{RtNormal}\n\nhrule-latex"
+          )
+        end
+
+      end
+
       describe "#convert_p" do
 
         [
           [
             "multiple nested environments around single paragraph",
             "word word word\n{: .normal .indent_for_eagle}\n",
-            "\\begin{RtNormal}\n\\begin{RtIndentForEagle}\nword word word\n\\end{RtIndentForEagle}\n\\end{RtNormal}\n\n"
+            "\\begin{RtIndentForEagle}\n\\begin{RtNormal}\nword word word\n\\end{RtNormal}\n\\end{RtIndentForEagle}\n\n"
           ],
         ].each do |desc, test_string, xpect|
           it "handles #{ desc }" do
