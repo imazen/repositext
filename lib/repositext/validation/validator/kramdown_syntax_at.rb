@@ -86,7 +86,13 @@ class Repositext
                 @kpn_tracker = l_kpn
               else
                 # Subsequent KPN
-                if(l_kpn != @kpn_tracker + 1)
+                if(
+                  (l_kpn != @kpn_tracker + 1) && \
+                  !(
+                    (@file_to_validate.path.index('eng60-0515m_0663') && l_kpn == 9) || # exception 1
+                    (@file_to_validate.path.index('eng63-0318_0943') && l_kpn == 181) # exception 2
+                  )
+                )
                   warnings << Reportable.error(
                     [
                       @file_to_validate.path,
