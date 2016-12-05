@@ -128,18 +128,18 @@ module Kramdown
           @header_font_name = @options[:header_font_name]
           @header_text = compute_header_text_latex(
             @options[:header_text],
-            @options[:hrules_present],
+            @options[:header_footer_rules_present],
             @options[:language_code_3_chars]
           )
           @header_title = compute_header_title_latex(
             document_title_plain_text,
             document_title_latex,
-            @options[:hrules_present],
+            @options[:header_footer_rules_present],
             @options[:language_code_3_chars],
             @options[:truncated_header_title_length]
           )
           # Turns on hrules in title, header and footer.
-          @hrules_present = @options[:hrules_present]
+          @header_footer_rules_present = @options[:header_footer_rules_present]
           @id_address_primary_latex_1 = @options[:id_address_primary_latex_1]
           @id_address_primary_latex_2 = @options[:id_address_primary_latex_2]
           @id_address_secondary_latex_1 = @options[:id_address_secondary_latex_1]
@@ -161,7 +161,7 @@ module Kramdown
           @linebreaklocale = @options[:language_code_2_chars]
           @magnification = magnification
           @page_number_command = compute_page_number_command(
-            @options[:hrules_present],
+            @options[:header_footer_rules_present],
             @options[:language_code_3_chars]
           )
           @page_settings = page_settings_for_latex_geometry_package
@@ -196,11 +196,11 @@ module Kramdown
 
         # Wraps header_text in latex markup (this is the non-title header text)
         # @param header_text [String]
-        # @param hrules_present [Boolean]
+        # @param header_footer_rules_present [Boolean]
         # @param language_code_3_chars [String]
         # @return [String]
-        def compute_header_text_latex(header_text, hrules_present, language_code_3_chars)
-          if hrules_present
+        def compute_header_text_latex(header_text, header_footer_rules_present, language_code_3_chars)
+          if header_footer_rules_present
             # italic, small caps and large font
             t = emulate_small_caps(
               escape_latex_text(header_text),
@@ -223,13 +223,13 @@ module Kramdown
         # digits.
         # @param document_title_plain_text [String]
         # @param document_title_latex [String]
-        # @param hrules_present [Boolean]
+        # @param header_footer_rules_present [Boolean]
         # @param language_code_3_chars [String]
         # @param title_length_override [Integer, optional] will force
         #        title to be truncated to this many chars, ignoring word boundaries.
         # @return [String]
-        def compute_header_title_latex(document_title_plain_text, document_title_latex, hrules_present, language_code_3_chars, title_length_override)
-          if hrules_present # this means we're in primary repo
+        def compute_header_title_latex(document_title_plain_text, document_title_latex, header_footer_rules_present, language_code_3_chars, title_length_override)
+          if header_footer_rules_present # this means we're in primary repo
             # bold, italic, small caps and large font
             # NOTE: All titles are wrapped in <em> and .smcaps, so that will
             # take care of the italics and smallcaps.
@@ -254,7 +254,7 @@ module Kramdown
             "\\textscale{#{ 0.909091 }}{\\textbf{#{ truncated }}}"
           else
             # regular, all caps and small font
-            # We use same method as for primary (with hrules_present),
+            # We use same method as for primary (with header_footer_rules_present),
             # except we pass plain text as document_title_latex.
             # This is so that we get newline removal and warnings on titles
             # that get truncated without a length override.
@@ -307,11 +307,11 @@ module Kramdown
         end
 
         # Computes the command to be used for page numbers in the page header.
-        # @param hrules_present [Boolean]
+        # @param header_footer_rules_present [Boolean]
         # @param language_code_3_chars [String]
         # @return [String]
-        def compute_page_number_command(hrules_present, language_code_3_chars)
-          if hrules_present
+        def compute_page_number_command(header_footer_rules_present, language_code_3_chars)
+          if header_footer_rules_present
             # bold, italic, small caps and large font
             "\\textscale{#{ 0.909091 }}{\\textbf{\\textit{\\thepage}}}"
           else

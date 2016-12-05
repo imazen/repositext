@@ -124,7 +124,7 @@
 \fancypagestyle{RtPageStyle}{%
   \fancyhf{}
   \fancyhfoffset[LE]{0mm}
-  <% if @hrules_present %>
+  <% if @header_footer_rules_present %>
     % single line in header (default)
     \renewcommand{\headrulewidth}{0.19pt}
     % double line in footer
@@ -134,7 +134,7 @@
     \renewcommand{\headrulewidth}{0mm}
     % no line in footer (default)
   <% end %>
-  \fancyhead[EL,OR]{<%= "\\hrule height 0.19\pt \\kern 0.33\pt"  if @hrules_present %><%= @page_number_command %>} % outside
+  \fancyhead[EL,OR]{<%= "\\hrule height 0.19\pt \\kern 0.33\pt"  if @header_footer_rules_present %><%= @page_number_command %>} % outside
   \fancyhead[ER]{<%= @polyglossia_default_language ? '' : '\headerfont' %><%= @polyglossia_default_language ? '' : '\addfontfeature{LetterSpace=7.5}' %><%= @header_text %>} % inside even
   \fancyhead[OL]{<%= @polyglossia_default_language ? '' : '\headerfont' %><%= @polyglossia_default_language ? '' : '\addfontfeature{LetterSpace=7.5}' %><%= @header_title %>} % inside odd
   \RtFooterContent
@@ -145,7 +145,7 @@
 \fancypagestyle{RtFirstPageStyle}{%
   \fancyhf{}
   \renewcommand{\headrulewidth}{0mm} % no line in header
-  <% if @hrules_present %>
+  <% if @header_footer_rules_present %>
     % double line in footer
     \renewcommand{\footrule}{\RtDoubleHRule\par}
   <% else %>
@@ -800,7 +800,7 @@
           \vspace*{-3.262pt}% sets the location of the top hrule.
         <% end %>
         {%
-          \color{<%= @hrules_present ? 'black' : 'white' %>}
+          \color{<%= @header_footer_rules_present ? 'black' : 'white' %>}
           \hrule width \hsize height 0.201pt
         }
         \vspace*{-2.975pt}% sets the spacing between the title and the top hrule.
@@ -815,7 +815,7 @@
             \par
             \vspace*{-2.73pt}% sets the spacing between the title and the bottom hrule.
             {%
-              \color{<%= @hrules_present ? 'black' : 'white' %>}
+              \color{<%= @header_footer_rules_present ? 'black' : 'white' %>}
               \hrule width \hsize height 0.201pt
             }
             \setstretch{0}

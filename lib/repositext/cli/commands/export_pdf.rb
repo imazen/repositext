@@ -154,7 +154,7 @@ class Repositext
           has_id_page: false,
           header_font_name: "V-Excelsior LT Std",
           header_text: "header text",
-          hrules_present: false,
+          header_footer_rules_present: false,
           id_address_primary_latex_1: "ID address primary 1",
           id_address_primary_latex_2: "ID address primary 2",
           id_address_secondary_latex_1: "ID address secondary 1",
@@ -304,7 +304,7 @@ class Repositext
           options[:header_superscript_scale] = config.setting(:pdf_export_header_superscript_scale)
           options[:header_superscript_raise] = config.setting(:pdf_export_header_superscript_raise)
           options[:header_text] = config.setting(:pdf_export_header_text)
-          options[:hrules_present] = config.setting(:pdf_export_hrules_present)
+          options[:header_footer_rules_present] = config.setting(:pdf_export_header_footer_rules_present)
           options[:id_copyright_year] = config.setting(:erp_id_copyright_year, false)
           options[:id_recording] = config.setting(:pdf_export_id_recording, false)
           options[:id_series] = config.setting(:pdf_export_id_series, false)
