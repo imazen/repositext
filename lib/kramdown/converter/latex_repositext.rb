@@ -220,9 +220,10 @@ module Kramdown
               before.prepend("\\begin{RtSong}\n")
               after << "\n\\end{RtSong}"
             elsif el.has_class?('song_break')
-              # render in RtSong environment
-              before.prepend("\\begin{RtSongBreak}\n")
-              after << "\n\\end{RtSongBreak}"
+              # render in RtSong(Break) environment
+              latex_env = apply_song_break_class ? 'RtSongBreak' : 'RtSong'
+              before.prepend("\\begin{#{ latex_env }}\n")
+              after << "\n\\end{#{ latex_env }}"
             elsif el.has_class?('stanza')
              # render in RtStanza environment
               before.prepend("\\begin{RtStanza}\n")
@@ -257,12 +258,6 @@ module Kramdown
               b,a = latex_environment_for_translator_omit
               before.prepend(b)
               after << a
-            end
-            if el.has_class?('song_break')
-              # render in RtSong(Break) environment
-              latex_env = apply_song_break_class ? 'RtSongBreak' : 'RtSong'
-              before.prepend("\\begin{#{ latex_env }}\n")
-              after << "\n\\end{#{ latex_env }}"
             end
 
             # Put it all together
