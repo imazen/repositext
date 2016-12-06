@@ -10,6 +10,7 @@ module Kramdown
 
           highlight_gap_marks_in_red!(lb)
           format_leading_and_trailing_eagles!(lb) # NOTE: Do this after processing gap_marks!
+          replace_narrow_non_breaking_spaces!(lb) # NOTE: Do this before other whitespace processing!
           remove_space_after_paragraph_numbers!(lb)
           set_line_break_positions!(lb)
 

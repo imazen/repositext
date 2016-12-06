@@ -12,7 +12,7 @@ module Kramdown
           ["word &amp; word\n{: .normal}", "\\begin{RtNormal}\nword \\&{} word\n\\end{RtNormal}\n\n"],
           ["word &#x2011; word\n{: .normal}", "\\begin{RtNormal}\nword \u2011 word\n\\end{RtNormal}\n\n"],
           ["word &#x2028; word\n{: .normal}", "\\begin{RtNormal}\nword \u2028 word\n\\end{RtNormal}\n\n"],
-          ["word &#x202F; word\n{: .normal}", "\\begin{RtNormal}\nword \u202F word\n\\end{RtNormal}\n\n"],
+          ["word &#x202F; word\n{: .normal}", "\\begin{RtNormal}\nword  RtNarrowNonBreakingSpace  word\n\\end{RtNormal}\n\n"],
           ["word &#xFEFF; word\n{: .normal}", "\\begin{RtNormal}\nword \uFEFF word\n\\end{RtNormal}\n\n"],
         ].each do |test_string, xpect|
           it "decodes valid encoded entity #{ test_string.inspect }" do

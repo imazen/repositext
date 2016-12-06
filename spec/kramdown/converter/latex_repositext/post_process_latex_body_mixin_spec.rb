@@ -66,6 +66,18 @@ module Kramdown
           end
         end
 
+        describe '#replace_narrow_non_breaking_spaces!' do
+          [
+            ["word RtNarrowNonBreakingSpace word", "word\\thinspace{}word"],
+          ].each do |test_string, xpect|
+            it "handles #{ test_string.inspect }" do
+              c = LatexRepositext.send(:new, '_', { language: language })
+              c.send(:replace_narrow_non_breaking_spaces!, test_string)
+              test_string.must_equal(xpect)
+            end
+          end
+        end
+
         describe '#remove_space_after_paragraph_numbers!' do
           [
             ["\\RtParagraphNumber{123} word", "\\RtParagraphNumber{123}word"],
