@@ -169,6 +169,12 @@ module Kramdown
           end
         end
 
+        # Replace placeholder with latex character for narrow non-breaking space.
+        # @param lb [String] latex body, will be modified in place.
+        def replace_narrow_non_breaking_spaces!(lb)
+          lb.gsub!(' RtNarrowNonBreakingSpace ', "\\thinspace{}")
+        end
+
         # Removes space after paragraph number to avoid fluctuations in indent.
         # @param lb [String] latex body, will be modified in place.
         def remove_space_after_paragraph_numbers!(lb)
