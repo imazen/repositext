@@ -10,7 +10,6 @@ module Kramdown
 
           highlight_gap_marks_in_red!(lb)
           format_leading_and_trailing_eagles!(lb) # NOTE: Do this after processing gap_marks!
-          replace_narrow_non_breaking_spaces!(lb) # NOTE: Do this before other whitespace processing!
           remove_space_after_paragraph_numbers!(lb)
           set_line_break_positions!(lb)
 
@@ -169,12 +168,6 @@ module Kramdown
           end
         end
 
-        # Replace placeholder with latex character for narrow non-breaking space.
-        # @param lb [String] latex body, will be modified in place.
-        def replace_narrow_non_breaking_spaces!(lb)
-          lb.gsub!(' RtNarrowNonBreakingSpace ', "\\thinspace{}")
-        end
-
         # Removes space after paragraph number to avoid fluctuations in indent.
         # @param lb [String] latex body, will be modified in place.
         def remove_space_after_paragraph_numbers!(lb)
@@ -200,11 +193,16 @@ module Kramdown
           )
           # Exceptions: Don't insert zero-width space if followed by no-break characters:
           no_break_following_chars = Regexp.escape(
-            [l_ch[:s_quote_close], l_ch[:d_quote_close], ')?,!'].join
+            [
+              l_ch[:s_quote_close],
+              l_ch[:d_quote_close],
+              ')?,!',
+              "\u00A0", # non-breaking space
+              "\u202F", # narrow non-breaking space
+            ].join
           )
           # We only want to allow linebreak _after_ line_breakable_chars but not _before_.
           # We insert a \\nolinebreak to prevent linebreaks _before_.
-          # Excpetions: no_break_following_chars or ed_and_trn_abbreviations
           lb.gsub!(
             /
               (?<lbc> # named capture group

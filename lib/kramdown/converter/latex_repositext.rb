@@ -98,11 +98,7 @@ module Kramdown
           r = entity_to_latex(entity)
           if '' == r
             # kramdown couldn't handle it
-            r = case sprintf("%04X", entity.code_point)
-            when '202F'
-              # use placeholder and replace after latex has been generated
-              ' RtNarrowNonBreakingSpace '
-            when *%w[200B 2011 2028 FEFF]
+            r = if %w[200B 2011 2028 202F FEFF].include?(sprintf("%04X", entity.code_point))
               # decode valid characters
               Repositext::Utils::EntityEncoder.decode(el.options[:original])
             else

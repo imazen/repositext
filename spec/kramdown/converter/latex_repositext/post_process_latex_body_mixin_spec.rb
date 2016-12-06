@@ -66,18 +66,6 @@ module Kramdown
           end
         end
 
-        describe '#replace_narrow_non_breaking_spaces!' do
-          [
-            ["word RtNarrowNonBreakingSpace word", "word\\thinspace{}word"],
-          ].each do |test_string, xpect|
-            it "handles #{ test_string.inspect }" do
-              c = LatexRepositext.send(:new, '_', { language: language })
-              c.send(:replace_narrow_non_breaking_spaces!, test_string)
-              test_string.must_equal(xpect)
-            end
-          end
-        end
-
         describe '#remove_space_after_paragraph_numbers!' do
           [
             ["\\RtParagraphNumber{123} word", "\\RtParagraphNumber{123}word"],
@@ -92,7 +80,8 @@ module Kramdown
 
         describe '#set_line_break_positions!' do
           [
-            # Insert zero width space after line_breakable_chars (elipsis, em-dash, and hyphen), except when followed by certain characters
+            # Insert zero width space after line_breakable_chars
+            # (elipsis, em-dash, and hyphen), except when followed by certain characters.
             [
               "word1 word2#{ language.chars[:elipsis] }word3 word4",
               "word1 word2\\nolinebreak[4]#{ language.chars[:elipsis] }\\hspace{0pt}word3 word4"
@@ -129,7 +118,7 @@ module Kramdown
               "\\RtGapMarkText{…}\\emph{\\RtGapMarkText{word1}}",
               "\\RtGapMarkText{\\nolinebreak[4]…\\hspace{0pt}}\\emph{\\RtGapMarkText{word1}}"
             ],
-            # Don't insert zero width space before certain punctuation
+            # Don't insert zero width space before certain characters
             [
               "word1 word2-#{ language.chars[:s_quote_close] }word3 word4",
               "word1 word2-#{ language.chars[:s_quote_close] }word3 word4"
@@ -137,6 +126,30 @@ module Kramdown
             [
               "word1 word2-#{ language.chars[:d_quote_close] }word3 word4",
               "word1 word2-#{ language.chars[:d_quote_close] }word3 word4"
+            ],
+            [
+              "word1-) word2",
+              "word1-) word2"
+            ],
+            [
+              "word1-? word2",
+              "word1-? word2"
+            ],
+            [
+              "word1-, word2",
+              "word1-, word2"
+            ],
+            [
+              "word1-! word2",
+              "word1-! word2"
+            ],
+            [
+              "word1-\u00A0 word2",
+              "word1-\u00A0 word2"
+            ],
+            [
+              "word1-\u202F word2",
+              "word1-\u202F word2"
             ],
             # No line breaks _before_ or _after_ em dash when followed by some abbreviations
             [
