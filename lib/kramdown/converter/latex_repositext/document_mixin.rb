@@ -276,6 +276,17 @@ module Kramdown
                   "}}}",
                 ].join
               )
+            elsif r =~ /(?<=\d)[[:alpha:]]{1,2}(?=(\s|\z))/
+              # re-apply superscript to letters after ordinal numbers, e.g., "3e partie"
+              r.gsub!(
+                /(?<=\d)[[:alpha:]]{1,2}(?=(\s|\z))/,
+                [
+                  "{\\raisebox{#{ @options[:header_superscript_raise] }ex}",
+                  "{\\textscale{#{ @options[:header_superscript_scale] }ex}{",
+                  '\0',
+                  "}}}",
+                ].join
+              )
             end
             if 'chn' == language_code_3_chars
               r = "\\textbf{#{ r }}"

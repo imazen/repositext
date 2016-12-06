@@ -85,6 +85,58 @@ module Kramdown
             end
           end
         end
+
+        describe "#compute_header_title_latex" do
+          [
+            [
+              "Regular primary title",
+              "word word",
+              "word word",
+              true,
+              'eng',
+              20,
+              "\\textscale{0.909091}{\\textbf{word word}}"
+            ],
+            [
+              "Foreign title with trailing digit",
+              "word word 17",
+              "\\emph{word} word 17",
+              false,
+              'spn',
+              20,
+              "\\textscale{0.7}{WORD WORD {\\raisebox{0.3ex}{\\textscale{0.2}{17}}}}"
+            ],
+            [
+              "Foreign title with ordinal number",
+              "word 17th word",
+              "\\emph{word} 17th word",
+              false,
+              'spn',
+              20,
+              "\\textscale{0.7}{WORD 17{\\raisebox{0.3ex}{\\textscale{0.2ex}{TH}}} WORD}"
+            ],
+          ].each do |desc, title_plain_text, title_latex, hfr_present, lang_code_3, max_len, xpect|
+            it "Handles #{ desc }" do
+              converter = LatexRepositextPlain.send(
+                :new,
+                '_',
+                {
+                  header_superscript_raise: 0.3,
+                  header_superscript_scale: 0.2,
+                }
+              )
+              converter.send(
+                :compute_header_title_latex,
+                title_plain_text,
+                title_latex,
+                hfr_present,
+                lang_code_3,
+                max_len
+              ).must_equal(xpect)
+            end
+          end
+        end
+
       end
     end
   end
