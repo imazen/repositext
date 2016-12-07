@@ -270,7 +270,7 @@ module Kramdown
                 /(?<=\d)[[:alpha:]]{1,2}(?=(\s|\z))/,
                 [
                   "{\\raisebox{#{ @options[:header_superscript_raise] }ex}",
-                  "{\\textscale{#{ @options[:header_superscript_scale] }ex}{",
+                  "{\\textscale{#{ @options[:header_superscript_scale] }}{",
                   '\0',
                   "}}}",
                 ].join
