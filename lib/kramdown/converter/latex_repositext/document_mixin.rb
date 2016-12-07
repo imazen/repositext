@@ -239,18 +239,6 @@ module Kramdown
               title_length_override || 58,
               title_length_override ? 0 : 3,
             )
-            # re-apply superscript to any trailing digits
-            if truncated =~ /\d+\}\z/
-              truncated.gsub!(
-                /\d+\}\z/,
-                [
-                  "{\\raisebox{#{ @options[:header_superscript_raise] }ex}",
-                  "{\\textscale{#{ @options[:header_superscript_scale] }ex}{",
-                  '\0',
-                  "}}}",
-                ].join
-              )
-            end
             "\\textscale{#{ 0.909091 }}{\\textbf{#{ truncated }}}"
           else
             # regular, all caps and small font
