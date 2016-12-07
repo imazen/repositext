@@ -239,6 +239,17 @@ module Kramdown
               title_length_override || 58,
               title_length_override ? 0 : 3,
             )
+            # Replace title superscript params with header ones
+            truncated.gsub!(
+              [
+                "{\\raisebox{#{ @options[:title_superscript_raise] }ex}",
+                "{\\textscale{#{ @options[:title_superscript_scale] }}{",
+              ].join,
+              [
+                "{\\raisebox{#{ @options[:header_superscript_raise] }ex}",
+                "{\\textscale{#{ @options[:header_superscript_scale] }}{",
+              ].join,
+            )
             "\\textscale{#{ 0.909091 }}{\\textbf{#{ truncated }}}"
           else
             # regular, all caps and small font
