@@ -229,7 +229,7 @@ class Repositext
               ins_del, txt_diff, location, context = diff_group.first
 
               # Ignore missing horizontal_rule in PDF
-              next  if "* * * * * * *\n" == txt_diff
+              next  if "* * * * * * *" == txt_diff.strip
 
               # With drop cap first eagle, pdf extractor gets confused and
               # doesn't insert a space between the first and second line.
@@ -328,9 +328,9 @@ class Repositext
           # Trim leading and trailing whitespace
           sanitized_text.strip!
 
-          # Convert NARROW NO-BREAK SPACE to regular space since the same happens in
+          # Convert (NARROW) NO-BREAK SPACE to regular space since the same happens in
           # the process of exporting plain text from content AT.
-          sanitized_text.gsub!(/[\u202F]/, ' ')
+          sanitized_text.gsub!(/[\u00A0\u202F]/, ' ')
 
           # Append newline and return
           sanitized_text + "\n"
@@ -345,7 +345,7 @@ class Repositext
           # Trim leading and trailing whitespace
           sanitized_text.strip!
 
-          # Convert NO-BREAK SPACE to regular space since the same happens in
+          # Convert (NARROW) NO-BREAK SPACE to regular space since the same happens in
           # the process of extracting plain text from PDF.
           sanitized_text.gsub!(/[\u00A0\u202F]/, ' ')
 
