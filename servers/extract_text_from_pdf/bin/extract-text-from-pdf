@@ -97,9 +97,9 @@ loop {
         # Foreign bound book/web
         {
           crop_x: 0, # crop area top left corner x-coordinate
-          crop_y: 1.0, # crop area top left corner y-coordinate
+          crop_y: 0.7, # crop area top left corner y-coordinate
           crop_width: 5.5, # crop area width
-          crop_height: 6.6, # crop area height
+          crop_height: 7.3, # crop area height
         }
       when /\.book-stitched\.pdf$/,
            /\.web-stitched\.pdf$/

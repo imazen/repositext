@@ -162,6 +162,7 @@ class Repositext
             ],
             [%(removes {123}gap_mark indexes), %(removes gap_mark indexes\n)],
             [%(removes record id lines\nRecord id: rid-60281179\nword word), %(removes record id lines\nword word\n)],
+            [%(Converts NARROW NO-BREAK SPACE\u202Fto regular space), %(Converts NARROW NO-BREAK SPACE to regular space\n)],
           ].each do |pdf_raw_text, xpect|
             it "handles #{ pdf_raw_text.inspect }" do
               validator, logger, reporter = build_validator_logger_and_reporter(

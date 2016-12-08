@@ -17,6 +17,7 @@ class Repositext
         # @return [Outcome]
         def pdf_export_consistent?(pdf_file_name)
           content_type = @options['content_type']
+          config = content_type.config
           language = content_type.language
 
           pdf_file_stub = Repositext::RFile::Pdf.new(
@@ -46,20 +47,27 @@ class Repositext
           content_at_plain_text = corresponding_content_at_file.plain_text_contents(
             convert_smcaps_to_upper_case: true
           )
-          # We have to reload file settings to get 'id_recording' for each file.
-          # NOTE: Can't use @options['id_recording'] since that is not updated
-          # per file for validations, just for the export in Repositext::Cli::Export#export_pdf_base
-          file_level_settings = corresponding_content_at_file.read_file_level_settings
+          # We have to reload settings at the file level to get all required
+          # settings.
+          # NOTE: Can't use @options['...'] since that is not updated per file
+          # for validations, just for the export in Repositext::Cli::Export#export_pdf_base
+          config.update_for_file(corresponding_content_at_file.corresponding_data_json_filename)
+
+          adjusted_content_at_plain_text = adjust_plain_text(
+            content_at_plain_text,
+            corresponding_content_at_file,
+            config
+          )
 
           errors = []
           warnings = []
 
           validate_content_consistency(
             pdf_raw_text,
-            content_at_plain_text,
+            adjusted_content_at_plain_text,
             errors,
             warnings,
-            file_level_settings
+            config
           )
           Outcome.new(errors.empty?, nil, [], errors, warnings)
         end
@@ -73,6 +81,77 @@ class Repositext
             pdf_file_name,
             pdfbox_text_extraction_options
           )
+        end
+
+        # Adjusts the content at based plain text to contain the same elements
+        # as the extracted pdf plain text (id section).
+        # @param plain_text [String] plain text as exported from content AT
+        # @param content_at_file [RFile::ContentAt]
+        # @param config [Repositext::Cli::Config] config for file
+        def adjust_plain_text(plain_text, content_at_file, config)
+          appendix = []
+
+          # Append id contents only if file has id
+          if content_at_file.contents.index('.id_paragraph')
+            add_rt_id_paragraph_environment_contents(appendix, content_at_file, config)
+          end
+
+          # Append RtIdRecording
+          appendix << convert_latex_to_plain_text(config.setting(:pdf_export_id_recording, false))
+          # Append RtIdSeries
+          if (rtids = config.setting(:pdf_export_id_series, false))
+            appendix << convert_latex_to_plain_text(rtids)
+            # The RtIdParagraph may not be in the content AT file but in the
+            # id_series setting. If so, then we need to append additional content
+            # here.
+            if rtids.index('RtIdParagraph')
+              add_rt_id_paragraph_environment_contents(appendix, content_at_file, config)
+            end
+          end
+
+          # Remove nils, join with space before and between each segment
+          r = plain_text + ' ' + appendix.compact.join(' ')
+          # squeeze whitespace runs (e.g., "\n ")
+          r.gsub(/\s{2,}/, ' ')
+        end
+
+        # Appends text that will be rendered after RtIdParagraph environment.
+        # Modifies appendix in place.
+        # @param appendix [Array] will be appended to in place
+        # @param content_at_file [RFile::ContentAt]
+        # @param config [Repositext::Cli::Config]
+        def add_rt_id_paragraph_environment_contents(appendix, content_at_file, config)
+          # Append RtIdExtraLanguageInfo
+          appendix << config.setting(:pdf_export_id_extra_language_info, false)
+          # Append RtIdLanguage (foreign only)
+          if !config.setting(:is_primary_repo)
+            # TODO: clean up method chain!
+            appendix << content_at_file.content_type.language.name.upcase
+          end
+          # Append RtIdCopyrightYear
+          appendix << %(©#{ config.setting(:erp_id_copyright_year, false) } #{ config.setting(:company_short_name) }, ALL RIGHTS RESERVED)
+          # Append RtIdWriteToSecondary
+          appendix << convert_latex_to_plain_text(config.setting(:pdf_export_id_write_to_secondary, false))
+          # Append RtIdAddressSecondaryFirst
+          appendix << convert_latex_to_plain_text(config.setting(:pdf_export_id_address_secondary_latex_1, false))
+          # Append RtIdAddressSecondarySecond
+          appendix << convert_latex_to_plain_text(config.setting(:pdf_export_id_address_secondary_latex_2, false))
+          # Append RtIdAddressSecondaryThird
+          appendix << convert_latex_to_plain_text(config.setting(:pdf_export_id_address_secondary_latex_3, false))
+          # Append RtIdWriteToPrimary
+          appendix << convert_latex_to_plain_text(config.setting(:pdf_export_id_write_to_primary, false))
+          # Append RtIdAddressPrimaryFirst
+          appendix << convert_latex_to_plain_text(config.setting(:pdf_export_id_address_primary_latex_1, false))
+          # Append RtIdAddressPrimarySecond
+          appendix << convert_latex_to_plain_text(config.setting(:pdf_export_id_address_primary_latex_2, false))
+          # Append RtIdWebMaybePhone
+          if config.setting(:is_primary_repo)
+            # NOTE: in the template the two spaces around the period are \u2003 em-space.
+            # That gets lost in the pdf extraction, so we use regular spaces here.
+            appendix << %(#{ config.setting(:company_phone_number) } . #{ config.setting(:company_web_address) })
+          else
+            appendix << config.setting(:company_web_address)
+          end
         end
 
         # Validates that contents of pdf_raw_text and content_at are consistent.
@@ -137,14 +216,6 @@ class Repositext
             current_diff_group = nil
           end
 
-          # Compute id_recording and prefix once for all diffs
-          id_recording = file_level_settings['pdf_export_id_recording'].to_s.strip
-          id_recording_prefix = if '' != id_recording
-            id_recording[0,20] # get first twenty chars for quick detection in diffs
-          else
-            nil
-          end
-
           # Process each diff_group
           diff_groups.each { |diff_group|
 
@@ -198,18 +269,6 @@ class Repositext
               # Newline is inserted after eagle "\n\n"
               next  if("\n" == txt_diff && context.index("\n\n"))
 
-              # Ignore id_recording
-              if(
-                id_recording_prefix &&
-                txt_diff.index(id_recording_prefix) &&
-                # Do more expensive check, replace newlines (from PDF text
-                # extraction) with spaces
-                (sanitized_txt_diff = txt_diff.gsub("\n", ' ').strip) == id_recording
-              )
-                # Remove id_recording
-                next
-              end
-
               # Ignore extra spaces inserted before punctuation [!?’”]
               # We look at the 1st and 2nd char in trailing context, or the
               # entire context if it is too short
@@ -244,9 +303,6 @@ class Repositext
           # Remove revision information at the end of the doc
           sanitized_text.gsub!(/\sRevision\sInformation\sDate.+\z/m, '')
 
-          # Remove copyright and address information at the end of the doc
-          sanitized_text.gsub!(/^©[0-9\?]{4}\sVGR.+\z/m, '')
-
           # Clean up an edge case where a space is inserted before a question
           # or exclamation mark, and a newline is inserted after the question/exclamation mark.
           # This occurs a couple times in all files and is best handled here
@@ -272,6 +328,10 @@ class Repositext
           # Trim leading and trailing whitespace
           sanitized_text.strip!
 
+          # Convert NARROW NO-BREAK SPACE to regular space since the same happens in
+          # the process of exporting plain text from content AT.
+          sanitized_text.gsub!(/[\u202F]/, ' ')
+
           # Append newline and return
           sanitized_text + "\n"
         end
@@ -287,10 +347,57 @@ class Repositext
 
           # Convert NO-BREAK SPACE to regular space since the same happens in
           # the process of extracting plain text from PDF.
-          sanitized_text.gsub!("\u00A0", ' ')
+          sanitized_text.gsub!(/[\u00A0\u202F]/, ' ')
 
           # Append newline and return
           sanitized_text + "\n"
+        end
+
+        # Converts latex_string to plain text.
+        # Removes fragments like "\\RtSmCapsEmulation{-0.12em}{" and "}{0em}"
+        # @param latex_string [String, nil]
+        # @return [String] with latex control sequences removed
+        def convert_latex_to_plain_text(latex_string)
+          return nil  if latex_string.nil?
+          pt = latex_string.dup
+          # Replace begin/end tags for environments with spaces
+          pt.gsub!(
+            /
+              \\(begin|end)\{ # begin or end tag followed by opening brace
+              [^\}]* # zero or more non closing brace chars for environment name
+              \} # followed by closing brace
+            /x,
+            ' '
+          )
+          # Remove RtSmCapsEmulation
+          pt.gsub!(
+            /
+              \\RtSmCapsEmulation # latex control sequence
+              \{[^\}]*\} # leading kerning argument
+              \{ # smallcaps contents start
+              ( # capture group 1 to be preserved
+                [^\{]* # smallcaps text
+              )
+              \} # smallcaps contents end
+              \{[^\}]*\} # trailing kerning argument
+            /x,
+            '\1'
+          )
+          # Remove \\emph NOTE: This has to happen fairly late since we're matching
+          # on the closing brace by itself. If there are any nested commands inside
+          # the emph, we'd stop at their closing brace.
+          pt.gsub!(
+            /
+              \\emph # latex control sequence
+              \{ # emph contents start
+              ( # capture group 1 to be preserved
+                [^\{]* # emph text
+              )
+              \} # emph contents end
+            /x,
+            '\1'
+          )
+          pt
         end
 
       end
