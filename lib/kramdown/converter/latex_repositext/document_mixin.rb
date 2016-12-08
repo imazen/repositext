@@ -248,7 +248,7 @@ module Kramdown
               [
                 "{\\raisebox{#{ @options[:header_superscript_raise] }ex}",
                 "{\\textscale{#{ @options[:header_superscript_scale] }}{",
-              ].join,
+              ].join
             )
             "\\textscale{#{ 0.909091 }}{\\textbf{#{ truncated }}}"
           else
