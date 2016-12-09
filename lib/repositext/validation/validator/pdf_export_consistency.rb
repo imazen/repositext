@@ -222,19 +222,22 @@ class Repositext
             ins_del_signature = diff_group.map { |e| e.first }
             description = nil
             text_difference = nil
+            text_diffs = nil
 
             case ins_del_signature
             when [-1]
               # Deletion
               ins_del, txt_diff, location, context = diff_group.first
+              text_diffs = [txt_diff]
 
               # Ignore missing horizontal_rule in PDF
               next  if "* * * * * * *" == txt_diff.strip
 
               # With drop cap first eagle, pdf extractor gets confused and
-              # doesn't insert a space between the first and second line.
+              # doesn't insert a space (for same paragraph) or newline (for two
+              # separate paragraphs) between the first and second line.
               # It's safe to ignore.
-              next  if((' ' == txt_diff) && (context[0,excerpt_window].index("\n")))
+              next  if(([' ', "\n"].include?(txt_diff)) && (context[0,excerpt_window].index("\n")))
 
               # Titles with explicit linebreaks are missing a space, ignore.
               # We match on all caps letters: "WORD WORD \nWORD WORD"
@@ -249,10 +252,15 @@ class Repositext
               # Get each diff. They consist of
               # ins_del, txt_diff, location, and context
               del, ins = diff_group
+              text_diffs = [del, ins].map { |e| e[1] }
 
               # Ignore any mismatches caused by PDF line wrapping.
               # Space is changed to a newline.
               next  if(' ' == del[1] && "\n" == ins[1])
+
+              # Ignore custom formats for horizontal rules.
+              # Asterisks are changed to stars
+              next  if('*' == del[1] && "✩" == ins[1])
 
               # Prepare error reporting data
               description = "Changed "
@@ -260,6 +268,7 @@ class Repositext
             when [1]
               # Addition
               ins_del, txt_diff, location, context = diff_group.first
+              text_diffs = [txt_diff]
 
               # Ignore any mismatches caused by PDF line wrapping.
               # Newline is inserted after elipsis, emdash, or hyphen.
@@ -279,6 +288,13 @@ class Repositext
               text_difference = diff_group.first[1].inspect
             else
               raise "Handle this: #{ diff_group.inspect }"
+            end
+
+            # When the PDF text extractor encounters a character that is missing
+            # in the font, it returns \uFFFF. This is an issue with the font,
+            # and we need to raise an exception.
+            if text_diffs.any? { |e| e.index("\uFFFF") }
+              raise "Missing character in font: #{ text_diffs.inspect }"
             end
 
             context = diff_group.first[3].inspect
