@@ -284,7 +284,7 @@ class Repositext
               # Ignore extra spaces inserted before punctuation.
               # We look at the 1st and 2nd char in trailing context, or the
               # entire context if it is too short
-              next  if(' ' == txt_diff && (context[excerpt_window,2] || context) =~ /\s[\!\?\’\”\.\,\:\;]/)
+              next  if(' ' == txt_diff && (context[excerpt_window,2] || context) =~ /\s[\!\?\’\”\.\,\:\;\…]/)
 
               # Prepare error reporting data
               description = "Extra "
