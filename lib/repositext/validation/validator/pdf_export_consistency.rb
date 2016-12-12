@@ -96,8 +96,11 @@ class Repositext
             add_rt_id_paragraph_environment_contents(appendix, content_at_file, config)
           end
 
-          # Append RtIdRecording
-          appendix << convert_latex_to_plain_text(config.setting(:pdf_export_id_recording, false))
+
+          # Append RtIdRecording if it is to be included
+          if @options[:include_id_recording]
+            appendix << convert_latex_to_plain_text(config.setting(:pdf_export_id_recording, false))
+          end
           # Append RtIdSeries
           if (rtids = config.setting(:pdf_export_id_series, false))
             appendix << convert_latex_to_plain_text(rtids)
@@ -278,10 +281,10 @@ class Repositext
               # Newline is inserted after eagle "\n\n"
               next  if("\n" == txt_diff && context.index("\n\n"))
 
-              # Ignore extra spaces inserted before punctuation [!?’”.]
+              # Ignore extra spaces inserted before punctuation.
               # We look at the 1st and 2nd char in trailing context, or the
               # entire context if it is too short
-              next  if(' ' == txt_diff && (context[excerpt_window,2] || context) =~ /\s[\!\?\’\”\.]/)
+              next  if(' ' == txt_diff && (context[excerpt_window,2] || context) =~ /\s[\!\?\’\”\.\,\:\;]/)
 
               # Prepare error reporting data
               description = "Extra "
@@ -338,15 +341,20 @@ class Repositext
           # Remove gap_mark indexes on recording pdfs. Example: `{123}`
           sanitized_text.gsub!(/\{\d+\}/, '')
 
+          # Handle a special case where "word. word" (content AT) is compared
+          # with "word .\nword" (pdf extracted). We just normalize the PDF
+          # extracted version to what it should be.
+          sanitized_text.gsub!(" .\n", ". ")
+
           # Remove record_marks. Example: `Record id: rid-60281179\n`
           sanitized_text.gsub!(/^Record id: rid-[^\n]+\n/, '')
-
-          # Trim leading and trailing whitespace
-          sanitized_text.strip!
 
           # Convert (NARROW) NO-BREAK SPACE to regular space since the same happens in
           # the process of exporting plain text from content AT.
           sanitized_text.gsub!(/[\u00A0\u202F]/, ' ')
+
+          # Trim leading and trailing whitespace
+          sanitized_text.strip!
 
           # Append newline and return
           sanitized_text + "\n"
@@ -376,6 +384,8 @@ class Repositext
         def convert_latex_to_plain_text(latex_string)
           return nil  if latex_string.nil?
           pt = latex_string.dup
+          # Replace tildes with spaces
+          pt.gsub!('~', ' ')
           # Replace begin/end tags for environments with spaces
           pt.gsub!(
             /

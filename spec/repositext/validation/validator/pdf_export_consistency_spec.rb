@@ -9,7 +9,7 @@ class Repositext
 
         include SharedSpecBehaviors
 
-        let(:default_file_level_settings){ { 'pdf_export_id_recording' => '<<this is the id_recording>>' } }
+        let(:default_file_level_settings){ { } }
 
         describe '#validate_content_consistency ignores' do
           [
@@ -58,10 +58,6 @@ class Repositext
               %(Extra newline after eagle \n\nword1 word2\n),
             ],
             [
-              %(Extra id_recording\nword1 word2\n),
-              %(Extra id_recording\n<<this is the id_recording>>\nword1 word2\n),
-            ],
-            [
               %(Extra space before exclamation mark! word1 word2\n),
               %(Extra space before exclamation mark ! word1 word2\n),
             ],
@@ -76,6 +72,22 @@ class Repositext
             [
               %(Extra space before closing double quote” word1 word2\n),
               %(Extra space before closing double quote ” word1 word2\n),
+            ],
+            [
+              %(Extra space before period. word1 word2\n),
+              %(Extra space before period . word1 word2\n),
+            ],
+            [
+              %(Extra space before comma, word1 word2\n),
+              %(Extra space before comma , word1 word2\n),
+            ],
+            [
+              %(Extra space before semicolon; word1 word2\n),
+              %(Extra space before semicolon ; word1 word2\n),
+            ],
+            [
+              %(Extra space before colon: word1 word2\n),
+              %(Extra space before colon : word1 word2\n),
             ],
             [
               %(NO-BREAK SPACE\u00A0word1 word2\n),
