@@ -169,12 +169,34 @@ class Repositext
               %(handles edge case where space is inserted before questionmark?\nand newline after\n),
             ],
             [
+              %(changes period after word with extra space at end of line .\nword),
+              %(changes period after word with extra space at end of line.\nword\n),
+            ],
+            [
+              %(doesn't change newline at end of sequence of periods . . . . .\nword),
+              %(doesn't change newline at end of sequence of periods . . . . .\nword\n),
+            ],
+            [
               %(handles edge case where space is inserted before exclamation mark !\nand newline after),
               %(handles edge case where space is inserted before exclamation mark!\nand newline after\n),
             ],
             [%(removes {123}gap_mark indexes), %(removes gap_mark indexes\n)],
-            [%(removes record id lines\nRecord id: rid-60281179\nword word), %(removes record id lines\nword word\n)],
-            [%(Converts NARROW NO-BREAK SPACE\u202Fto regular space), %(Converts NARROW NO-BREAK SPACE to regular space\n)],
+            [
+              %(removes record id lines\nRecord id: rid-60281179\nword word),
+              %(removes record id lines\nword word\n)
+            ],
+            [
+              %(Converts NO-BREAK SPACE\u00A0to regular space),
+              %(Converts NO-BREAK SPACE to regular space\n)
+            ],
+            [
+              %(Converts NARROW NO-BREAK SPACE\u202Fto regular space),
+              %(Converts NARROW NO-BREAK SPACE to regular space\n)
+            ],
+            [
+              %(Converts ZERO WIDTH NO-BREAK SPACE\uFEFFto regular space),
+              %(Converts ZERO WIDTH NO-BREAK SPACE to regular space\n)
+            ],
           ].each do |pdf_raw_text, xpect|
             it "handles #{ pdf_raw_text.inspect }" do
               validator, logger, reporter = build_validator_logger_and_reporter(
@@ -193,7 +215,18 @@ class Repositext
           [
             [%(plain text), %(plain text\n)],
             [%(  strips surrounding space  ), %(strips surrounding space\n)],
-            [%(Converts NO-BREAK SPACE\u00A0to regular space), %(Converts NO-BREAK SPACE to regular space\n)],
+            [
+              %(Converts NO-BREAK SPACE\u00A0to regular space),
+              %(Converts NO-BREAK SPACE to regular space\n)
+            ],
+            [
+              %(Converts NARROW NO-BREAK SPACE\u202Fto regular space),
+              %(Converts NARROW NO-BREAK SPACE to regular space\n)
+            ],
+            [
+              %(Converts ZERO WIDTH NO-BREAK SPACE\uFEFFto regular space),
+              %(Converts ZERO WIDTH NO-BREAK SPACE to regular space\n)
+            ],
           ].each do |pdf_raw_text, xpect|
             it "handles #{ pdf_raw_text.inspect }" do
               validator, logger, reporter = build_validator_logger_and_reporter(

@@ -344,7 +344,8 @@ class Repositext
           # Handle a special case where "word. word" (content AT) is compared
           # with "word .\nword" (pdf extracted). We just normalize the PDF
           # extracted version to what it should be.
-          sanitized_text.gsub!(" .\n", ". ")
+          # Exception: "\n. . . . . .\n"
+          sanitized_text.gsub!(/(?<!\.) \.\n/, ".\n")
 
           # Remove record_marks. Example: `Record id: rid-60281179\n`
           sanitized_text.gsub!(/^Record id: rid-[^\n]+\n/, '')
