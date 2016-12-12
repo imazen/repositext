@@ -1,6 +1,6 @@
 class Repositext
   class Cli
-    # This namespace contains methods related to the sync command.
+    # This namespace contains methods related to the `sync` command.
     module Sync
 
     private

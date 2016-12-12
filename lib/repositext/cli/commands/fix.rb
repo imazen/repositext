@@ -1,6 +1,6 @@
 class Repositext
   class Cli
-    # This namespace contains methods related to the fix command.
+    # This namespace contains methods related to the `fix` command (ongoing fixes).
     module Fix
 
     private

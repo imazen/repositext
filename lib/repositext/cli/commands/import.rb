@@ -1,6 +1,6 @@
 class Repositext
   class Cli
-    # This namespace contains methods related to the import command.
+    # This namespace contains methods related to the `import` command.
     module Import
 
     private

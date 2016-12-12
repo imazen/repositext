@@ -1,6 +1,6 @@
 class Repositext
   class Cli
-    # This namespace contains methods related to the delete command.
+    # This namespace contains methods related to the `delete` command.
     module Delete
 
     private

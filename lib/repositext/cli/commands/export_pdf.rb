@@ -1,6 +1,6 @@
 class Repositext
   class Cli
-    # This namespace contains methods related to the export command.
+    # This namespace contains methods related to the `export` command (PDF only).
     module Export
 
     private

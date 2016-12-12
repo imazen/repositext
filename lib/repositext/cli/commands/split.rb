@@ -1,6 +1,6 @@
 class Repositext
   class Cli
-    # This namespace contains methods related to the split command.
+    # This namespace contains methods related to the `split` command.
     module Split
 
     private

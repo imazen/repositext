@@ -1,6 +1,6 @@
 class Repositext
   class Cli
-    # This namespace contains methods related to the move command.
+    # This namespace contains methods related to the `move` command.
     module Move
 
     private

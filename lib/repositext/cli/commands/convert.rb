@@ -1,6 +1,6 @@
 class Repositext
   class Cli
-    # This namespace contains methods related to the convert command.
+    # This namespace contains methods related to the `convert` command.
     module Convert
 
     private

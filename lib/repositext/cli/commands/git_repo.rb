@@ -1,6 +1,6 @@
 class Repositext
   class Cli
-    # This namespace contains methods related to the git_repo command.
+    # This namespace contains methods related to the `git_repo` command.
     module GitRepo
 
     private

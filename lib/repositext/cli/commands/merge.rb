@@ -1,6 +1,6 @@
 class Repositext
   class Cli
-    # This namespace contains methods related to the merge command.
+    # This namespace contains methods related to the `merge` command.
     module Merge
 
     private

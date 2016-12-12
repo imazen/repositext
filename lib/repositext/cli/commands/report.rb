@@ -1,6 +1,6 @@
 class Repositext
   class Cli
-    # This namespace contains methods related to the report command.
+    # This namespace contains methods related to the `report` command.
     module Report
 
     private
