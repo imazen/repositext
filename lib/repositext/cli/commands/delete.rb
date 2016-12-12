@@ -31,6 +31,26 @@ class Repositext
         )
       end
 
+      # Deletes all PDF export files in repo.
+      def delete_all_pdf_exports(options)
+        delete_options = options.dup
+        # Force file-selector to all files.
+        delete_options['file-selector'] = "**/*"
+
+        delete_pdf_exports(delete_options)
+      end
+
+      # Deletes PDF export files that match file-selector.
+      # Requires the 'file-selector' option to be present
+      def delete_pdf_exports(options)
+        delete_options = options.dup
+        # Force base-dir and file-extension to PDF export, leave file-selector as is
+        delete_options['base-dir'] = :pdf_export_dir
+        delete_options['file-extension'] = :pdf_extension
+
+        delete_files(delete_options)
+      end
+
     end
   end
 end

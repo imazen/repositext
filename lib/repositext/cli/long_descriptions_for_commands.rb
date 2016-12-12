@@ -52,6 +52,18 @@ class Repositext
           )
         end
 
+        def long_description_for_delete
+          %(
+            Deletes files
+
+            Available SPECs:
+
+            Examples:
+
+            * bundle exec rt delete all_pdf_exports
+          )
+        end
+
         def long_description_for_distribute
           %(
             Distributes files to final destination.

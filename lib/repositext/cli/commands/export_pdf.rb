@@ -231,6 +231,9 @@ class Repositext
         if !export_pdf_variants.include?(variant)
           raise(ArgumentError.new("Invalid variant: #{ variant.inspect }"))
         end
+        # Delete all existing PDF exports that match file-selector
+        delete_pdf_exports(options)
+
         input_base_dir = config.compute_base_dir(options['base-dir'] || :content_dir)
         input_file_selector = config.compute_file_selector(options['file-selector'] || :all_files)
         input_file_extension = config.compute_file_extension(options['file-extension'] || :at_extension)

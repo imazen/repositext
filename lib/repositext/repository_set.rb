@@ -239,10 +239,15 @@ class Repositext
     def report_content_sources(repo_set_spec, content_type)
       run_repositext_command(repo_set_spec, "rt #{ content_type.name } report content_sources")
     end
-    
+
     # Run `report quotes_details` in all repositories
     def report_quotes_details(repo_set_spec, content_type)
       run_repositext_command(repo_set_spec, "rt #{ content_type.name } report quotes_details")
+    end
+
+    # Run `delete_all_pdf_exports` in all repositories
+    def delete_all_pdf_exports(repo_set_spec, content_type)
+      run_repositext_command(repo_set_spec, "rt #{ content_type.name } delete all_pdf_exports")
     end
 
     # Run `export pdf_book` in all repositories

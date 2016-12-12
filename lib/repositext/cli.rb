@@ -144,6 +144,13 @@ class Repositext
       invoke_repositext_command('copy', command_spec, options)
     end
 
+    desc 'delete SPEC', 'Deletes files'
+    long_desc long_description_for_delete
+    # @param [String] command_spec Specification of the operation
+    def delete(command_spec)
+      invoke_repositext_command('delete', command_spec, options)
+    end
+
     desc 'distribute SPEC', 'Distributes files to destination location'
     long_desc long_description_for_distribute
     # @param [String] command_spec Specification of the operation

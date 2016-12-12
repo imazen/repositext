@@ -16,6 +16,15 @@ class Repositext
         RepositorySet.new(repos_parent_path).git_clone_missing_repos(:all_content_repos)
       end
 
+      # Runs `rt delete all_pdf_exports` on all content repos
+      def git_repo_delete_all_pdf_exports(options)
+        repos_parent_path = File.expand_path('..', Dir.pwd)
+        RepositorySet.new(repos_parent_path).delete_all_pdf_exports(
+          :all_content_repos,
+          content_type
+        )
+      end
+
       # Runs `rt export pdf_book` on all content repos
       def git_repo_export_pdf_book_all(options)
         repos_parent_path = File.expand_path('..', Dir.pwd)
