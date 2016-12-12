@@ -351,7 +351,7 @@ class Repositext
 
           # Convert (NARROW) NO-BREAK SPACE to regular space since the same happens in
           # the process of exporting plain text from content AT.
-          sanitized_text.gsub!(/[\u00A0\u202F]/, ' ')
+          sanitized_text.gsub!(/[\u00A0\u202F\uFEFF]/, ' ')
 
           # Trim leading and trailing whitespace
           sanitized_text.strip!
@@ -371,7 +371,7 @@ class Repositext
 
           # Convert (NARROW) NO-BREAK SPACE to regular space since the same happens in
           # the process of extracting plain text from PDF.
-          sanitized_text.gsub!(/[\u00A0\u202F]/, ' ')
+          sanitized_text.gsub!(/[\u00A0\u202F\uFEFF]/, ' ')
 
           # Append newline and return
           sanitized_text + "\n"
