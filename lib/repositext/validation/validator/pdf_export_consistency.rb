@@ -180,13 +180,16 @@ class Repositext
           # find insert [1], delete [-1], and change [-1,1] groups
           diff_groups = []
           current_diff_group = nil
+          prev_zero_diff = nil
           all_diffs_with_context.each { |diff|
+
             ins_del, txt_diff, location, context = diff
             case ins_del
             when -1
               if current_diff_group.nil?
                 # A -1 always starts a new group
-                current_diff_group = [diff]
+                # Prepend new diff_group with prev_zero_diff for context
+                current_diff_group = [prev_zero_diff, diff].compact
               else
                 # We don't expect to see a -1 if we already have a current_diff_group
                 raise "Unexpected -1: #{ diff.inspect }"
@@ -194,13 +197,19 @@ class Repositext
             when 0
               # 0 closes any diff groups
               if current_diff_group
+                # Append this zero_diff for context
+                current_diff_group << diff
+                # Add entire group to container
                 diff_groups << current_diff_group
                 current_diff_group = nil
               end
+              # Record this diff as prev_zero_diff
+              prev_zero_diff = diff
             when 1
               if current_diff_group.nil?
-                # An insertion
-                current_diff_group = [diff]
+                # An insertion, start a new group
+                # Prepend new diff_group with prev_zero_diff for context
+                current_diff_group = [prev_zero_diff, diff].compact
               else
                 # This is a change. We already have a -1
                 current_diff_group << diff
@@ -208,13 +217,16 @@ class Repositext
             else
               raise "handle this: #{ ins_del.inspect }"
             end
-            if current_diff_group && current_diff_group.length > 2
-              # No diff group should have more than 2 elements
+            if current_diff_group && current_diff_group.length > 4
+              # No diff group should have more than 4 elements
               raise "Handle this: #{ current_diff_group.inspect }"
             end
           }
           # Finalize any started diff group
           if current_diff_group
+            # Append prev_zero_diff for context
+            current_diff_group << prev_zero_diff  if prev_zero_diff
+            # Add entire group to container
             diff_groups << current_diff_group
             current_diff_group = nil
           end
@@ -228,19 +240,25 @@ class Repositext
             text_diffs = nil
 
             case ins_del_signature
-            when [-1]
+            when [-1], [-1,0], [0,-1], [0,-1,0]
               # Deletion
-              ins_del, txt_diff, location, context = diff_group.first
+              ins_del, txt_diff, location, context = diff_group.detect { |e| -1 == e.first }
               text_diffs = [txt_diff]
 
               # Ignore missing horizontal_rule in PDF
               next  if "* * * * * * *" == txt_diff.strip
 
+              # Compute context for scenarios that require it
+              context_before, context_after = extract_before_and_after_contexts(diff_group)
+
               # With drop cap first eagle, pdf extractor gets confused and
               # doesn't insert a space (for same paragraph) or newline (for two
               # separate paragraphs) between the first and second line.
               # It's safe to ignore.
-              next  if(([' ', "\n"].include?(txt_diff)) && (context[0,excerpt_window].index("\n")))
+              next  if(
+                [' ', "\n"].include?(txt_diff) &&
+                context_before.truncate_from_beginning(excerpt_window, omission: '', separator: nil).index("\n")
+              )
 
               # Titles with explicit linebreaks are missing a space, ignore.
               # We match on all caps letters: "WORD WORD \nWORD WORD"
@@ -249,12 +267,13 @@ class Repositext
               # Prepare error reporting data
               description = "Missing "
               text_difference = txt_diff.inspect
-            when [-1,1]
+            when [-1,1], [-1,1,0], [0,-1,1], [0,-1,1,0]
               # Change
 
               # Get each diff. They consist of
               # ins_del, txt_diff, location, and context
-              del, ins = diff_group
+              del = diff_group.detect { |e| -1 == e.first }
+              ins = diff_group.detect { |e| 1 == e.first }
               text_diffs = [del, ins].map { |e| e[1] }
 
               # Ignore any mismatches caused by PDF line wrapping.
@@ -268,27 +287,34 @@ class Repositext
               # Prepare error reporting data
               description = "Changed "
               text_difference = "#{ del[1].inspect } to #{ ins[1].inspect }"
-            when [1]
+              context_before, context_after = extract_before_and_after_contexts(diff_group)
+            when [1], [1,0], [0,1], [0,1,0]
               # Addition
-              ins_del, txt_diff, location, context = diff_group.first
+              ins_del, txt_diff, location, context = diff_group.detect { |e| 1 == e.first }
               text_diffs = [txt_diff]
+
+              # Compute context for scenarios that require it
+              context_before, context_after = extract_before_and_after_contexts(diff_group)
 
               # Ignore any mismatches caused by PDF line wrapping.
               # Newline is inserted after elipsis, emdash, or hyphen.
-              next  if("\n" == txt_diff && context =~ /[…—-]\n/)
+              next  if("\n" == txt_diff && context_before =~ /[…—-]\z/)
               # Newline is inserted before elipsis, emdash, or hyphen.
-              next  if("\n" == txt_diff && context =~ /\n[…—-]/)
+              next  if("\n" == txt_diff && context_after =~ /\A[…—-]/)
               # Newline is inserted after eagle "\n\n"
-              next  if("\n" == txt_diff && context.index("\n\n"))
+              next  if("\n" == txt_diff && context_before =~ /\n\z/)
 
               # Ignore extra spaces inserted before punctuation.
               # We look at the 1st and 2nd char in trailing context, or the
               # entire context if it is too short
-              next  if(' ' == txt_diff && (context[excerpt_window,2] || context) =~ /\s[\!\?\’\”\.\,\:\;]/)
+              next  if(
+                ' ' == txt_diff &&
+                context_after =~ /\A[\!\?\’\”\.\,\:\;]/
+              )
 
               # Prepare error reporting data
               description = "Extra "
-              text_difference = diff_group.first[1].inspect
+              text_difference = txt_diff.inspect
             else
               raise "Handle this: #{ diff_group.inspect }"
             end
@@ -300,8 +326,7 @@ class Repositext
               raise "Missing character in font: #{ text_diffs.inspect }"
             end
 
-            context = diff_group.first[3].inspect
-            description << %(#{ text_difference } in #{ context })
+            description << %(#{ text_difference } in #{ context_before.inspect }<diff>#{ context_after.inspect })
             errors << Reportable.error(
               [@file_to_validate],
               [
@@ -311,6 +336,23 @@ class Repositext
             )
 
           }
+        end
+
+        # Returns the leading and trailing zero_diff text in diff_group
+        # @param diff_group [Array<diff>]
+        # @return [Array<String>] with two elements
+        def extract_before_and_after_contexts(diff_group)
+          before = (
+            (first_diff = diff_group.first) &&
+            (first_zero_diff = (0 == first_diff.first ? first_diff : nil)) &&
+            first_zero_diff[1]
+          ) || ''
+          after = (
+            (last_diff = diff_group.last) &&
+            (last_zero_diff = (0 == last_diff.first ? last_diff : nil)) &&
+            last_zero_diff[1]
+          ) || ''
+          [before, after]
         end
 
         # Sanitizes pdf_raw_text.
