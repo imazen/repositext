@@ -275,6 +275,8 @@ class Repositext
           # This sets the right and left margin for 'RtSong', 'RtSongBreak' and 'RtStanza'.
           song_leftskip: config.setting(:pdf_export_song_leftskip),
           song_rightskip: config.setting(:pdf_export_song_rightskip),
+          # Sets the vbadness_penalty limit for veritcal justification. This is the maximum penalty allowed.
+          vbadness_penalty: config.setting(:pdf_export_vbadness_penalty),
           version_control_page: options['include-version-control-info'],
         })
         primary_titles = options[:primary_titles_override] || compute_primary_titles # hash with product indentity ids as keys and primary titles as values

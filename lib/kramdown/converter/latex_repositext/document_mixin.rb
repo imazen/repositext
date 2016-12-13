@@ -178,6 +178,8 @@ module Kramdown
           @title_font_size = @options[:title_font_size]
           @title_vspace = @options[:title_vspace] # space to be inserted above title to align with body text
           @use_cjk_package = ['chn','cnt'].include?(@options[:language_code_3_chars])
+          # Sets the vbadness_penalty limit for veritcal justification. This is the maximum penalty allowed.
+          @vbadness_penalty = @options[:vbadness_penalty]
           @version_control_page = if @options[:version_control_page]
             compute_version_control_page(git_repo, @options[:source_filename])
           else

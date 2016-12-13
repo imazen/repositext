@@ -859,7 +859,7 @@
 %\hbadness=10000
 % log file will contain only overfull/underfull _vboxes_ above this badness.
 % 100 is the transition from loose -> underfull
-\vbadness=<%= @is_primary_repo ? '100' : '300' %>
+\vbadness=<%= @vbadness_penalty %>
 
 % set rubber value between paras for flushbottom
 \setlength{\parskip}{3pt plus 4pt minus 0.2pt}

@@ -90,6 +90,10 @@ class Repositext
               %(Extra space before colon : word1 word2\n),
             ],
             [
+              %(Extra space before colon… word1 word2\n),
+              %(Extra space before colon … word1 word2\n),
+            ],
+            [
               %(NO-BREAK SPACE\u00A0word1 word2\n),
               %(NO-BREAK SPACE word1 word2\n),
             ],

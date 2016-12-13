@@ -309,7 +309,7 @@ class Repositext
               # entire context if it is too short
               next  if(
                 ' ' == txt_diff &&
-                context_after =~ /\A[\!\?\’\”\.\,\:\;]/
+                context_after =~ /\A[\!\?\’\”\.\,\:\;\…]/
               )
 
               # Ignore extra spaces inserted between small cap `a` and full cap 'K'
