@@ -312,6 +312,14 @@ class Repositext
                 context_after =~ /\A[\!\?\’\”\.\,\:\;]/
               )
 
+              # Ignore extra spaces inserted between small cap `a` and full cap 'K'
+              # in titles (both get here as upper case chars)
+              next  if(
+                ' ' == txt_diff &&
+                context_before =~ /A\z/ &&
+                context_after =~ /\AK/
+              )
+
               # Prepare error reporting data
               description = "Extra "
               text_difference = txt_diff.inspect

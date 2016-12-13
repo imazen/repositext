@@ -93,6 +93,10 @@ class Repositext
               %(NO-BREAK SPACE\u00A0word1 word2\n),
               %(NO-BREAK SPACE word1 word2\n),
             ],
+            [
+              %(Extra space between AK word\n),
+              %(Extra space between A K word\n),
+            ],
           ].each do |content_at_plain_text, pdf_raw_text|
             it "handles #{ pdf_raw_text.inspect }" do
               validator, logger, reporter = build_validator_logger_and_reporter(
