@@ -113,7 +113,7 @@ module Kramdown
               false,
               'spn',
               20,
-              "\\textscale{0.7}{WORD 17{\\raisebox{0.3ex}{\\textscale{0.2ex}{TH}}} WORD}"
+              "\\textscale{0.7}{WORD 17{\\raisebox{0.3ex}{\\textscale{0.2}{TH}}} WORD}"
             ],
           ].each do |desc, title_plain_text, title_latex, hfr_present, lang_code_3, max_len, xpect|
             it "Handles #{ desc }" do
