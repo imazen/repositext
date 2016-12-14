@@ -90,6 +90,10 @@ class Repositext
     class_option :'from-commit',
                  :type => :string,
                  :desc => "For commands that require from and to commit information (e.g., subtitle operations)"
+    class_option :'keep-existing',
+                 :type => :boolean,
+                 :default => false,
+                 :desc => "Will keep existing files for any export commands that delete previously exported files."
     class_option :output,
                  :type => :string,
                  :desc => 'Overrides the output base directory.'
