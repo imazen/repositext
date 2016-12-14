@@ -34,6 +34,13 @@ class Repositext
         )
       end
 
+      # Fetches all branches and pulls current branch.
+      # @param [Hash] options
+      def git_repo_fetch_and_pull_all_content(options)
+        repos_parent_path = File.expand_path('..', Dir.pwd)
+        RepositorySet.new(repos_parent_path).git_fetch_and_pull(:all_content_repos)
+      end
+
       # Runs `rt fix normalize_trailing_newlines` on all content repos
       def git_repo_fix_normalize_trailing_newlines(options)
         repos_parent_path = File.expand_path('..', Dir.pwd)
