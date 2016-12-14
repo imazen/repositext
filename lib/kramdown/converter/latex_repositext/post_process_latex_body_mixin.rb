@@ -246,10 +246,12 @@ module Kramdown
             "\\nolinebreak[4]" + l_ch[:em_dash] + "\\nolinebreak[4]" + '\1'
           )
 
-          # We don't allow linebreaks before certain numbers
+          # We don't allow linebreaks before certain numbers:
+          # `word 1` => `word~1`
           lb.gsub!(/(?<=[a-z])\s(?=\d)/, "~")
 
-          # We don't allow linebreaks between period and numbers, e.g., "word .22"
+          # We don't allow linebreaks between period and numbers:
+          # `word .22` => `word .\\nolinebreak[4]22`
           lb.gsub!(/( \.)(\d)/, '\1' + "\\nolinebreak[4]" + '\2')
 
           # We don't allow linebreaks between the end of a control sequence and a period
