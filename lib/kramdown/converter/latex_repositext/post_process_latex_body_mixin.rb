@@ -98,7 +98,7 @@ module Kramdown
             lb.gsub!(
               /
                 (#{ gap_mark_number_regex }) # capture group for tmp gap mark number
-                 # followed by eagle
+                \s? # followed by eagle and optional space
               /x,
               '\1' # Reverse order
             )
