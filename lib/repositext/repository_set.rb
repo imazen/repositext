@@ -135,7 +135,7 @@ class Repositext
             repo_issues << "Has uncommitted changes"
           end
           if !exit_status.success?
-            repo_issues << "Error: could not check repo (#{ stderr.read })"
+            repo_issues << "Error: could not check repo (#{ stderr.read })".color(:red)
           end
         end
         if repo_issues.any?
@@ -174,7 +174,7 @@ class Repositext
           if exit_status.success?
             puts " - Pulled #{ repo_path }"
           else
-            msg = %(Could not pull #{ repo_path }:\n\n)
+            msg = %(Could not pull #{ repo_path }:\n\n).color(:red)
             puts(msg + stderr.read)
           end
         end
@@ -193,7 +193,7 @@ class Repositext
           if exit_status.success?
             puts " - Pushed #{ repo_path }"
           else
-            msg = %(Could not push #{ repo_path }:\n\n)
+            msg = %(Could not push #{ repo_path }:\n\n).color(:red)
             puts(msg + stderr.read)
           end
         end
@@ -316,7 +316,7 @@ class Repositext
         Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
           exit_status = wait_thr.value
           if !exit_status.success?
-            msg = %(Could not pull #{ repo_name }:\n\n)
+            msg = %(Could not pull #{ repo_name }:\n\n).color(:red)
             puts(msg + stderr.read)
           end
         end
