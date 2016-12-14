@@ -103,7 +103,7 @@ module Kramdown
               '\1' # Reverse order
             )
             # Convert tmp_gap_mark_number to latex command
-            lb.gsub!(gap_mark_number_regex, "\\RtGapMarkNumber")
+            lb.gsub!(gap_mark_number_regex, "\\RtGapMarkNumber{}")
           end
           # Make sure no tmp_gap_marks are left
           if(ltgm = lb.match(/.{0,20}#{ Regexp.escape(tmp_gap_mark_text) }.{0,20}/))
@@ -131,7 +131,7 @@ module Kramdown
               )
               (?!$) # not followed by line end
             /x,
-            "\\RtFirstEagle " + '\1' # we use an environment for first eagle
+            "\\RtFirstEagle{}" + '\1' # we use an environment for first eagle
           )
           # NOTE: We've had issues where PDF export hung forever on files that
           # didn't have a trailing eagle. So we run this processing step only
@@ -163,7 +163,7 @@ module Kramdown
             # with the previous line of text.
             lb.gsub!(
               /\\RtLastEagle(\{\}\n\\end\{(?:RtSong|RtStanza)\})/,
-              "\\RtLastEagleInsideSong" + '\1'
+              "\\RtLastEagleInsideSong{}" + '\1'
             )
           end
         end

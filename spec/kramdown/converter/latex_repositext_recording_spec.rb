@@ -15,12 +15,12 @@ module Kramdown
             [
               'apostrophe',
               "#{ language.chars[:apostrophe] }#{ tmp_gap_mark_complete }word",
-              "\\RtGapMarkNumber#{ language.chars[:apostrophe] }\\RtGapMarkText{word}"
+              "\\RtGapMarkNumber{}#{ language.chars[:apostrophe] }\\RtGapMarkText{word}"
             ],
             [
               'double quote open',
               "#{ language.chars[:d_quote_open] }#{ tmp_gap_mark_complete }word",
-              "\\RtGapMarkNumber#{ language.chars[:d_quote_open] }\\RtGapMarkText{word}"
+              "\\RtGapMarkNumber{}#{ language.chars[:d_quote_open] }\\RtGapMarkText{word}"
             ],
           ].each do |(name, test_string, xpect)|
             it "moves gap_mark numbers outside of #{ name}" do
@@ -31,7 +31,11 @@ module Kramdown
         end
         describe "Moves gap_mark numbers after" do
           [
-            ['eagle', "#{ tmp_gap_mark_complete } word", "\\RtFirstEagle \\RtGapMarkNumber \\RtGapMarkText{word}"],
+            [
+              'eagle',
+              "#{ tmp_gap_mark_complete } word",
+              "\\RtFirstEagle{}\\RtGapMarkNumber{} \\RtGapMarkText{word}"
+            ],
           ].each do |(name, test_string, xpect)|
             it "moves gap_mark numbers after #{ name}" do
               c = LatexRepositextRecording.send(:new, '_', { language: language })

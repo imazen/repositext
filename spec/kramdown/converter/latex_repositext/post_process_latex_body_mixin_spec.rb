@@ -53,10 +53,19 @@ module Kramdown
         describe '#format_leading_and_trailing_eagles!' do
           [
             # Replace leading eagle with latex environment
-            ["first para\n second para word1 word2 word3\nthird para", "first para\n\\RtFirstEagle second para word1 word2 word3\nthird para"],
-            [" \\RtGapMarkText{First} para word1 word2 word3", "\\RtFirstEagle \\RtGapMarkText{First} para word1 word2 word3"],
+            [
+              "first para\n second para word1 word2 word3\nthird para",
+              "first para\n\\RtFirstEagle{}second para word1 word2 word3\nthird para"
+            ],
+            [
+              " \\RtGapMarkText{First} para word1 word2 word3",
+              "\\RtFirstEagle{}\\RtGapMarkText{First} para word1 word2 word3"
+            ],
             # Replace trailing eagle with latex command
-            ["Second to last para\nLast para word1 word2 word3 \n{: .normal}", "Second to last para\nLast para word1 word2 word3\\RtLastEagle{}\n{: .normal}"],
+            [
+              "Second to last para\nLast para word1 word2 word3 \n{: .normal}",
+              "Second to last para\nLast para word1 word2 word3\\RtLastEagle{}\n{: .normal}"
+            ],
           ].each do |test_string, xpect|
             it "handles #{ test_string.inspect }" do
               c = LatexRepositext.send(:new, '_', { language: language })
