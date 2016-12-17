@@ -25,9 +25,13 @@ class Repositext
         # Remove block_ials and record_marks
         content_without_blocks = content.gsub(/^\{:[^\n]+(?=\n)/, '')
                                         .gsub(/^\^\^\^[^\n]+(?=\n)/, '')
+        # Decode all entities for correct character length
+        content_with_decoded_entities = EntityEncoder.decode(
+          content_without_blocks
+        )
         # Remove all tokens but :subtitle_mark from content_at
         content_with_subtitle_marks_only = Suspension::TokenRemover.new(
-          content_without_blocks,
+          content_with_decoded_entities,
           Suspension::REPOSITEXT_TOKENS.find_all { |e| :subtitle_mark != e.name }
         ).remove
       end

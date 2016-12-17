@@ -3,7 +3,7 @@ class Repositext
     class Validator
       # Validates that there are 120 or less characters in each caption.
       # A caption is the segment of text between subtitle marks.
-      # Include whitespace in this count excpet for leading or trailing.
+      # Include whitespace in this count except for leading or trailing.
       class SubtitleMarkSpacing < Validator
 
         # Runs all validations for self

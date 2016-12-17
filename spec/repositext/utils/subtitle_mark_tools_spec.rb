@@ -25,7 +25,11 @@ class Repositext
           [
             %(\n\n@para1 *with other tokens*{: .italic}\n\n^^^ {: .rid #rid-64080029 kpn="002"}\n\n@para2),
             "\n\n@para1 with other tokens\n\n\n\n@para2"
-          ]
+          ],
+          [
+            %(word&#x00A0;word&#xFEFF;word),
+            "word\u00A0word\uFEFFword"
+          ],
         ].each do |test_string, xpect|
           it "handles #{ test_string.inspect }" do
             SubtitleMarkTools.send(
