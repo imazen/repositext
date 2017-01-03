@@ -107,7 +107,7 @@ class Repositext
           elsif File.exists?(folio_input_filename)
             folio_sourced << filename
           elsif File.exists?(docx_input_filename)
-            folio_sourced << filename
+            docx_sourced << filename
           else
             other_sourced << filename
           end
