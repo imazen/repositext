@@ -75,9 +75,11 @@ class Repositext
       # Generates a list of how each file in content AT was sourced (Folio or Idml)
       def report_content_sources(options)
         content_base_dir = config.base_dir(:content_dir)
+        docx_import_base_dir = config.base_dir(:docx_import_dir)
         folio_import_base_dir = config.base_dir(:folio_import_dir)
         idml_import_base_dir = config.base_dir(:idml_import_dir)
         total_count = 0
+        docx_sourced = []
         folio_sourced = []
         idml_sourced = []
         other_sourced = []
@@ -94,13 +96,17 @@ class Repositext
           options
         ) do |contents, filename|
           total_count += 1
-          idml_input_filename = filename.gsub(content_base_dir, idml_import_base_dir)
-                                        .gsub(/\.at/, '.idml.at')
+          docx_input_filename = filename.gsub(content_base_dir, docx_import_base_dir)
+                                        .gsub(/\.at/, '.docx.at')
           folio_input_filename = filename.gsub(content_base_dir, folio_import_base_dir)
                                          .gsub(/\.at/, '.folio.at')
+          idml_input_filename = filename.gsub(content_base_dir, idml_import_base_dir)
+                                        .gsub(/\.at/, '.idml.at')
           if File.exists?(idml_input_filename)
             idml_sourced << filename
           elsif File.exists?(folio_input_filename)
+            folio_sourced << filename
+          elsif File.exists?(docx_input_filename)
             folio_sourced << filename
           else
             other_sourced << filename
@@ -127,6 +133,14 @@ class Repositext
         else
           lines << " - There are no content AT files sourced from Folio."
         end
+        if docx_sourced.any?
+          lines << " - The following #{ docx_sourced.length } content AT files are sourced from DOCX:"
+          docx_sourced.each do |f|
+            lines << "   - #{ f }"
+          end
+        else
+          lines << " - There are no content AT files sourced from DOCX."
+        end
         if other_sourced.any?
           lines << " - The following #{ folio_sourced.length } content AT files are from other sources:"
           other_sourced.each do |f|
@@ -137,10 +151,11 @@ class Repositext
         end
         lines << '-' * 40
         lines << "Sources summary:"
-        lines << " - Idml: #{ idml_sourced.length }"
+        lines << " - DOCX: #{ docx_sourced.length }"
         lines << " - Folio: #{ folio_sourced.length }"
+        lines << " - Idml: #{ idml_sourced.length }"
         lines << " - Other: #{ other_sourced.length }"
-        total_sourced = idml_sourced.length + folio_sourced.length + other_sourced.length
+        total_sourced = docx_sourced.length + folio_sourced.length + idml_sourced.length + other_sourced.length
         lines << "Determined sources for #{ total_sourced } of #{ total_count } files at #{ Time.now.to_s }."
         $stderr.puts
         lines.each { |l| $stderr.puts l }
