@@ -84,6 +84,15 @@ class Repositext
         )
       end
 
+      # Runs `rt report count_files_with_gap_marks_and_subtitle_marks` on all content repos
+      def git_repo_report_all_count_files_with_gap_marks_and_subtitle_marks(options)
+        repos_parent_path = File.expand_path('..', Dir.pwd)
+        RepositorySet.new(repos_parent_path).report_count_files_with_gap_marks_and_subtitle_marks(
+          :all_content_repos,
+          content_type
+        )
+      end
+
       # Runs `rt report quotes_details` on all content repos
       def git_repo_report_all_quotes_details(options)
         repos_parent_path = File.expand_path('..', Dir.pwd)
