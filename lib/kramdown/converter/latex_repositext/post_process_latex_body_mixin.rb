@@ -248,7 +248,7 @@ module Kramdown
 
           # We don't allow linebreaks before certain numbers:
           # `word 1` => `word~1`
-          lb.gsub!(/(?<=[a-z])\s(?=\d)/, "~")
+          # lb.gsub!(/(?<=[a-z])\s(?=\d)/, "~")
 
           # We don't allow linebreaks between period and numbers:
           # `word .22` => `word .\\nolinebreak[4]22`

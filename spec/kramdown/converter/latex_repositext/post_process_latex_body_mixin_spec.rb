@@ -166,18 +166,18 @@ module Kramdown
               "word1 word2\\nolinebreak[4]#{ language.chars[:em_dash] }\\nolinebreak[4]ed. word3 word4"
             ],
             # No line breaks before certain numbers
-            [
-              "word 4",
-              "word~4"
-            ],
-            [
-              "word 4:5",
-              "word~4:5"
-            ],
-            [
-              "word 42:52",
-              "word~42:52"
-            ],
+            # [
+            #   "word 4",
+            #   "word~4"
+            # ],
+            # [
+            #   "word 4:5",
+            #   "word~4:5"
+            # ],
+            # [
+            #   "word 42:52",
+            #   "word~42:52"
+            # ],
             # No linebreaks between period and digits
             [
               "word .22 word",
