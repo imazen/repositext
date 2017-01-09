@@ -41,11 +41,17 @@ class Repositext
           pdf = ''
           log = ''
           Dir.mktmpdir { |tmp_dir|
+            max_num_loops = 4
             has_overfull_hboxes = true
             loop_count = 0
-            while has_overfull_hboxes && loop_count < 4 do
+            while has_overfull_hboxes && loop_count < max_num_loops do
               loop_count += 1
-              puts "   - converting latex to pdf (iteration #{ loop_count })"
+              s = "   - converting latex to pdf (iteration #{ loop_count })"
+              # Highlight last iteration in red because it likely failed.
+              if loop_count == max_num_loops
+                s = s.color(:red)
+              end
+              puts s
               convert_latex_to_pdf(tmp_dir, latex)
               tex_file_contents = File.read(File.join(tmp_dir, 'tmp.tex'))
               log_file_contents = File.read(File.join(tmp_dir, 'tmp.log'))
@@ -108,8 +114,8 @@ class Repositext
           # We're looking for a log entry like this:
           #
           # Overfull \hbox (59.42838pt too wide) in paragraph at lines 557--558
-          # \EU1/Lohit-Tamil(0)/m/n/13.00003 மனைவி அல்லது கணவன் படுக்கையின் அருகில் நின்றுக
-          #  ொண்டிருக்கும்போது,
+          # \EU1/Lohit-Tamil(0)/m/n/13.00003 <some text>
+          #  <some more text>
           #  []
           #
 
