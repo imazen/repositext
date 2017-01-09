@@ -129,6 +129,7 @@ class Repositext
               (?:\.\d*pt\stoo\swide\)\sin\sparagraph\sat\slines\s) # middle of line
               (\d+) # line number
               (?:[^\n]+\n) # until end of line
+              (?:\s?) # optional space at beginning of line
               (?:[^\s]+\s+) # font preamble until first space
               ([^\[]+) # offensive string
               (?:\[\]) # closing brackets
@@ -148,7 +149,7 @@ class Repositext
             # previously reported ohbs won't be valid any more. This approach will
             # result in more iterations, however it will prevent orphaned words on
             # a line where a line break was inserted in the wrong spot.
-            if e[:overhang_in_pt] > 5 && ohbs_to_fix.none? { |f| f[:line] == e[:line] }
+            if e[:overhang_in_pt] > 0 && ohbs_to_fix.none? { |f| f[:line] == e[:line] }
               ohbs_to_fix << e
             end
           }

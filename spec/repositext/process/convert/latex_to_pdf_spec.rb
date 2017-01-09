@@ -16,6 +16,24 @@ class Repositext
               ].join("\n"),
               [{ overhang_in_pt: 59, line: 557, offensive_string: "Offending text line 1 Offending text line 2" }],
             ],
+            [
+              [
+                %(Overfull \\hbox (17.90964pt too wide) in paragraph at lines 868--869),
+                %( []\\EU1/Meera(2)/m/it/12 Offending text line 1),
+                %(),
+                %( []),
+              ].join("\n"),
+              [{ overhang_in_pt: 17, line: 868, offensive_string: "Offending text line 1" }],
+            ],
+            [
+              [
+                %(Overfull \\hbox (26.54625pt too wide) in paragraph at lines 1145--1146),
+                %(\\EU1/Meera(2)/m/sc/12 Offending text line 1),
+                %(Offending text line 2),
+                %( []),
+              ].join("\n"),
+              [{ overhang_in_pt: 26, line: 1145, offensive_string: "Offending text line 1Offending text line 2" }],
+            ],
           ].each do |(txt, xpect)|
             it "handles #{ txt.inspect }" do
               r = LatexToPdf.send(:find_overfull_hboxes, txt)
