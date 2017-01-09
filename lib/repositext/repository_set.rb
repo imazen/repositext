@@ -258,6 +258,11 @@ class Repositext
       run_repositext_command(repo_set_spec, "rt #{ content_type.name } report content_sources")
     end
 
+    # Run `report count_files_with_gap_marks_and_subtitle_marks` in all repositories
+    def report_count_files_with_gap_marks_and_subtitle_marks(repo_set_spec, content_type)
+      run_repositext_command(repo_set_spec, "rt #{ content_type.name } report count_files_with_gap_marks_and_subtitle_marks")
+    end
+
     # Run `report quotes_details` in all repositories
     def report_quotes_details(repo_set_spec, content_type)
       run_repositext_command(repo_set_spec, "rt #{ content_type.name } report quotes_details")
