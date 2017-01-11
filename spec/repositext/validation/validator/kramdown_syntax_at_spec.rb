@@ -95,6 +95,7 @@ class Repositext
             ["subtitle_mark at invalid position (after opening bracket) [@word", 1],
             ["subtitle_mark NOT at invalid position (if followed by …?…) word@…?…", 0],
             ["subtitle_mark NOT at invalid position (if preced by …*) …*@word", 0],
+            ["subtitle_mark NOT at invalid position (if followed by —) word@—", 0],
             ["Paragraph not followed by exactly two newlines \n{: .normal}\nNext para", 2],
             ["Paragraph not followed by exactly two newlines \n{: .normal}\n\n", 0],
             ["Paragraph not followed by exactly two newlines \n{: .normal}\n\n\n", 1],
