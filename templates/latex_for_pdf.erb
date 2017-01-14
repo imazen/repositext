@@ -81,9 +81,9 @@
 }
 \newcommand{\RtFooterContent}{%
   <% if @include_meta_info %>
-    \fancyfoot[L]{\textscale{0.73}{<%= @date_code %>}} % outside
-    \fancyfoot[C]{\textscale{0.73}{<%= @footer_title %>}} % center
-    \fancyfoot[R]{\textscale{0.67}{<%= @additional_footer_text %> Rev. <%= @latest_commit_hash %>}} % inside
+    \fancyfoot[L]{\textscale{0.73}{\LR{<%= @date_code %>}}} % outside
+    \fancyfoot[C]{\textscale{0.73}{\LR{<%= @footer_title %>}}} % center
+    \fancyfoot[R]{\textscale{0.67}{\LR{<%= @additional_footer_text %> Rev. <%= @latest_commit_hash %>}}} % inside
   <% end %>
 }
 
@@ -194,7 +194,7 @@
       \primaryfont
       \fontsize{12pt}{14.4pt}\selectfont
       \centering
-      <%= @id_address_primary_latex_1 %>
+      \LR{<%= @id_address_primary_latex_1 %>}
       \par
     <% end %>
   }
@@ -208,7 +208,7 @@
       \primaryfont
       \fontsize{10pt}{12pt}\selectfont
       \centering
-      <%= @id_address_primary_latex_2 %>
+      \LR{<%= @id_address_primary_latex_2 %>}
       \par
     <% end %>
   }
@@ -271,7 +271,7 @@
     \centering
     \primaryfont
     \fontsize{5.5pt}{10.5pt}\selectfont
-    ©<%= @id_copyright_year %> <%= @company_short_name %>, ALL RIGHTS RESERVED
+    \LR{©<%= @id_copyright_year %> <%= @company_short_name %>, ALL RIGHTS RESERVED}
     \par
   }
 
@@ -295,7 +295,7 @@
     \centering
     \primaryfont
     \fontsize{5.5pt}{10.5pt}\selectfont
-    <%= @language_name.upcase %>
+    \LR{<%= @language_name.upcase %>}
     \par
   }
 
@@ -315,7 +315,7 @@
       <%= @company_phone_number %> . <%= @company_web_address %>
       \vspace*{-1.519pt}%
     <% else %>
-      <%= @company_web_address %>
+      \LR{<%= @company_web_address %>}
       \vspace*{-1.47pt}%
     <% end %>
   }
@@ -546,6 +546,7 @@
     <% end %>
     \setlength{\lineskiplimit}{-100pt} % This setting keeps latex from automatically stretching linespacing when characters may overlap.
     \setlength{\parindent}{0pt}
+    \setLR
     \centering
     <%= @polyglossia_default_language ? '' : '\idtitlefont' %>%
     \fontsize{8pt}{10.5pt}\selectfont
