@@ -187,7 +187,7 @@ module Kramdown
                 # add space between title and date code
                 inner_text.gsub!(/ ([[:alpha:]]{3}\d{2}\-\d{4})/, "\\" + 'hspace{2 mm}\1')
                 # make date code smaller
-                inner_text.gsub!(/[[:alpha:]]{3}\d{2}\-\d{4}.*/, "\\" + 'textscale{0.8}{\0}')
+                inner_text.gsub!(/[[:alpha:]]{3}\d{2}\-\d{4}.*/, "\\" + 'textscale{0.8}{\\LR{\0}}')
               end
             elsif el.has_class?('id_title2')
               # render in RtIdTitle2 environment
