@@ -175,6 +175,7 @@ module Kramdown
           @question3_indent = @options[:question3_indent]
           @song_leftskip = @options[:song_leftskip]
           @song_rightskip = @options[:song_rightskip]
+          @text_left_to_right = @options[:text_left_to_right]
           @title_font_name = @options[:title_font_name]
           @title_font_size = @options[:title_font_size]
           @title_vspace = @options[:title_vspace] # space to be inserted above title to align with body text

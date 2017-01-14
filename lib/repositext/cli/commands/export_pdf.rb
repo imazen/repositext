@@ -278,6 +278,8 @@ class Repositext
           # This sets the right and left margin for 'RtSong', 'RtSongBreak' and 'RtStanza'.
           song_leftskip: config.setting(:pdf_export_song_leftskip),
           song_rightskip: config.setting(:pdf_export_song_rightskip),
+          # Sets whether a languge is read left to right.
+          text_left_to_right: config.setting(:pdf_export_text_left_to_right),
           # Sets the vbadness_penalty limit for veritcal justification. This is the maximum penalty allowed.
           vbadness_penalty: config.setting(:pdf_export_vbadness_penalty),
           version_control_page: options['include-version-control-info'],

@@ -134,9 +134,9 @@
     \renewcommand{\headrulewidth}{0mm}
     % no line in footer (default)
   <% end %>
-  \fancyhead[EL,OR]{<%= "\\hrule height 0.19\pt \\kern 0.33\pt"  if @header_footer_rules_present %><%= @page_number_command %>} % outside
-  \fancyhead[ER]{<%= @polyglossia_default_language ? '' : '\headerfont' %><%= @polyglossia_default_language ? '' : '\addfontfeature{LetterSpace=7.5}' %><%= @header_text %>} % inside even
-  \fancyhead[OL]{<%= @polyglossia_default_language ? '' : '\headerfont' %><%= @polyglossia_default_language ? '' : '\addfontfeature{LetterSpace=7.5}' %><%= @header_title %>} % inside odd
+  \fancyhead[<%= @text_left_to_right ? 'EL,OR' : 'ER,OL' %>]{<%= "\\hrule height 0.19\pt \\kern 0.33\pt"  if @header_footer_rules_present %><%= @page_number_command %>} % outside
+  \fancyhead[<%= @text_left_to_right ? 'ER' : 'EL' %>]{<%= @polyglossia_default_language ? '' : '\headerfont' %><%= @polyglossia_default_language ? '' : '\addfontfeature{LetterSpace=7.5}' %><%= @header_text %>} % inside even
+  \fancyhead[<%= @text_left_to_right ? 'OL' : 'OR' %>]{<%= @polyglossia_default_language ? '' : '\headerfont' %><%= @polyglossia_default_language ? '' : '\addfontfeature{LetterSpace=7.5}' %><%= @header_title %>} % inside odd
   \RtFooterContent
 }
 \pagestyle{RtPageStyle} % apply custom pagestyle
@@ -389,7 +389,7 @@
 % command to render paragraph number. Pass the para number as argument.
 \newcommand{\RtParagraphNumber}[1]
 <% if @polyglossia_default_language %>
-  {\noindent\makebox[\parindent][l]{\raisebox{0.5ex}{{\textscale{0.655}{#1}}}}}
+  {\noindent\makebox[\parindent][<%= @text_left_to_right ? 'l' : 'r' %>]{\raisebox{0.5ex}{{\textscale{0.655}{#1}}}}}
 <% else %>
   {\noindent\textparagraphnumberfont{\makebox[\parindent][l]{\raisebox{0.5ex}{{\textscale{0.655}{#1}}}}}}
 <% end %>
