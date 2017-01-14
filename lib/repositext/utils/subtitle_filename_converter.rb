@@ -7,6 +7,7 @@ class Repositext
       # Maps from 3 to 2 character language codes
       LANGUAGE_CODE_MAP = [
         %w[afr af],
+        %w[ara ar],
         %w[bem bem],
         %w[eng en],
         %w[ceb ceb],

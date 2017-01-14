@@ -80,6 +80,7 @@ module Kramdown
         # TODO: Move this into settings or `Language` classes
         def polyglossia_default_language(language_code_3_chars)
           {
+            'ara' => 'arabic',
             'mal' => 'malayalam',
             'kan' => 'kannada',
             'frs' => 'farsi',
