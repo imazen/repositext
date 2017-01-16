@@ -284,10 +284,15 @@ module Kramdown
         flag_match_found
       end
 
-
       def process_node_nobreakhyphen(xn)
         # TODO: How to handle noBreakHyphen
         # noBreakHyphen -> ?
+        ignore_node(xn)
+        flag_match_found
+      end
+
+      def process_node_omath(xn)
+        # TODO: How to handle omath
         ignore_node(xn)
         flag_match_found
       end
