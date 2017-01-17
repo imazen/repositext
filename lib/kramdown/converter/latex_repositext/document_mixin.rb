@@ -148,6 +148,7 @@ module Kramdown
           @id_address_secondary_latex_3 = @options[:id_address_secondary_latex_3]
           @id_copyright_year = @options[:id_copyright_year]
           @id_extra_language_info = @options[:id_extra_language_info]
+          @id_paragraph_line_spacing = @options[:id_paragraph_line_spacing]
           @id_recording = @options[:id_recording]  if @options[:include_id_recording]
           @id_series = @options[:id_series]
           @id_title_1_font_size = @options[:id_title_1_font_size]

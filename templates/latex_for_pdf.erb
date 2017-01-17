@@ -191,9 +191,10 @@
         \setlength{\parskip}{7.882pt}
       <% end %>
       \setlength{\parindent}{0pt}
+      \centering
+      \linespread{1.0}
       \primaryfont
       \fontsize{12pt}{14.4pt}\selectfont
-      \centering
       \LR{<%= @id_address_primary_latex_1 %>}
       \par
     <% end %>
@@ -205,9 +206,9 @@
     <% if @id_address_primary_latex_2 %>
       \setlength{\parskip}{1.635pt}
       \setlength{\parindent}{0pt}
+      \centering
       \primaryfont
       \fontsize{10pt}{12pt}\selectfont
-      \centering
       \LR{<%= @id_address_primary_latex_2 %>}
       \par
     <% end %>
@@ -223,9 +224,9 @@
         \setlength{\parskip}{7.882pt}
       <% end %>
       \setlength{\parindent}{0pt}
+      \centering
       \primaryfont
       \fontsize{12pt}{14.4pt}\selectfont
-      \centering
       <%= @id_address_secondary_latex_1 %>
       \par
     <% end %>
@@ -237,9 +238,9 @@
     <% if @id_address_secondary_latex_2 %>
       \setlength{\parskip}{1.635pt}
       \setlength{\parindent}{0pt}
+      \centering
       \primaryfont
       \fontsize{10pt}{12pt}\selectfont
-      \centering
       <%= @id_address_secondary_latex_2 %>
       \par
     <% end %>
@@ -251,9 +252,9 @@
     <% if @id_address_secondary_latex_3 %>
       \setlength{\parskip}{1.635pt}
       \setlength{\parindent}{0pt}
+      \centering
       \primaryfont
       \fontsize{10pt}{12pt}\selectfont
-      \centering
       <%= @id_address_secondary_latex_3 %>
       \par
     <% end %>
@@ -269,6 +270,7 @@
     <% end %>
     \setlength{\parindent}{0pt}
     \centering
+    \linespread{1.0}
     \primaryfont
     \fontsize{5.5pt}{10.5pt}\selectfont
     \LR{©<%= @id_copyright_year %> <%= @company_short_name %>, ALL RIGHTS RESERVED}
@@ -457,7 +459,7 @@
     <% end %>
     \setlength{\lineskiplimit}{-100pt} % This setting keeps latex from automatically stretching linespacing when characters may overlap.
     \setlength{\parindent}{0pt}
-    \begin{spacing}{1.0027}
+    \begin{spacing}{<%= @id_paragraph_line_spacing %>}
       \fontsize{8pt}{10.5pt}\selectfont
   }
   {%
@@ -475,7 +477,7 @@
     <% end %>
     \setlength{\lineskiplimit}{-100pt} % This setting keeps latex from automatically stretching linespacing when characters may overlap.
     \setlength{\parindent}{0pt}
-    \begin{spacing}{1.0027}
+    \begin{spacing}{<%= @id_paragraph_line_spacing %>}
       \fontsize{8pt}{10.5pt}\selectfont
   }
   {%

@@ -261,6 +261,8 @@ class Repositext
           id_address_secondary_latex_3: config.setting(:pdf_export_id_address_secondary_latex_3,false),
           # Adds the text provided as a paragraph below 'RtIdParagraph'.
           id_extra_language_info: config.setting(:pdf_export_id_extra_language_info,false),
+          # Sets the line spacing of the id_paragraph
+          id_paragraph_line_spacing: config.setting(:pdf_export_id_paragraph_line_spacing,false),
           # Adds write to instructions above the primary address.
           id_write_to_primary: config.setting(:pdf_export_id_write_to_primary,false),
           # Adds write to instructions above the secondary address.
