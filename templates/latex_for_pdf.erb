@@ -557,6 +557,25 @@
     \par
   }
 
+% environment to render idtitle3 paragraphs
+\newenvironment{RtIdTitle3}
+  {%
+    <% if @is_primary_repo %>
+      \setlength{\parskip}{2.487pt}
+    <% else %>
+      \setlength{\parskip}{1.467pt}
+    <% end %>
+    \setlength{\lineskiplimit}{-100pt} % This setting keeps latex from automatically stretching linespacing when characters may overlap.
+    \setlength{\parindent}{0pt}
+    \setLR
+    \centering
+    <%= @polyglossia_default_language ? '' : '\idtitlefont' %>%
+    \fontsize{8pt}{10.5pt}\selectfont
+  }
+  {%
+    \par
+  }
+
 % environment to render meta info
 \newenvironment{RtMetaInfo}
   {%

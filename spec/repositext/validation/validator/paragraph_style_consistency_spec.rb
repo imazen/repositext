@@ -71,6 +71,7 @@ class Repositext
             ["para\n{: .normal}", ['', '.normal']],
             ["para with .omit last\n{: .normal .omit}", ['', '.normal']],
             ["para with .omit first\n{: .omit .stanza}", ['', '.stanza']],
+            ["para with .id_title3\n{: .id_title3}", ['', '']],
           ].each do |test_string, xpect|
             it "handles #{ test_string.inspect }" do
               validator, logger, reporter = build_validator_logger_and_reporter(

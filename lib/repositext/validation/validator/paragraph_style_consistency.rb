@@ -64,7 +64,9 @@ class Repositext
             # primary and foreign languages.
             r = e.gsub(/\s*\.indent_for_eagle\s*/, ' ')
             r.gsub!(/\s*\.omit\s*/, ' ')
-            # Normalize .song_break to .song because we expect them to be differnt between English and foreign
+            # Remove .id_title3. They are expected to exist in foreign languages but not in the primary language.
+            r.gsub!(/\s*\.id_title3\s*/, '')
+            # Normalize .song_break to .song because we expect them to be differnt between primary and foreign languages.
             r.gsub!(/\s*\.song_break\s*/, ' .song ')
             # Remove everything but paragraph class names
             r = r.scan(/\.\w+/)

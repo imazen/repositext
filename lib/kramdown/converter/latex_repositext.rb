@@ -194,6 +194,11 @@ module Kramdown
               before.prepend("\\begin{RtIdTitle2}\n")
               after << "\n\\end{RtIdTitle2}"
               inner_text = inner(el, opts.merge(smallcaps_font_override: @options[:title_font_name]))
+            elsif el.has_class?('id_title3')
+              # render in RtIdTitle3 environment
+              before.prepend("\\begin{RtIdTitle3}\n")
+              after << "\n\\end{RtIdTitle3}"
+              inner_text = inner(el, opts.merge(smallcaps_font_override: @options[:title_font_name]))
             elsif el.has_class?('normal')
               # render in RtNormal environment
               before.prepend("\\begin{RtNormal}\n")
