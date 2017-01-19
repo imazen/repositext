@@ -255,6 +255,8 @@ class Repositext
           # Contains the content for all lines of the primary address in the id.
           id_address_primary_latex_1: config.setting(:pdf_export_id_address_primary_latex_1,false),
           id_address_primary_latex_2: config.setting(:pdf_export_id_address_primary_latex_2,false),
+          # Adds an email address below the secondary address.
+          id_address_secondary_email: config.setting(:pdf_export_id_address_secondary_email,false),
           # Contains the content for all lines of the secondary address in the id.
           id_address_secondary_latex_1: config.setting(:pdf_export_id_address_secondary_latex_1,false),
           id_address_secondary_latex_2: config.setting(:pdf_export_id_address_secondary_latex_2,false),

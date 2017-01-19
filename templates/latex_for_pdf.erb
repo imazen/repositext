@@ -214,6 +214,20 @@
     <% end %>
   }
 
+% command to render email address underneath the secondary address
+\newcommand{\RtIdAddressSecondaryEmail}
+  {%
+    <% if @id_address_secondary_email %>
+      \setlength{\parskip}{1.3445pt}
+      \setlength{\parindent}{0pt}
+      \centering
+      \primaryfont
+      \fontsize{7pt}{10pt}\selectfont
+      <%= @id_address_secondary_email %>
+      \par
+    <% end %>
+  }
+
 % command to render the first line of the secondary address
 \newcommand{\RtIdAddressSecondaryFirst}
   {%
@@ -494,6 +508,7 @@
     \RtIdAddressSecondaryFirst
     \RtIdAddressSecondarySecond
     \RtIdAddressSecondaryThird
+    \RtIdAddressSecondaryEmail
     \RtIdWriteToPrimary
     \RtIdAddressPrimaryFirst
     \RtIdAddressPrimarySecond

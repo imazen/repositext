@@ -143,6 +143,7 @@ module Kramdown
           @header_footer_rules_present = @options[:header_footer_rules_present]
           @id_address_primary_latex_1 = @options[:id_address_primary_latex_1]
           @id_address_primary_latex_2 = @options[:id_address_primary_latex_2]
+          @id_address_secondary_email = @options[:id_address_secondary_email]
           @id_address_secondary_latex_1 = @options[:id_address_secondary_latex_1]
           @id_address_secondary_latex_2 = @options[:id_address_secondary_latex_2]
           @id_address_secondary_latex_3 = @options[:id_address_secondary_latex_3]
