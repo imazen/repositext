@@ -60,10 +60,12 @@ class Repositext
           doc.strip.split(/\n/).map { |line|
             line =~ PARAGRAPH_STYLE_REGEX ? line : ''
           }.inject([]) { |m,e|
-            # Remove .omit and .indent_for_eagle classes. They are expected to be different between
+            # Remove .indent_for_eagle, .omit, .decreased_word_space and .increased_word_space classes. They are expected to be different between
             # primary and foreign languages.
             r = e.gsub(/\s*\.indent_for_eagle\s*/, ' ')
             r.gsub!(/\s*\.omit\s*/, ' ')
+            r.gsub!(/\s*\.decreased_word_space\s*/, ' ')
+            r.gsub!(/\s*\.increased_word_space\s*/, ' ')
             # Remove .id_title3. They are expected to exist in foreign languages but not in the primary language.
             r.gsub!(/\s*\.id_title3\s*/, '')
             # Normalize .song_break to .song because we expect them to be differnt between primary and foreign languages.
