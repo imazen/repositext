@@ -102,10 +102,6 @@ class Repositext
 
         # @return [Repositext::Subtitle::OperationsForFile]
         def compute
-puts
-puts "New file: ========================================================="
-puts @content_at_file.filename
-puts
           mappings_for_all_hunks = @hunks.inject([]) { |m,hunk|
             m += SubtitleIndexToIdMappingsForHunk.new(
               @content_at_lines_with_subtitles[(hunk.old_start - 1), hunk.old_lines],
