@@ -27,7 +27,6 @@ class Repositext
         ) do |content_at_file|
           content_at_file.update_file_level_data(key_val_pairs)
         end
-
       end
 
       # Updates the subtitle_mark character positions in *.subtitle_markers.csv
@@ -142,7 +141,7 @@ class Repositext
           options.merge(
             'config' => config,
             'file_list' => file_list,
-            'is_initial_sync' => true,
+            'is_initial_sync' => false,
             'last_operation_id' => primary_repo.read_repo_level_data['st_sync_last_operation_id'],
             'primary_repository' => primary_repo,
             'stids_inventory_file' => stids_inventory_file,

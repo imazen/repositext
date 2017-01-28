@@ -62,7 +62,8 @@ class Repositext
 
         # @param content_at_file_to [Repositext::RFile::ContentAt]
         # @param repo_base_dir [String]
-        # @param options [Hash] with keys :from_git_commit, :to_git_commit, :prev_last_operation_id
+        # @param options [Hash] with keys :from_git_commit (SHA1 string),
+        #   :to_git_commit (SHA1 string), :prev_last_operation_id (Integer)
         def initialize(content_at_file_to, repo_base_dir, options)
           @content_at_file_to = content_at_file_to
           @file_date_code = @content_at_file_to.extract_date_code

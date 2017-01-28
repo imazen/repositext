@@ -10,8 +10,12 @@ class Repositext
               from_git_commit
             )
             stm_csv_file_to = content_at_file_to.corresponding_subtitle_markers_csv_file
+            # We need to grab contents of STM CSV file as of the next commit
+            # after the `from_git_commit` because that's when the updates to
+            # the STM CSV file were made as part of the previous st sync.
             stm_csv_file_from = stm_csv_file_to.as_of_git_commit(
-              from_git_commit
+              from_git_commit,
+              :at_next_commit
             )
             st_attrs_with_content_only = convert_content_at_to_subtitle_attrs(
               content_at_file_from.contents

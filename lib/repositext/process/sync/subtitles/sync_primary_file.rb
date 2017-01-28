@@ -95,9 +95,17 @@ class Repositext
             return [[],[]]  if st_ops_for_file.nil? && !@is_initial_sync
 
             # old_stids: extract STIDs and record_ids from corresponding STM CSV file
+            # NOTE: We use the contents of stm CSV file as of the next commit
+            # after `from_git_commit`. The reason being that the STM CSV file
+            # was updated with new subtitle data after previous st sync.
+            # This wasn't committed until one commit after the old `to_git_commit`
+            # which is this sync's `from_git_commit`
             old_stids = []
             corr_stm_csv_file = content_at_file.corresponding_subtitle_markers_csv_file
-                                               .as_of_git_commit(@from_git_commit)
+                                               .as_of_git_commit(
+                                                 @from_git_commit,
+                                                 :at_next_commit
+                                               )
             corr_stm_csv_file.each_row { |e|
               old_stids << { persistent_id: e['persistentId'], record_id: e['recordId'] }
             }

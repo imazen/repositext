@@ -2,15 +2,17 @@ class Repositext
   class Process
     class Compute
 
-      # Computes subtitle operations for an entire repository. Going from
-      # git commit `from_git_commit` to git commit `to_git_commit`.
+      # Computes subtitle operations for an entire (primary) repository.
+      # Going from git commit `from_git_commit` to git commit `to_git_commit`.
+      # This will never be done for foreign repositories.
       class SubtitleOperationsForRepository
 
         # Initializes a new instance from high level objects.
         # @param content_type [Repositext::ContentType]
-        # @param from_git_commit [String]
-        # @param to_git_commit [String]
+        # @param from_git_commit [String] SHA1
+        # @param to_git_commit [String] SHA1
         # @param file_list [Array<String>] path to files to include
+        # @param is_initial_sync [Boolean] set to true for initial sync only
         # @param prev_last_operation_id [Integer] previous sync's last operation_id
         def initialize(content_type, from_git_commit, to_git_commit, file_list, is_initial_sync, prev_last_operation_id)
           @content_type = content_type

@@ -74,6 +74,7 @@ class Repositext
     #   * :at_next_commit - as of next commit that included self, or current
     #     contents if there is no next commit.
     # @param git_commit_sha1 [String]
+    # @param reference [Symbol]
     # @return [RFile]
     def as_of_git_commit(git_commit_sha1, reference=:at_commit)
       if !git_commit_sha1.is_a?(String)
@@ -86,29 +87,28 @@ class Repositext
       new_contents = case reference
       when :at_commit
         # Use git_commit_sha1
-        `git --no-pager show #{ git_commit_sha1 }:#{ repo_relative_path }`
+        `git --git-dir=#{ repository.repo_path } --no-pager show #{ git_commit_sha1 }:#{ repo_relative_path }`
       when :at_next_commit
         # Find next commit's sha1
         # Get all commits between git_commit_sha1 and HEAD in reverse order,
         # starting with the next one after git_commit_sha1, ending with HEAD,
         # one commit sha1 per line.
-        all_commit_sha1s, _ = Open3.capture2(
-          [
-            "git",
-            "--git-dir=#{ repository.repo_path }",
-            "log",
-            "--reverse",
-            "--pretty=format:'%H'",
-            "--ancestry-path",
-            "#{git_commit_sha1}..HEAD",
-            "--",
-            filename.sub(repository.base_dir, ''),
-          ].join(' ')
-        )
-        next_commit_sha1 = all_commit_sha1s.lines.first
+        cmd = [
+          "git",
+          "--git-dir=#{ repository.repo_path }",
+          "log",
+          "--reverse",
+          "--pretty=format:'%H'",
+          "--ancestry-path",
+          "#{git_commit_sha1}..HEAD",
+          "--",
+          filename.sub(repository.base_dir, ''),
+        ].join(' ')
+        all_commit_sha1s, _ = Open3.capture2(cmd)
+        next_commit_sha1 = (all_commit_sha1s.lines.first || '').strip
         if '' != next_commit_sha1.to_s
           # Load contents as of next commit
-          `git --no-pager show #{ next_commit_sha1 }:#{ repo_relative_path }`
+          `git --git-dir=#{ repository.repo_path } --no-pager show #{ next_commit_sha1 }:#{ repo_relative_path }`
         else
           # No next commit, use current file contents
           is_binary ? File.binread(filename) : File.read(filename)

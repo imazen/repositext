@@ -60,7 +60,7 @@ class Repositext
           "log",
           "-1",
           "--pretty=format:'%H'",
-          ("--until='#{ before_time.strftime('%Y-%m-%d') }'"  if before_time),
+          ("--until='#{ before_time.to_s }'"  if before_time),
           "--",
           filename.sub(base_dir, ''),
         ].join(' ')
