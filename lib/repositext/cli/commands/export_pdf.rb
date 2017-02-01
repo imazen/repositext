@@ -306,6 +306,9 @@ class Repositext
           config.update_for_file(filename.gsub(/\.at\z/, '.data.json'))
           pdf_export_binding = config.setting(:pdf_export_binding)
           # Options in this section get updated on a per-file basis.
+          # Overrides for when title on odd pages should be different from computed value
+          options[:document_title_plain_text_override] = config.setting(:pdf_export_document_title_plain_text_override, false)
+          options[:document_title_latex_override] = config.setting(:pdf_export_document_title_latex_override, false)
           options[:ed_and_trn_abbreviations] = config.setting(:pdf_export_ed_and_trn_abbreviations)
           options[:first_eagle] = config.setting(:pdf_export_first_eagle)
           # Sets the starting page number.

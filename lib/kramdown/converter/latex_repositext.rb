@@ -289,10 +289,10 @@ module Kramdown
           latex_body = inner(el, opts)
           latex_body = post_process_latex_body(latex_body)
           document_title_plain_text = (
-            @document_title_plain_text || '[Untitled]'
+            @options[:document_title_plain_text_override] || @document_title_plain_text || '[Untitled]'
           ).strip
           document_title_latex = (
-            @document_title_latex || '[Untitled]'
+            @options[:document_title_latex_override] || @document_title_latex || '[Untitled]'
           )
           r = wrap_body_in_template(latex_body, document_title_plain_text, document_title_latex)
           if @options[:debug]
