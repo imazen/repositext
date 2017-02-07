@@ -20,13 +20,14 @@ class Repositext
             if fgc_o.success?
               file_from_git_commit = fgc_o.result[:from_git_commit]
               ffgc_source = fgc_o.result[:source]
-              print "from_git_commit: #{ file_from_git_commit.inspect }, source: #{ ffgc_source.inspect }"
+              print " from_git_commit: #{ file_from_git_commit.inspect }, source: #{ ffgc_source.inspect }"
             else
               msg = fgc_o.messages.join(' ')
               @unprocessable_files << {
                 file: foreign_content_at_file,
                 message: msg,
               }
+              puts # terminate log line
               puts msg.color(:red)
               return false
             end

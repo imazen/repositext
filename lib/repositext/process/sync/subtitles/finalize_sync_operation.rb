@@ -15,7 +15,7 @@ class Repositext
               puts "     - #{ from_git_commit } to #{ to_git_commit }"
             }
             if @unprocessable_files.any?
-              puts "   - The following files could not be synced:".color(:red)
+              puts "   - The following #{ @unprocessable_files.count } files could not be synced:".color(:red)
               @unprocessable_files.each { |f_attrs|
                 print "     - #{ f_attrs[:file].repo_relative_path }:".ljust(52).color(:red)
                 puts "#{ f_attrs[:message] }".color(:red)

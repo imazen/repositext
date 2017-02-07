@@ -36,7 +36,7 @@ class Repositext
                   @to_git_commit,
                   {} # no sts that require review
                 )
-                print " - N/A"
+                print " - No applicable st_ops"
               end
               true
             end
