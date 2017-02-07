@@ -24,7 +24,7 @@ class Repositext
       # @param st_ops_dir [String]
       # @return [String]
       def self.compute_earliest_from_commit(st_ops_dir)
-        earliest_st_ops_file_name = find_latest(st_ops_dir)
+        earliest_st_ops_file_name = find_earliest(st_ops_dir)
         return nil  if earliest_st_ops_file_name.nil?
         extract_from_and_to_commit_from_filename(earliest_st_ops_file_name).first
       end
@@ -109,6 +109,13 @@ class Repositext
         match = filename.match(/([\h]{6})-to-([\h]{6})\.json\z/)
         from_commit, to_commit = match[1], match[2]
         [from_commit, to_commit]
+      end
+
+      # Finds the path of the earliest st-ops file if any exist
+      # @param st_ops_dir [String]
+      # @return [String, Nil]
+      def self.find_earliest(st_ops_dir)
+        get_all_st_ops_files(st_ops_dir).first
       end
 
       # Finds the path of the latest st-ops file if any exist
