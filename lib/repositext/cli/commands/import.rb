@@ -127,17 +127,10 @@ class Repositext
         # NOTE: On foreign repos we update data related to st_sync on a per file basis.
         #       This is done in `merge_subtitle_marks_from_subtitle_import_into_content_at`
         if config.setting(:is_primary_repo)
-          use_subtitle_sync_behavior = false
+          use_subtitle_sync_behavior = true
           if use_subtitle_sync_behavior
             # sync-subtitles behavior
-            sync_file_level_data(
-              options.merge(
-                { 'base-dir' => :content_dir, 'file-extension' => :at_extension }
-              ),
-              {
-                'st_sync_required' => true,
-              }
-            )
+            repository.update_repo_level_data('st_sync_required' => true)
           else # Pre-sync-subtitles behavior
             # Handle subtitle_marker CSV files only when we're working in the primary repo.
             copy_subtitle_marker_csv_files_to_content(

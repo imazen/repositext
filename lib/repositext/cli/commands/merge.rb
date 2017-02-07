@@ -480,7 +480,7 @@ class Repositext
         primary_repo = content_type.corresponding_primary_content_type.repository
         primary_repo_sync_commit = repository.read_repo_level_data['st_sync_commit']
 
-        use_subtitle_sync_behavior = false
+        use_subtitle_sync_behavior = true
 
         Dir.glob(input_file_pattern_subtitle_import).each do |subtitle_import_file_name|
           if subtitle_import_file_name =~ /\.markers\.txt\z/
