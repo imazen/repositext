@@ -11,7 +11,7 @@ class Repositext
           # Finalizes the subtitles sync operation
           def finalize_sync_operation
             puts "   - Transferred the following st_ops to foreign repos:"
-            @st_ops_cache.keys.each { |from_git_commit, to_git_commit|
+            @st_ops_cache_file.keys.each { |from_git_commit, to_git_commit|
               puts "     - #{ from_git_commit } to #{ to_git_commit }"
             }
             if @unprocessable_files.any?

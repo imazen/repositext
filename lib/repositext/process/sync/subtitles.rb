@@ -4,6 +4,8 @@ class Repositext
     class Sync
 
       # Synchronizes subtitles from English to foreign repos.
+      # * Extracts subtitle operations in primary repo
+      # * Transfers subtitle operations to foreign repos where applicable
       class Subtitles
 
         class ReposNotReadyError < StandardError; end
@@ -40,7 +42,9 @@ class Repositext
 
           # Cache for Subtitle::OperationsForRepository.
           # See #cached_st_ops_for_repo for details.
-          @st_ops_cache = {}
+          @st_ops_cache_repo = {}
+          # See #cached_st_ops_for_file for details.
+          @st_ops_cache_file = {}
           # Cache for primary files (content AT and STM CSV) at various git
           # commits. See #cached_primary_file_data for details.
           @primary_subtitle_data_cache = {}
@@ -91,7 +95,8 @@ class Repositext
 
       private
 
-        # Returns an array of foreign repos that have `st_sync_active` set to true.
+        # Returns an array of foreign repos that have `st_sync_active` setting
+        # set to true.
         # @return [Array<Repository>]
         def all_synced_foreign_repos
           RepositorySet.new(
@@ -99,7 +104,7 @@ class Repositext
           ).all_repos(
             :foreign_content_repos
           ).find_all { |foreign_repo|
-            foreign_repo.read_repo_level_data['st_sync_active']
+            foreign_repo.read_repo_level_settings['st_sync_active']
           }
         end
 
@@ -160,7 +165,7 @@ class Repositext
         # Any ops that are not in the cache yet will be retrieved by calling
         # st_ops_generator block and added to cache.
         # Caches st_ops in memory in a hash with [from_git_commit, to_git_commit]
-        # (first 6 chars only) as keys in the @st_ops_cache i_var:
+        # (first 6 chars only) as keys in the @st_ops_cache_repo i_var:
         #     {
         #       ['123456', '654321'] => <#Subtitle::OperationsForRepository ...>,
         #       [<from_git_commit>, <to_git_commit>] => Subtitle::OperationsForRepository,
@@ -174,13 +179,49 @@ class Repositext
           cache_key = [from_git_commit, to_git_commit].map { |e|
             Subtitle::OperationsFile.truncate_git_commit_sha1(e)
           }
-          if(cached_st_ops = @st_ops_cache[cache_key])
+          if(cached_st_ops = @st_ops_cache_repo[cache_key])
             # Return cached data
             return cached_st_ops
           end
 
           # Data is not cached yet, generate, cache and return it.
-          @st_ops_cache[cache_key] = yield
+          @st_ops_cache_repo[cache_key] = yield
+        end
+
+        # Returns st_ops_for_file given a from, to git commit and a primary file's
+        # product_identity_id.
+        # Any ops that are not in the cache yet will be retrieved by calling
+        # st_ops_generator block and added to cache.
+        # Caches st_ops in memory in a hash with
+        # [from_git_commit, to_git_commit][product_identity_id]
+        # (first 6 chars only) as keys in the @st_ops_cache_file i_var:
+        #     {
+        #       ['123456', '654321'] => {
+        #         '1234' => <#Subtitle::OperationsForFile ...>,
+        #         ...
+        #       },
+        #       [<from_git_commit>, <to_git_commit>] => {
+        #         <product_identity_id> => Subtitle::OperationsForFile,
+        #         ...
+        #       },
+        #     }
+        # @param primary_content_at_file [RFile::ContentAt]
+        # @param from_git_commit [String]
+        # @param to_git_commit [String]
+        # @param st_ops_generator [Proc], expected to return Subtitle::OperationsForFile
+        # @return [Subtitle::OperationsForFile] either from cache or generator
+        def cached_st_ops_for_file(primary_content_at_file, from_git_commit, to_git_commit, &st_ops_generator)
+          primary_cache_key = [from_git_commit, to_git_commit].map { |e|
+            Subtitle::OperationsFile.truncate_git_commit_sha1(e)
+          }
+          secondary_cache_key = primary_content_at_file.extract_product_identity_id
+          if(cached_st_ops = (@st_ops_cache_file[primary_cache_key] ||= {})[secondary_cache_key])
+            # Return cached data
+            return cached_st_ops
+          end
+
+          # Data is not cached yet, generate, cache and return it.
+          @st_ops_cache_file[primary_cache_key][secondary_cache_key] = yield
         end
 
         # Computes the `to` commit
