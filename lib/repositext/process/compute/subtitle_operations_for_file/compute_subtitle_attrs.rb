@@ -5,6 +5,9 @@ class Repositext
         # Namespace for methods related to computing individual subtitles' attributes
         module ComputeSubtitleAttrs
 
+          class MismatchingSubtitleCountsError < ::StandardError; end
+          class EncounteredNilStidError < ::StandardError; end
+
           def compute_subtitle_attrs_from(content_at_file_to, from_git_commit)
             content_at_file_from = content_at_file_to.as_of_git_commit(
               from_git_commit
@@ -20,6 +23,7 @@ class Repositext
             st_attrs_with_content_only = convert_content_at_to_subtitle_attrs(
               content_at_file_from.contents
             )
+
             enrich_st_attrs_from(
               st_attrs_with_content_only,
               stm_csv_file_from.subtitles
@@ -95,11 +99,19 @@ class Repositext
             if st_attrs_list.length != st_objects.length
               pp st_attrs_list
               pp st_objects
-              raise(ArgumentError.new("Mismatch in counts: st_attrs_list: #{ st_attrs_list.length }, st_objects: #{ st_objects.length }"))
+              raise(
+                MismatchingSubtitleCountsError.new(
+                  "Mismatch in counts: st_attrs_list: #{ st_attrs_list.length }, st_objects: #{ st_objects.length }"
+                )
+              )
             end
 
             if st_objects.any? { |st| st.persistent_id.nil? }
-              raise("Encountered subtitle with nil persistent_id!")
+              raise(
+                EncounteredNilStidError.new(
+                  "Encountered subtitle with nil persistent_id!"
+                )
+              )
             end
 
             r = []
