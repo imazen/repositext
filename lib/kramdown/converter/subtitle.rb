@@ -25,6 +25,9 @@ module Kramdown
           if el.has_class?('pn')
             # replace space after paragraph numbers with 4 spaces. Done in post processing
             @output << "<<replace space after with 4 spaces>>"
+          elsif el.has_class?('line_break')
+            # line_break, ignore self and children
+            el.children = []
           end
         when :entity
           # Decode whitelisted entities
