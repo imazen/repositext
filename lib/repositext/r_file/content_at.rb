@@ -28,20 +28,20 @@ class Repositext
         ).compute
       end
 
-      def corresponding_subtitle_export_markers_file
-        return nil  if !File.exist?(corresponding_subtitle_export_markers_filename)
-        RFile::SubtitleMarkersCsv.new(
-          File.read(corresponding_subtitle_export_markers_filename),
+      def corresponding_subtitle_export_en_txt_file
+        return nil  if !File.exist?(corresponding_subtitle_export_en_txt_filename)
+        RFile::Content.new(
+          File.read(corresponding_subtitle_export_en_txt_filename),
           language,
-          corresponding_subtitle_export_markers_filename,
+          corresponding_subtitle_export_en_txt_filename,
           content_type
         )
       end
 
-      def corresponding_subtitle_export_markers_filename
+      def corresponding_subtitle_export_en_txt_filename
         filename.sub(/(?<=\/)[a-z]{3}(?=[\d]{2}-[\d]{4})/, '') # remove lang code
                 .sub(/\/content\//, '/subtitle_export/') # update path
-                .sub(/\.at\z/, '.markers.txt') # update extension
+                .sub(/\.at\z/, '.en.txt') # update extension
       end
 
       def corresponding_subtitle_import_markers_file
