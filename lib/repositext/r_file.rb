@@ -184,8 +184,17 @@ class Repositext
     end
 
     # Returns relative path from repo root to self
-    def repo_relative_path
-      filename.sub(repository.base_dir, '')
+    # @param include_repo_root [Boolean] if true, path will include the repo root dir
+    # @return [String]
+    def repo_relative_path(include_repo_root=false)
+      leading_path_segments = if include_repo_root
+        # Remove repo root dir from leading_path_segments to keep it
+        Pathname.new(repository.base_dir).parent.to_s
+      else
+        repository.base_dir
+      end
+      # Remove leading path segments plus any leading slashes
+      filename.sub(leading_path_segments, '').sub(/\A\//, '')
     end
 
     # Updates contents and persists them

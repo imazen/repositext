@@ -11,7 +11,7 @@ class Repositext
           # @param content_at_file [RFile::ContentAt] current version of file
           # @param st_ops_for_repo [Repositext::Subtitle::OperationsForRepository]
           def sync_primary_file(content_at_file, st_ops_for_repo)
-            puts "     - process #{ content_at_file.repo_relative_path }"
+            puts "     - process #{ content_at_file.repo_relative_path(true) }"
             st_ops_for_file = extract_st_ops_for_primary_file(
               content_at_file.extract_product_identity_id,
               st_ops_for_repo

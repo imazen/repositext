@@ -47,7 +47,7 @@ class Repositext
               content_at_file_path,
               content_type
             )
-            puts "   - #{ content_at_file.repo_relative_path }"
+            puts "   - #{ content_at_file.repo_relative_path(true) }"
             process_primary_file(content_at_file)
           end
 

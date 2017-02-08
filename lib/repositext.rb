@@ -35,7 +35,7 @@ require 'open3'
 require 'ostruct'
 require 'outcome'
 require 'parallel'
-require 'pathname' # for #relative_path_from
+require 'pathname' # for #relative_path_from and #repo_relative_path
 require 'pp'
 require 'pragmatic_segmenter'
 require 'rainbow/ext/string' # to monkey patch Rainbow String extensions

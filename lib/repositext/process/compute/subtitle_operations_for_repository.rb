@@ -93,7 +93,7 @@ class Repositext
               @content_type
             )
 
-            puts "     - process #{ content_at_file_to.repo_relative_path }"
+            puts "     - process #{ content_at_file_to.repo_relative_path(true) }"
 
             soff = SubtitleOperationsForFile.new(
               content_at_file_to,

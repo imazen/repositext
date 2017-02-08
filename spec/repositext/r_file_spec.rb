@@ -1,12 +1,38 @@
-# encoding UTF-8
 require_relative '../helper'
 
 class Repositext
+
   describe RFile do
+
     let(:contents) { 'contents' }
     let(:language) { Language::English.new }
-    let(:filename) { '/path/to/r_file.at' }
-    let(:default_rfile) { RFile.new(contents, language, filename) }
+    let(:content_type_name) { 'general' }
+    let(:repo_name) { 'rt-english' }
+    let(:path_to_repo) {
+      File.join(Repository::Test.repos_folder, repo_name, '')
+    }
+    let(:repo) {
+      Repository::Test.create!(repo_name)
+      Repository::Content.new(path_to_repo)
+    }
+    let(:path_to_content_type) {
+      File.join(repo.base_dir, "ct-#{ content_type_name }", '')
+    }
+    let(:content_type) {
+      ContentType.new(path_to_content_type)
+    }
+    let(:file_basename) {
+      "eng57-0103-1234.txt"
+    }
+    let(:content_type_relative_path_segments) {
+      "content/57"
+    }
+    let(:filename) {
+      File.join(path_to_content_type, content_type_relative_path_segments, file_basename)
+    }
+    let(:default_rfile) {
+      RFile.new(contents, language, filename, content_type)
+    }
 
     describe '.relative_path_from_to' do
       [
@@ -83,26 +109,41 @@ class Repositext
 
     describe '#basename' do
       it 'handles default data' do
-        default_rfile.basename.must_equal('r_file.at')
+        default_rfile.basename.must_equal(file_basename)
       end
     end
 
     describe '#dir' do
       it 'handles default data' do
-        default_rfile.dir.must_equal('/path/to')
+        default_rfile.dir.must_equal(filename.sub("/#{ file_basename }", ''))
       end
     end
 
-    describe 'is_binary' do
+    describe '#is_binary' do
       it 'returns false' do
         default_rfile.is_binary.must_equal(false)
       end
     end
 
-    describe 'lang_code_3' do
+    describe '#lang_code_3' do
       it 'returns correct value' do
         default_rfile.lang_code_3.must_equal(:eng)
       end
     end
+
+    describe '#repo_relative_path' do
+      it 'returns path without repo root by default' do
+        default_rfile.repo_relative_path.must_equal(
+          'ct-general/content/57/eng57-0103-1234.txt'
+        )
+      end
+
+      it 'returns path with repo root if passed true' do
+        default_rfile.repo_relative_path(true).must_equal(
+          'rt-english/ct-general/content/57/eng57-0103-1234.txt'
+        )
+      end
+    end
+
   end
 end
