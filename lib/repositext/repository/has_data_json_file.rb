@@ -31,6 +31,14 @@ class Repositext
         cdjf.read_data
       end
 
+      # Returns all key value pairs of corresponding data_json file
+      # under the 'settings' key as Hash
+      def read_repo_level_settings
+        cdjf = corresponding_data_json_file
+        return {}  if cdjf.nil?
+        cdjf.read_settings
+      end
+
       # Syncs key_val_pairs under data key in corresponding data_json file.
       # @param key_val_pairs [Hash] with string keys
       def update_repo_level_data(key_val_pairs)
