@@ -118,6 +118,13 @@ class Repositext
         lines.each { |l| $stderr.puts l }
       end
 
+      # Procedure for syncing subtitles while we do this manually on command line:
+      # * create branch
+      # * import subtitles
+      # * commit changes to subtitles
+      # * merge branch into master
+      # * check out master
+      # * run rt sync subtitles on primary repo
       def sync_subtitles(options)
         if !config.setting(:is_primary_repo)
           raise "Please run this command from inside the primary repository"
