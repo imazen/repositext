@@ -480,7 +480,7 @@ class Repositext
         primary_repo = content_type.corresponding_primary_content_type.repository
         primary_repo_sync_commit = repository.read_repo_level_data['st_sync_commit']
 
-        use_subtitle_sync_behavior = true
+        use_subtitle_sync_behavior = false
 
         Dir.glob(input_file_pattern_subtitle_import).each do |subtitle_import_file_name|
           if subtitle_import_file_name =~ /\.markers\.txt\z/
@@ -517,36 +517,33 @@ class Repositext
               success_count += 1
               $stderr.puts " + Merge :subtitle_marks from #{ subtitle_import_file_name }"
 
-              if use_subtitle_sync_behavior
-                # Update st_sync related file_level data
+              if use_subtitle_sync_behavior && !content_at_file.is_primary?
+                # Update st_sync related file_level data for foreign files only.
+                # St_sync data for primary files has already been updated in
+                # Repositext::Cli::Import#import_subtitle
                 export_sync_commit = content_at_file.read_file_level_data['exported_subtitles_at_st_sync_commit']
                 if export_sync_commit.nil?
                   raise "Missing export_sync_commit for file #{ content_at_file.filename }"
                 end
-                if !content_at_file.is_primary?
-                  # Update file level st_sync related data. We do this only for
-                  # foreign files. st_sync data for primary files has already been
-                  # updated in Repositext::Cli::Import#import_subtitle
-                  content_at_file.update_file_level_data(
-                    {
-                      'exported_subtitles_at_st_sync_commit' => nil,
-                      'st_sync_autosplit' => nil,
-                      'st_sync_commit' => export_sync_commit,
-                      'st_sync_subtitles_to_review' => {},
-                    }
+                content_at_file.update_file_level_data(
+                  {
+                    'exported_subtitles_at_st_sync_commit' => nil,
+                    'st_sync_autosplit' => nil,
+                    'st_sync_commit' => export_sync_commit,
+                    'st_sync_subtitles_to_review' => {},
+                  }
+                )
+                # Transfer any subtitle operations that have accumulated since
+                # the subtitle export.
+                # NOTE: This process updates the file level st_sync data for
+                # `st_sync_commit` and `st_sync_subtitles_to_review` for
+                # content_at_file.
+                if export_sync_commit != primary_repo_sync_commit
+                  sync_sts = Repositext::Process::Sync::Subtitles.new('config' => config)
+                  sync_sts.sync_foreign_file(
+                    export_sync_commit,
+                    content_at_file
                   )
-                  # Transfer any subtitle operations that have accumulated since
-                  # the subtitle export.
-                  # NOTE: This process updates the file level st_sync data for
-                  # `st_sync_commit` and `st_sync_subtitles_to_review` for
-                  # content_at_file.
-                  if export_sync_commit != primary_repo_sync_commit
-                    sync_sts = Repositext::Process::Sync::Subtitles.new('config' => config)
-                    sync_sts.sync_foreign_file(
-                      export_sync_commit,
-                      content_at_file
-                    )
-                  end
                 end
               end
             else

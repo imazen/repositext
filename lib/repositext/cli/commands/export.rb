@@ -156,7 +156,7 @@ class Repositext
             content_type: content_type,
           )
         ) do |content_at_file|
-          use_subtitle_sync_behavior = true
+          use_subtitle_sync_behavior = false
           if use_subtitle_sync_behavior
             # sync-subtitles behavior
             # Make sure primary file (or foreign file's corresponding primary file)
