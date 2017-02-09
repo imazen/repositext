@@ -10,14 +10,20 @@ class Repositext
 
           # Finalizes the subtitles sync operation
           def finalize_sync_operation
-            puts "   - Transferred the following st_ops to foreign repos:"
+            puts "   - Transferred the following #{ @st_ops_cache_file.keys.count } st_ops versions to foreign repos:"
             @st_ops_cache_file.keys.each { |from_git_commit, to_git_commit|
               puts "     - #{ from_git_commit } to #{ to_git_commit }"
             }
+            if @successful_files.any?
+              puts "   - The following #{ @successful_files.count } files were synced successfully:".color(:green)
+              @successful_files.each { |file_path| puts "     - #{ file_path }" }
+            else
+              puts "   - No files were synced successfully".color(:red)
+            end
             if @unprocessable_files.any?
               puts "   - The following #{ @unprocessable_files.count } files could not be synced:".color(:red)
               @unprocessable_files.each { |f_attrs|
-                print "     - #{ f_attrs[:file].repo_relative_path(true) }:".ljust(52).color(:red)
+                print "     - #{ f_attrs[:file].repo_relative_path(true) }: ".ljust(52).color(:red)
                 puts "#{ f_attrs[:message] }".color(:red)
               }
             else

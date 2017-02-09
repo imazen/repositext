@@ -42,6 +42,9 @@ class Repositext
               foreign_content_at_file,
               applicable_st_ops
             )
+
+            @successful_files << foreign_content_at_file.repo_relative_path(true)
+
             puts # terminate log line
             true
           end
