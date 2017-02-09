@@ -21,8 +21,6 @@ class Repositext
               content_at_file,
               st_ops_for_file
             )
-
-            update_primary_file_level_st_sync_data(content_at_file)
           end
 
         private
@@ -73,14 +71,6 @@ class Repositext
             )
 
             true
-          end
-
-          # @param content_at_file [RFile::ContentAt]
-          def update_primary_file_level_st_sync_data(content_at_file)
-            content_at_file.update_file_level_data(
-              'st_sync_required' => false,
-              'last_st_sync_commit_for_this_file' => @to_git_commit,
-            )
           end
 
           # Extracts old_stids and new_time_slices for content_at_file.
