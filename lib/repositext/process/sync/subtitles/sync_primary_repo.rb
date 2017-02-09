@@ -97,7 +97,7 @@ class Repositext
             # Record git_to_commit at primary repo level
             @primary_repository.update_repo_level_data(
               'st_sync_commit' => @to_git_commit,
-              'st_sync_required' => nil,
+              'st_sync_required' => false,
               'st_sync_last_operation_id' => last_operation_id,
             )
           end
