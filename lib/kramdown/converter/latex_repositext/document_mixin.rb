@@ -163,6 +163,8 @@ module Kramdown
           @latest_commit_hash = latest_commit.oid[0,8]
           @linebreaklocale = @options[:language_code_2_chars]
           @magnification = magnification
+          @metadata_additional_keywords = @options[:metadata_additional_keywords]
+          @metadata_author = @options[:metadata_author]
           @page_number_command = compute_page_number_command(
             @options[:header_footer_rules_present],
             @options[:language_code_3_chars]
