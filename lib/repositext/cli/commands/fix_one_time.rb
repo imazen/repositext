@@ -92,9 +92,9 @@ class Repositext
       def fix_add_initial_data_json_file(options)
         Repositext::Cli::Utils.read_files(
           config.compute_glob_pattern(
-            options['base-dir'] || :content_dir,
+            :content_dir,
             options['file-selector'] || :all_files,
-            options['file-extension'] || :at_extension
+            :at_extension
           ),
           options['file_filter'],
           nil,
