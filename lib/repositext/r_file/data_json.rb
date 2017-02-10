@@ -21,7 +21,7 @@ class Repositext
       # Returns the default contents for a data.json file
       # @return [String] JSON formatted string
       def self.default_file_contents
-        JSON.generate(default_data, json_formatting_options)
+        JSON.generate(default_data, json_formatting_options) + "\n"
       end
 
       # Returns default data as Hash
