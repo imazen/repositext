@@ -275,6 +275,10 @@ class Repositext
           language_code_2_chars: config.setting(:language_code_2_chars),
           language_code_3_chars: config.setting(:language_code_3_chars),
           language_name: content_type.language.name,
+          # Sets addtional keywaords for the pdf export metadata
+          metadata_additional_keywords: config.setting(:pdf_export_metadata_additional_keywords,false),
+          # Sets the author for the pdf export metadata
+          metadata_author: config.setting(:pdf_export_metadata_author,false),
           # NOTE: We grab pdf_export_font_name from the _PRIMARY_ repo's config
           primary_font_name: primary_config.setting(:pdf_export_font_name),
           # Do not move the 'song_leftskip' and 'song_rightskip' settings to the file specific settings.
