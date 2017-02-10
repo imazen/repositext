@@ -25,11 +25,38 @@ class Repositext
       all_content_repo_names + code_repo_names
     end
 
+    # Returns an array of paths to all repos in repo_set_spec
+    # @param repo_set_spec [Symbol, Array<String>] A symbol describing a predefined
+    #     group of repos, or an Array with specific repo names as strings.
+    def all_repo_paths(repo_set_spec)
+      compute_repo_paths(repo_set_spec)
+    end
+
+    # Returns an array of all repos in repo_set
+    def all_repos(repo_set)
+      repo_class = if repo_set.is_a?(Symbol) && repo_set.to_s.include?('_content_')
+        Repository::Content
+      else
+        Repository
+      end
+      all_repo_paths(repo_set).map{ |e| repo_class.new(e) }
+    end
+
     def code_repo_names
       %w[
         repositext
         suspension
       ]
+    end
+
+    # Run `delete_all_pdf_exports` in all repositories
+    def delete_all_pdf_exports(repo_set_spec, content_type)
+      run_repositext_command(repo_set_spec, "rt #{ content_type.name } delete all_pdf_exports")
+    end
+
+    # Run `export pdf_book` in all repositories
+    def export_pdf_book(repo_set_spec, content_type)
+      run_repositext_command(repo_set_spec, "rt #{ content_type.name } export pdf_book")
     end
 
     def fix_add_initial_data_json_file(repo_set_spec, content_type)
@@ -49,21 +76,10 @@ class Repositext
       ]
     end
 
-    # Returns an array of all repos in repo_set
-    def all_repos(repo_set)
-      repo_class = if repo_set.is_a?(Symbol) && repo_set.to_s.include?('_content_')
-        Repository::Content
-      else
-        Repository
-      end
-      all_repo_paths(repo_set).map{ |e| repo_class.new(e) }
-    end
-
-    # Returns an array of paths to all repos in repo_set_spec
-    # @param repo_set_spec [Symbol, Array<String>] A symbol describing a predefined
-    #     group of repos, or an Array with specific repo names as strings.
-    def all_repo_paths(repo_set_spec)
-      compute_repo_paths(repo_set_spec)
+    # Extracting the git clone command so that it can be overridden in subclasses.
+    # @param repo_name [String]
+    def git_clone_command(repo_name)
+      "git clone <repo clone url>#{ repo_name }.git"
     end
 
     # Clones all git repos that don't exist on local filesystem yet.
@@ -94,12 +110,6 @@ class Repositext
           end
         end
       }
-    end
-
-    # Extracting the git clone command so that it can be overridden in subclasses.
-    # @param repo_name [String]
-    def git_clone_command(repo_name)
-      "git clone <repo clone url>#{ repo_name }.git"
     end
 
     # Makes sure that all content repos are ready for git operations:
@@ -270,16 +280,6 @@ class Repositext
     # Run `report quotes_details` in all repositories
     def report_quotes_details(repo_set_spec, content_type)
       run_repositext_command(repo_set_spec, "rt #{ content_type.name } report quotes_details")
-    end
-
-    # Run `delete_all_pdf_exports` in all repositories
-    def delete_all_pdf_exports(repo_set_spec, content_type)
-      run_repositext_command(repo_set_spec, "rt #{ content_type.name } delete all_pdf_exports")
-    end
-
-    # Run `export pdf_book` in all repositories
-    def export_pdf_book(repo_set_spec, content_type)
-      run_repositext_command(repo_set_spec, "rt #{ content_type.name } export pdf_book")
     end
 
     # Allows running of any command (e.g., export, fix, report, validate) on
