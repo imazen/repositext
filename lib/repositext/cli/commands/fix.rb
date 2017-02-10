@@ -213,12 +213,14 @@ class Repositext
         # ) do |contents, filename|
         #   [Outcome.new(true, { contents: contents.gsub(/(?<!\n)\n*\z/, "\n") }, [])]
         # end
-
-        which_files = :all # :content_at_only or :all
+        which_files = :all # :content_at_only, :content_files_only, or :all
         case which_files
         when :content_at_only
           input_base_dirs = %w[content_dir]
           input_file_extension_name = options['file-extension'] || :at_extension
+        when :content_files_only
+          input_base_dirs = %w[content_dir]
+          input_file_extension_name = options['file-extension'] || :repositext_extensions
         when :all
           # Process all subfolders of root. Don't touch files in root.
           input_base_dirs = %w[
