@@ -77,7 +77,8 @@ class Repositext
             puts "   - skip, repo is up-to-date."
           end
 
-          # Compute earliest global `from` git commit. No sync may go before this commit.
+          # Compute earliest global `from` git commit. No sync may go before
+          # this commit.
           @earliest_from_git_commit = @primary_repository.lookup(
             Subtitle::OperationsFile.compute_earliest_from_commit(
               @config.base_dir(:subtitle_operations_dir)

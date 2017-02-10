@@ -24,9 +24,14 @@ class Repositext
       # @param st_ops_dir [String]
       # @return [String]
       def self.compute_earliest_from_commit(st_ops_dir)
-        earliest_st_ops_file_name = find_earliest(st_ops_dir)
-        return nil  if earliest_st_ops_file_name.nil?
-        extract_from_and_to_commit_from_filename(earliest_st_ops_file_name).first
+        # Hack: Normally we'd execute the code below to get the earliest from
+        # git commit, based on the first st_ops file. However, since we
+        # hacked our way around this when we did the initial st_sync,
+        # I'm overriding the commit SHA1 to what it actually should be:
+        '85a93b2dc14284199dccb6f6686507cef3148d9a'
+        # earliest_st_ops_file_name = find_earliest(st_ops_dir)
+        # return nil  if earliest_st_ops_file_name.nil?
+        # extract_from_and_to_commit_from_filename(earliest_st_ops_file_name).first
       end
 
       # Returns a string to be used in st-ops file names to document the sync
