@@ -32,6 +32,10 @@ class Repositext
       ]
     end
 
+    def fix_add_initial_data_json_file(repo_set_spec, content_type)
+      run_repositext_command(repo_set_spec, "rt #{ content_type.name } fix add_initial_data_json_file")
+    end
+
     def fix_normalize_trailing_newlines(repo_set_spec, content_type)
       run_repositext_command(repo_set_spec, "rt #{ content_type.name } fix normalize_trailing_newlines")
     end

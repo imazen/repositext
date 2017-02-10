@@ -86,6 +86,30 @@ class Repositext
         end
       end
 
+      # Makes sure that every content AT file in the repo has a corresponding
+      # data.json file.
+      # This should be run once on all language repos
+      def fix_add_initial_data_json_file(options)
+        Repositext::Cli::Utils.read_files(
+          config.compute_glob_pattern(
+            options['base-dir'] || :content_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :at_extension
+          ),
+          options['file_filter'],
+          nil,
+          "Reading content AT files",
+          options.merge(
+            use_new_repositext_file_api: true,
+            content_type: content_type,
+          )
+        ) do |content_at_file|
+          # Calling #corresponding_data_json_file with (true) will create
+          # it if it doesn't exist already.
+          content_at_file.corresponding_data_json_file(true)
+        end
+      end
+
       # Adds line breaks into file's text
       def fix_add_line_breaks(options)
         Repositext::Cli::Utils.change_files_in_place(
