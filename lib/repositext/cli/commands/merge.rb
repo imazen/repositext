@@ -525,7 +525,7 @@ class Repositext
                 if export_sync_commit.nil?
                   raise "Missing export_sync_commit for file #{ content_at_file.filename }"
                 end
-                content_at_file.update_file_level_data(
+                content_at_file.update_file_level_data!(
                   {
                     'exported_subtitles_at_st_sync_commit' => nil,
                     'st_sync_autosplit' => nil,

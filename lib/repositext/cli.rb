@@ -11,6 +11,7 @@ class Repositext
     include Cli::Compare
     include Cli::Convert
     include Cli::Copy
+    include Cli::Data
     include Cli::Delete
     include Cli::Distribute
     include Cli::Fix
@@ -146,6 +147,13 @@ class Repositext
     # @param [String] command_spec Specification of the operation
     def copy(command_spec)
       invoke_repositext_command('copy', command_spec, options)
+    end
+
+    desc 'data SPEC', 'Manipulates contents of data.json files'
+    long_desc long_description_for_data
+    # @param [String] command_spec Specification of the operation
+    def data(command_spec)
+      invoke_repositext_command('data', command_spec, options)
     end
 
     desc 'delete SPEC', 'Deletes files'

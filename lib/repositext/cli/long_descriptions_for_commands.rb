@@ -52,6 +52,18 @@ class Repositext
           )
         end
 
+        def long_description_for_data
+          %(
+            Manipulates the contents of data.json files.
+
+            Available SPECs:
+
+            Examples:
+
+            * bundle exec rt data set_st_sync_active_to_false
+          )
+        end
+
         def long_description_for_delete
           %(
             Deletes files

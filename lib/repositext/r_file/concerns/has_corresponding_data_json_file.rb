@@ -48,7 +48,7 @@ class Repositext
 
       # Syncs key_val_pairs under data key in corresponding data_json file.
       # @param key_val_pairs [Hash] with string keys
-      def update_file_level_data(key_val_pairs)
+      def update_file_level_data!(key_val_pairs)
         # Create corresponding data.json file if it doesn't exist yet
         cdjf = corresponding_data_json_file(true)
         cdjf.update_data!(key_val_pairs)

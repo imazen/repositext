@@ -79,7 +79,7 @@ class Repositext
           File.write(subtitle_import_markers_filename, csv_string)
 
           puts "     - set 'last_st_sync_commit_for_this_file'"
-          content_at_file.update_file_level_data(
+          content_at_file.update_file_level_data!(
             'last_st_sync_commit_for_this_file' => @from_git_commit
           )
 

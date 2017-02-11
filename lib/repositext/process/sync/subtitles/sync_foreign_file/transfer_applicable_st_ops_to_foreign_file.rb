@@ -100,7 +100,7 @@ class Repositext
               already_flagged_sts = existing_data['st_sync_subtitles_to_review'] || {}
               new_flagged_sts = already_flagged_sts.merge(sts_that_require_review)
 
-              foreign_content_at_file.update_file_level_data(
+              foreign_content_at_file.update_file_level_data!(
                 existing_data.merge({
                   'st_sync_commit' => sync_commit,
                   'st_sync_subtitles_to_review' => new_flagged_sts,
