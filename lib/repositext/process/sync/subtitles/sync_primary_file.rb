@@ -82,7 +82,7 @@ class Repositext
           #     * new_time_slices <Array>
           def extract_primary_stm_csv_file_input_data(content_at_file, st_ops_for_file)
             # Return blank values if no st_ops are found for file
-            return [[],[]]  if st_ops_for_file.nil? && !@is_initial_sync
+            return [[],[]]  if st_ops_for_file.nil? && !@is_initial_primary_sync
 
             # old_stids: extract STIDs and record_ids from corresponding STM CSV file
             # NOTE: We use the contents of stm CSV file as of the next commit
@@ -135,7 +135,7 @@ class Repositext
           # @param st_ops_for_file [Subtitle::OperationsForFile]
           def validate_subtitle_sync_input_data(content_at_file, old_stids, new_time_slices, st_ops_for_file)
             # Validate that old and new subtitle counts are consistent with operations
-            st_ops_count_delta = if @is_initial_sync && st_ops_for_file.nil?
+            st_ops_count_delta = if @is_initial_primary_sync && st_ops_for_file.nil?
               # This is the initial sync for a file with no subtitle operations.
               0
             else
@@ -170,7 +170,7 @@ class Repositext
           #           }
           #         ]
           def compute_new_subtitle_data(old_sts, new_time_slices, new_char_lengths, st_ops_for_file)
-            new_sts = if @is_initial_sync && st_ops_for_file.nil?
+            new_sts = if @is_initial_primary_sync && st_ops_for_file.nil?
               # This is the initial sync for a file with no subtitle operations.
               old_sts.dup
             else

@@ -12,14 +12,14 @@ class Repositext
         # @param from_git_commit [String] SHA1
         # @param to_git_commit [String] SHA1
         # @param file_list [Array<String>] path to files to include
-        # @param is_initial_sync [Boolean] set to true for initial sync only
+        # @param is_initial_primary_sync [Boolean] set to true for initial sync only
         # @param prev_last_operation_id [Integer] previous sync's last operation_id
-        def initialize(content_type, from_git_commit, to_git_commit, file_list, is_initial_sync, prev_last_operation_id)
+        def initialize(content_type, from_git_commit, to_git_commit, file_list, is_initial_primary_sync, prev_last_operation_id)
           @content_type = content_type
           @repository = @content_type.repository
           @language = @content_type.language
           @from_git_commit = from_git_commit
-          @is_initial_sync = is_initial_sync
+          @is_initial_primary_sync = is_initial_primary_sync
           @first_operation_id = prev_last_operation_id + 1
           @prev_last_operation_id = prev_last_operation_id
           @to_git_commit = to_git_commit
@@ -41,7 +41,7 @@ class Repositext
             )
           end
 
-          operations_for_all_files = if @is_initial_sync
+          operations_for_all_files = if @is_initial_primary_sync
             process_all_primary_files
           else
             process_primary_files_with_changes_only

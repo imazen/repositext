@@ -36,7 +36,7 @@ class Repositext
           @primary_repository = options['primary_repository']
           @stids_inventory_file = options['stids_inventory_file']
           @to_git_commit = options['to-commit']
-          @is_initial_sync = options['is_initial_sync']
+          @is_initial_primary_sync = options['is_initial_primary_sync']
 
           # Init caches
 
@@ -85,7 +85,7 @@ class Repositext
             )
           )
 
-          if !@is_initial_sync
+          if !@is_initial_primary_sync
             # Syncronize all foreign repos that participate in st sync
             all_synced_foreign_repos.each do |foreign_repo|
               puts " - Sync foreign repo '#{ foreign_repo.name }'".color(:blue)

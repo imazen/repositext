@@ -42,7 +42,7 @@ class Repositext
         #         { from_git_commit: <the sync commit's SHA1 or nil>, source: <Symbol> }
         #         if not successful, #messages contains details.
         def compute
-          if is_initial_sync?
+          if is_initial_foreign_sync?
             if file_has_subtitles?
               use_corresponding_primary_st_sync_commit
             else # file has no subtitles
@@ -286,7 +286,7 @@ class Repositext
         # synced. We determine this by the absence of the file level
         # 'st_sync_commit' data setting.
         # @return [Boolean]
-        def is_initial_sync?
+        def is_initial_foreign_sync?
           !get_file_level_st_sync_commit
         end
 

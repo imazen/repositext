@@ -20,7 +20,7 @@ class Repositext
             st_ops_for_repo = extract_and_persist_primary_subtitle_operations
 
             puts "   - Sync primary files (update STM CSV and file level st_sync data):"
-            files_to_sync = if @is_initial_sync
+            files_to_sync = if @is_initial_primary_sync
               # For the initial sync we include all files. This is required so that we
               # restore the STM CSV files to have all columns even for those files that
               # have no subtitle operations
@@ -66,7 +66,7 @@ class Repositext
               @from_git_commit,
               @to_git_commit,
               @file_list,
-              @is_initial_sync,
+              @is_initial_primary_sync,
               @last_operation_id
             ).compute
 
