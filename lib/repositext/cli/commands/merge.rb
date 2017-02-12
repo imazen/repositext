@@ -478,7 +478,7 @@ class Repositext
 
         language = content_type.language
         primary_repo = content_type.corresponding_primary_content_type.repository
-        primary_repo_sync_commit = repository.read_repo_level_data['st_sync_commit']
+        primary_repo_sync_commit = primary_repo.read_repo_level_data['st_sync_commit']
 
         use_subtitle_sync_behavior = true
 
@@ -526,9 +526,11 @@ class Repositext
                 else
                   # Foreign files: Update st_sync related file_level data
                   export_sync_commit = content_at_file.read_file_level_data['exported_subtitles_at_st_sync_commit']
+
                   if export_sync_commit.nil?
                     raise "Missing export_sync_commit for file #{ content_at_file.filename }"
                   end
+
                   content_at_file.update_file_level_data!(
                     {
                       'exported_subtitles_at_st_sync_commit' => nil,
@@ -543,10 +545,13 @@ class Repositext
                   # `st_sync_commit` and `st_sync_subtitles_to_review` for
                   # content_at_file.
                   if export_sync_commit != primary_repo_sync_commit
+                    primary_content_type = content_type.corresponding_primary_content_type
+                    primary_config = primary_content_type.config
                     sync_sts = Repositext::Process::Sync::Subtitles.new(
-                      'config' => config,
+                      'config' => primary_config,
                       'primary_repository' => primary_repo
                     )
+                    r = sync_sts.compute_to_git_commit!(@to_git_commit, primary_repo)
                     sync_sts.sync_foreign_file(content_at_file)
                   end
                 end

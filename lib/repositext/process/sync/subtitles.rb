@@ -20,14 +20,14 @@ class Repositext
 
         # Initialize a new subtitle sync process
         # @param options [Hash] with stringified keys
-        # @option options [Config] 'config'
+        # @option options [Config] The primary repo's config
         # @option options [Array<String>] 'file_list' can be used at command
         #                                 line via file-selector to limit which
         #                                 files should be synced.
         # @option options [String, Nil] 'from-commit', optional, defaults to previous `to-commit`
         # @option options [Repository] 'primary_repository' the primary repo
         # @option options [IO] stids_inventory_file
-        # @option options [String, Nil] 'to-commit', optional, defaults to most recent local git commit
+        # @option options [String, Nil] 'to-commit', optional, computed if not given
         def initialize(options)
           @config = options['config']
           @file_list = options['file_list']
@@ -66,12 +66,7 @@ class Repositext
           # ensure_all_content_repos_are_ready
 
           puts " - Compute 'to_git_commit':".color(:blue)
-          primary_st_sync_required = @primary_repository.read_repo_level_data['st_sync_required']
-          @to_git_commit = compute_to_git_commit(
-            @to_git_commit,
-            primary_st_sync_required,
-            @primary_repository
-          )
+          compute_to_git_commit!(@to_git_commit, @primary_repository)
           puts "   - #{ @to_git_commit.inspect }"
 
           # Syncronize primary repo if required
@@ -101,6 +96,12 @@ class Repositext
 
           puts " - Finalize sync operation".color(:blue)
           finalize_sync_operation
+        end
+
+        # Public Bang! wrapper around compute_to_git_commit to assign the instance
+        # variable.
+        def compute_to_git_commit!(commit_sha1_override, primary_repository)
+          @to_git_commit = compute_to_git_commit(commit_sha1_override, primary_repository)
         end
 
       private
@@ -244,14 +245,13 @@ class Repositext
         # st_sync_required) or may get created with latest primary git commit
         # (if primary has st_sync_required).
         # @param commit_sha1_override [String, Nil]
-        # @param primary_st_sync_required [Boolean]
         # @param primary_repository [Repositext::Repository]
         # @return [String] the sha1 of the commit
-        def compute_to_git_commit(commit_sha1_override, primary_st_sync_required, primary_repository)
+        def compute_to_git_commit(commit_sha1_override, primary_repository)
           # Use override if given
           return o  if '' != (o = commit_sha1_override.to_s)
 
-          if primary_st_sync_required
+          if @primary_repository.read_repo_level_data['st_sync_required']
             # We're going to sync primary and create a new st_ops file with
             # the latest git commit as `to_git_commit`
             primary_repository.latest_commit_sha_local
