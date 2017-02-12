@@ -156,16 +156,28 @@ class Repositext
             content_type: content_type,
           )
         ) do |content_at_file|
-          use_subtitle_sync_behavior = false
+          config.update_for_file(content_at_file.corresponding_data_json_filename)
+          file_st_sync_is_active = config.setting(:st_sync_active)
+          use_subtitle_sync_behavior = true
+
           if use_subtitle_sync_behavior
             # sync-subtitles behavior
-            # Make sure primary file (or foreign file's corresponding primary file)
-            # does not require a subtitle sync.
-            self_or_corresponding_primary_file = content_at_file.corresponding_primary_file
-            if self_or_corresponding_primary_file.read_file_level_data['st_sync_required']
-              raise "Cannot export #{ content_at_file.filename } since it requires a subtitle sync!".color(:red)
+            if file_st_sync_is_active
+              # Make sure primary file (or foreign file's corresponding primary file)
+              # does not require a subtitle sync.
+              # Reason: We want to make sure that foreign subtitle splitters get
+              # the most recent English version to work with.
+              self_or_corresponding_primary_file = content_at_file.corresponding_primary_file
+              if self_or_corresponding_primary_file.read_file_level_data['st_sync_required']
+                raise "Cannot export #{ content_at_file.filename } since it requires a subtitle sync!".color(:red)
+              end
+            else
+              # File's st_sync_active is false, however subtitles are being
+              # exported. This is unexpected, we print a warning.
+              puts "Warning: You are exporting subtitles for a file that has 'st_sync_active' set to false!".color(:red)
             end
           end
+
           # Since the kramdown parser is specified as module in Rtfile,
           # I can't use the standard kramdown API:
           # `doc = Kramdown::Document.new(contents, :input => 'kramdown_repositext')`
@@ -175,14 +187,18 @@ class Repositext
           doc = Kramdown::Document.new('')
           doc.root = root
           subtitle = doc.send(config.kramdown_converter_method(:to_subtitle))
+
           if use_subtitle_sync_behavior
-            # Foreign files only: Record sync commit at which subtitles were exported
-            if !config.setting(:is_primary_repo)
-              content_at_file.update_file_level_data(
+            # sync-subtitles behavior
+            # Foreign files with st_sync_active only:
+            # Record sync commit at which subtitles were exported
+            if !config.setting(:is_primary_repo) && file_st_sync_is_active
+              content_at_file.update_file_level_data!(
                 'exported_subtitles_at_st_sync_commit' => st_sync_commit_sha1
               )
             end
           end
+
           # Return Outcome
           [Outcome.new(true, { contents: subtitle, extension: 'txt' })]
         end

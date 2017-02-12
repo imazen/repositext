@@ -125,13 +125,12 @@ class Repositext
         )
         fix_normalize_trailing_newlines(options)
 
-        # Flag st_sync as required on primary repo.
-        # NOTE: On foreign repos we update data related to st_sync on a per file basis.
-        #       This is done in `merge_subtitle_marks_from_subtitle_import_into_content_at`
         if config.setting(:is_primary_repo)
           use_subtitle_sync_behavior = true
           if use_subtitle_sync_behavior
-            # sync-subtitles behavior
+            # NOTE: We update st_sync related data on a per file basis in
+            #       `merge_subtitle_marks_from_subtitle_shared_into_content_at`
+            # Flag st_sync as required on primary repo.
             repository.update_repo_level_data('st_sync_required' => true)
           else # Pre-sync-subtitles behavior
             # Handle subtitle_marker CSV files only when we're working in the primary repo.

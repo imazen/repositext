@@ -66,12 +66,18 @@ class Repositext
           # ensure_all_content_repos_are_ready
 
           puts " - Compute 'to_git_commit':".color(:blue)
-          @to_git_commit = compute_to_git_commit(@to_git_commit, @primary_repository)
+          primary_st_sync_required = @primary_repository.read_repo_level_data['st_sync_required']
+          @to_git_commit = compute_to_git_commit(
+            @to_git_commit,
+            primary_st_sync_required,
+            @primary_repository
+          )
           puts "   - #{ @to_git_commit.inspect }"
 
           # Syncronize primary repo if required
           puts " - Sync primary repo '#{ @primary_repository.name }'".color(:blue)
-          if @primary_repository.read_repo_level_data['st_sync_required']
+
+          if primary_st_sync_required
             sync_primary_repo
           else
             puts "   - skip, repo is up-to-date."
@@ -228,21 +234,37 @@ class Repositext
           @st_ops_cache_file[primary_cache_key][secondary_cache_key] = yield
         end
 
-        # Computes the `to` commit
+        # Computes the `to` commit that will be used for all primary and
+        # foreign files. The returned commit is guaranteed to be
+        # aligned with the `to-git-commit` of the latest st_ops file.
+        # This will make sure that all foreign files are synced to st_sync
+        # git commits, and we can use st_ops files to extract and transfer
+        # subtitle operations.
+        # The latest st_ops file may already exist (if primary has not
+        # st_sync_required) or may get created with latest primary git commit
+        # (if primary has st_sync_required).
         # @param commit_sha1_override [String, Nil]
+        # @param primary_st_sync_required [Boolean]
         # @param primary_repository [Repositext::Repository]
-        def compute_to_git_commit(commit_sha1_override, primary_repository)
+        # @return [String] the sha1 of the commit
+        def compute_to_git_commit(commit_sha1_override, primary_st_sync_required, primary_repository)
           # Use override if given
           return o  if '' != (o = commit_sha1_override.to_s)
 
-          # Otherwise use latest commit from primary_repository
-          primary_repository.latest_commit_sha_local
+          if primary_st_sync_required
+            # We're going to sync primary and create a new st_ops file with
+            # the latest git commit as `to_git_commit`
+            primary_repository.latest_commit_sha_local
+          else
+            # No st_sync on primary required, use the `to_git_commit` of the
+            # latest st_ops file in primary repo
+            # Load `from` and `to` commits from latest st-ops file as array,
+            # return last item (`to` commit).
+            Subtitle::OperationsFile.compute_latest_from_and_to_commits(
+              @config.base_dir(:subtitle_operations_dir)
+            ).last
+          end
         end
-
-        def verbose_logging
-          true
-        end
-
       end
     end
   end
