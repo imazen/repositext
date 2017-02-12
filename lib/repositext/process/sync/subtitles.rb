@@ -72,7 +72,7 @@ class Repositext
           # Syncronize primary repo if required
           puts " - Sync primary repo '#{ @primary_repository.name }'".color(:blue)
 
-          if primary_st_sync_required
+          if @primary_repository.read_repo_level_data['st_sync_required']
             sync_primary_repo
           else
             puts "   - skip, repo is up-to-date."
@@ -266,6 +266,7 @@ class Repositext
             @primary_repository.expand_commit_sha1(truncated_sha1)
           end
         end
+
       end
     end
   end
