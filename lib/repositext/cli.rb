@@ -348,6 +348,7 @@ class Repositext
       end_time = Time.now
       duration_in_seconds = (end_time - start_time).to_i
       $stderr.puts "Total duration: #{ duration_in_seconds } seconds."
+      $stderr.puts "Boom done!".color(:yellow)  if duration_in_seconds < 2
     end
 
     # Makes sure that the local branch is up-to-date with origin:master.

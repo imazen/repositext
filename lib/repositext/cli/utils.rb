@@ -165,27 +165,27 @@ class Repositext
       end
 
       # Processes files
-      # @param [String] file_pattern A Dir.glob file pattern that describes
+      # @param file_pattern [String] A Dir.glob file pattern that describes
       #     the file set to be operated on. This is typically provided by either
       #     Rtfile or as command line argument by the user.
-      # @param [Trequal] file_filter Each file's name (and path) is compared with
+      # @param file_filter [Trequal] Each file's name (and path) is compared with
       #     file_filter using ===. The file will be processed if the comparison
       #     evaluates to true. file_filter can be anything that responds to
       #     #===, e.g., a Regexp, a Proc, or a String.
       #     This is provided by the callling command, limiting the files to be
       #     operated on to valid file types.
       #     See here for more info on ===: http://ruby.about.com/od/control/a/The-Case-Equality-Operator.htm
-      # @param [Proc] output_path_lambda A proc that computes the output file
+      # @param output_path_lambda [Proc] A proc that computes the output file
       #     path as string. It is given the input file path and output file attrs.
       #     If output_path_lambda returns '' (empty string), no files will be written.
-      # @param [String] description A description of the operation, used for logging.
-      # @param [Hash] options
+      # @param description [String] A description of the operation, used for logging.
+      # @param options [Hash]
       #     :input_is_binary to force File.binread where required
       #     :output_is_binary
       #     :'changed-only'
       #     :repository
       #     :use_new_repositext_file_api
-      # @param [Proc] block A Proc that performs the desired operation on each file.
+      # @param block [Proc] A Proc that performs the desired operation on each file.
       #     Arguments to the proc are each file's name and contents.
       #     Calling block is expected to return an Array of Outcome objects, one
       #     for each file, with the following attrs:
