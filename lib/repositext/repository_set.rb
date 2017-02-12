@@ -273,8 +273,14 @@ class Repositext
     end
 
     # Run `report count_files_with_gap_marks_and_subtitle_marks` in all repositories
+    # @param repo_set_spec [Symbol, Array<String>] A symbol describing a predefined
+    #     group of repos, or an Array with specific repo names as strings.
     def report_count_files_with_gap_marks_and_subtitle_marks(repo_set_spec, content_type)
       run_repositext_command(repo_set_spec, "rt #{ content_type.name } report count_files_with_gap_marks_and_subtitle_marks")
+    end
+
+    def report_files_that_dont_have_st_sync_active(repo_set_spec, content_type)
+      run_repositext_command(repo_set_spec, "rt #{ content_type.name } report files_that_dont_have_st_sync_active -g")
     end
 
     # Run `report quotes_details` in all repositories

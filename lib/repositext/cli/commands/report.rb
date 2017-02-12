@@ -232,6 +232,78 @@ class Repositext
         $stderr.puts "Found #{ subtitle_marks_count } subtitle_marks in #{ file_count } files at #{ Time.now.to_s }."
       end
 
+      # Reports all content AT files that don't have st_sync_active
+      def report_files_that_dont_have_st_sync_active(options)
+        ftdhssa = []
+        total_file_count = 0
+
+        Repositext::Cli::Utils.read_files(
+          config.compute_glob_pattern(
+            options['base-dir'] || :content_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :json_extension
+          ),
+          /\.data\.json\z/,
+          nil,
+          "Reading data.json files",
+          options.merge(
+            use_new_repositext_file_api: true,
+            content_type: content_type,
+          )
+        ) do |data_json_file|
+          total_file_count += 1
+          rrfn = data_json_file.repo_relative_path(true)
+          if data_json_file.contents.index('"st_sync_active":false')
+            ftdhssa << rrfn
+            $stderr.puts "   - doesn't have st_sync_active".color(:blue)
+          end
+        end
+        if ftdhssa.any?
+          $stderr.puts "\n\n#{ ftdhssa.length } files that don't have st_sync_active:"
+          $stderr.puts '-' * 80
+          ftdhssa.each { |e| $stderr.puts e }
+          $stderr.puts
+        end
+        summary_line = "Found #{ ftdhssa.length } of #{ total_file_count } files that don't have st_sync_active at #{ Time.now.to_s }."
+        $stderr.puts summary_line
+      end
+
+      # Reports all content AT files that require an st_sync
+      def report_files_that_have_st_sync_required(options)
+        ftrss = []
+        total_file_count = 0
+
+        Repositext::Cli::Utils.read_files(
+          config.compute_glob_pattern(
+            options['base-dir'] || :content_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :json_extension
+          ),
+          /\.data\.json\z/,
+          nil,
+          "Reading data.json files",
+          options.merge(
+            use_new_repositext_file_api: true,
+            content_type: content_type,
+          )
+        ) do |data_json_file|
+          total_file_count += 1
+          rrfn = data_json_file.repo_relative_path(true)
+          if data_json_file.contents.index('"st_sync_required":true')
+            ftrss << rrfn
+            $stderr.puts "   - has st_sync_required".color(:blue)
+          end
+        end
+        if ftrss.any?
+          $stderr.puts "\n\n#{ ftrss.length } files that require st_sync:"
+          $stderr.puts '-' * 80
+          ftrss.each { |e| $stderr.puts e }
+          $stderr.puts
+        end
+        summary_line = "Found #{ ftrss.length } of #{ total_file_count } files that require st_sync at #{ Time.now.to_s }."
+        $stderr.puts summary_line
+      end
+
       # Reports files that contain editors notes with multiple paragraphs
       def report_files_with_multi_para_editors_notes(options)
         multi_para_editors_notes = []
