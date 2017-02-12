@@ -20,6 +20,19 @@ class Repositext
       head_ref.name.sub(/^refs\/heads\//, '')
     end
 
+    # Expands (possibly truncated) sha1 to its full length.
+    # @param sha1 [String] truncated or full sha1 of a commit
+    # @return [String]
+    def expand_commit_sha1(sha1)
+      r = lookup(sha1)
+      case r
+      when Rugged::Commit
+        r.oid
+      else
+        raise "Handle this: #{ r.inspect }"
+      end
+    end
+
     def head_ref
       @repo.head
     end
@@ -123,6 +136,7 @@ class Repositext
     end
 
     # Delegates #lookup method to Rugged::Repository
+    # @return [Rugged::Commit, possibly others]
     def lookup(oid)
       @repo.lookup(oid)
     rescue Rugged::InvalidError => e

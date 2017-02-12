@@ -260,9 +260,10 @@ class Repositext
             # latest st_ops file in primary repo
             # Load `from` and `to` commits from latest st-ops file as array,
             # return last item (`to` commit).
-            Subtitle::OperationsFile.compute_latest_from_and_to_commits(
+            truncated_sha1 = Subtitle::OperationsFile.compute_latest_from_and_to_commits(
               @config.base_dir(:subtitle_operations_dir)
             ).last
+            @primary_repository.expand_commit_sha1(truncated_sha1)
           end
         end
       end
