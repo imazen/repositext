@@ -543,11 +543,11 @@ class Repositext
                   # `st_sync_commit` and `st_sync_subtitles_to_review` for
                   # content_at_file.
                   if export_sync_commit != primary_repo_sync_commit
-                    sync_sts = Repositext::Process::Sync::Subtitles.new('config' => config)
-                    sync_sts.sync_foreign_file(
-                      export_sync_commit,
-                      content_at_file
+                    sync_sts = Repositext::Process::Sync::Subtitles.new(
+                      'config' => config,
+                      'primary_repository' => primary_repo
                     )
+                    sync_sts.sync_foreign_file(content_at_file)
                   end
                 end
               end
