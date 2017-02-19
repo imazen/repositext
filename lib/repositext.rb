@@ -32,6 +32,7 @@ require 'multi_ruby_runner'
 require 'needleman_wunsch_aligner'
 require 'nokogiri'
 require 'open3'
+require 'os'
 require 'ostruct'
 require 'outcome'
 require 'parallel'
@@ -54,6 +55,11 @@ class Repositext
   class Cli < Thor
   end
 end
+
+# Runtime platform detection. Require this first so it can be used in all other
+# repositext libraries.
+
+require 'repositext/os_platform'
 
 # repositext libraries
 

@@ -31,6 +31,7 @@ Gem::Specification.new do |s|
   s.add_dependency('multi_ruby_runner', '~> 1.0.2')
   s.add_dependency('needleman_wunsch_aligner', '~> 1.1.1')
   s.add_dependency('nokogiri')
+  s.add_dependency('os')
   s.add_dependency('outcome')
   s.add_dependency('parallel')
   s.add_dependency('pragmatic_segmenter', '~> 0.3.7')
