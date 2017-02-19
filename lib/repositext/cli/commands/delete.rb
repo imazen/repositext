@@ -5,6 +5,19 @@ class Repositext
 
     private
 
+      # Deletes all contents inside directory_path
+      # @param options [Hash] expects :directory_path key
+      def delete_directory_contents(options)
+        if options[:directory_path].nil?
+          raise ":directory_path option is required"
+        end
+        puts "Deleting all files under #{ options[:directory_path] }"
+        FileUtils.rm_rf(
+          Dir.glob("#{ options[:directory_path] }/*"),
+          secure: true
+        )
+      end
+
       # Delete files that match file specs.
       # @param options [Hash]
       def delete_files(options)
