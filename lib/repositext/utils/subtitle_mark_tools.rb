@@ -16,7 +16,7 @@ class Repositext
       # @param [String] txt
       def self.extract_body_text_with_subtitle_marks_only(txt)
         # Remove id title and paragraph
-        content = Repositext::Utils::IdPageRemover.remove(txt)
+        content, _ = Repositext::Utils::IdPageRemover.remove(txt)
 
         # Replace certain block elements with empty strings. This is necessary to
         # preserve line number consistency. Suspension::TokenRemover would

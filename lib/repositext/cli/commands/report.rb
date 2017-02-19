@@ -609,7 +609,7 @@ class Repositext
           # `doc = Kramdown::Document.new(contents, :input => 'kramdown_repositext')`
           # We have to patch a base Kramdown::Document with the root to be able
           # to convert it.
-          contents_without_id_page = Repositext::Utils::IdPageRemover.remove(contents)
+          contents_without_id_page, _ = Repositext::Utils::IdPageRemover.remove(contents)
           root, warnings = config.kramdown_parser(:kramdown).parse(contents_without_id_page)
           doc = Kramdown::Document.new('')
           doc.root = root
