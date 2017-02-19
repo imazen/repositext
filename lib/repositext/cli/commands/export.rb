@@ -115,6 +115,30 @@ class Repositext
         end
       end
 
+      # #xport content AT files in `/content` to plain text for autosplitting
+      def export_plain_text_for_st_autosplit(options)
+        input_base_dir = config.compute_base_dir(options['base-dir'] || :content_dir)
+        input_file_selector = config.compute_file_selector(options['file-selector'] || :all_files)
+        input_file_extension = config.compute_file_extension(options['file-extension'] || :at_extension)
+        output_base_dir = options['output'] || config.base_dir(:autosplit_subtitles_dir)
+        Repositext::Cli::Utils.export_files(
+          input_base_dir,
+          input_file_selector,
+          input_file_extension,
+          output_base_dir,
+          options['file_filter'],
+          "Exporting AT files to plain text for subtitle autosplit",
+          options.merge(
+            use_new_repositext_file_api: true,
+            content_type: content_type,
+          )
+        ) do |content_at_file|
+          txt = content_at_file.plain_text_for_st_autosplit_contents(
+            st_autosplit_context: :for_lf_aligner
+          )
+          [Outcome.new(true, { contents: txt, extension: 'txt' })]
+        end
+      end
 
       # Export Subtitle files. Behavior depends on whether we are in
       # * English:

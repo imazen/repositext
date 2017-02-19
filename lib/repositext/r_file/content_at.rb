@@ -119,6 +119,10 @@ class Repositext
         kramdown_doc(options).to_plain_text
       end
 
+      def plain_text_for_st_autosplit_contents(options)
+        kramdown_doc(options).to_plain_text_for_st_autosplit
+      end
+
       def plain_text_with_subtitles_contents(options)
         kramdown_doc(options).to_plain_text_with_subtitles
       end
