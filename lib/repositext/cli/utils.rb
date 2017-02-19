@@ -267,13 +267,13 @@ class Repositext
 
                   counts[:success] += 1
                 else
-                  $stderr.puts "  x  Error: #{ outcome.messages.join("\n") }"
+                  $stderr.puts "  x  Error: #{ outcome.messages.join("\n") }".color(:red)
                   counts[:errors] += 1
                 end
               end
             rescue StandardError => e
               counts[:errors] += 1
-              $stderr.puts %(  x  Error: #{ e.class.name } - #{ e.message } - #{ e.backtrace.join("\n") })
+              $stderr.puts %(  x  Error: #{ e.class.name } - #{ e.message } - #{ e.backtrace.join("\n") }).color(:red)
             end
             counts[:total] += 1
           end
