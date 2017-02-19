@@ -20,6 +20,11 @@ class Repositext
               prepared_pt,
               cat_wo_id
             ).replace(:subtitle_mark)
+
+            # Adjust subtitle mark positions
+            f_cat_w_a_st = adjust_subtitle_mark_positions(f_cat_w_st)
+
+            Outcome.new(true, f_cat_w_a_st)
           end
 
           # Prepares plain text for suspension processing
@@ -38,6 +43,13 @@ class Repositext
             # Append newline at the end
             new_pt << "\n"
             new_pt
+          end
+
+          # @param f_cat_w_st [String] foreign content AT with raw subtitles
+          # @return [String] foreign content AT with adjusted subtitle_marks.
+          def adjust_subtitle_mark_positions(f_cat_w_st)
+            # Move subtitle marks after paragraph numbers to beginning of line
+            f_cat_w_st.gsub(/^(\*\d+\*\{: \.pn\} )@/, '@\1')
           end
         end
       end
