@@ -5,7 +5,7 @@ class Repositext
 
       # Removes id page and its contents from txt
       # @param txt [String] complete AT document
-      # @return [String] AT document without id page
+      # @return [Array<String>] An array of content AT without id page, and the id page
       def self.remove(txt)
         txt.gsub(
           /

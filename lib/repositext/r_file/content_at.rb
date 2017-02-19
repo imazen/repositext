@@ -28,6 +28,11 @@ class Repositext
         ).compute
       end
 
+      def corresponding_st_autosplit_filename
+        filename.sub(/\/content\//, '/autosplit_subtitles/') # update path
+                .sub(/\.at\z/, '.txt') # update extension
+      end
+
       def corresponding_subtitle_export_en_txt_file
         return nil  if !File.exist?(corresponding_subtitle_export_en_txt_filename)
         RFile::Content.new(
@@ -113,6 +118,10 @@ class Repositext
 
       def kramdown_parser
         'Kramdown'
+      end
+
+      def language_code_2_chars
+        language.code_2_chars
       end
 
       def plain_text_contents(options)
