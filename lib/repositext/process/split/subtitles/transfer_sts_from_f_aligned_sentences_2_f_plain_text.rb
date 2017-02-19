@@ -97,7 +97,7 @@ class Repositext
             f_p_pt_wo_st = f_p_pt_w_st.gsub('@', '')
             if f_p_pt_wo_st != f_pt
               diffs = Suspension::StringComparer.compare(f_pt, f_p_pt_wo_st)
-              raise "Plain text mismatch between original plain text and plain text with subtitles: #{ diffs.inspect }"
+              raise "Text mismatch between original plain text and plain text with subtitles: #{ diffs.inspect }"
             end
           end
         end

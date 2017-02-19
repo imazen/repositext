@@ -24,6 +24,11 @@ class Repositext
             # Adjust subtitle mark positions
             f_cat_w_a_st = adjust_subtitle_mark_positions(f_cat_w_st)
 
+            # Add id_page back
+            f_cat_w_a_st << id_page
+
+            validate_that_no_content_was_changed(f_cat, f_cat_w_a_st)
+
             Outcome.new(true, f_cat_w_a_st)
           end
 
@@ -50,6 +55,18 @@ class Repositext
           def adjust_subtitle_mark_positions(f_cat_w_st)
             # Move subtitle marks after paragraph numbers to beginning of line
             f_cat_w_st.gsub(/^(\*\d+\*\{: \.pn\} )@/, '@\1')
+          end
+
+          # Raises an exception if any content was changed
+          # @param f_cat [String] the original foreign content AT
+          # @param f_cat_w_a_st [String] the new foreign content AT with subtitles
+          def validate_that_no_content_was_changed(f_cat, f_cat_w_a_st)
+            # Remove subtitles
+            f_cat_wo_st = f_cat_w_a_st.gsub('@', '')
+            if f_cat_wo_st != f_cat
+              diffs = Suspension::StringComparer.compare(f_cat, f_cat_wo_st)
+              raise "Text mismatch between original content AT and content AT with subtitles: #{ diffs.inspect }"
+            end
           end
         end
       end
