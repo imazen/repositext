@@ -51,20 +51,20 @@ class Repositext
                 # A paragraph number that is in pt but not in sentence,
                 # append to new_f_pt
                 new_f_pt << pn
-              elsif(
-                (n_w = s.check(/\S+\s?/)) &&
-                (n_w_regexp = Regexp.new("\\A" + Regexp.escape(n_w.rstrip) + "\\s?")) &&
-                (f_s_wo_st =~ n_w_regexp)
-              )
-                # The next (actual) sentence in f_s is not aligned with f_pt.
-                # This occurs when the sentence splitter fails to detect a
-                # sentence correctly. The sentence may span across paragraph
-                # boundaries in f_pt. So we need to capture word by word.
-                # Append n_w to new_f_pt, advance string scanner to end of
-                # n_w and remove n_w from f_s
-                new_f_pt << n_w
-                s.skip(n_w_regexp)
-                f_s_wo_st.sub!(n_w_regexp, '')
+              # elsif(
+              #   (n_w = s.check(/\S+\s?/)) &&
+              #   (n_w_regexp = Regexp.new("\\A" + Regexp.escape(n_w.rstrip) + "\\s?")) &&
+              #   (f_s_wo_st =~ n_w_regexp)
+              # )
+              #   # The next (actual) sentence in f_s is not aligned with f_pt.
+              #   # This occurs when the sentence splitter fails to detect a
+              #   # sentence correctly. The sentence may span across paragraph
+              #   # boundaries in f_pt. So we need to capture word by word.
+              #   # Append n_w to new_f_pt, advance string scanner to end of
+              #   # n_w and remove n_w from f_s
+              #   new_f_pt << n_w
+              #   s.skip(n_w_regexp)
+              #   f_s_wo_st.sub!(n_w_regexp, '')
               elsif '' == f_s_wo_st
                 # We've consumed all words in f_s_wo_st, get next foreign sentence
                 get_next_foreign_sentence = true
