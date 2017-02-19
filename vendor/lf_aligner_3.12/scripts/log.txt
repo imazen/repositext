@@ -1,0 +1,25 @@
+Program: LF Aligner, version: 3.12, OS: Mac, launched: 2017.02.18_14.38.42
+
+Setup: filetype_def: t; filetype_prompt: n; lang_1_iso_def: en; lang_2_iso_def: hu; l1_prompt: y; l2_prompt: y; segmenttext: y; confirm_segmenting: n; cleanup_def: y; cleanup_prompt: n; review_def: x; review_prompt: n; create_tmx_def: y; create_tmx_prompt: n; tmx_langcode_1_def: ; tmx_langcode_2_def: ; tmx_langcode_1_prompt: y; tmx_langcode_2_prompt: y; creationdate_prompt: y; creationid_def: LF Aligner 3.12; creationid_prompt: y; ask_master_TM: y; chopmode: 15000; tmxnote_prompt: y; skiphalfempty: y; pdfmode: y
+
+Command line arguments on
+GUI off
+filetype: t
+Input file 1: eng64-0306_1038.txt (/Users/johund/development/repositext_parent/vgr-english/ct-sermons/autosplit_subtitles/64/eng64-0306_1038.txt)
+Input file 2: ger64-0306_1038.txt (/Users/johund/development/repositext_parent/vgr-german/ct-sermons/autosplit_subtitles/64/ger64-0306_1038.txt)
+Input file sizes: 82635 bytes 90297 bytes
+File sizes after conversion to txt: 82635 bytes 90297 bytes
+Initial stats: 
+- en: 245 segments,	15941 words,	80663 chars
+- de: 245 segments,	14915 words,	88109 chars
+Segmentation: y, segment numbers: 
+- en: 245 -> 1172
+- de: 245 -> 1172
+Using segmented file versions
+Hunalign dictionary: en-de.dic
+Using Hunalign in normal mode, (1172 is less than 15000)
+Aligned file: 1171 segments, 182314 bytes (/Users/johund/development/repositext_parent/vgr-german/ct-sermons/autosplit_subtitles/64/align_2017.02.18/aligned_en-de.txt)
+Cleanup: y
+Review: n
+Create TMX: n
+Terminated normally.
