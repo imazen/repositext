@@ -108,6 +108,11 @@ module Kramdown
       output
     end
 
+    # Returns true if self is an id block element
+    def is_id?
+      get_classes.any? { |e| e =~ /\Aid_/ }
+    end
+
     # Returns true if self is of same element type as other_ke.
     # This is used e.g., to merge adjacent siblings
     # @param [Kramdown::Element] other_ke
