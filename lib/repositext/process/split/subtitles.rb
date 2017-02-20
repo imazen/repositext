@@ -6,6 +6,13 @@ class Repositext
       #
       # Expects both primary and foreign plain_text_for_st_autosplit files to
       # already exist.
+      #
+      # # Notes
+      #
+      # The sentence alignment will not always be perfect. In some cases a
+      # primary sentence gets split into two foreign sentences, or two primary
+      # sentences may get merged into a single foreign sentence. It may even
+      # occur that two sentences from different paragraphs get merged.
       class Subtitles
 
         include AlignSentences
@@ -58,6 +65,10 @@ class Repositext
           f_pt = tsf_f_as2f_pt_o.result
           f_cat = @f_content_at_file.contents
           o = transfer_sts_from_f_plain_text_2_f_content_at(f_pt, f_cat)
+        end
+
+        def debug
+          true
         end
       end
     end

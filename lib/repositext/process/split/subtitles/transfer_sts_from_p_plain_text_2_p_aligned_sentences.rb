@@ -12,9 +12,9 @@ class Repositext
           # exist in the primary plain_text (p_pt).
           #
           # Types of chars encountered in p_pt:
-          #   * subtitle_mark
-          #   * newlines
+          #   * subtitle_marks - will be transferred
           #   * matching_text (with text in the asp primary sentences)
+          #   * newlines and spaces between paragraphs and sentences.
           #
           # @param p_pt [String] primary plain text
           # @param asp [Array<Array<String, Nil>>] the aligned sentence pairs.
@@ -49,23 +49,41 @@ class Repositext
               new_s = '' # container for new sentence
               finalize_sentence = false
 
+              if debug
+                puts
+                puts "New p_s: #{ p_s.inspect }"
+                puts "s.rest:  #{ s.rest[0,100].inspect }"
+              end
+
               while !finalize_sentence && !s.eos? do
 
                 # check for various character types. Start with most specific
                 # matches and go to more general ones.
-                if s.scan(Regexp.new(Regexp.escape(p_s) + "\n?"))
+                if s.scan(Regexp.new(Regexp.escape(p_s)))
                   # sentence matches in its entirety, append to new_s
-                  # we also consume any trailing newlines
                   new_s << p_s
                   finalize_sentence = true
                 elsif s.scan(/@/)
                   # subtitle_mark, append to new_s
                   new_s << '@'
-                elsif s.scan(/ /)
-                  # space, just consume, nothing else to do
                 elsif(
-                  (partial_sentence_caption = s.check(/[^@]+/)) &&
                   (
+                    # match up to first subtitle_mark, excluding optional preceding whitespace
+                    partial_sentence_caption = s.check_until(/(?=(@|\s@))/)
+                  ) &&
+                  ('' != partial_sentence_caption) &&
+                  (
+                    puts(" - ppt2pas - partial match: #{ partial_sentence_caption.inspect }")  if debug
+                    true
+                  ) &&
+                  (
+                    # We build the regexp without trailing whitespace. p_s and
+                    # p_pt may have different kinds of whitespace. E.g., if
+                    # primary sentence consists of two (to make it match with
+                    # foreign sentence), these two sentences may come from
+                    # different paragraphs and may be separated by \n instead
+                    # of a space character. So we build the regexp without the
+                    # trailing space to make sure it matches anyways.
                     partial_sentence_caption_regexp = Regexp.new(
                       "\\A" + Regexp.escape(partial_sentence_caption)
                     )
@@ -73,14 +91,38 @@ class Repositext
                   (p_s =~ partial_sentence_caption_regexp)
                 )
                   # The next caption in p_pt is not aligned with sentence
-                  # boundaries. Append caption to new_s, advance string scanner
-                  # to end of caption, and remove partial_sentence_caption from
-                  # p_s.
+                  # boundaries:
+                  # * Re-scan partial_sentence_caption, capturing optional
+                  #   trailing whitespace. This will also advance the string
+                  #   scanner to the correct location.
+                  # * Append caption to new_s
+                  # * Remove partial_sentence_caption from p_s.
+                  # * Preserve any trailing whitespace in partial sentence
+                  #   caption. This whitespace exists in noth p_pt but not in p_s
+                  # partial_sentence_caption_w_ws = s.scan(
+                  #   /#{ partial_sentence_caption_regexp }\s*/
+                  # )
                   new_s << partial_sentence_caption
                   s.skip(partial_sentence_caption_regexp)
                   p_s.sub!(partial_sentence_caption_regexp, '')
+                  if(leading_ws = p_s.match(/\A\s+/))
+                    # append the captured whitespace to new_s and remove it from p_s
+                    new_s << leading_ws.to_s
+                    p_s.lstrip!
+                  end
+                elsif s.scan(/\n/)
+                  # Newline between two paragraphs. It exists in plain text only,
+                  # just consume, nothing else to do
+                elsif s.scan(/ /)
+                  # Space between two sentences. It exists in plain text only,
+                  # just consume, nothing else to do
                 else
-                  raise "Handle this: #{ s.rest[0,20].inspect }"
+                  puts
+                  puts "p_s:".color(:red) + "                     #{ p_s.inspect }"
+                  puts "remaining p_pt:".color(:red) + "          #{ s.rest[0,150].inspect }"
+                  puts "new_s:".color(:red) + "                   #{ new_s.inspect }"
+                  puts "previously matched p_pt:".color(:red) + " #{ s.pre_match.inspect }"
+                  raise "Handle this!"
                 end
               end
               new_s
@@ -107,7 +149,6 @@ class Repositext
             }
             Outcome.new(true, asp_w_sts)
           end
-
         end
       end
     end

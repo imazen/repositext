@@ -34,14 +34,27 @@ class Repositext
             f_s = f_ss.shift
             f_s_wo_st = f_s.gsub('@', '')
             get_next_foreign_sentence = false
+            partial_match_active = false
 
             # # Scan through f_pt and rebuild new_f_pt
             while f_s && !s.eos? do
+
+              if debug
+                puts
+                puts "new StringScanner iteration:"
+                puts "s.rest:    #{ s.rest[0,150].inspect }"
+                puts "f_s_wo_st: #{ f_s_wo_st.inspect }"
+              end
+
               # check for various matches. Start with most specific
               # matches and go to more general ones.
-              if s.scan(Regexp.new(Regexp.escape(f_s_wo_st)))
-                # sentence (with subtitles removed) matches in its entirety,
+              if !partial_match_active && s.scan(Regexp.new(Regexp.escape(f_s_wo_st)))
+                # Sentence with subtitles removed matches in its entirety,
                 # append sentence with subtitles to new_f_pt.
+                if debug
+                  puts " - complete match:"
+                  puts "   f_s: #{ f_s.inspect }"
+                end
                 new_f_pt << f_s
                 get_next_foreign_sentence = true
               elsif(ws = s.scan(/[ \n]/))
@@ -51,23 +64,39 @@ class Repositext
                 # A paragraph number that is in pt but not in sentence,
                 # append to new_f_pt
                 new_f_pt << pn
-              # elsif(
-              #   (n_w = s.check(/\S+\s?/)) &&
-              #   (n_w_regexp = Regexp.new("\\A" + Regexp.escape(n_w.rstrip) + "\\s?")) &&
-              #   (f_s_wo_st =~ n_w_regexp)
-              # )
-              #   # The next (actual) sentence in f_s is not aligned with f_pt.
-              #   # This occurs when the sentence splitter fails to detect a
-              #   # sentence correctly. The sentence may span across paragraph
-              #   # boundaries in f_pt. So we need to capture word by word.
-              #   # Append n_w to new_f_pt, advance string scanner to end of
-              #   # n_w and remove n_w from f_s
-              #   new_f_pt << n_w
-              #   s.skip(n_w_regexp)
-              #   f_s_wo_st.sub!(n_w_regexp, '')
+              elsif(
+                (n_w = s.check(/\S+\s?/)) &&
+                (n_w_regexp = Regexp.new(Regexp.escape(n_w.rstrip) + "\\s?")) &&
+                (f_s_wo_st =~ /\A#{ n_w_regexp }/)
+              )
+                # The next (actual) sentence in f_s is not aligned with f_pt.
+                # This occurs when the sentence aligner has to merge sentences
+                # to make alignment work. The sentence may span across paragraph
+                # boundaries in f_pt. So we need to capture word by word.
+                # Append n_w to new_f_pt, advance string scanner to end of
+                # n_w and remove n_w from f_s.
+                # We also track partial_match_active to block complete matches
+                # higher up. We have to complete the partial match before we
+                # can try a new complete match. Otherwise we'll get duplicate
+                # content.
+                partial_match_active = true
+                new_f_pt << n_w
+                s.skip(n_w_regexp)
+                f_s_wo_st.sub!(n_w_regexp, '')
+                if debug
+                  puts " - fas2fpt - partial match: #{ n_w.inspect }"
+                  puts "   rx:        #{ n_w_regexp.inspect }"
+                  puts "   f_s_wo_st: #{ f_s_wo_st.inspect }"
+                  puts "   new_f_pt:  #{ new_f_pt[-100, 100].inspect }"
+                  puts "   s.rest:    #{ s.rest[0,100].inspect }"
+                end
               elsif '' == f_s_wo_st
                 # We've consumed all words in f_s_wo_st, get next foreign sentence
+                if debug
+                  puts "   Finished partial match!"
+                end
                 get_next_foreign_sentence = true
+                partial_match_active = false
               elsif !get_next_foreign_sentence
                 raise "Handle this: #{ s.rest[0,20].inspect }"
               end
@@ -76,6 +105,10 @@ class Repositext
                 f_s = f_ss.shift
                 f_s_wo_st = f_s.gsub('@', '')  if f_s
                 get_next_foreign_sentence = false
+              end
+
+              if debug
+                puts "new_f_pt:  #{ new_f_pt[-100, 100].inspect }"
               end
             end
 

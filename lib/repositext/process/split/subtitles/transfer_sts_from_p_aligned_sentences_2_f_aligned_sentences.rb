@@ -16,8 +16,8 @@ class Repositext
               next [p_w, f_s]  if p_s.nil? || f_s.nil?
 
               # Otherwise transfer subtitles to foreign sentence
-              f_s_w_st = transfer_subtitles_into_foreign_sentence(p_s, f_s)
-              [p_s, f_s_w_st]
+              f_s_w_st_o = transfer_subtitles_to_foreign_sentence(p_s, f_s)
+              [p_s, f_s_w_st_o.result]
             }
             f_s_w_sts = asp_w_f_sts.map(&:last)
 
@@ -27,27 +27,33 @@ class Repositext
           # Transfers subtitles from primary sentence to foreign sentence.
           # @param p_s [String] primary sentence with subtitles
           # @param f_S [String] foreign sentence without subtitles
-          # @return [String] the foreign sentence with subtitles inserted.
-          def transfer_subtitles_into_foreign_sentence(p_s, f_s)
+          # @return [Outcome] with the foreign sentence with subtitles inserted as result.
+          def transfer_subtitles_to_foreign_sentence(p_s, f_s)
             subtitle_count = p_s.count('@')
             if 0 == subtitle_count
               # Return as is
-              f_s
-            elsif 1 == subtitle_count
+              Outcome.new(true, f_s)
+            elsif((1 == subtitle_count) && (p_s =~ /\A@/))
               # Prepend one subtitle
-# TODO: Make sure that we can blindly prepend. We may want to check where the st is.
-              '@' << f_s
+              Outcome.new(true, '@' << f_s)
             else
-              # Interpolate multiple subtitles
-              interpolate_multiple_subtitles(p_s, f_s)
+              transfer_complex_subtitles(p_s, f_s)
             end
 # TODO: return an outcome from this method!
+          end
+
+          # @param p_s [String] primary sentence with subtitles
+          # @param f_S [String] foreign sentence without subtitles
+          # @return [Outcome] with the foreign sentence with subtitles inserted as result.
+          def transfer_complex_subtitles(p_s, f_s)
+            # Interpolate multiple subtitles
+            interpolate_multiple_subtitles(p_s, f_s)
           end
 
           # Inserts multiple subtitles based on word interpolation.
           # @param p_s [String] primary sentence with subtitles
           # @param f_S [String] foreign sentence without subtitles
-          # @return [String] the foreign sentence with subtitles inserted.
+          # @return [Outcome] with the foreign sentence with subtitles inserted as result.
           def interpolate_multiple_subtitles(p_s, f_s)
             primary_words = p_s.split(' ')
             primary_subtitle_indexes = primary_words.each_with_index.inject([]) { |m, (word, idx)|
@@ -61,8 +67,8 @@ class Repositext
               (e * word_scale_factor).floor
             }
             foreign_subtitle_indexes.each { |i| foreign_words[i].prepend('@') }
-            foreign_words.join(' ')
-# TODO: return an outcome from this method!
+
+            Outcome.new(true, foreign_words.join(' '))
           end
 
         end
