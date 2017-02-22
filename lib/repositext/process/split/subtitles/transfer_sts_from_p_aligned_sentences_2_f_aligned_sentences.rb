@@ -175,7 +175,7 @@ class Repositext
                 # Detect nearby foreign punctuation
                 leading_punctuation, txt_between_punctuation_and_stm = if(
                   before_md = prev_f_c.match(
-                    /([#{ punctuation_regex_list }])\s([^#{ punctuation_regex_list }]{1,#{ max_snap_distance }}\s*)\z/
+                    /([#{ punctuation_regex_list }])\s?([^#{ punctuation_regex_list }]{1,#{ max_snap_distance }}\s*)\z/
                   )
                 )
                   # Previous foreign caption has punctuation shortly before

@@ -64,7 +64,7 @@ class Repositext
             partial_match_active = false
 
             # # Scan through f_pt and rebuild new_f_pt
-            while f_s && !s.eos? do
+            while(f_s && !s.eos?) do
 
               if debug
                 puts
@@ -91,7 +91,7 @@ class Repositext
                 end
                 new_f_pt << pn
               elsif(
-                (n_w = s.check(/\S+\s?/)) &&
+                (n_w = s.check(/\S+?[\s…\(]?/)) &&
                 (n_w_regexp = Regexp.new(Regexp.escape(n_w.rstrip) + "\\s?")) &&
                 (f_s_wo_st =~ /\A#{ n_w_regexp }/)
               )
@@ -176,12 +176,9 @@ class Repositext
             # Fix any paragraphs that don't start with a subtitle.
             p_f_pt_lines = []
             raw_f_pt.split("\n").each_with_index { |pt_line, idx|
-              if pt_line =~ /\A@/
-                # Line starts with subtitle_mark, use as is
-                p_f_pt_lines << pt_line
-                next
-              elsif 0 == idx
-                # First (header) line, use as is
+
+              # Skip first (Header) line, use as it
+              if 0 == idx
                 p_f_pt_lines << pt_line
                 next
               end
@@ -189,6 +186,8 @@ class Repositext
               # Move subtitle marks to before pargraph numbers
               pt_line.gsub!(/\A(\d+) @/, '@\1 ')
 
+              # If line still doesn't start with subtitle mark, move it there
+              # from somewhere else
               if pt_line !~ /\A@/
                 prev_line = p_f_pt_lines[idx - 1]
 
@@ -234,6 +233,8 @@ class Repositext
 
               end
 
+              # Clean up general subtitle_mark placement
+
               # Move subtitle marks to beginning of words
               # "word.@ word" => "word. @word"
               pt_line.gsub!(/@ (?=\w)/, ' @')
@@ -241,6 +242,11 @@ class Repositext
               # Move spaces inside subtitle_marker sequences to beginning of the
               # sequence "word.@@@@@ @word" => "word. @@@@@@word"
               pt_line.gsub!(/(@+) (@+)/, ' \1\2')
+
+              # Move subtitle_marks to the outside of closing quote marks
+              # "word.@” word" => "word.” @word"
+              pt_line.gsub!(/@” (?=\w)/, '” @')
+
 
               p_f_pt_lines << pt_line
             }
