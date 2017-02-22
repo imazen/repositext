@@ -5,7 +5,7 @@ class Repositext
 
         # This name space provides methods for transferring subtitles from
         # primary plain text to primary aligned sentences.
-        module TransferStsFromPrimaryPlainText2PrimaryAlignedSentences
+        module TransferStsFromPPlainText2PAlignedSentences
 
           # Returns modified aligned sentence pairs (asp) where subtitle_marks
           # have been added to the primary sentences in locations where they
@@ -44,7 +44,7 @@ class Repositext
 
             # Iterate over all sentences and insert subtitles as needed
             p_ss_w_st = p_ss.map { |p_s|
-              next nil  if p_s.nil? # return gaps as is
+              next ''  if '' == p_s # return gaps as is
 
               new_s = '' # container for new sentence
               finalize_sentence = false

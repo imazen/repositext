@@ -7,10 +7,15 @@ class Repositext
         # foreign plain text to foreign content AT.
         module TransferStsFromFPlainText2ForeignContentAt
 
-          # @param f_pt [String] foreign plain text with subtitles
-          # @param f_cat [String] foreign content AT to transfer subtitles to
-          # @return [Outcome] with new content AT with subtitles as result.
-          def transfer_sts_from_f_plain_text_2_f_content_at(f_pt, f_cat)
+          # @param f_pt [String] foreign plain text with subtitles.
+          # @param f_cat [String] foreign content AT to transfer subtitles to.
+          # @param f_st_confs [Array<Float>] Array with foreign subtitle confidences.
+          # @return [Outcome] with new content AT with subtitles and subtitle confidences as result.
+          def transfer_sts_from_f_plain_text_2_f_content_at(f_pt, f_cat, f_st_confs)
+            if f_pt.count('@') != f_st_confs.length
+              raise ArgumentError.new("Mismatch in subtitle (#{ f_pt.count('@') }) and confidence (#{ f_st_confs.length }) counts!")
+            end
+
             # Separate content from id page
             cat_wo_id, id_page = Repositext::Utils::IdPageRemover.remove(f_cat)
             prepared_pt = prepare_plain_text(f_pt)
@@ -21,15 +26,12 @@ class Repositext
               cat_wo_id
             ).replace(:subtitle_mark)
 
-            # Adjust subtitle mark positions
-            f_cat_w_a_st = adjust_subtitle_mark_positions(f_cat_w_st)
-
             # Add id_page back
-            f_cat_w_a_st << id_page
+            f_cat_w_st << id_page
 
-            validate_that_no_content_was_changed(f_cat, f_cat_w_a_st)
+            validate_that_no_content_at_was_changed(f_cat, f_cat_w_st)
 
-            Outcome.new(true, f_cat_w_a_st)
+            Outcome.new(true, [f_cat_w_st, f_st_confs])
           end
 
           # Prepares plain text for suspension processing
@@ -50,17 +52,10 @@ class Repositext
             new_pt
           end
 
-          # @param f_cat_w_st [String] foreign content AT with raw subtitles
-          # @return [String] foreign content AT with adjusted subtitle_marks.
-          def adjust_subtitle_mark_positions(f_cat_w_st)
-            # Move subtitle marks after paragraph numbers to beginning of line
-            f_cat_w_st.gsub(/^(\*\d+\*\{: \.pn\} )@/, '@\1')
-          end
-
           # Raises an exception if any content was changed
           # @param f_cat [String] the original foreign content AT
           # @param f_cat_w_a_st [String] the new foreign content AT with subtitles
-          def validate_that_no_content_was_changed(f_cat, f_cat_w_a_st)
+          def validate_that_no_content_at_was_changed(f_cat, f_cat_w_a_st)
             # Remove subtitles
             f_cat_wo_st = f_cat_w_a_st.gsub('@', '')
             if f_cat_wo_st != f_cat

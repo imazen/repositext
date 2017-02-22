@@ -19,7 +19,7 @@ class Repositext
         include TransferStsFromFAlignedSentences2FPlainText
         include TransferStsFromFPlainText2ForeignContentAt
         include TransferStsFromPAlignedSentences2FAlignedSentences
-        include TransferStsFromPrimaryPlainText2PrimaryAlignedSentences
+        include TransferStsFromPPlainText2PAlignedSentences
 
         # @param p_content_at_file [Repositext::RFile::ContentAt] the primary content AT file
         # @param f_content_at_file [Repositext::RFile::ContentAt] the foreign content AT file
@@ -52,19 +52,21 @@ class Repositext
           return tsf_p_as2f_as_o  if !tsf_p_as2f_as_o.success?
 
           # Transfer subtitles from foreign sentences to foreign plain text
-          f_s_w_st = tsf_p_as2f_as_o.result
+          f_s_w_st, f_s_confs = tsf_p_as2f_as_o.result
           f_pt = @f_content_at_file.plain_text_for_st_autosplit_contents(
             st_autosplit_context: :for_st_transfer_foreign
           )
           tsf_f_as2f_pt_o = transfer_sts_from_f_aligned_sentences_2_f_plain_text(
-            f_s_w_st, f_pt
+            f_s_w_st,
+            f_pt,
+            f_s_confs
           )
           return tsf_f_as2f_pt_o  if !tsf_f_as2f_pt_o.success?
 
           # Transfer subtitles from foreign plain text to foreign content AT
-          f_pt = tsf_f_as2f_pt_o.result
+          f_pt, f_st_confs = tsf_f_as2f_pt_o.result
           f_cat = @f_content_at_file.contents
-          o = transfer_sts_from_f_plain_text_2_f_content_at(f_pt, f_cat)
+          o = transfer_sts_from_f_plain_text_2_f_content_at(f_pt, f_cat, f_st_confs)
         end
 
         def debug

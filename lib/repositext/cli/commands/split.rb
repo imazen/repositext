@@ -45,7 +45,9 @@ class Repositext
             repositext_file.corresponding_primary_file,
             repositext_file
           ).split
-          [Outcome.new(o.success, { contents: o.result }, o.messages)]
+          new_c_at, st_confs = o.result
+
+          [Outcome.new(o.success, { contents: new_c_at }, o.messages)]
         end
       end
 

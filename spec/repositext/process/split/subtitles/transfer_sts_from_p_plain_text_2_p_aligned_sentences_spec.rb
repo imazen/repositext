@@ -6,7 +6,7 @@ class Repositext
     class Split
       class Subtitles
 
-        describe TransferStsFromPrimaryPlainText2PrimaryAlignedSentences do
+        describe TransferStsFromPPlainText2PAlignedSentences do
 
           let(:default_split_instance) { Split::Subtitles.new('_', '_') }
 
@@ -44,7 +44,7 @@ class Repositext
               it "handles #{ desc }" do
                 default_split_instance.transfer_sts_from_plain_text_2_sentences(
                   p_pt, p_ss
-                ).must_equal(xpect)
+                ).result.must_equal(xpect)
               end
             end
 
