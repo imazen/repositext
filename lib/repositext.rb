@@ -63,6 +63,10 @@ require 'repositext/os_platform'
 
 # repositext libraries
 
+require 'patches/object'
+
+# Dependency boundary
+
 require 'patches/array'
 require 'patches/caracal'
 require 'patches/caracal/run_attrs'
