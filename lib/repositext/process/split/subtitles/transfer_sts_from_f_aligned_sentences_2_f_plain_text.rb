@@ -234,6 +234,14 @@ class Repositext
 
               end
 
+              # Move subtitle marks to beginning of words
+              # "word.@ word" => "word. @word"
+              pt_line.gsub!(/@ (?=\w)/, ' @')
+
+              # Move spaces inside subtitle_marker sequences to beginning of the
+              # sequence "word.@@@@@ @word" => "word. @@@@@@word"
+              pt_line.gsub!(/(@+) (@+)/, ' \1\2')
+
               p_f_pt_lines << pt_line
             }
 
