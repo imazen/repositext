@@ -117,9 +117,9 @@ class Repositext
               m
             }
             foreign_chars = f_s.chars
-            word_scale_factor = foreign_chars.length / primary_chars.length.to_f
+            char_scale_factor = foreign_chars.length / primary_chars.length.to_f
             foreign_subtitle_indexes = primary_subtitle_indexes.map { |e|
-              (e * word_scale_factor).round
+              (e * char_scale_factor).round
             }
             # Insert subtitles at proportional character position, may be inside
             # a word. We reverse the array so that earlier inserts don't affect
@@ -146,7 +146,8 @@ class Repositext
             f_captions = new_f_s_raw.split(/(?=@)/)
             sentence_confidence = 1.0
 
-            punctuation_regex_list = Regexp.escape(".,;:!?")
+            # TODO: Replace some of these characters with language specific ones.
+            punctuation_regex_list = Regexp.escape(".,;:!?)]…”—")
             # Set max_snap_distance based on total sentence length. Range for
             # snap distance is from 10 to 40 characters.
             # Sentences range from 50 to 450 characters.
