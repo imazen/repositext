@@ -77,7 +77,7 @@ class Repositext
 
           # @param content_at_file [RFile::ContentAt]
           def update_primary_file_level_st_sync_data(content_at_file)
-            content_at_file.update_file_level_data(
+            content_at_file.update_file_level_data!(
               'st_sync_required' => false
             )
           end
