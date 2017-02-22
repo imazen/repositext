@@ -182,7 +182,7 @@ module Kramdown
     # @param collector [String, optional] for recursive calls
     # @return [String]
     def to_plain_text(collector = '')
-      before, after = Kramdown::Converter::PlainText.convert_el(self)
+      before, after = Kramdown::Converter::PlainText.convert_el(self, {})
       collector << before  if before
       # walk the tree
       children.each { |e| e.to_plain_text(collector) }
