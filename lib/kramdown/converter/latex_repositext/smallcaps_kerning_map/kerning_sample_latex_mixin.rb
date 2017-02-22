@@ -84,7 +84,7 @@ module Kramdown
 This document renders kerning samples for all font, font-attribute, and
 character-pair combinations.
 
-To re-generate this document use rt command `export pdf\\_kerning\\_samples`.
+To generate this document use rt command `export pdf\\_kerning\\_samples`.
 
 The file will be exported to the current language repo's root directory,
 named `kerning\\_samples.pdf`.
