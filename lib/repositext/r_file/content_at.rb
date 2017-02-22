@@ -96,6 +96,12 @@ class Repositext
         filename.sub(/\.at\z/, '.subtitle_markers.csv')
       end
 
+      # Returns the first level 1 header in the file. Does this by using the
+      # first line in the plain_text_contents
+      def extract_title
+        plain_text_contents({}).split("\n").first.strip
+      end
+
       # Returns true if contents contain subtitle_marks ('@')
       def has_subtitle_marks?
         !!contents.index('@')

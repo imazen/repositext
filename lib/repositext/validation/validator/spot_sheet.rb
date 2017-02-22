@@ -55,7 +55,11 @@ class Repositext
           warnings = []
 
           validate_corrections_file(
-            sanitized_corrections_txt, errors, warnings
+            submitted_corrections_file,
+            sanitized_corrections_txt,
+            corresponding_content_at_file,
+            errors,
+            warnings
           )
           validate_corrections(
             corrections, errors, warnings
@@ -74,14 +78,42 @@ class Repositext
         end
 
         # Validates the corrections file in its entirety
-        # @param corrections_file_contents [String]
+        # @param corrections_file [RFile::Content]
+        # @param sanitized_corrections_txt [String] sanitized contents of corrections file
+        # @param content_at_file [RFile::ContentAt] the corresponding content AT file
         # @param [Array] errors collector for errors
         # @param [Array] warnings collector for warnings
-        def validate_corrections_file(corrections_file_contents, errors, warnings)
+        def validate_corrections_file(corrections_file, sanitized_corrections_txt, content_at_file, errors, warnings)
+          # Validate that the `Title` key matches the primary title.
+          corr_prim_content_at_file = content_at_file.corresponding_primary_file
+          spot_title = nil
+          spot_title_md = sanitized_corrections_txt.match(/^Title: ([^\n]+)\n/)
+          if spot_title_md
+            spot_title = spot_title_md[1].strip
+            primary_title = corr_prim_content_at_file.extract_title
+          end
+          if !spot_title || (spot_title != primary_title)
+            loc = [@file_to_validate]
+            desc = ["Unexpected title", "Found #{ spot_title.inspect }, expected #{ primary_title.inspect }"]
+            errors << Reportable.error(loc, desc)
+          end
+
+          # Validate that the `Date` key matches the file's date code
+          spot_datecode_md = sanitized_corrections_txt.match(/^Date: ([^\n]+)\n/)
+          if spot_datecode_md
+            spot_datecode = spot_datecode_md[1].strip
+            file_datecode = corrections_file.extract_date_code
+          end
+          if !spot_datecode || (spot_datecode != file_datecode)
+            loc = [@file_to_validate]
+            desc = ["Unexpected date", "Found #{ spot_datecode.inspect }, expected #{ file_datecode.inspect }"]
+            errors << Reportable.error(loc, desc)
+          end
+
           # Validate that no invalid characters are in correction file
           # NOTE: straight double quotes are allowed inside kramdown IALs, so we
           # convert them to a placeholder string ('<sdq>') for validation purposes.
-          txt = corrections_file_contents.gsub(/(?<=\{)[^\{\}]*(?=\})/) { |inside_ial|
+          txt = sanitized_corrections_txt.gsub(/(?<=\{)[^\{\}]*(?=\})/) { |inside_ial|
             inside_ial.gsub(/"/, '<sdq>')
           }
 
