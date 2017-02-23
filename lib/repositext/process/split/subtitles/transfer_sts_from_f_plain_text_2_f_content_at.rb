@@ -18,25 +18,30 @@ class Repositext
 
             # Separate content from id page
             cat_wo_id, id_page = Repositext::Utils::IdPageRemover.remove(f_cat)
-            prepared_pt = prepare_plain_text(f_pt)
+            prepared_pt = pre_process_plain_text(f_pt)
+            prepared_cat = pre_process_content_at(cat_wo_id)
 
             # Use suspension to transfer subtitle_marks from plain_text to content AT
             f_cat_w_st = Suspension::TokenReplacer.new(
               prepared_pt,
-              cat_wo_id
+              prepared_cat
             ).replace(:subtitle_mark)
 
             # Add id_page back
             f_cat_w_st << id_page
 
-            validate_that_no_content_at_was_changed(f_cat, f_cat_w_st)
+            # post process content AT
+            final_f_cat = post_process_content_at(f_cat_w_st)
 
-            Outcome.new(true, [f_cat_w_st, f_st_confs])
+            validate_that_no_content_at_was_changed(f_cat, final_f_cat)
+
+            Outcome.new(true, [final_f_cat, f_st_confs])
           end
 
           # Prepares plain text for suspension processing
           # @param pt [String] raw plain text
-          def prepare_plain_text(pt)
+          # @return [String]
+          def pre_process_plain_text(pt)
             # Modify title
             new_pt = pt.dup
             second_line = pt.split("\n")[1]
@@ -47,9 +52,30 @@ class Repositext
               # Insert second newline after title
               new_pt.sub!(/\n/, "\n\n")
             end
+
+            # Modify horizontal rules so they match content AT:
+            # Replace 7 asterisks with three
+            new_pt.gsub!('* * * * * * *', repositext_hr_placeholder + "\n")
+
             # Append newline at the end
             new_pt << "\n"
             new_pt
+          end
+
+          # Prepares content AT for suspension processing
+          # @param cat [String] content AT
+          # @return [String]
+          def pre_process_content_at(cat)
+            # Convert hrs to temporary placeholder
+            cat.gsub("* * *", repositext_hr_placeholder)
+          end
+
+          # Post processes content AT after suspension processing
+          # @param cat [String] content AT
+          # @return [String]
+          def post_process_content_at(cat)
+            # Convert temporary placeholders back to hrs
+            cat.gsub(repositext_hr_placeholder, "* * *")
           end
 
           # Raises an exception if any content was changed
@@ -62,6 +88,10 @@ class Repositext
               diffs = Suspension::StringComparer.compare(f_cat, f_cat_wo_st)
               raise "Text mismatch between original content AT and content AT with subtitles: #{ diffs.inspect }"
             end
+          end
+
+          def repositext_hr_placeholder
+            'Repositext-Hr-Placeholder'
           end
         end
       end
