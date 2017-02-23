@@ -60,6 +60,9 @@ class Repositext
             # to satisfy Suspention::TokenReplacer.
             new_pt.gsub!('* * * * * * *', repositext_hr_placeholder + "\n")
 
+            # Encode entities
+            new_pt = Repositext::Utils::EntityEncoder.encode(new_pt)
+
             # Append newline at the end
             new_pt << "\n"
             new_pt
