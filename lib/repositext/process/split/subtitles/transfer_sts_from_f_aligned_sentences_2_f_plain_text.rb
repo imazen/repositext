@@ -98,7 +98,7 @@ class Repositext
               # check for various matches. Start with most specific
               # matches and go to more general ones.
               if !partial_match_active && s.scan(Regexp.new(Regexp.escape(f_s_wo_st)))
-                # Sentence (with subtitles removed) matches in its entirety,
+                # Sentence without subtitles matches in its entirety,
                 # append sentence with subtitles to new_f_pt.
                 if debug
                   puts " - complete match:"
@@ -137,7 +137,8 @@ class Repositext
                 if f_s =~ /\A@/
                   # transfer sts we encounter in f_s
                   new_f_pt << '@'
-                  f_s.sub!(/\A@/, '')
+                  # Remove st (and optional trailing whitespace) for f_s
+                  f_s.sub!(/\A@\s?/, '')
                 end
                 # Before I transfer n_w I recapture it using n_w_regexp which
                 # has an optional whitespace capture group added. This is
@@ -150,6 +151,7 @@ class Repositext
                 if debug
                   puts " - fas2fpt - partial match: #{ n_w.inspect }"
                   puts "   rx:        #{ n_w_regexp.inspect }"
+                  puts "   f_s:       #{ f_s.inspect }"
                   puts "   f_s_wo_st: #{ f_s_wo_st.inspect }"
                   puts "   s.rest:    #{ s.rest[0,100].inspect }"
                 end
