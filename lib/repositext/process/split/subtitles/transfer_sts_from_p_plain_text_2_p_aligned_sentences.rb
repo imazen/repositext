@@ -113,9 +113,12 @@ class Repositext
                 elsif s.scan(/\n/)
                   # Newline between two paragraphs. It exists in plain text only,
                   # just consume, nothing else to do
-                elsif s.scan(/ /)
-                  # Space between two sentences. It exists in plain text only,
-                  # just consume, nothing else to do
+                elsif s.scan(/[ \u00A0\uFEFF]/)
+                  # A space character between two sentences:
+                  # * Regular space
+                  # * non-breaking space (0x00A0)
+                  # * zero width no-break space (0xFEFF)
+                  # It exists in plain text only, just consume, nothing else to do.
                 else
                   puts
                   puts "p_s:".color(:red) + "                     #{ p_s.inspect }"
