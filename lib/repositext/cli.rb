@@ -236,6 +236,9 @@ class Repositext
 
     desc 'split SPEC', 'Splits files in /content'
     long_desc long_description_for_split
+    method_option :'remove-existing-sts',
+                  :type => :boolean,
+                  :desc => 'If true, will remove any subtitle_marks that already exist in the content AT file.'
     # @param [String] command_spec Specification of the operation
     def split(command_spec)
       invoke_repositext_command('split', command_spec, options)

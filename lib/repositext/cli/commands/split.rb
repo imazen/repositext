@@ -43,7 +43,8 @@ class Repositext
         ) do |repositext_file|
           o = Repositext::Process::Split::Subtitles.new(
             repositext_file.corresponding_primary_file,
-            repositext_file
+            repositext_file,
+            { remove_existing_sts: options['remove-existing-sts'] }
           ).split
           new_c_at, st_confs = o.result
 

@@ -23,7 +23,13 @@ class Repositext
 
         # @param p_content_at_file [Repositext::RFile::ContentAt] the primary content AT file
         # @param f_content_at_file [Repositext::RFile::ContentAt] the foreign content AT file
-        def initialize(p_content_at_file, f_content_at_file)
+        # @param options [Hash] :remove_existing_sts will remove subtitle_marks
+        #   that alread exist in f_content_at_file.
+        def initialize(p_content_at_file, f_content_at_file, options={})
+          @options = {
+            remove_existing_sts: false
+          }.merge(options)
+
           @p_content_at_file = p_content_at_file
           @f_content_at_file = f_content_at_file
         end
@@ -59,14 +65,20 @@ class Repositext
           tsf_f_as2f_pt_o = transfer_sts_from_f_aligned_sentences_2_f_plain_text(
             f_s_w_st,
             f_pt,
-            f_s_confs
+            f_s_confs,
+            @options[:remove_existing_sts]
           )
           return tsf_f_as2f_pt_o  if !tsf_f_as2f_pt_o.success?
 
           # Transfer subtitles from foreign plain text to foreign content AT
           f_pt, f_st_confs = tsf_f_as2f_pt_o.result
           f_cat = @f_content_at_file.contents
-          o = transfer_sts_from_f_plain_text_2_f_content_at(f_pt, f_cat, f_st_confs)
+          o = transfer_sts_from_f_plain_text_2_f_content_at(
+            f_pt,
+            f_cat,
+            f_st_confs,
+            @options[:remove_existing_sts]
+          )
         end
 
         def debug

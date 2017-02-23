@@ -11,18 +11,31 @@ class Repositext
           # @param f_pt [String] foreign plain text without subtitles.
           # @param f_s_confs [Array<Float>] an array with confidence levels for
           #   each foreign sentence.
+          # @param remove_existing_sts [Boolean] if true will remove any
+          #   subtitle_marks that already exist in f_cat.
           # @return [Outcome] with foreign plain text _with_ subtitles and
           #   Array of subtitle confidences as result.
-          def transfer_sts_from_f_aligned_sentences_2_f_plain_text(f_ss, f_pt, f_s_confs)
+          def transfer_sts_from_f_aligned_sentences_2_f_plain_text(f_ss, f_pt, f_s_confs, remove_existing_sts)
+            if !remove_existing_sts && f_pt.index('@')
+              # f_pt has unexpected subtitle_marks, raise
+              raise(
+                ArgumentError.new(
+                  "You are trying to autosplit subtitles on a file that already has subtitles. " +
+                  "If this is your intention, use the '--remove-existing-sts' flag."
+                )
+              )
+            end
 
             working_f_ss = f_ss.deep_copy # so that we don't mutate the original data
             if working_f_ss.length != f_s_confs.length
               raise ArgumentError.new("Mismatch in sentences and confidences!")
             end
 
+            prepared_f_pt = pre_process_foreign_plain_text(f_pt, remove_existing_sts)
+
             f_pt_w_st_o = transfer_sts_from_sentences_to_plain_text(
               working_f_ss,
-              f_pt,
+              prepared_f_pt,
               f_s_confs
             )
             return f_pt_w_st_o  if !f_pt_w_st_o.success?
@@ -44,6 +57,14 @@ class Repositext
 
             # Return outcome of post-processing
             f_p_pt_w_st_a_c_o
+          end
+
+          # Prepares plain text
+          # @param f_pt [String] raw plain text
+          # @param remove_existing_sts [Boolean]
+          # @return [String]
+          def pre_process_foreign_plain_text(f_pt, remove_existing_sts)
+            remove_existing_sts ? f_pt.gsub('@', '') : f_pt
           end
 
           # @param f_ss [Array<String>] the foreign sentences with subtitles.
@@ -266,10 +287,11 @@ class Repositext
           # @param f_pt [String] the original foreign plain text
           # @param f_p_pt_w_st [String] post processed foreign plain text with subtitles added
           def validate_that_no_plain_text_content_was_changed(f_pt, f_p_pt_w_st)
-            # Remove subtitles
+            # Remove subtitles in both texts (f_pt may already have sts)
+            f_pt_wo_st = f_pt.gsub('@', '')
             f_p_pt_wo_st = f_p_pt_w_st.gsub('@', '')
-            if f_p_pt_wo_st != f_pt
-              diffs = Suspension::StringComparer.compare(f_pt, f_p_pt_wo_st)
+            if f_p_pt_wo_st != f_pt_wo_st
+              diffs = Suspension::StringComparer.compare(f_pt_wo_st, f_p_pt_wo_st)
               raise "Text mismatch between original plain text and plain text with subtitles: #{ diffs.inspect }"
             end
           end
