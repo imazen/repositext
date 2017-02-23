@@ -69,8 +69,7 @@ class Repositext
           # Transfers subtitles from primary sentence to foreign sentence.
           # @param p_s [String] primary sentence with subtitles
           # @param f_S [String] foreign sentence without subtitles
-          # @return [Outcome] with the foreign sentence with subtitles inserted
-          #   and sentence confidence as result.
+          # @return [Outcome] with Array of foreign sentence and confidence as result.
           def transfer_subtitles_to_foreign_sentence(p_s, f_s)
             subtitle_count = p_s.count('@')
             if 0 == subtitle_count
@@ -80,31 +79,69 @@ class Repositext
               # Prepend one subtitle
               Outcome.new(true, ['@' << f_s, 1.0])
             else
-              transfer_subtitles(p_s, f_s, subtitle_count)
+              transfer_subtitles(p_s, f_s)
             end
           end
 
           # Inserts multiple subtitles based on word interpolation.
           # @param p_s [String] primary sentence with subtitles
           # @param f_S [String] foreign sentence without subtitles
-          # @param subtitle_count [Integer] number of subtitles in p_s
-          # @return [Outcome] with the foreign sentence with subtitles inserted
-          #   and confidence as result.
-          def transfer_subtitles(p_s, f_s, subtitle_count)
+          # @return [Outcome] with Array of foreign sentence and confidence as result.
+          def transfer_subtitles(p_s, f_s)
+            # Determine if we can use punctuation signature for snapping.
+            # Conditions: Each primary st is preceded by punctuation and primary
+            # and foreign punctuation signatures are identical.
+            sts_w_preceding_punct = p_s.scan(/(?:\S|^)\s?@/)
+            all_sts_are_preceded_by_punct = sts_w_preceding_punct.all? { |e|
+              e =~ /\A@/ || e =~ /\A[#{ regex_punctuation_chars }]/
+            }
 
-            # Do a simple character based interpolation for subtitle_mark positions
-            new_f_s_raw = interpolate_subtitle_positions(p_s, f_s)
-
-            # Snap subtitle_marks to nearby punctuation
-            new_f_s_snapped_to_punctuation_o = snap_subtitles_to_punctuation(
-              p_s,
-              new_f_s_raw
+            # Determine and apply snapping strategy
+            new_f_s_snapped_to_punctuation_o = if(
+              all_sts_are_preceded_by_punct &&
+              (
+                p_punct_sig = p_s.scan(/[#{ regex_punctuation_chars }]/).join
+                f_punct_sig = f_s.scan(/[#{ regex_punctuation_chars }]/).join
+                punc_sig_sim = p_punct_sig.longest_subsequence_similar(f_punct_sig)
+                1.0 == punc_sig_sim
+              )
             )
+              # All primary subtitles are preceded by punctuation, and primary
+              # and foreign punctuation signatures are identical.
+              snap_subtitles_to_punctuation_signature(p_s, f_s)
+            else
+              # Do a simple character based interpolation for initial
+              # subtitle_mark placement.
+              new_f_s_raw = interpolate_subtitle_positions(p_s, f_s)
+              # Snap subtitle_marks to nearby punctuation
+              snap_subtitles_to_nearby_punctuation(p_s, new_f_s_raw)
+            end
+          end
 
-            Outcome.new(
-              true,
-              new_f_s_snapped_to_punctuation_o.result
-            )
+          # @return [String]
+          def regex_punctuation_chars
+            # TODO: Replace some of these characters with language specific ones.
+            Regexp.escape(".,;:!?)]…”—")
+          end
+
+          # @param p_s [String] primary sentence with subtitles
+          # @param f_S [String] foreign sentence without subtitles
+          # @return [Outcome] with Array of foreign sentence and confidence as result.
+          def snap_subtitles_to_punctuation_signature(p_s, f_s)
+            p_segs = p_s.scan(/[^#{ regex_punctuation_chars }]*[#{ regex_punctuation_chars }]\s?/)
+            f_segs = f_s.scan(/[^#{ regex_punctuation_chars }]*[#{ regex_punctuation_chars }]\s?/)
+            if p_segs.length != f_segs.length
+              pp p_segs
+              pp f_segs
+              raise "Handle this!"
+            end
+            new_f_segs = []
+            p_segs.each { |p_seg|
+              f_seg = f_segs.shift
+              f_seg.prepend('@')  if p_seg =~ /\A@/
+              new_f_segs << f_seg
+            }
+            Outcome.new(true, [new_f_segs.join, 1.0])
           end
 
           # @param p_s [String] primary sentence with subtitles
@@ -136,8 +173,8 @@ class Repositext
 
           # @param p_s [String] primary sentence with subtitles
           # @param new_f_s_raw [String] foreign sentence with interpolated subtitles
-          # @return [String] the new f_s with subtitles snapped to punctuation.
-          def snap_subtitles_to_punctuation(p_s, new_f_s_raw)
+          # @return [Outcome] with Array of foreign sentence and confidence as result.
+          def snap_subtitles_to_nearby_punctuation(p_s, new_f_s_raw)
             # Then we check if we can further optimize subtitle_mark positions:
             # If the subtitle mark comes after secondary punctuation in primary,
             # then we check if the same punctuation is nearby the position of
@@ -146,26 +183,25 @@ class Repositext
             f_captions = new_f_s_raw.split(/(?=@)/)
             sentence_confidence = 1.0
 
-            # TODO: Replace some of these characters with language specific ones.
-            punctuation_regex_list = Regexp.escape(".,;:!?)]…”—")
             # Set max_snap_distance based on total sentence length. Range for
             # snap distance is from 10 to 40 characters.
             # Sentences range from 50 to 450 characters.
             max_snap_distance = (
               [
-                [(p_s.length / 10.0), 10].max,
+                [(p_s.length / 8.0), 10].max,
                 40
               ].min
             ).round
 
             p_captions.each_with_index do |curr_p_c, idx|
+
               next  if 0 == idx # nothing to do for first caption
               curr_f_c = f_captions[idx]
               next  if curr_f_c.nil?
               prev_f_c = f_captions[idx-1]
               prev_p_c = p_captions[idx-1]
 
-              if(primary_punctuation_md = prev_p_c.match(/([#{ punctuation_regex_list }])\s?\z/))
+              if(primary_punctuation_md = prev_p_c.match(/([#{ regex_punctuation_chars }])\s?\z/))
                 # Previous caption ends with punctuation. Try to see if
                 # there is punctuation nearby the corresponding foreign
                 # subtitle_mark. Note that the foreign punctuation could be
@@ -175,7 +211,7 @@ class Repositext
                 # Detect nearby foreign punctuation
                 leading_punctuation, txt_between_punctuation_and_stm = if(
                   before_md = prev_f_c.match(
-                    /([#{ punctuation_regex_list }])\s?([^#{ punctuation_regex_list }]{1,#{ max_snap_distance }}\s*)\z/
+                    /([#{ regex_punctuation_chars }])\s?([^#{ regex_punctuation_chars }]{1,#{ max_snap_distance }}\s*)\z/
                   )
                 )
                   # Previous foreign caption has punctuation shortly before
@@ -186,7 +222,7 @@ class Repositext
                 end
                 txt_between_stm_and_punctuation, trailing_punctuation = if(
                   after_md = curr_f_c.match(
-                    /\A@([^#{ punctuation_regex_list }]{,#{ max_snap_distance }})([#{ punctuation_regex_list }]\s*)/
+                    /\A@([^#{ regex_punctuation_chars }]{,#{ max_snap_distance }})([#{ regex_punctuation_chars }]\s*)/
                   )
                 )
                   # Current foreign caption has punctuation shortly after
@@ -218,7 +254,7 @@ class Repositext
                   if leading_punctuation == primary_punctuation && trailing_punctuation_str != primary_punctuation
                     # Only leading punctuation equals primary
                     :before
-                  elsif leading_punctuation != primary_punctuation && trailing_punctuation_str != primary_punctuation
+                  elsif leading_punctuation != primary_punctuation && trailing_punctuation_str == primary_punctuation
                     # Only trailing punctuation equals primary
                     :after
                   elsif txt_between_punctuation_and_stm.length < txt_between_stm_and_punctuation.length
