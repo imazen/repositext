@@ -54,7 +54,8 @@ class Repositext
             end
 
             # Modify horizontal rules so they match content AT:
-            # Replace 7 asterisks with three
+            # Replace 7 asterisks with placeholder. Also append extra newline
+            # to satisfy Suspention::TokenReplacer.
             new_pt.gsub!('* * * * * * *', repositext_hr_placeholder + "\n")
 
             # Append newline at the end
@@ -67,15 +68,19 @@ class Repositext
           # @return [String]
           def pre_process_content_at(cat)
             # Convert hrs to temporary placeholder
+            # and make sure file has two trailing newlines
             cat.gsub("* * *", repositext_hr_placeholder)
+               .gsub(/\n+\z/, "\n\n")
           end
 
           # Post processes content AT after suspension processing
           # @param cat [String] content AT
           # @return [String]
           def post_process_content_at(cat)
-            # Convert temporary placeholders back to hrs
+            # Convert temporary placeholders back to hrs and normalize to single
+            # newline at end of file.
             cat.gsub(repositext_hr_placeholder, "* * *")
+               .gsub(/\n+\z/, "\n")
           end
 
           # Raises an exception if any content was changed
