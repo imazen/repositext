@@ -58,7 +58,7 @@ class Repositext
             # Modify horizontal rules so they match content AT:
             # Replace 7 asterisks with placeholder. Also append extra newline
             # to satisfy Suspention::TokenReplacer.
-            new_pt.gsub!('* * * * * * *', repositext_hr_placeholder + "\n")
+            new_pt.gsub!('* * *', repositext_hr_placeholder + "\n")
 
             # Encode entities
             new_pt = Repositext::Utils::EntityEncoder.encode(new_pt)
