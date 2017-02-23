@@ -28,6 +28,8 @@ class Repositext
             return f_pt_w_st_o  if !f_pt_w_st_o.success?
             raw_f_pt_w_st, f_st_confs = f_pt_w_st_o.result
 
+            validate_that_no_plain_text_content_was_changed(f_pt, raw_f_pt_w_st)
+
 
 
             f_p_pt_w_st_a_c_o = post_process_plain_text(
@@ -116,8 +118,11 @@ class Repositext
                   new_f_pt << '@'
                   f_s.sub!(/\A@/, '')
                 end
-                new_f_pt << n_w # transfer n_w
-                s.skip(n_w_regexp) # advance string scanner position
+                # Before I transfer n_w I recapture it using n_w_regexp which
+                # has an optional whitespace capture group added. This is
+                # necessary in cases where I have an elipsis (already part of n_w)
+                # followed by a \n. If I don't recapture, the \n will get lost.
+                new_f_pt << s.scan(n_w_regexp) # transfer n_w and advance string scanner position
                 f_s_wo_st.sub!(n_w_regexp, '') # remove n_w from f_s_wo_st
                 f_s.sub!(n_w_regexp, '') # remove n_w from f_s
 
