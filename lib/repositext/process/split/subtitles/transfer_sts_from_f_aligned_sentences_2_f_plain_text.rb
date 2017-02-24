@@ -205,8 +205,8 @@ class Repositext
             p_f_pt_lines = []
             raw_f_pt.split("\n").each_with_index { |pt_line, idx|
 
-              # Skip first (Header) line, use as it
-              if 0 == idx
+              # Skip first (Header) line, and horizontal rule lines:
+              if((0 == idx) || ("* * *" == pt_line))
                 p_f_pt_lines << pt_line
                 next
               end
