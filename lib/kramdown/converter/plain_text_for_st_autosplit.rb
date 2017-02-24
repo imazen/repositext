@@ -24,7 +24,7 @@ module Kramdown
       # @param options [Hash]
       def self.include_paragraph_numbers?(options)
         case options[:st_autosplit_context]
-        when :for_lf_aligner, :for_st_transfer_primary
+        when :for_lf_aligner_foreign, :for_lf_aligner_primary, :for_st_transfer_primary
           # We don't want paragraph numbers
           false
         when :for_st_transfer_foreign
@@ -35,12 +35,27 @@ module Kramdown
         end
       end
 
+      # Return true to prefix header lines with hash marks
+      # @param options [Hash]
+      def self.prefix_header_lines?(options)
+        case options[:st_autosplit_context]
+        when :for_lf_aligner_foreign, :for_st_transfer_foreign
+          # We want header prefixes
+          true
+        when :for_lf_aligner_primary, :for_st_transfer_primary
+          # We don't want header prefixes
+          false
+        else
+          raise "Handle invalid :st_autosplit_context option: #{ options[:st_autosplit_context].inspect }"
+        end
+      end
+
       # We don't want subtitle marks for LF Aligner (It throws off the sentence
       # splitter), however we want them for subtitle transfer.
       # @param options [Hash]
       def self.subtitle_mark_output(options)
         case options[:st_autosplit_context]
-        when :for_lf_aligner
+        when :for_lf_aligner_foreign, :for_lf_aligner_primary
           # We don't want subtitle marks
           nil
         when :for_st_transfer_foreign, :for_st_transfer_primary

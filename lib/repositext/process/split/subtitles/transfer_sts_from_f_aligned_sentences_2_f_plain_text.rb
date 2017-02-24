@@ -169,6 +169,7 @@ class Repositext
                 get_next_foreign_sentence = true
                 partial_match_active = false
               elsif !get_next_foreign_sentence
+                puts "f_s: #{ f_s.inspect }"
                 raise "Handle this: #{ s.rest[0,20].inspect }"
               end
 
@@ -205,8 +206,14 @@ class Repositext
             p_f_pt_lines = []
             raw_f_pt.split("\n").each_with_index { |pt_line, idx|
 
-              # Skip first (Header) line, and horizontal rule lines:
-              if((0 == idx) || ("* * *" == pt_line))
+              # Skip any header lines
+              if pt_line =~ /\A\#/
+                # Leave line as is (we need the header prefix later)
+                p_f_pt_lines << pt_line
+                next
+              end
+              # Skip horizontal rule lines
+              if "* * *" == pt_line
                 p_f_pt_lines << pt_line
                 next
               end
@@ -289,9 +296,10 @@ class Repositext
           # @param f_pt [String] the original foreign plain text
           # @param f_p_pt_w_st [String] post processed foreign plain text with subtitles added
           def validate_that_no_plain_text_content_was_changed(f_pt, f_p_pt_w_st)
-            # Remove subtitles in both texts (f_pt may already have sts)
-            f_pt_wo_st = f_pt.gsub('@', '')
-            f_p_pt_wo_st = f_p_pt_w_st.gsub('@', '')
+            # Remove subtitles and temporary header prefixes in both texts
+            # (f_pt may already have sts)
+            f_pt_wo_st = f_pt.gsub('@', '').gsub(/^\#/, '')
+            f_p_pt_wo_st = f_p_pt_w_st.gsub('@', '').gsub(/^\#/, '')
             if f_p_pt_wo_st != f_pt_wo_st
               diffs = Suspension::StringComparer.compare(f_pt_wo_st, f_p_pt_wo_st)
               raise "Text mismatch between original plain text and plain text with subtitles: #{ diffs.inspect }"

@@ -47,8 +47,13 @@ module Kramdown
         when :gap_mark
           # nothing to do
         when :header
-          # add a new line for each header
-          return [nil, "\n"]
+          if prefix_header_lines?(options)
+            # Prepend line with hash mark, append newline
+            return ['# ', "\n"]
+          else
+            # add a new line for each header
+            return [nil, "\n"]
+          end
         when :hr
           # put 7 asterisks on new line.
           ["* * * * * * *\n", nil]
@@ -82,6 +87,12 @@ module Kramdown
         end
       end
 
+      # Return true to include line breaks for `.line_break` IAL classes.
+      # @param options [Hash]
+      def self.handle_line_break_class?(options)
+        true
+      end
+
       # Return true to include id
       # @param options [Hash]
       def self.include_id_elements?(options)
@@ -94,10 +105,10 @@ module Kramdown
         true
       end
 
-      # Return true to include line breaks for `.line_break` IAL classes.
+      # Return true to prefix header lines with hash marks
       # @param options [Hash]
-      def self.handle_line_break_class?(options)
-        true
+      def self.prefix_header_lines?(options)
+        false
       end
 
       # Return nil to ignore subtitle_marks.

@@ -133,8 +133,9 @@ class Repositext
             content_type: content_type,
           )
         ) do |content_at_file|
+          st_as_ctxt = content_at_file.is_primary? ? :for_lf_aligner_primary : :for_lf_aligner_foreign
           txt = content_at_file.plain_text_for_st_autosplit_contents(
-            st_autosplit_context: :for_lf_aligner
+            st_autosplit_context: st_as_ctxt
           )
           [Outcome.new(true, { contents: txt, extension: 'txt' })]
         end
