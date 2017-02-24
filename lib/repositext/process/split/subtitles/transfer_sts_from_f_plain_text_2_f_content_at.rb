@@ -82,6 +82,8 @@ class Repositext
             # Make sure file has two trailing newlines
             r.gsub!(/\n+\z/, "\n\n")
             r.gsub!('@', '')  if remove_existing_sts
+            # Remove period from inside .line_break IAL
+            r.gsub!("*.*{: .line_break}", "**{: .line_break}")
             r
           end
 
@@ -89,10 +91,13 @@ class Repositext
           # @param cat [String] content AT
           # @return [String]
           def post_process_content_at(cat)
-            # Convert temporary placeholders back to hrs and normalize to single
-            # newline at end of file.
-            cat.gsub(repositext_hr_placeholder, "* * *")
-               .gsub(/\n+\z/, "\n")
+            # Convert temporary placeholders back to hrs.
+            r = cat.gsub(repositext_hr_placeholder, "* * *")
+            # Normalize to single newline at end of file.
+            r.gsub!(/\n+\z/, "\n")
+            # Put period inside .line_break IAL back
+            r.gsub!("**{: .line_break}", "*.*{: .line_break}")
+            r
           end
 
           # Raises an exception if any content was changed
