@@ -49,10 +49,12 @@ class Repositext
             # Modify title lines:
             # * Add second newline after any header line that is not followed
             #   by another header line.
-            new_pt.gsub!(/^(\#[^\n]+\n)(?!\#)/, '\1' + "\n")
-            # * Remove hash mark prefixes
-            # * Leave leading space
-            new_pt.gsub!(/^\#/, '')
+            new_pt.gsub!(/^(@?\#[^\n]+\n)(?!@?\#)/, '\1' + "\n")
+            # * Remove hash mark prefixes (with optional preceding newline)
+            #   See comment above Suspension::RepositextTokens::BLOCK_START for
+            #   reason of leading newline removal.
+            # * Leave optional subtitle_mark and leading space
+            new_pt.gsub!(/(?:\n|\A)(@?)\#/, '\1')
 
             # Modify horizontal rules so they match content AT:
             # Replace 7 asterisks with placeholder. Also append extra newline
