@@ -35,7 +35,11 @@ class Repositext
             elsif :autosplit == fgc_o.result[:source]
               # This file requires autosplit. After autosplit, file will be
               # synced to primary repo's current @to_git_commit.
-              process_autosplit(f_content_at_file, @to_git_commit)
+              process_unprocessable(
+                f_content_at_file,
+                "Autosplit is not implemented yet as part of sync subtitles."
+              )
+              # process_autosplit(f_content_at_file, @to_git_commit)
             else
               # This file can't be processed
               process_unprocessable(f_content_at_file, fgc_o.messages.join(' '))
