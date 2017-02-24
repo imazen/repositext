@@ -44,16 +44,15 @@ class Repositext
           # @param pt [String] raw plain text
           # @return [String]
           def pre_process_plain_text(pt)
-            # Modify title
             new_pt = pt.dup
-            second_line = pt.split("\n")[1]
-            if second_line =~ /\A@?/
-              # 2nd line starts with eagle, modify title in first line
-              # Insert space at beginning of line
-              new_pt.prepend(' ')
-              # Insert second newline after title
-              new_pt.sub!(/\n/, "\n\n")
-            end
+
+            # Modify title lines:
+            # * Add second newline after any header line that is not followed
+            #   by another header line.
+            new_pt.gsub!(/^(\#[^\n]+\n)(?!\#)/, '\1' + "\n")
+            # * Remove hash mark prefixes
+            # * Leave leading space
+            new_pt.gsub!(/^\#/, '')
 
             # Modify horizontal rules so they match content AT:
             # Replace 7 asterisks with placeholder. Also append extra newline
