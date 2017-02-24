@@ -100,8 +100,12 @@ class Repositext
             new_f_s_snapped_to_punctuation_o = if(
               all_sts_are_preceded_by_punct &&
               (
-                p_punct_sig = p_s.scan(/[#{ regex_punctuation_chars }]/).join
-                f_punct_sig = f_s.scan(/[#{ regex_punctuation_chars }]/).join
+                p_punct_sig = p_s.scan(/([#{ regex_punctuation_chars }])|([^#{ regex_punctuation_chars }]+)/).map { |m1, m2|
+                  m1 ? m1 : 'T'
+                }.join
+                f_punct_sig = f_s.scan(/([#{ regex_punctuation_chars }])|([^#{ regex_punctuation_chars }]+)/).map { |m1, m2|
+                  m1 ? m1 : 'T'
+                }.join
                 punc_sig_sim = p_punct_sig.longest_subsequence_similar(f_punct_sig)
                 1.0 == punc_sig_sim
               )
