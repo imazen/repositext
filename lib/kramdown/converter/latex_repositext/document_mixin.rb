@@ -81,9 +81,10 @@ module Kramdown
         def polyglossia_default_language(language_code_3_chars)
           {
             'ara' => 'arabic',
-            'mal' => 'malayalam',
-            'kan' => 'kannada',
             'frs' => 'farsi',
+            'kan' => 'kannada',
+            'mal' => 'malayalam',
+            'pun' => 'punjabi',
           }[language_code_3_chars]
         end
 
