@@ -157,6 +157,7 @@ class Repositext
           # be processed as they don't match the file selector.
           raise ArgumentError.new("\nPlease don't add language codes to the file selector since export may have to run on primary and foreign languages: #{ options['file-selector'].inspect }")
         end
+        files_that_could_not_be_exported_because_they_require_st_sync = []
         input_base_dir = config.compute_base_dir(options['base-dir'] || :content_dir)
         input_file_selector = config.compute_file_selector(options['file-selector'] || :all_files)
         input_file_extension = config.compute_file_extension(options['file-extension'] || :at_extension)
@@ -194,7 +195,10 @@ class Repositext
               # the most recent English version to work with.
               self_or_corresponding_primary_file = content_at_file.corresponding_primary_file
               if self_or_corresponding_primary_file.read_file_level_data['st_sync_required']
-                raise "Cannot export #{ content_at_file.filename } since it requires a subtitle sync!".color(:red)
+                # If we get here on any foreign file, then we don't export any
+                # primary files and we don't copy any marker files!
+                files_that_could_not_be_exported_because_they_require_st_sync << content_at_file
+                next  [Outcome.new(false, nil, ["Cannot export this file. A subtitle sync is required first!"])]
               end
             else
               # File's st_sync_active is false, however subtitles are being
@@ -227,31 +231,39 @@ class Repositext
           # Return Outcome
           [Outcome.new(true, { contents: subtitle, extension: 'txt' })]
         end
-        # Fork depending on whether we're in primary or foreign repo.
-        # If command is initially run on primary, it will reach the primary
-        # brach only. If this command was called on foreign initially, it will
-        # first execute the foreign branch, then call itself recursively on
-        # the primary repo and execute the primary branch.
-        if config.setting(:is_primary_repo)
-          # We're in primary repo, copy subtitle_marker_csv_files to foreign repo
-          # This works because options['output'] points to foreign repo.
-          copy_subtitle_marker_csv_files_to_subtitle_export(options)
+        if files_that_could_not_be_exported_because_they_require_st_sync.empty?
+          # Fork depending on whether we're in primary or foreign repo.
+          # If command is initially run on primary, it will reach the primary
+          # brach only. If this command was called on foreign initially, it will
+          # first execute the foreign branch, then call itself recursively on
+          # the primary repo and execute the primary branch.
+          if config.setting(:is_primary_repo)
+            # We're in primary repo, copy subtitle_marker_csv_files to foreign repo
+            # This works because options['output'] points to foreign repo.
+            copy_subtitle_marker_csv_files_to_subtitle_export(options)
+          else
+            # Whe're operating on foreign repo: Export subtitles from primary
+            # repo and copy them to this foreign repo's subtitle_export dir.
+            # Recursively call this method with some options modified:
+            # We call it via `Cli.start` so that we can use a different Rtfile.
+            primary_repo_rtfile_path = File.join(config.primary_content_type_base_dir, 'Rtfile')
+            args = [
+              "export",
+              "subtitle",
+              "--content-type-name", options['content-type-name'], # use same content_type
+              "--file-selector", input_file_selector, # use same file-selector
+              "--rtfile", primary_repo_rtfile_path, # use primary repo's Rtfile
+              "--output", output_base_dir, # use this foreign repo's subtitle_export dir
+            ]
+            args << '--skip-git-up-to-date-check'  if options['skip-git-up-to-date-check']
+            Repositext::Cli.start(args)
+          end
         else
-          # Whe're operating on foreign repo: Export subtitles from primary
-          # repo and copy them to this foreign repo's subtitle_export dir.
-          # Recursively call this method with some options modified:
-          # We call it via `Cli.start` so that we can use a different Rtfile.
-          primary_repo_rtfile_path = File.join(config.primary_content_type_base_dir, 'Rtfile')
-          args = [
-            "export",
-            "subtitle",
-            "--content-type-name", options['content-type-name'], # use same content_type
-            "--file-selector", input_file_selector, # use same file-selector
-            "--rtfile", primary_repo_rtfile_path, # use primary repo's Rtfile
-            "--output", output_base_dir, # use this foreign repo's subtitle_export dir
-          ]
-          args << '--skip-git-up-to-date-check'  if options['skip-git-up-to-date-check']
-          Repositext::Cli.start(args)
+          puts "The subtitle export could not be completed because the following files require a subtitle sync:".color(:red)
+          puts "===============================================================================================".color(:red)
+          files_that_could_not_be_exported_because_they_require_st_sync.each do |content_at_file|
+            puts " * #{ content_at_file.filename }".color(:red)
+          end
         end
       end
 
