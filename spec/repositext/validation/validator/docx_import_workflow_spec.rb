@@ -140,17 +140,17 @@ class Repositext
             [
               'Incorrect rPr (added attr)',
               valid_styles['Normal'].sub(%(<w:sz w:val="20"/>), %(<w:sz w:val="20"/><w:keepNext/>)),
-              [["Unexpected modification of document styles", "Style: Normal, expected pPr to contain the following attrs: [\"color\", \"rFonts\", \"sz\"], got [\"color\", \"keepNext\", \"rFonts\", \"sz\"]"]],
+              [["Unexpected modification of document styles", "Style: Normal, expected rPr to contain the following attrs: [\"color\", \"rFonts\", \"sz\"], got [\"color\", \"keepNext\", \"rFonts\", \"sz\"]"]],
             ],
             [
               'Incorrect rPr (removed attr)',
               valid_styles['Normal'].sub(%(<w:sz w:val="20"/>), %()),
-              [["Unexpected modification of document styles", "Style: Normal, expected pPr to contain the following attrs: [\"color\", \"rFonts\", \"sz\"], got [\"color\", \"rFonts\"]"]],
+              [["Unexpected modification of document styles", "Style: Normal, expected rPr to contain the following attrs: [\"color\", \"rFonts\", \"sz\"], got [\"color\", \"rFonts\"]"]],
             ],
             [
               'Missing rPr',
               valid_styles['Normal'].gsub("w:rPr", 'w:rPrX'),
-              [["Unexpected modification of document styles", "Style: Normal, expected pPr to contain the following attrs: [\"color\", \"rFonts\", \"sz\"], got []"]],
+              [["Unexpected modification of document styles", "Style: Normal, expected rPr to contain the following attrs: [\"color\", \"rFonts\", \"sz\"], got []"]],
             ],
           ].each do |desc, style_entries, xpect|
             it "handles #{ desc }" do
@@ -172,10 +172,49 @@ class Repositext
               errors.map { |e| e.details }.must_equal(xpect)
             end
           end
+
+          it "Ignores the order of style elements in pPr and rPr" do
+            validator = DocxImportWorkflow.new(
+              FileLikeStringIO.new('/_', '_'),
+              logger,
+              reporter,
+              {}
+            )
+            styles_xml_contents = [
+              styles_xml_prefix,
+              %(
+                <w:style w:default="1" w:styleId="Normal" w:type="paragraph">
+                  <w:name w:val="Normal"/>
+                  <w:rsid w:val="0007621A"/>
+                  <w:pPr>
+                    <w:spacing w:after="0" w:before="60" w:line="240" w:lineRule="auto"/>
+                    <w:jc w:val="both"/>
+                    <w:tabs>
+                      <w:tab w:pos="360" w:val="left"/>
+                    </w:tabs>
+                  </w:pPr>
+                  <w:rPr>
+                    <w:sz w:val="20"/>
+                    <w:color w:themeColor="text1" w:val="000000"/>
+                    <w:rFonts w:ascii="V-Excelsior LT Std" w:hAnsi="V-Excelsior LT Std"/>
+                  </w:rPr>
+                </w:style>
+              ),
+              styles_xml_suffix
+            ].join
+            errors = []
+            warnings = []
+            validator.send(
+              :validate_document_styles_not_modified,
+              styles_xml_contents,
+              errors,
+              warnings
+            )
+            errors.must_equal([])
+          end
+
         end
-
       end
-
     end
   end
 end
