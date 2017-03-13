@@ -101,6 +101,59 @@ class Repositext
         }
       end
 
+      # Reports content data.json files that have invalid st_sync_commits,
+      # e.g., not aligned with from/to commits of st_ops files.
+      def report_data_json_files_with_unexpected_st_sync_commits(options)
+        invalid_files = []
+        total_file_count = 0
+
+        primary_config = if config.setting(:is_primary_repo)
+          config
+        else
+          content_type.corresponding_primary_content_type.config
+        end
+        git_commits_from_st_ops_files = Subtitle::OperationsFile.get_sync_commits(
+          primary_config.base_dir(:subtitle_operations_dir)
+        )
+
+        Repositext::Cli::Utils.read_files(
+          config.compute_glob_pattern(
+            options['base-dir'] || :content_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :json_extension
+          ),
+          options['file_filter'],
+          nil,
+          "Reading data.json files",
+          options.merge(
+            use_new_repositext_file_api: true,
+            content_type: content_type,
+          )
+        ) do |data_json_file|
+          total_file_count += 1
+          st_sync_commit = data_json_file.read_data['st_sync_commit']
+          next  if '' == st_sync_commit.to_s
+          truncated_commit_sha = Subtitle::OperationsFile.truncate_git_commit_sha1(st_sync_commit)
+          next  if git_commits_from_st_ops_files.include?(truncated_commit_sha)
+          # We found an unexpected st_sync_commit
+          invalid_files << {
+            filename: data_json_file.repo_relative_path(true),
+            unexpected_st_sync_commit: st_sync_commit
+          }
+        end
+
+        if invalid_files.any?
+          $stderr.puts "\n\n"
+          $stderr.puts "Found #{ invalid_files.length } data.json files with unexpected st_sync_commits in total of #{ total_file_count } files at #{ Time.now.to_s }:"
+          $stderr.puts '-' * 40
+          invalid_files.each { |f_attrs|
+            $stderr.puts " * #{ f_attrs[:filename].ljust(70, ' ') } - (#{ f_attrs[:unexpected_st_sync_commit] })"
+          }
+        end
+        $stderr.puts '-' * 40
+        $stderr.puts "Command to generate this file: `repositext report files_data_json_files_with_unexpected_st_sync_commitswith_multi_para_editors_notes`\n"
+      end
+
       # Reports files that contain editors notes with multiple paragraphs
       def report_files_with_multi_para_editors_notes(options)
         multi_para_editors_notes = []
