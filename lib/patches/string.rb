@@ -8,6 +8,12 @@ class String
     # middle of the string. This gives us trailing whitespace instead of leading:
     # ["word2 ", "word3"] instead of ["word2", " word3"].
     word_boundary_after_middle_pos = rindex(/\b/, middle)
+    # For strings without word boundaries (e.g., '@'), or strings that have the
+    # word boundary at the beginning (e.g., 'word') we return the original
+    # string and an empty string
+    if word_boundary_after_middle_pos.nil? || 0 == word_boundary_after_middle_pos
+      return [self.dup, '']
+    end
     first = slice(0, word_boundary_after_middle_pos)
     second = slice(word_boundary_after_middle_pos, length)
     [first, second]
