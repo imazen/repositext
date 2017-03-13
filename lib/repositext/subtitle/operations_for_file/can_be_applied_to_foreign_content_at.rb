@@ -47,7 +47,7 @@ class Repositext
         # @param to_subtitles [Array<Subtitle>]
         def insert_new_subtitles_into_foreign_content_at!(foreign_subtitles_with_content, to_subtitles)
           insert_and_split_ops.each do |op|
-            insert_after_stid = op.affected_stids.first.persistent_id
+            insert_after_stid = op.after_stid
             insert_after_st = foreign_subtitles_with_content.detect { |e|
               e.persistent_id == insert_after_stid
             }
