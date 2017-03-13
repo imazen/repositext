@@ -923,65 +923,6 @@ class Repositext
         end
       end
 
-      # Generates a list of all subtitle operations for the given file set and
-      # git commits.
-      # from_sha1 = 'b5064a949b4681cb9673c53ce1867de68817635b' # Jan 25, 2016 (the-table-v4)
-      # to_sha1 = 'c94b551257529068868799bf01a512a46bed1273' # March 1, 2016 (before restructure)
-      # to_sha1 = '25f7e9304b22e6bcef8be3675ea7bfc5d4232010' # Nov. 25, 2015
-      # to_sha1 = '039d79e13d5670af5c810219a946c380f4d1cbc1' # Aug. 3, 2015
-      # to_sha1 = '3bc45ca672735158fca0b8516d26910d55c8b127' # May 2015 (for iOS mapping file)
-      # rt sermons report subtitle_operations --skip-git-up-to-date-check=true --from-commit="b5064a949b4681cb9673c53ce1867de68817635b" --to-commit="c94b551257529068868799bf01a512a46bed1273"
-      # Output format:
-      #     {
-      #       "comments": "productId: 62-0211",
-      #       "product_identity_id": "831",
-      #       "language": "eng",
-      #       "from": {
-      #         "gitCommit": "f54aac",
-      #       },
-      #       "to": {
-      #         "gitCommit": "ce1d40",
-      #       },
-      #       "operations": [
-      #         {
-      #           "operation_type": "delete",
-      #           "operation_id": "0-1", # hunk index + subtitle pair index
-      #           "affected_stids": [
-      #             {
-      #               "comments": "stIndex: 17",
-      #               "stid": "1234567",
-      #               "before": "@word1",
-      #               "after": null
-      #               "after_stid": "2345678",
-      #             }
-      #           ]
-      #         },
-      def report_subtitle_operations(options)
-        file_list_pattern = config.compute_glob_pattern(
-          options['base-dir'] || :content_dir,
-          options['file-selector'] || :all_files,
-          options['file-extension'] || :at_extension
-        )
-        file_list = Dir.glob(file_list_pattern)
-        if (file_filter = options['file_filter'])
-          file_list = file_list.find_all { |filename| file_filter === filename }
-        end
-        subtitle_ops = Repositext::Process::Compute::SubtitleOperationsForRepository.new(
-          content_type,
-          options['from-commit'],
-          options['to-commit'],
-          file_list
-        ).compute
-        report_file_path = File.join(
-          config.base_dir(:reports_dir),
-          'subtitle_operations.json'
-        )
-        File.open(report_file_path, 'w') { |f|
-          f.write(subtitle_ops.to_json.to_s)
-        }
-        puts " - Writing JSON file to #{ report_file_path }"
-      end
-
       # Computes stats for the latest st-ops file
       def report_st_ops_file_stats(options)
         latest_st_ops_file_path = Subtitle::OperationsFile.find_latest(
