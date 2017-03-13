@@ -151,7 +151,7 @@ class Repositext
           }
         end
         $stderr.puts '-' * 40
-        $stderr.puts "Command to generate this file: `repositext report files_data_json_files_with_unexpected_st_sync_commitswith_multi_para_editors_notes`\n"
+        $stderr.puts "Command to generate this file: `repositext report data_json_files_with_unexpected_st_sync_commits`\n"
       end
 
       # Reports files that contain editors notes with multiple paragraphs
