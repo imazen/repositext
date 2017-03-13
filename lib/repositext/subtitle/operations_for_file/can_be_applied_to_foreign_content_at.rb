@@ -78,24 +78,30 @@ class Repositext
         # @param foreign_subtitles_with_content [Array<Subtitle>]
         def delete_subtitles_from_foreign_content_at!(foreign_subtitles_with_content)
           delete_and_merge_ops.each do |op|
-            # Make sure that deleted subtitle comes second. We create signature
-            # based on whether `after` is empty (indicates deletion).
+            # We create signature based on whether `after` is empty (indicates deletion).
             signature = op.affected_stids.map { |e| '' == e.tmp_attrs[:after] }
-            # NOTE: The subtitle operation may be a compound merge that has more
-            # than two affected subtitles. In this case the empty `after` still
-            # needs to be at the end. We use #chunk to collapse adjacent identical
-            # items in the signature.
-            if [false, true] != signature.chunk { |e| e }.map(&:first)
-              raise "Handle this: signature: #{ signature.inspect }, operation: #{ op.to_hash.inspect }".color(:red)
-            end
-            retained_stid, deleted_stid = op.affected_stids.map { |e| e.persistent_id }
-            retained_st = foreign_subtitles_with_content.detect { |e| retained_stid == e.persistent_id }
-            deleted_st = foreign_subtitles_with_content.detect { |e| deleted_stid == e.persistent_id }
             case op.operation_type
             when 'delete'
-              # nothing to do
+              # Delete the subitle with its contents
+              # Verify that affected_stids are what we expect them to be:
+              if [true] != signature
+                raise "Handle this: signature: #{ signature.inspect }, operation: #{ op.to_hash.inspect }".color(:red)
+              end
+              deleted_stid = op.affected_stids.first.persistent_id
+              deleted_st = foreign_subtitles_with_content.detect { |e| deleted_stid == e.persistent_id }
             when 'merge'
-              # merge contents
+              # Merge contents into first subtitle, delete second st.
+              # Make sure that deleted subtitle comes second.
+              # NOTE: The subtitle operation may be a compound merge that has more
+              # than two affected subtitles. In this case the empty `after` still
+              # needs to be at the end. We use #chunk to collapse adjacent identical
+              # items in the signature.
+              if [false, true] != signature.chunk { |e| e }.map(&:first)
+                raise "Handle this: signature: #{ signature.inspect }, operation: #{ op.to_hash.inspect }".color(:red)
+              end
+              retained_stid, deleted_stid = op.affected_stids.map { |e| e.persistent_id }
+              retained_st = foreign_subtitles_with_content.detect { |e| retained_stid == e.persistent_id }
+              deleted_st = foreign_subtitles_with_content.detect { |e| deleted_stid == e.persistent_id }
               retained_st.content << deleted_st.content.sub(/\A@/, '')
             else
               raise "Handle this: #{ op.inspect }"
