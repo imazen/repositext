@@ -479,6 +479,9 @@ class Repositext
         language = content_type.language
         primary_repo = content_type.corresponding_primary_content_type.repository
         primary_repo_sync_commit = primary_repo.read_repo_level_data['st_sync_commit']
+        if primary_repo_sync_commit.nil?
+          raise "Unexpected nil primary st sync commit!"
+        end
 
         use_subtitle_sync_behavior = true
 
@@ -547,11 +550,13 @@ class Repositext
                   if export_sync_commit != primary_repo_sync_commit
                     primary_content_type = content_type.corresponding_primary_content_type
                     primary_config = primary_content_type.config
+                    # We want to sync the foreign file to the current primary
+                    # st_sync_commit.
                     sync_sts = Repositext::Process::Sync::Subtitles.new(
                       'config' => primary_config,
-                      'primary_repository' => primary_repo
+                      'primary_repository' => primary_repo,
+                      'to-commit' => primary_repo_sync_commit
                     )
-                    r = sync_sts.compute_to_git_commit!(@to_git_commit, primary_repo)
                     sync_sts.sync_foreign_file(content_at_file)
                   end
                 end
