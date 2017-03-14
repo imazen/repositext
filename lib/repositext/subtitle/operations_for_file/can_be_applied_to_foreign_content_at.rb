@@ -91,13 +91,22 @@ class Repositext
             signature = op.affected_stids.map { |e| '' == e.tmp_attrs[:after] }
             case op.operation_type
             when 'delete'
-              # Delete the subitle with its contents
+              # We may get false `Delete` operations. Because of that, we have a
+              # policy that we don't remove any content. Instead we treat it
+              # like a merge and add the deleted subtitle's content to the
+              # previous one.
               # Verify that affected_stids are what we expect them to be:
               if [true] != signature
                 raise "Handle this: signature: #{ signature.inspect }, operation: #{ op.to_hash.inspect }".color(:red)
               end
               deleted_stid = op.affected_stids.first.persistent_id
-              deleted_st = foreign_subtitles_with_content.detect { |e| deleted_stid == e.persistent_id }
+              retained_st, deleted_st = nil, nil
+              foreign_subtitles_with_content.each_cons(2) { |prev_st, cur_st|
+                if cur_st.persistent_id == deleted_stid
+                  retained_st, deleted_st = prev_st, cur_st
+                  break
+                end
+              }
             when 'merge'
               # Merge contents into first subtitle, delete second st.
               # Make sure that deleted subtitle comes second.
@@ -111,10 +120,10 @@ class Repositext
               retained_stid, deleted_stid = op.affected_stids.map { |e| e.persistent_id }
               retained_st = foreign_subtitles_with_content.detect { |e| retained_stid == e.persistent_id }
               deleted_st = foreign_subtitles_with_content.detect { |e| deleted_stid == e.persistent_id }
-              retained_st.content << deleted_st.content.sub(/\A@/, '')
             else
               raise "Handle this: #{ op.inspect }"
             end
+            retained_st.content << deleted_st.content.sub(/\A@/, '')
             foreign_subtitles_with_content.delete(deleted_st)
           end
           true
