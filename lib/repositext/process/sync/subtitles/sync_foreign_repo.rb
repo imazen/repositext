@@ -52,7 +52,7 @@ class Repositext
                   ct_config.setting(:st_sync_active) &&
                   file_level_data['st_sync_commit'] != @to_git_commit
                 )
-                has_pending_subtitle_import = '' != file_level_data['exported_at_st_sync_commit'].to_s
+                has_pending_subtitle_import = '' != file_level_data['exported_subtitles_at_st_sync_commit'].to_s
                 if st_sync_required && !has_pending_subtitle_import
                   fts << content_at_file
                 end
