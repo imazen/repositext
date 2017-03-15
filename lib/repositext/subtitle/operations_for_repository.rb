@@ -71,8 +71,10 @@ class Repositext
         end
         self.operations_for_files = operations_for_files
         if !(
-          @first_operation_id.to_i < @last_operation_id.to_i
+          @first_operation_id.to_i <= @last_operation_id.to_i
         )
+          # We expect first_operation_id to be less than (for multiple st_ops)
+          # or equal to last_operation_id (single st_op).
           raise ArgumentError.new("Invalid operation_id boundaries: #{ [@first_operation_id, @last_operation_id].inspect }")
         end
       end
