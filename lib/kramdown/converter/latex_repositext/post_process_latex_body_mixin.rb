@@ -257,6 +257,13 @@ module Kramdown
           # We don't allow linebreaks between the end of a control sequence and a period
           lb.gsub!("}.", "}\\nolinebreak[4].")
 
+          # We don't allow linebreaks between a hyphen and an ellipsis when
+          # followed by a closing quote mark
+          lb.gsub!(
+            "\\nolinebreak[4]-\\hspace{0pt}…#{ l_ch[:d_quote_close] }",
+            "\\nolinebreak[4]-\\nolinebreak[4]…#{ l_ch[:d_quote_close] }"
+          )
+
           # We don't allow linebreaks between chinese period and closing bracket
           lb.gsub!("。]", "。\\nolinebreak[4]]")
 
