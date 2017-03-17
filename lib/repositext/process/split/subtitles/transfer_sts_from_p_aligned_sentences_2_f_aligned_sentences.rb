@@ -132,8 +132,8 @@ class Repositext
           # @param f_S [String] foreign sentence without subtitles
           # @return [Outcome] with Array of foreign sentence and confidence as result.
           def snap_subtitles_to_punctuation_signature(p_s, f_s)
-            p_segs = p_s.scan(/[^#{ regex_punctuation_chars }]*(?:[#{ regex_punctuation_chars }]\s?|\s?\z)/)
-            f_segs = f_s.scan(/[^#{ regex_punctuation_chars }]*(?:[#{ regex_punctuation_chars }]\s?|\s?\z)/)
+            p_segs = p_s.scan(/[^#{ regex_punctuation_chars }]+(?:[#{ regex_punctuation_chars }]\s?|\s?\z)/)
+            f_segs = f_s.scan(/[^#{ regex_punctuation_chars }]+(?:[#{ regex_punctuation_chars }]\s?|\s?\z)/)
             if p_segs.length != f_segs.length
               pp p_segs
               pp f_segs
@@ -142,7 +142,13 @@ class Repositext
             new_f_segs = []
             p_segs.each { |p_seg|
               f_seg = f_segs.shift
-              f_seg.prepend('@')  if p_seg =~ /\A@/
+              if p_seg =~ /\A@/
+                # Primary starts with stm
+                # Remove one stm from foreign
+                f_seg.sub!(/@/, '')
+                # Prepend foreign segment with stm
+                f_seg.prepend('@')
+              end
               new_f_segs << f_seg
             }
             Outcome.new(true, [new_f_segs.join, 1.0])

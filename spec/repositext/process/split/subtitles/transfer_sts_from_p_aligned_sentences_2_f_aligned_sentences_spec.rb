@@ -39,35 +39,56 @@ class Repositext
             end
           end
 
-          describe '#snap_subtitles_to_punctuation' do
+          describe '#snap_subtitles_to_punctuation_signature' do
             [
               [
                 'Simple case',
                 '@word word, @word word',
                 '@ward ward, ward @ward',
-                ['@ward ward, @ward ward', 0.8],
+                ['@ward ward, @ward ward', 1.0],
               ],
               [
-                'Snaps to closest punctuation if both are the same',
+                'Snaps to correct punctuation even if closer to wrong one.',
                 '@word word word, @word word word, word word word',
                 '@ward ward ward, ward ward @ward, ward ward ward',
-                ['@ward ward ward, ward ward ward, @ward ward ward', 0.8],
+                ['@ward ward ward, @ward ward ward, ward ward ward', 1.0],
               ],
               [
                 'Correct punctuation type is further away',
                 '@word word word, @word word word; word word word',
                 '@ward ward ward, ward ward @ward; ward ward ward',
-                ['@ward ward ward, @ward ward ward; ward ward ward', 0.8],
+                ['@ward ward ward, @ward ward ward; ward ward ward', 1.0],
+              ],
+              [
+                'Elipsis without trailing space',
+                '@word word…@word word',
+                '@ward ward…ward @ward',
+                ['@ward ward…@ward ward', 1.0],
               ],
             ].each do |(desc, p_s, f_s, xpect)|
               it "handles #{ desc }" do
-                default_split_instance.snap_subtitles_to_punctuation(
+                default_split_instance.snap_subtitles_to_punctuation_signature(
                   p_s, f_s
                 ).result.must_equal(xpect)
               end
             end
-          end
 
+            punctuation_marks = ".,;:!?)]…”—".chars
+
+            punctuation_marks.each do |p_punct|
+              punctuation_marks.each do |f_punct|
+                it "snaps primary #{ p_punct.inspect } to foreign #{ f_punct.inspect }" do
+                  p_s = "@word word#{ p_punct } @word word"
+                  f_s = "@ward ward#{ f_punct } ward @ward"
+                  xpect = ["@ward ward#{ f_punct } @ward ward", 1.0]
+                  default_split_instance.snap_subtitles_to_punctuation_signature(
+                    p_s, f_s
+                  ).result.must_equal(xpect)
+                end
+              end
+            end
+
+          end
         end
       end
     end

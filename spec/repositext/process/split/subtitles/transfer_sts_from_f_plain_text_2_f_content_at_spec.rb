@@ -45,7 +45,7 @@ class Repositext
             ].each do |(desc, f_pt, f_cat, f_st_confs, xpect)|
               it "handles #{ desc }" do
                 default_split_instance.transfer_sts_from_f_plain_text_2_f_content_at(
-                  f_pt, f_cat, f_st_confs
+                  f_pt, f_cat, f_st_confs, false
                 ).result.must_equal(xpect)
               end
             end

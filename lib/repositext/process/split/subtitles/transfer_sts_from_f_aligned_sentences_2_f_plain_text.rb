@@ -86,7 +86,7 @@ class Repositext
             get_next_foreign_sentence = false
             partial_match_active = false
 
-            # # Scan through f_pt and rebuild new_f_pt
+            # Scan through f_pt and rebuild new_f_pt
             while(f_s && !s.eos?) do
 
               if debug
@@ -114,7 +114,7 @@ class Repositext
                 end
                 new_f_pt << pn
               elsif(
-                (n_w = s.check(/\S+?[\s…\(]?/)) &&
+                (n_w = s.check(/[^\s…\(]*[\s…\(]?/)) &&
                 (n_w_regexp = Regexp.new(Regexp.escape(n_w.rstrip) + "\\s?")) &&
                 (f_s_wo_st =~ /\A#{ n_w_regexp }/)
               )
@@ -128,12 +128,12 @@ class Repositext
                 # * Remove n_w from f_s
                 # * Transfer any subtitles encountered in f_s
                 # * Track partial match mode
-                # We also track partial_match_active to block complete matches
+                # We track partial_match_active to block complete matches
                 # higher up. We have to complete the partial match before we
                 # can try a new complete match. Otherwise we'll get duplicate
                 # content.
-                # Check if f_s starts with subtitle and transfer it
                 partial_match_active = true # go into partial_match mode
+                # Check if f_s starts with subtitle and transfer it
                 if f_s =~ /\A@/
                   # transfer sts we encounter in f_s
                   new_f_pt << '@'
@@ -169,7 +169,7 @@ class Repositext
                 get_next_foreign_sentence = true
                 partial_match_active = false
               elsif !get_next_foreign_sentence
-                puts "f_s: #{ f_s.inspect }"
+                puts "f_s:       #{ f_s.inspect }"
                 raise "Handle this: #{ s.rest[0,20].inspect }"
               end
 
@@ -222,7 +222,7 @@ class Repositext
               pt_line.gsub!(/\A(\d+) @/, '@\1 ')
 
               # If line still doesn't start with subtitle mark, move it there
-              # from somewhere else
+              # from somewhere else (the previous line, or a later stm on current)
               if pt_line !~ /\A@/
                 prev_line = p_f_pt_lines[idx - 1]
 
@@ -233,11 +233,18 @@ class Repositext
                 else
                   nil
                 end
+
+                # We look at text on the current line
+puts "prev_txt: #{ prev_txt.inspect }"
                 foll_txt = if(foll_stm_md = pt_line.match(/\A([^@]*)@/))
+                  # Curr line has stm, capture text before first stm
                   foll_stm_md[1]
                 else
                   nil
                 end
+
+                # Decide which stm to use
+puts "foll_txt: #{ foll_txt.inspect }"
                 matches_count = [prev_txt, foll_txt].compact.count
                 which_stm_to_use = if 0 == matches_count
                   raise "Handle this!"
@@ -251,6 +258,7 @@ class Repositext
                   raise "Handle this!"
                 end
 
+                # Move chosen stm
                 case which_stm_to_use
                 when :none
                   # Nothing to do
@@ -265,7 +273,6 @@ class Repositext
                 else
                   raise "Handle this!"
                 end
-
               end
 
               # Clean up general subtitle_mark placement
@@ -304,6 +311,7 @@ class Repositext
               diffs = Suspension::StringComparer.compare(f_pt_wo_st, f_p_pt_wo_st)
               raise "Text mismatch between original plain text and plain text with subtitles: #{ diffs.inspect }"
             end
+            true
           end
 
           # Raises an exception if foreign sentences and foreign plain text
