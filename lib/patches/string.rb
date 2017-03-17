@@ -7,7 +7,11 @@ class String
     # In order to split at a word beginning, we use rindex starting at the
     # middle of the string. This gives us trailing whitespace instead of leading:
     # ["word2 ", "word3"] instead of ["word2", " word3"].
-    word_boundary_after_middle_pos = rindex(/\b/, middle)
+    # NOTE: We need to handle encoded entities like "&#x8820;". They would get
+    # split before the x (word boundary like so: ["&#", "x8820;"]).
+    # So we only split on word boundaries that are not part of encoded entities.
+    # And we match specifically on the start of encoded entities.
+    word_boundary_after_middle_pos = rindex(/&#x|(?<!&#)\b(?!x)/, middle)
     # For strings without word boundaries (e.g., '@'), or strings that have the
     # word boundary at the beginning (e.g., 'word') we return the original
     # string and an empty string

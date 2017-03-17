@@ -13,6 +13,7 @@ describe String do
       ['word', ["word", ""]],
       ['', ["", ""]],
       ['@', ["@", ""]],
+      ['word &#x8820; word', ["word ", "&#x8820; word"]],
     ].each do |test_string, xpect|
       it "handles #{ test_string.inspect }" do
         test_string.split_into_two.must_equal(xpect)
