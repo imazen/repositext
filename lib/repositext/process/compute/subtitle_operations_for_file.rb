@@ -129,7 +129,7 @@ class Repositext
           Repositext::Subtitle::OperationsForFile.new(
             @content_at_file_to,
             {
-              file_path: @content_at_file_to.filename.sub(@repo_base_dir, ''),
+              file_path: @content_at_file_to.repo_relative_path,
               from_git_commit: @options[:from_git_commit],
               to_git_commit: @options[:to_git_commit],
             },
