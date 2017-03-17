@@ -188,6 +188,11 @@ module Kramdown
               "word。] word",
               "word。\\nolinebreak[4]] word"
             ],
+            # No linebreak between hyphen and ellipsis
+            [
+              "word-…” word",
+              "word\\nolinebreak[4]-\\nolinebreak[4]…” word"
+            ],
             # No linebreak between end of latex control sequence and period.
             [
               # Word a.d.
