@@ -156,6 +156,51 @@ class Repositext
         ).sync
       end
 
+      # Synchronizes subtitles in foreign files that match options['file-selector'].
+      # This is called from `import_subtitle` when run on foreign repos.
+      # It transfers any subtitle operations that have accumulated since the
+      # foreign file's subtitles were exported.
+      def sync_subtitles_for_foreign_files(options)
+        if config.setting(:is_primary_repo)
+          raise "This command can only be used in a foreign repository."
+        end
+
+        file_count = 0
+        primary_content_type = content_type.corresponding_primary_content_type
+        primary_config = primary_content_type.config
+        primary_repo = primary_content_type.repository
+        primary_repo_sync_commit = primary_repo.read_repo_level_data['st_sync_commit']
+
+        Repositext::Cli::Utils.read_files(
+          config.compute_glob_pattern(
+            options['base-dir'] || :content_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :at_extension
+          ),
+          options['file_filter'],
+          nil,
+          "Reading content AT files",
+          options.merge(
+            use_new_repositext_file_api: true,
+            content_type: content_type,
+          )
+        ) do |content_at_file|
+
+          file_count += 1
+          # We want to sync the foreign file to the current primary
+          # st_sync_commit.
+          # NOTE: This process updates the file level st_sync data for
+          # `st_sync_commit` and `st_sync_subtitles_to_review` for content_at_file.
+          sync_sts = Repositext::Process::Sync::Subtitles.new(
+            'config' => primary_config,
+            'primary_repository' => primary_repo,
+            'to-commit' => primary_repo_sync_commit
+          )
+          sync_sts.sync_foreign_file(content_at_file)
+
+        end
+      end
+
       def sync_test(options)
         # dummy method for testing
         puts 'sync_test'

@@ -147,6 +147,15 @@ class Repositext
 
         options['append_to_validation_report'] = true
         validate_subtitle_import(options.merge('run_options' => %w[post_import]))
+
+        if !config.setting(:is_primary_repo) && use_subtitle_sync_behavior
+          # We're in a foreign repo, we transfer any subtitle operations that
+          # have accumulated since the subtitle export.
+          # NOTE: This step has to occur after the post_import validation.
+          # Otherwise the validation would fail.
+          sync_subtitles_for_foreign_files(options)
+        end
+
       end
 
       def import_subtitle_tagging(options)

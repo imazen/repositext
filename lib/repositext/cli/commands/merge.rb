@@ -497,7 +497,6 @@ class Repositext
           content_at_file_name = Repositext::Utils::SubtitleFilenameConverter.convert_from_subtitle_import_to_repositext(
             subtitle_import_file_name.gsub(subtitle_import_base_dir, content_base_dir)
           )
-
           content_at_file = RFile::ContentAt.new(
             File.read(content_at_file_name),
             language,
@@ -542,23 +541,6 @@ class Repositext
                       'st_sync_subtitles_to_review' => {},
                     }
                   )
-                  # Transfer any subtitle operations that have accumulated since
-                  # the subtitle export.
-                  # NOTE: This process updates the file level st_sync data for
-                  # `st_sync_commit` and `st_sync_subtitles_to_review` for
-                  # content_at_file.
-                  if export_sync_commit != primary_repo_sync_commit
-                    primary_content_type = content_type.corresponding_primary_content_type
-                    primary_config = primary_content_type.config
-                    # We want to sync the foreign file to the current primary
-                    # st_sync_commit.
-                    sync_sts = Repositext::Process::Sync::Subtitles.new(
-                      'config' => primary_config,
-                      'primary_repository' => primary_repo,
-                      'to-commit' => primary_repo_sync_commit
-                    )
-                    sync_sts.sync_foreign_file(content_at_file)
-                  end
                 end
               end
             else
