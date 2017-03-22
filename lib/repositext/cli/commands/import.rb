@@ -40,8 +40,12 @@ class Repositext
         # )
         fix_normalize_trailing_newlines(options)
         copy_docx_import_to_content(options)
-        # Make sure that any newly created content AT files also have a data.json file.
-        fix_add_initial_data_json_file(options)
+        # Make sure that any newly created content AT files also have a
+        # data.json file.
+        # Deactivate st_sync for this new file by default
+        fix_add_initial_data_json_file(
+          options.merge('data_json_settings' => { 'st_sync_active' => false })
+        )
         fix_insert_record_mark_into_all_at_files(options)
         options['report_file'] ||= config.compute_glob_pattern(
           :content_dir, :validation_report_file, ''

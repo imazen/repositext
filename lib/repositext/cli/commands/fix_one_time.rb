@@ -89,6 +89,9 @@ class Repositext
       # Makes sure that every content AT file in the repo has a corresponding
       # data.json file.
       # This should be run once on all language repos
+      # @param options [Hash] accepts 'data_json_settings' key with a Hash
+      #   to determine any data that should be merged into the 'settings' key.
+      #   Keys must be stringified.
       def fix_add_initial_data_json_file(options)
         Repositext::Cli::Utils.read_files(
           config.compute_glob_pattern(
@@ -106,7 +109,10 @@ class Repositext
         ) do |content_at_file|
           # Calling #corresponding_data_json_file with (true) will create
           # it if it doesn't exist already.
-          content_at_file.corresponding_data_json_file(true)
+          djf = content_at_file.corresponding_data_json_file(true)
+          if options['data_json_settings']
+            djf.update_settings(options['data_json_settings'])
+          end
         end
       end
 
