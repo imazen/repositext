@@ -10,14 +10,14 @@ class Repositext
 
         # Finds an RFile given date_code and a content_type
         # @param date_code [String]
-        # @param extension [String]
+        # @param extension [String] with leading period
         # @param content_type [ContentType]
         # @return [RFile, Nil]
         def find_by_date_code(date_code, extension, content_type)
           file_path = Dir.glob(
             File.join(
               content_type.base_dir,
-              "content/**/*#{ date_code }_*.*"
+              "content/**/*#{ date_code }_*#{ extension }"
             )
           ).first
           return nil  if file_path.nil?
