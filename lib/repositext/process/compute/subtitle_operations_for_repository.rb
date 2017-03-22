@@ -190,10 +190,11 @@ class Repositext
             end
           }
 
-          # Then we add any files that have st_sync_required set to true
+          # Then we add any files that have st_sync_required set to true and are
+          # not in fwc already.
           @file_list.each { |content_at_filename|
             # Skip files that we have captured already
-            next  if fwc.any? { |soff| soff.content_at_file.filename == content_at_filename }
+            next  if fwc.any? { |soff| soff.content_at_file.repo_relative_path == content_at_filename }
             # Skip files that don't have st_sync_required set to true
             dj_filename = content_at_filename.sub(/\.at\z/, '.data.json')
             dj_file = Repositext::RFile::DataJson.new(
