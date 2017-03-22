@@ -111,7 +111,7 @@ class Repositext
           # it if it doesn't exist already.
           djf = content_at_file.corresponding_data_json_file(true)
           if options['data_json_settings']
-            djf.update_settings(options['data_json_settings'])
+            djf.update_settings!(options['data_json_settings'])
           end
         end
       end
