@@ -109,8 +109,7 @@ class Repositext
         ) do |content_at_file|
           # We first check to see if djf exists already. If so, we don't apply
           # initial_only_data_json_settings.
-          djf = content_at_file.corresponding_data_json_file(true)
-          if djf.nil?
+          if content_at_file.corresponding_data_json_file.nil?
             # djf does not exist. Create it by calling
             # `corresponding_data_json_file(true)`. We also apply any
             # `initial_only_data_json_settings`.
