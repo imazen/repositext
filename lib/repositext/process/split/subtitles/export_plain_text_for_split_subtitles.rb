@@ -17,7 +17,8 @@ class Repositext
                 "plain_text_for_st_autosplit",
                 "--content-type-name", content_at_file.content_type_name,
                 "--file-selector", "**/*#{ content_at_file.extract_date_code }*",
-                "--rtfile", File.join(content_at_file.content_type_base_dir, 'Rtfile')
+                "--rtfile", File.join(content_at_file.content_type_base_dir, 'Rtfile'),
+                "-g",
               ]
             )
           end
