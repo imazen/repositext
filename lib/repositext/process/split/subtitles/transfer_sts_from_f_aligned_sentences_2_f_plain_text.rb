@@ -79,8 +79,8 @@ class Repositext
             s = StringScanner.new(f_pt)
 
             # Prepare first iteration
-            f_s = working_f_ss.shift # Get next foreign sentence
-            f_s_conf = f_s_confs.shift # Get next foreign sentence confidence
+            f_s = working_f_ss.shift # Get first foreign sentence
+            f_s_conf = f_s_confs.shift # Get first foreign sentence confidence
             f_st_confs += [f_s_conf] * f_s.count('@') # Add a confidence value for each subtitle in sentence
             f_s_wo_st = f_s.gsub('@', '') # Get foreign sentence without subtitles
             get_next_foreign_sentence = false
@@ -114,18 +114,28 @@ class Repositext
                 end
                 new_f_pt << pn
               elsif(
-                (n_w = s.check(/[^\s…\(]*[\s…\(]?/)) &&
-                (n_w_regexp = Regexp.new(Regexp.escape(n_w.rstrip) + "\\s?")) &&
-                (f_s_wo_st =~ /\A#{ n_w_regexp }/)
+                # NOTE: LF Aligner converts certain unicode characters to regular
+                # ASCII chars. So far we have encountered the following cases:
+                #  * 0x00A0 => regular space
+                # In order to handle this, we need two regexes, one for sentences
+                # (_ss suffix, using ascii characters), and one for plain text
+                # (_pt suffix, using original unicode characters).
+                (n_w_pt = s.check(/[^\s…\(]*[\s…\(]?/)) &&
+                (
+                  n_w_ss = n_w_pt.gsub(/\u00A0/, ' ')
+                  n_w_regexp_pt = Regexp.new(Regexp.escape(n_w_pt.rstrip) + "\\s?")
+                  n_w_regexp_ss = Regexp.new(Regexp.escape(n_w_ss.rstrip) + "\\s?")
+                ) &&
+                (f_s_wo_st =~ /\A#{ n_w_regexp_ss }/)
               )
                 # The next (actual) sentence in f_s is not aligned with f_pt.
                 # This occurs when the sentence aligner has to merge sentences
                 # to make alignment work. The sentence may span across paragraph
                 # boundaries in f_pt. So we need to capture word by word:
-                # * Append n_w to new_f_pt
-                # * Advance string scanner to end of n_w
-                # * Remove n_w from f_s_wo_st
-                # * Remove n_w from f_s
+                # * Append n_w_pt to new_f_pt
+                # * Advance string scanner to end of n_w_pt
+                # * Remove n_w_ss from f_s_wo_st
+                # * Remove n_w_ss from f_s
                 # * Transfer any subtitles encountered in f_s
                 # * Track partial match mode
                 # We track partial_match_active to block complete matches
@@ -133,28 +143,36 @@ class Repositext
                 # can try a new complete match. Otherwise we'll get duplicate
                 # content.
                 partial_match_active = true # go into partial_match mode
-                # Check if f_s starts with subtitle and transfer it
-                if f_s =~ /\A@/
-                  # transfer sts we encounter in f_s
-                  new_f_pt << '@'
-                  # Remove st (and optional trailing whitespace) for f_s
-                  f_s.sub!(/\A@\s?/, '')
+                r = '' # container to collect string to be appended to new_f_pt
+
+                # Handle subtitles in f_s
+                if (num_sts_in_f_s = f_s.count('@')) > 0
+                  # Remove sts from f_s
+                  num_sts_in_f_s.times { f_s.sub!('@', '')}
+                  # Add sts to beginning of r
+                  r << '@' * num_sts_in_f_s
                 end
-                # Before I transfer n_w I recapture it using n_w_regexp which
-                # has an optional whitespace capture group added. This is
-                # necessary in cases where I have an elipsis (already part of n_w)
-                # followed by a \n. If I don't recapture, the \n will get lost.
-                new_f_pt << s.scan(n_w_regexp) # transfer n_w and advance string scanner position
-                f_s_wo_st.sub!(n_w_regexp, '') # remove n_w from f_s_wo_st
-                f_s.sub!(n_w_regexp, '') # remove n_w from f_s
+
+                # Before I transfer n_w_pt I recapture it using n_w_regexp_pt
+                # which has an optional whitespace capture group added.
+                # This is necessary in cases where I have an elipsis (already
+                # part of n_w_pt) followed by a \n. If I don't recapture, the \n
+                # will get lost.
+                r << s.scan(n_w_regexp_pt) # transfer n_w_pt and advance string scanner position
+                f_s_wo_st.sub!(n_w_regexp_ss, '') # remove n_w_ss from f_s_wo_st
+                f_s.sub!(n_w_regexp_ss, '') # remove n_w_ss from f_s
+
+                # Append r to new_f_pt
+                new_f_pt << r
 
                 if debug
-                  puts " - fas2fpt - partial match: #{ n_w.inspect }"
-                  puts "   rx:        #{ n_w_regexp.inspect }"
+                  puts " - fas2fpt - partial match: #{ n_w_ss.inspect }"
+                  puts "   rx:        #{ n_w_regexp_ss.inspect }"
                   puts "   f_s:       #{ f_s.inspect }"
                   puts "   f_s_wo_st: #{ f_s_wo_st.inspect }"
                   puts "   s.rest:    #{ s.rest[0,100].inspect }"
                 end
+
               elsif(ws = s.scan(/[ \n]/))
                 # space or newline, append to new_f_pt
                 if debug
@@ -163,9 +181,19 @@ class Repositext
                 new_f_pt << ws
               elsif partial_match_active && '' == f_s_wo_st
                 # We've consumed all words in f_s_wo_st, get next foreign sentence
+
+                # Check if there are still any subtitles in f_s and transfer them.
+                if f_s =~ /\A@+/
+                  # transfer sts we encounter in f_s
+                  new_f_pt << f_s[/\A@+/]
+                  # Remove sts (and optional trailing whitespace) from f_s
+                  f_s.sub!(/\A@+\s?/, '')
+                end
+
                 if debug
                   puts "   Finished partial match!"
                 end
+
                 get_next_foreign_sentence = true
                 partial_match_active = false
               elsif !get_next_foreign_sentence
@@ -178,7 +206,7 @@ class Repositext
                   # There are more sentences to process, get next one.
                   f_s = working_f_ss.shift # Get next foreign sentence
                   if debug
-                    puts "next f_s: #{ f_s.inspect }"
+                    puts "starting new f_s: #{ f_s.inspect }"
                   end
                   f_s_conf = f_s_confs.shift # Get next foreign sentence confidence
                   f_st_confs += [f_s_conf] * f_s.count('@') # Add a confidence value for each subtitle in sentence
@@ -191,7 +219,7 @@ class Repositext
               end
 
               if debug
-                puts "new_f_pt:  #{ new_f_pt[-250, 250].inspect }"
+                puts "new_f_pt tail:  #{ new_f_pt[-250, 250].inspect }"
               end
             end
 
@@ -235,7 +263,6 @@ class Repositext
                 end
 
                 # We look at text on the current line
-puts "prev_txt: #{ prev_txt.inspect }"
                 foll_txt = if(foll_stm_md = pt_line.match(/\A([^@]*)@/))
                   # Curr line has stm, capture text before first stm
                   foll_stm_md[1]
@@ -244,7 +271,6 @@ puts "prev_txt: #{ prev_txt.inspect }"
                 end
 
                 # Decide which stm to use
-puts "foll_txt: #{ foll_txt.inspect }"
                 matches_count = [prev_txt, foll_txt].compact.count
                 which_stm_to_use = if 0 == matches_count
                   raise "Handle this!"

@@ -5,12 +5,15 @@ class Repositext
 
     attr_reader :content_type, :contents, :filename, :language
 
+    # Optional content_type, without prefix
     delegate :corresponding_primary_content_type_base_dir,
              :corresponding_primary_content_type,
              :repository,
              to: :content_type,
              prefix: false,
              allow_nil: true
+    # Requires content_type, with prefix
+    delegate :base_dir, :config, :name, to: :content_type, prefix: true
 
     # Returns a relative path from source_path to target_path.
     # @param source_path [String] absolute path

@@ -16,6 +16,7 @@ class Repositext
       class Subtitles
 
         include AlignSentences
+        include ExportPlainTextForSplitSubtitles
         include TransferStsFromFAlignedSentences2FPlainText
         include TransferStsFromFPlainText2ForeignContentAt
         include TransferStsFromPAlignedSentences2FAlignedSentences
@@ -29,13 +30,39 @@ class Repositext
           @options = {
             remove_existing_sts: false
           }.merge(options)
-
           @p_content_at_file = p_content_at_file
           @f_content_at_file = f_content_at_file
         end
 
         # @return [Outcome] with new foreign content AT file contents as result.
         def split
+          # Skip this foreign file if primary file requires st_sync
+          if @p_content_at_file.read_file_level_data['st_sync_required']
+            return Outcome.new(
+              false,
+              nil,
+              ["Cannot autosplit this file. The corresponding primary file requires a subtitle sync first!"]
+            )
+          end
+          # First delete all files in primary and foreign st_autosplit directories.
+          # This is necessary in particular for the LF Aligner output file.
+          # LF Aligner just appends to an existing file rather than overwriting it.
+          # LF Aligner also creates a bunch of temporary directories.
+          # So to be safe, we just delete everything in the st_autosplit directories.
+          # First primary
+          Process::Delete::DirectoryContents.delete(
+            @p_content_at_file.content_type_config.base_dir(:autosplit_subtitles_dir)
+          )
+          # Then foreign
+          Process::Delete::DirectoryContents.delete(
+            @f_content_at_file.content_type_config.base_dir(:autosplit_subtitles_dir)
+          )
+
+          # Export foreign plain_text file for splitting subtitles
+          export_plain_text_for_split_subtitles(@f_content_at_file)
+          # Export primary plain_text file for splitting subtitles
+          export_plain_text_for_split_subtitles(@p_content_at_file)
+
           # Align sentences in input files
           as_o = align_sentences(@p_content_at_file, @f_content_at_file)
           return as_o  if !as_o.success?

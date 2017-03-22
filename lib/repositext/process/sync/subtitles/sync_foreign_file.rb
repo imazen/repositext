@@ -35,11 +35,7 @@ class Repositext
             elsif :autosplit == fgc_o.result[:source]
               # This file requires autosplit. After autosplit, file will be
               # synced to primary repo's current @to_git_commit.
-              process_unprocessable(
-                f_content_at_file,
-                "Autosplit is not implemented yet as part of sync subtitles."
-              )
-              # process_autosplit(f_content_at_file, @to_git_commit)
+              process_autosplit(f_content_at_file, @to_git_commit)
             else
               # This file can't be processed
               process_unprocessable(f_content_at_file, fgc_o.messages.join(' '))
@@ -86,12 +82,12 @@ class Repositext
           # @param st_sync_commit [String] the full commit SHA1 string.
           #   Will be used as file's st_sync_commit.
           def process_autosplit(f_content_at_file, st_sync_commit)
-            print "     - source: :autosplit"
+            puts "     - source: :autosplit"
 
             # Autosplit subtitles
             ss_o = Process::Split::Subtitles.new(
-              f_content_at_file,
-              f_content_at_file.corresponding_primary_file
+              f_content_at_file.corresponding_primary_file,
+              f_content_at_file
             ).split
 
             if ss_o.success?
@@ -99,12 +95,9 @@ class Repositext
               f_content_at_file.update_contents!(ss_o.result)
 
               # Update foreign st_sync related data
-              existing_data = f_content_at_file.read_file_level_data
               f_content_at_file.update_file_level_data!(
-                existing_data.merge({
-                  'st_sync_commit' => st_sync_commit,
-                  'st_sync_subtitles_to_review' => { 'all' => 'autosplit' },
-                })
+                'st_sync_commit' => st_sync_commit,
+                'st_sync_subtitles_to_review' => { 'all' => 'autosplit' },
               )
 
               @successful_files << f_content_at_file.repo_relative_path(true)

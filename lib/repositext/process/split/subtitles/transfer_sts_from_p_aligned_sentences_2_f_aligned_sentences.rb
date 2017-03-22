@@ -132,8 +132,14 @@ class Repositext
           # @param f_S [String] foreign sentence without subtitles
           # @return [Outcome] with Array of foreign sentence and confidence as result.
           def snap_subtitles_to_punctuation_signature(p_s, f_s)
-            p_segs = p_s.scan(/[^#{ regex_punctuation_chars }]+(?:[#{ regex_punctuation_chars }]\s?|\s?\z)/)
-            f_segs = f_s.scan(/[^#{ regex_punctuation_chars }]+(?:[#{ regex_punctuation_chars }]\s?|\s?\z)/)
+            # Match text up to and including
+            #   * next punctuation character and optional trailing space OR
+            #   * optional trailing space and end of string
+            # Note that there may be sequences of punctuation characters with
+            # no other text between them, e.g., "), ", so we need to make the
+            # text before the punctuation character optional.
+            p_segs = p_s.scan(/[^#{ regex_punctuation_chars }]*(?:[#{ regex_punctuation_chars }]\s?|\s?\z)/)
+            f_segs = f_s.scan(/[^#{ regex_punctuation_chars }]*(?:[#{ regex_punctuation_chars }]\s?|\s?\z)/)
             if p_segs.length != f_segs.length
               pp p_segs
               pp f_segs
@@ -177,7 +183,8 @@ class Repositext
             # Re-build foreign sentence with subtitle_marks added
             r = foreign_chars.join
             # Move subtitle marks to beginning of word if they are inside a word
-            r.gsub(/(\S+)@/, '@\1')
+            r.gsub!(/(\w+)@(\w+)/, '@\1\2')
+            r
           end
 
 
@@ -191,6 +198,9 @@ class Repositext
             # the corresponding foreign subtitle_mark.
             p_captions = p_s.split(/(?=@)/)
             f_captions = new_f_s_raw.split(/(?=@)/)
+            if p_captions.length != f_captions.length
+              raise ArgumentError.new("Mismatch in captions count: p_captions: #{ p_captions.length }, f_captions: #{ f_captions.length }.")
+            end
             sentence_confidence = 1.0
 
             # Set max_snap_distance based on total sentence length. Range for
@@ -221,7 +231,7 @@ class Repositext
                 # Detect nearby foreign punctuation
                 leading_punctuation, txt_between_punctuation_and_stm = if(
                   before_md = prev_f_c.match(
-                    /([#{ regex_punctuation_chars }])\s?([^#{ regex_punctuation_chars }]{1,#{ max_snap_distance }}\s*)\z/
+                    /([#{ regex_punctuation_chars }]+)\s?([^#{ regex_punctuation_chars }]{0,#{ max_snap_distance }}\s*)\z/
                   )
                 )
                   # Previous foreign caption has punctuation shortly before
@@ -232,7 +242,7 @@ class Repositext
                 end
                 txt_between_stm_and_punctuation, trailing_punctuation = if(
                   after_md = curr_f_c.match(
-                    /\A@([^#{ regex_punctuation_chars }]{,#{ max_snap_distance }})([#{ regex_punctuation_chars }]\s*)/
+                    /\A@([^#{ regex_punctuation_chars }]{,#{ max_snap_distance }})([#{ regex_punctuation_chars }]+\s*)/
                   )
                 )
                   # Current foreign caption has punctuation shortly after
@@ -261,10 +271,10 @@ class Repositext
                 elsif 2 == matches_count
                   # We found nearby punctuation both before and after, use the
                   # same punctuation as primary (if different), or the closer one.
-                  if leading_punctuation == primary_punctuation && trailing_punctuation_str != primary_punctuation
+                  if leading_punctuation.index(primary_punctuation) && !trailing_punctuation_str.index(primary_punctuation)
                     # Only leading punctuation equals primary
                     :before
-                  elsif leading_punctuation != primary_punctuation && trailing_punctuation_str == primary_punctuation
+                  elsif !leading_punctuation.index(primary_punctuation) && trailing_punctuation_str.index(primary_punctuation)
                     # Only trailing punctuation equals primary
                     :after
                   elsif txt_between_punctuation_and_stm.length < txt_between_stm_and_punctuation.length

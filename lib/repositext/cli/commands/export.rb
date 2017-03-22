@@ -115,7 +115,7 @@ class Repositext
         end
       end
 
-      # #xport content AT files in `/content` to plain text for autosplitting
+      # Export content AT files in `/content` to plain text for autosplitting
       def export_plain_text_for_st_autosplit(options)
         input_base_dir = config.compute_base_dir(options['base-dir'] || :content_dir)
         input_file_selector = config.compute_file_selector(options['file-selector'] || :all_files)

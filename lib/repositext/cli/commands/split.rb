@@ -8,28 +8,18 @@ class Repositext
       # Updates the subtitle_mark character positions in *.subtitle_markers.csv
       # in /content
       def split_subtitles(options)
+        # Make sure we're not in primary repo
         if content_type.is_primary_repo
-          raise ArgumentError.new("split_subtitles only works on foreign repositories.")
+          raise ArgumentError.new("the `split subtitles` command only works on foreign repositories.")
         end
-
-        # First delete all files in st_autosplit directory. This is necessary
-        # in particular for the LF Aligner output file. LF Aligner just
-        # appends to an existing file rather than overwriting it.
-        # LF Aligner also creates a bunch of temporary directories.
-        # So to be safe, we just delete everything in the st_autosplit directory.
-        delete_directory_contents(
-          directory_path: config.base_dir(:autosplit_subtitles_dir)
-        )
+        # Make sure that 'file-selector' option is given.
+        if '' == options['file-selector'].to_s.strip
+          raise(ArgumentError.new("You must provide the file-selector command line option for this command!"))
+        end
 
         # Compute primary sync_commit
         primary_repo = content_type.corresponding_primary_content_type.repository
         primary_repo_sync_commit = primary_repo.read_repo_level_data['st_sync_commit']
-
-        # Export all _foreign_ plain_text_for_st_autosplit files
-        export_plain_text_for_st_autosplit(options)
-
-        # Export all _primary_ plain_text_for_st_autosplit files
-        export_primary_plain_text_for_st_autosplit(options)
 
         # Update foreign content AT files with subtitles
         files_that_could_not_be_auto_split = []
@@ -48,11 +38,6 @@ class Repositext
         ) do |f_content_at_file|
           # Skip this foreign file if primary file requires st_sync
           p_content_at_file = f_content_at_file.corresponding_primary_file
-          if p_content_at_file.read_file_level_data['st_sync_required']
-            files_that_could_not_be_auto_split << f_content_at_file
-            next  [Outcome.new(false, nil, ["Cannot autosplit this file. The corresponding primary file requires a subtitle sync first!"])]
-          end
-
           o = Repositext::Process::Split::Subtitles.new(
             p_content_at_file,
             f_content_at_file,
@@ -63,7 +48,7 @@ class Repositext
           if o.success
             f_content_at_file.update_file_level_data!(
               'st_sync_commit' => primary_repo_sync_commit,
-              'st_sync_autosplit' => true
+              'st_sync_subtitles_to_review' => { 'all' => 'autosplit' }
             )
           end
           new_c_at, st_confs = o.result

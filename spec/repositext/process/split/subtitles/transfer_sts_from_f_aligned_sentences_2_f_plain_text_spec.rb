@@ -72,6 +72,79 @@ class Repositext
                   [1],
                 ],
               ],
+              [
+                'comma after closing parens',
+                [
+                  '@foreign sentence (para1), @foreign sentence para2.',
+                ],
+                "foreign sentence (para1), foreign sentence para2.",
+                [1,1],
+                [
+                  "@foreign sentence (para1), @foreign sentence para2.",
+                  [1,1],
+                ],
+              ],
+              [
+                'Subtitle mark at the end of previous sentence',
+                [
+                  "@word word, word word.@",
+                  "“word!” word",
+                ],
+                "244 word word, word word. “word!” word",
+                [1,1],
+                [
+                  "244 @word word, word word.@ “word!” word",
+                  [1,1],
+                ],
+              ],
+              [
+                'Plain text contains no-break space that was removed from aligned sentences by aligner',
+                [
+                  "@word word.",
+                ],
+                "word\u00A0word.",
+                [1],
+                [
+                  "@word\u00A0word.",
+                  [1],
+                ],
+              ],
+              [
+                'Run of multiple stms at beginning of line',
+                [
+                  "@@@word word.",
+                ],
+                "word word.",
+                [1,1,1],
+                [
+                  "@@@word word.",
+                  [1,1,1],
+                ],
+              ],
+              [
+                'Run of multiple stms in the middle of line',
+                [
+                  "word @@@word.",
+                ],
+                "word word.",
+                [1,1,1],
+                [
+                  "word @@@word.",
+                  [1,1,1],
+                ],
+              ],
+              [
+                'Run of multiple stms at end of line',
+                [
+                  "word word.@@@",
+                ],
+                "word word.",
+                [1,1,1],
+                [
+                  "word word.@@@",
+                  [1,1,1],
+                ],
+              ],
             ].each do |(desc, f_ss, f_pt, f_s_confs, xpect)|
               it "handles #{ desc }" do
                 default_split_instance.transfer_sts_from_sentences_to_plain_text(
