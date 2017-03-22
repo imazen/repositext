@@ -111,11 +111,20 @@ class Repositext
         )
       end
 
-      # Runs `rt report report_files_that_dont_have_st_sync_active` on all content repos
+      # Runs `rt report files_that_dont_have_st_sync_active` on all content repos
       def git_repo_report_files_that_dont_have_st_sync_active(options)
         repos_parent_path = File.expand_path('..', Dir.pwd)
         RepositorySet.new(repos_parent_path).report_files_that_dont_have_st_sync_active(
           :all_content_repos,
+          content_type
+        )
+      end
+
+      # Runs `rt report files_with_subtitles_that_require_review` on all foreign content repos
+      def git_repo_report_files_with_subtitles_that_require_review(options)
+        repos_parent_path = File.expand_path('..', Dir.pwd)
+        RepositorySet.new(repos_parent_path).report_files_with_subtitles_that_require_review(
+          :foreign_content_repos,
           content_type
         )
       end

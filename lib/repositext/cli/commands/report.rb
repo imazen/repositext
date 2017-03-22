@@ -137,7 +137,7 @@ class Repositext
         $stderr.puts "Found #{ subtitle_marks_count } subtitle_marks in #{ file_count } files at #{ Time.now.to_s }."
       end
 
-      # Reports all content AT files that don't have st_sync_active
+      # Reports all content AT files that don't have st_sync_active.
       def report_files_that_dont_have_st_sync_active(options)
         ftdhssa = []
         total_file_count = 0
@@ -173,8 +173,51 @@ class Repositext
         $stderr.puts summary_line
       end
 
-      # Reports all content AT files that require an st_sync
+      # Reports all foreign files with subtitles that require review.
+      def report_files_with_subtitles_that_require_review(options)
+        if config.setting(:is_primary_repo)
+          raise "This command can only be used in foreign repos."
+        end
+
+        fwstrr = []
+        total_file_count = 0
+
+        Repositext::Cli::Utils.read_files(
+          config.compute_glob_pattern(
+            options['base-dir'] || :content_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :json_extension
+          ),
+          /\.data\.json\z/,
+          nil,
+          "Reading data.json files",
+          options.merge(
+            use_new_repositext_file_api: true,
+            content_type: content_type,
+          )
+        ) do |data_json_file|
+          total_file_count += 1
+          rrfn = data_json_file.repo_relative_path(true)
+          if(st_cnt = (data_json_file.read_data['st_sync_subtitles_to_review'] || {}).keys.count) > 0
+            fwstrr << [rrfn, st_cnt]
+            $stderr.puts "   - has #{ st_cnt } subtitles to review".color(:blue)
+          end
+        end
+        if fwstrr.any?
+          $stderr.puts "\n\n#{ fwstrr.length } files that have subtitles requiring review:"
+          $stderr.puts '-' * 80
+          fwstrr.each { |(fn, cnt)| $stderr.puts " * #{ fn } (#{ cnt })" }
+          $stderr.puts
+        end
+        summary_line = "Found #{ fwstrr.length } of #{ total_file_count } files that have subtitles requiring review at #{ Time.now.to_s }."
+        $stderr.puts summary_line
+      end
+
+      # Reports all primary content AT files that require an st_sync.
       def report_files_that_have_st_sync_required(options)
+        if !config.setting(:is_primary_repo)
+          raise "This command can only be used in the primary repo."
+        end
         ftrss = []
         total_file_count = 0
 

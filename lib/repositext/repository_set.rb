@@ -283,6 +283,10 @@ class Repositext
       run_repositext_command(repo_set_spec, "rt #{ content_type.name } report files_that_dont_have_st_sync_active -g")
     end
 
+    def report_files_with_subtitles_that_require_review(repo_set_spec, content_type)
+      run_repositext_command(repo_set_spec, "rt #{ content_type.name } report files_with_subtitles_that_require_review -g")
+    end
+
     # Run `report quotes_details` in all repositories
     def report_quotes_details(repo_set_spec, content_type)
       run_repositext_command(repo_set_spec, "rt #{ content_type.name } report quotes_details")
