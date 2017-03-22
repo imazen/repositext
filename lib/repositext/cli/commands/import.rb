@@ -44,7 +44,9 @@ class Repositext
         # data.json file.
         # Deactivate st_sync for this new file by default
         fix_add_initial_data_json_file(
-          options.merge('data_json_settings' => { 'st_sync_active' => false })
+          options.merge(
+            'initial_only_data_json_settings' => { 'st_sync_active' => false }
+          )
         )
         fix_insert_record_mark_into_all_at_files(options)
         options['report_file'] ||= config.compute_glob_pattern(
