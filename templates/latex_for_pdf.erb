@@ -50,6 +50,7 @@
   % This language requires polyglossia for correct font rendering
   \usepackage{polyglossia}
   \setdefaultlanguage{<%= @polyglossia_default_language %>}
+  \setotherlanguage{english}
 <% end %>
 
 % set leading for document
@@ -504,6 +505,47 @@
   }
   {%
     \end{spacing}
+    \par
+    <% if @id_extra_language_info %>
+      \RtIdExtraLanguageInfo
+    <% end %>
+    <% if !@is_primary_repo %>
+      \RtIdLanguage
+    <% end %>
+    \RtIdCopyrightYear
+    \RtIdWriteToSecondary
+    \RtIdAddressSecondaryFirst
+    \RtIdAddressSecondarySecond
+    \RtIdAddressSecondaryThird
+    \RtIdAddressSecondaryEmail
+    \RtIdWriteToPrimary
+    \RtIdAddressPrimaryFirst
+    \RtIdAddressPrimarySecond
+    \RtIdWebMaybePhone
+    <% if @has_id_page %>
+      \par
+    <% else %>
+      \clearpage % This clearpage will clear all floats that may have been pushed to the end of the document. This will ensure that no extra vertical space will occur.
+    <% end %>
+  }
+
+% environment to render idparagraph paragraphs
+\newenvironment{RtIdParagraphEnglish}
+  {%
+    <% if @is_primary_repo %>
+      \setlength{\parskip}{4.022pt}
+    <% else %>
+      \setlength{\parskip}{2.991pt}
+    <% end %>
+    \setlength{\lineskiplimit}{-100pt} % This setting keeps latex from automatically stretching linespacing when characters may overlap.
+    \setlength{\parindent}{0pt}
+    \begin{english}
+    \begin{spacing}{<%= @id_paragraph_line_spacing %>}
+      \fontsize{8pt}{10.5pt}\selectfont
+  }
+  {%
+    \end{spacing}
+    \end{english}
     \par
     <% if @id_extra_language_info %>
       \RtIdExtraLanguageInfo

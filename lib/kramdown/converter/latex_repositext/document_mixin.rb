@@ -514,6 +514,7 @@ module Kramdown
 
           # header
           vcp = "\\clearpage\n"
+          vcp << "\\begin{english}"
           vcp << "\\begin{RtSubTitle}\nVersion Control Info\n\\end{RtSubTitle}\n"
           vcp << "\\relscale{0.66}\n"
           # commits table
@@ -539,6 +540,7 @@ module Kramdown
             "most recent git commits that affected the file ",
             "#{ escape_latex_text(source_file_name.inspect) }.}\n\n",
           ].join
+          vcp << "\\end{english}"
           vcp
         end
 
