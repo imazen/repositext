@@ -177,6 +177,10 @@ module Kramdown
               # render in RtIdParagraph environment
               before.prepend("\\begin{RtIdParagraph}\n")
               after << "\n\\end{RtIdParagraph}"
+            elsif el.has_class?('id_paragraph_english')
+              # render in RtIdParagraph environment
+              before.prepend("\\begin{RtIdParagraphEnglish}\n")
+              after << "\n\\end{RtIdParagraphEnglish}"
             elsif el.has_class?('id_title1')
               # render in RtIdTitle1 environment
               before.prepend("\\begin{RtIdTitle1}\n")
