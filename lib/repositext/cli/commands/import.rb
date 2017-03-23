@@ -271,6 +271,14 @@ class Repositext
         )
         fix_normalize_trailing_newlines(options)
         move_staging_to_content(options)
+        # Make sure that any newly created content AT files also have a
+        # data.json file.
+        # Deactivate st_sync for this new file by default
+        fix_add_initial_data_json_file(
+          options.merge(
+            'initial_only_data_json_settings' => { 'st_sync_active' => false }
+          )
+        )
         options['report_file'] ||= config.compute_glob_pattern(
           :content_dir, :validation_report_file, ''
         )
