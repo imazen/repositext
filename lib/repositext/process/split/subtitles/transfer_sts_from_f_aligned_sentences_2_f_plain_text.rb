@@ -45,7 +45,7 @@ class Repositext
 
 
 
-            f_p_pt_w_st_a_c_o = post_process_plain_text(
+            f_p_pt_w_st_a_c_o = post_process_f_plain_text(
               raw_f_pt_w_st,
               f_st_confs
             )
@@ -198,6 +198,7 @@ class Repositext
                 partial_match_active = false
               elsif !get_next_foreign_sentence
                 puts "f_s:       #{ f_s.inspect }"
+                puts "f_s_wo_st: #{ f_s_wo_st.inspect }"
                 raise "Handle this: #{ s.rest[0,20].inspect }"
               end
 
@@ -219,7 +220,7 @@ class Repositext
               end
 
               if debug
-                puts "new_f_pt tail:  #{ new_f_pt[-250, 250].inspect }"
+                puts "new_f_pt tail:  #{ new_f_pt[-[250,new_f_pt.length].min, 250].inspect }"
               end
             end
 
@@ -229,7 +230,7 @@ class Repositext
           # @param raw_f_pt [String] the raw foreign plain text with subtitles.
           # @param f_st_confs [Array<Float>] Array with foreign subtitle confidences.
           # @return [Outcome] with foreign plain text _with_ subtitles and confidences as result.
-          def post_process_plain_text(raw_f_pt, f_st_confs)
+          def post_process_f_plain_text(raw_f_pt, f_st_confs)
             # Fix any paragraphs that don't start with a subtitle.
             p_f_pt_lines = []
             raw_f_pt.split("\n").each_with_index { |pt_line, idx|
@@ -291,7 +292,7 @@ class Repositext
                 when :previous
                   # Remove last subtitle mark from previous line and prepend it
                   # to current line.
-                  prev_line.sub!("@#{ prev_txt }", prev_txt)
+                  prev_line.sub!(/@#{ prev_txt }\z/, prev_txt)
                   pt_line.prepend('@')
                 when :following
                   # Move first stm to beginning of line
