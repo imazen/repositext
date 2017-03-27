@@ -26,7 +26,7 @@ class Repositext
               __FILE__
             )
             output_filename = f_input_filename.sub(/\.txt\z/, '.aligned.txt')
-            cmd = [
+            lf_aligner_cmd = [
               lf_aligner_script_path,
               %(--filetype="t"),
               %(--infiles="#{ p_input_filename }","#{ f_input_filename }"),
@@ -36,8 +36,7 @@ class Repositext
               %(--review="n"),
               %(--tmx="n"),
             ].join(' ')
-            `#{ cmd }`
-
+            stdout_and_stderr_str, status = Open3.capture2e(lf_aligner_cmd)
   # TODO: check successful result (using lf_aligner console output)
 
             # Read aligned sentences back

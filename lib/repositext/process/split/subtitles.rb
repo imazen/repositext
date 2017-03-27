@@ -44,6 +44,8 @@ class Repositext
               ["Cannot autosplit this file. The corresponding primary file requires a subtitle sync first!"]
             )
           end
+
+          puts "   - Splitting subtitles".color(:blue)
           # First delete all files in primary and foreign st_autosplit directories.
           # This is necessary in particular for the LF Aligner output file.
           # LF Aligner just appends to an existing file rather than overwriting it.
@@ -109,7 +111,7 @@ class Repositext
         end
 
         def debug
-          true
+          false
         end
       end
     end
