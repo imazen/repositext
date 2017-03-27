@@ -292,11 +292,11 @@ class Repositext
                 when :previous
                   # Remove last subtitle mark from previous line and prepend it
                   # to current line.
-                  prev_line.sub!(/@#{ prev_txt }\z/, prev_txt)
+                  prev_line.sub!(/@#{ Regexp.escape(prev_txt) }\z/, prev_txt)
                   pt_line.prepend('@')
                 when :following
                   # Move first stm to beginning of line
-                  pt_line.sub!("#{ foll_txt }@", "@#{ foll_txt }")
+                  pt_line.sub!(/\A#{ Regexp.escape(foll_txt) }@/, "@#{ foll_txt }")
                 else
                   raise "Handle this!"
                 end
