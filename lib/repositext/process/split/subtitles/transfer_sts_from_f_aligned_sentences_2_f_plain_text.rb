@@ -139,6 +139,12 @@ class Repositext
                   puts " - pn match"
                 end
                 new_f_pt << pn
+              elsif(ws = s.scan(/[ \n]/))
+                # space or newline, append to new_f_pt
+                if debug
+                  puts " - whitespace match"
+                end
+                new_f_pt << ws
               elsif(
                 # NOTE: LF Aligner converts certain unicode characters to regular
                 # ASCII chars. So far we have encountered the following cases:
@@ -177,7 +183,7 @@ class Repositext
                 # Handle subtitles in f_s
                 if (num_sts_in_f_s = f_s.count('@')) > 0
                   # Remove sts from f_s
-                  num_sts_in_f_s.times { f_s.sub!('@', '')}
+                  f_s.gsub!('@', '')
                   # Add sts to beginning of r
                   r << '@' * num_sts_in_f_s
                 end
@@ -202,12 +208,6 @@ class Repositext
                   puts "   s.rest:    #{ s.rest[0,100].inspect }"
                 end
 
-              elsif(ws = s.scan(/[ \n]/))
-                # space or newline, append to new_f_pt
-                if debug
-                  puts " - whitespace match"
-                end
-                new_f_pt << ws
               elsif partial_match_active && '' == f_s_wo_st
                 # We've consumed all words in f_s_wo_st, get next foreign sentence
 
