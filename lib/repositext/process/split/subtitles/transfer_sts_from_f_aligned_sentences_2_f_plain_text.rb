@@ -120,11 +120,11 @@ class Repositext
                 # In order to handle this, we need two regexes, one for sentences
                 # (_ss suffix, using ascii characters), and one for plain text
                 # (_pt suffix, using original unicode characters).
-                (n_w_pt = s.check(/[^\s…\(]*[\s…\(]?/)) &&
+                (n_w_pt = s.check(/[^[:space:]…\(]*[[:space:]…\(]?/)) &&
                 (
                   n_w_ss = n_w_pt.gsub(/\u00A0/, ' ')
-                  n_w_regexp_pt = Regexp.new(Regexp.escape(n_w_pt.rstrip) + "\\s?")
-                  n_w_regexp_ss = Regexp.new(Regexp.escape(n_w_ss.rstrip) + "\\s?")
+                  n_w_regexp_pt = Regexp.new(Regexp.escape(n_w_pt.rstrip) + "[[:space:]]?")
+                  n_w_regexp_ss = Regexp.new(Regexp.escape(n_w_ss.rstrip) + "[[:space:]]?")
                 ) &&
                 (f_s_wo_st =~ /\A#{ n_w_regexp_ss }/)
               )
@@ -187,7 +187,7 @@ class Repositext
                   # transfer sts we encounter in f_s
                   new_f_pt << f_s[/\A@+/]
                   # Remove sts (and optional trailing whitespace) from f_s
-                  f_s.sub!(/\A@+\s?/, '')
+                  f_s.sub!(/\A@+[[:space:]]?/, '')
                 end
 
                 if debug
