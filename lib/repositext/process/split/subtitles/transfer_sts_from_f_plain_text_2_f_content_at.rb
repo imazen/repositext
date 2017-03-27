@@ -14,6 +14,8 @@ class Repositext
           #   subtitle_marks that already exist in f_cat.
           # @return [Outcome] with new content AT with subtitles and subtitle confidences as result.
           def transfer_sts_from_f_plain_text_2_f_content_at(f_pt, f_cat, f_st_confs, remove_existing_sts)
+            puts "transfer_sts_from_f_plain_text_2_f_content_at".color(:blue)  if debug
+
             if f_pt.count('@') != f_st_confs.length
               raise ArgumentError.new("Mismatch in subtitle (#{ f_pt.count('@') }) and confidence (#{ f_st_confs.length }) counts!")
             end
@@ -22,6 +24,14 @@ class Repositext
             cat_wo_id, id_page = Repositext::Utils::IdPageRemover.remove(f_cat)
             prepared_pt = pre_process_plain_text(f_pt)
             prepared_cat = pre_process_content_at(cat_wo_id, remove_existing_sts)
+
+            if debug
+              puts "prepared_pt:"
+              puts prepared_pt
+              puts
+              puts "prepared_cat:"
+              puts prepared_cat
+            end
 
             # Use suspension to transfer subtitle_marks from plain_text to content AT
             f_cat_w_st = Suspension::TokenReplacer.new(

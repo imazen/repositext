@@ -43,14 +43,40 @@ class Repositext
 
             validate_that_no_plain_text_content_was_changed(f_pt, raw_f_pt_w_st)
 
-
-
             f_p_pt_w_st_a_c_o = post_process_f_plain_text(
               raw_f_pt_w_st,
               f_st_confs
             )
             return f_p_pt_w_st_a_c_o  if !f_p_pt_w_st_a_c_o.success?
             f_p_pt_w_st, f_st_confs = f_p_pt_w_st_a_c_o.result
+
+            if debug
+              puts
+              puts "comparing foreign captions".color(:red)
+              f_ss_captions = f_ss.map { |e| e.split(/(?=@)/) }.flatten.map(&:strip)
+              f_pt_captions = f_p_pt_w_st.split(/(?=@)/).map(&:strip)
+              while f_ss_captions.any? || f_pt_captions.any?
+                f_ss_caption = ''
+                f_pt_caption = ''
+                f_ss_caption = f_ss_captions.shift  until (f_ss_caption.nil? || f_ss_caption =~ /\A@/)
+                f_pt_caption = f_pt_captions.shift  until (f_pt_caption.nil? || f_pt_caption =~ /\A@/)
+                puts f_ss_caption.inspect
+                puts f_pt_caption.inspect
+                # Remove @, whitespace and digits
+                f_ss_matching = (f_ss_caption || '').gsub(/[@\s\d]/, '')
+                f_pt_matching = (f_pt_caption || '').gsub(/[@\s\d]/, '')
+                max_len = [f_ss_matching.length, f_pt_matching.length, 10].min
+                if f_ss_matching[0,max_len] != f_pt_matching[0,max_len]
+                  puts "  captions have differences".color(:red)
+                end
+                puts
+              end
+              f_ss_st_count = f_ss.inject(0) { |m,e| m += e.count('@'); m }
+              f_p_pt_w_st_st_count = f_p_pt_w_st.count('@')
+              if f_ss_st_count != f_p_pt_w_st_st_count
+                raise "Mismatch in subtitle counts: f_ss has #{ f_ss_st_count }, f_p_pt_w_st has #{ f_p_pt_w_st_st_count }"
+              end
+            end # debug
 
             validate_that_no_plain_text_content_was_changed(f_pt, f_p_pt_w_st)
             validate_same_number_of_sts_in_as_and_pt(f_ss, f_p_pt_w_st)
@@ -124,7 +150,10 @@ class Repositext
                 (
                   n_w_ss = n_w_pt.gsub(/\u00A0/, ' ')
                   n_w_regexp_pt = Regexp.new(Regexp.escape(n_w_pt.rstrip) + "[[:space:]]?")
+                  puts "n_w_regexp_pt: #{ n_w_regexp_pt.inspect }"  if debug
                   n_w_regexp_ss = Regexp.new(Regexp.escape(n_w_ss.rstrip) + "[[:space:]]?")
+                  puts "n_w_regexp_ss: #{ n_w_regexp_ss.inspect }"  if debug
+                  true
                 ) &&
                 (f_s_wo_st =~ /\A#{ n_w_regexp_ss }/)
               )
@@ -232,17 +261,21 @@ class Repositext
           # @return [Outcome] with foreign plain text _with_ subtitles and confidences as result.
           def post_process_f_plain_text(raw_f_pt, f_st_confs)
             # Fix any paragraphs that don't start with a subtitle.
+            puts "fas2fpt: post_process_f_plain_text"  if debug
+
             p_f_pt_lines = []
             raw_f_pt.split("\n").each_with_index { |pt_line, idx|
-
+              puts "  pt_line: #{ pt_line.inspect }"  if debug
               # Skip any header lines
               if pt_line =~ /\A\#/
                 # Leave line as is (we need the header prefix later)
+                puts "   * Header, leave as is"  if debug
                 p_f_pt_lines << pt_line
                 next
               end
               # Skip horizontal rule lines
               if "* * *" == pt_line
+                puts "   * Horizontal rule, leave as is"  if debug
                 p_f_pt_lines << pt_line
                 next
               end
@@ -253,17 +286,19 @@ class Repositext
               # If line still doesn't start with subtitle mark, move it there
               # from somewhere else (the previous line, or a later stm on current)
               if pt_line !~ /\A@/
+                puts "   * pt_line doesn't start with subtitle mark"  if debug
                 prev_line = p_f_pt_lines[idx - 1]
-
                 # Line doesn't start with subtitle_mark.
                 # Move closest subtitle_mark to beginning of line.
+
+                # Look for closest stm on previous line
                 prev_txt = if(prev_stm_md = prev_line.match(/@([^@]*)\z/))
                   prev_stm_md[1]
                 else
                   nil
                 end
 
-                # We look at text on the current line
+                # Look for closest stm on current line
                 foll_txt = if(foll_stm_md = pt_line.match(/\A([^@]*)@/))
                   # Curr line has stm, capture text before first stm
                   foll_stm_md[1]
@@ -284,6 +319,7 @@ class Repositext
                 else
                   raise "Handle this!"
                 end
+                puts "     * which_stm_to_use: #{ which_stm_to_use.inspect }"  if debug
 
                 # Move chosen stm
                 case which_stm_to_use
@@ -320,6 +356,7 @@ class Repositext
               # "word.@) word" => "word.) @word"
               pt_line.gsub!(/@\) (?=\w)/, ') @')
 
+              puts "  new pt_line: #{ pt_line.inspect }"  if debug
               p_f_pt_lines << pt_line
             }
 
