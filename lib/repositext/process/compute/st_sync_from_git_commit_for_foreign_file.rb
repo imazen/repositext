@@ -90,17 +90,8 @@ class Repositext
               from_git_commit: nil,
               source: :autosplit
             },
-            ['File requires autosplit which is not implemented yet.']
+            ['File requires autosplit.']
           )
-          # TODO: Return successful outcome once we have autosplit implemented
-          # Outcome.new(
-          #   true,
-          #   {
-          #     from_git_commit: nil,
-          #     source: :autosplit
-          #   },
-          #   ["This file has no subtitles and requires an initial subtitle autosplit first before subtitles can be synced."]
-          # )
         end
 
         # Returns a positive outcome with the st sync commit SHA1 from the
@@ -137,7 +128,7 @@ class Repositext
               Outcome.new(
                 false,
                 nil,
-                ["The content AT file has subtitle marks, however no subtitle export file (*.en.txt) was found."]
+                ["   x The content AT file has subtitle marks, however no subtitle export file (*.en.txt) was found."]
               )
             )
           end
@@ -148,7 +139,7 @@ class Repositext
               Outcome.new(
                 false,
                 nil,
-                ["We found a subtitle export file, however no subtitle import file was found."]
+                ["   x We found a subtitle export file, however no subtitle import file was found."]
               )
             )
           end
@@ -165,7 +156,7 @@ class Repositext
                 Outcome.new(
                   false,
                   nil,
-                  ["Could not find latest git commit for file #{ stf.repo_relative_path(true).inspect }"]
+                  ["   x Could not find latest git commit for file #{ stf.repo_relative_path(true).inspect }"]
                 )
               )
             end
@@ -177,7 +168,7 @@ class Repositext
             return Outcome.new(
               false,
               nil,
-              ["Found invalid subtitle import: The latest import is prior to the latest export."]
+              ["   x Found invalid subtitle import: The latest import is prior to the latest export."]
             )
           end
 

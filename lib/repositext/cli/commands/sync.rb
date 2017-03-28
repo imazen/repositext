@@ -185,7 +185,6 @@ class Repositext
             content_type: content_type,
           )
         ) do |content_at_file|
-
           file_count += 1
           # We want to sync the foreign file to the current primary
           # st_sync_commit.
@@ -197,7 +196,6 @@ class Repositext
             'to-commit' => primary_repo_sync_commit
           )
           sync_sts.sync_foreign_file(content_at_file)
-
         end
       end
 
