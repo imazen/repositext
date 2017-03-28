@@ -483,8 +483,6 @@ class Repositext
           raise "Unexpected nil primary st sync commit!"
         end
 
-        use_subtitle_sync_behavior = true
-
         Dir.glob(input_file_pattern_subtitle_import).each do |subtitle_import_file_name|
           if subtitle_import_file_name =~ /\.markers\.txt\z/
             # don't include markers files!
@@ -519,28 +517,26 @@ class Repositext
               success_count += 1
               $stderr.puts " + Merge :subtitle_marks from #{ subtitle_import_file_name }"
 
-              if use_subtitle_sync_behavior
-                if content_at_file.is_primary?
-                  # Set file-level st_sync_required flag to true
-                  content_at_file.update_file_level_data!(
-                    'st_sync_required' => true
-                  )
-                else
-                  # Foreign files: Update st_sync related file_level data
-                  export_sync_commit = content_at_file.read_file_level_data['exported_subtitles_at_st_sync_commit']
+              if content_at_file.is_primary?
+                # Set file-level st_sync_required flag to true
+                content_at_file.update_file_level_data!(
+                  'st_sync_required' => true
+                )
+              else
+                # Foreign files: Update st_sync related file_level data
+                export_sync_commit = content_at_file.read_file_level_data['exported_subtitles_at_st_sync_commit']
 
-                  if export_sync_commit.nil?
-                    raise "Missing export_sync_commit for file #{ content_at_file.filename }"
-                  end
-
-                  content_at_file.update_file_level_data!(
-                    {
-                      'exported_subtitles_at_st_sync_commit' => nil,
-                      'st_sync_commit' => export_sync_commit,
-                      'st_sync_subtitles_to_review' => {},
-                    }
-                  )
+                if export_sync_commit.nil?
+                  raise "Missing export_sync_commit for file #{ content_at_file.filename }"
                 end
+
+                content_at_file.update_file_level_data!(
+                  {
+                    'exported_subtitles_at_st_sync_commit' => nil,
+                    'st_sync_commit' => export_sync_commit,
+                    'st_sync_subtitles_to_review' => {},
+                  }
+                )
               end
             else
               errors_count += 1

@@ -132,25 +132,16 @@ class Repositext
         fix_normalize_trailing_newlines(options)
 
         if config.setting(:is_primary_repo)
-          use_subtitle_sync_behavior = true
-          if use_subtitle_sync_behavior
-            # NOTE: We update st_sync related data on a per file basis in
-            #       `merge_subtitle_marks_from_subtitle_shared_into_content_at`
-            # Flag st_sync as required on primary repo.
-            repository.update_repo_level_data('st_sync_required' => true)
-          else # Pre-sync-subtitles behavior
-            # Handle subtitle_marker CSV files only when we're working in the primary repo.
-            copy_subtitle_marker_csv_files_to_content(
-              options.merge({ 'base-dir' => :subtitle_import_dir, 'file-extension' => :txt_extension })
-            )
-            sync_subtitle_mark_character_positions(options)
-          end
+          # NOTE: We update st_sync related data on a per file basis in
+          #       `merge_subtitle_marks_from_subtitle_shared_into_content_at`
+          # Flag st_sync as required on primary repo.
+          repository.update_repo_level_data('st_sync_required' => true)
         end
 
         options['append_to_validation_report'] = true
         validate_subtitle_import(options.merge('run_options' => %w[post_import]))
 
-        if !config.setting(:is_primary_repo) && use_subtitle_sync_behavior
+        if !config.setting(:is_primary_repo)
           # We're in a foreign repo, we transfer any subtitle operations that
           # have accumulated since the subtitle export.
           # NOTE: This step has to occur after the post_import validation.

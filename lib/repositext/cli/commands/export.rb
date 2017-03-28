@@ -184,32 +184,28 @@ class Repositext
         ) do |content_at_file|
           config.update_for_file(content_at_file.corresponding_data_json_filename)
           file_st_sync_is_active = config.setting(:st_sync_active)
-          use_subtitle_sync_behavior = true
 
-          if use_subtitle_sync_behavior
-            # sync-subtitles behavior
-            if file_st_sync_is_active
-              # Make sure primary file (or foreign file's corresponding primary file)
-              # does not require a subtitle sync.
-              # Reason: We want to make sure that foreign subtitle splitters get
-              # the most recent English version to work with.
-              self_or_corresponding_primary_file = content_at_file.corresponding_primary_file
-              if self_or_corresponding_primary_file.read_file_level_data['st_sync_required']
-                # If we get here on any foreign file, then we don't export any
-                # primary files and we don't copy any marker files!
-                files_that_could_not_be_exported_because_they_require_st_sync << content_at_file
-                next  [Outcome.new(false, nil, ["Cannot export this file. A subtitle sync is required first!"])]
-              end
-            else
-              # File's st_sync_active is false, however subtitles are being
-              # exported. This is unexpected, we raise an exception.
-              # The assumption is that when we export subtitles for a foreign
-              # file we do so with the intention to activate subtitles for that
-              # file. By exporting it, we create the working files, however
-              # st sync will not touch this file until working files have been
-              # imported back. At that point we'll apply any accumulated st ops.
-              raise "You are exporting subtitles for a file that has 'st_sync_active' set to false. Please set it to true first, then try again.\n".color(:red)
+          if file_st_sync_is_active
+            # Make sure primary file (or foreign file's corresponding primary file)
+            # does not require a subtitle sync.
+            # Reason: We want to make sure that foreign subtitle splitters get
+            # the most recent English version to work with.
+            self_or_corresponding_primary_file = content_at_file.corresponding_primary_file
+            if self_or_corresponding_primary_file.read_file_level_data['st_sync_required']
+              # If we get here on any foreign file, then we don't export any
+              # primary files and we don't copy any marker files!
+              files_that_could_not_be_exported_because_they_require_st_sync << content_at_file
+              next  [Outcome.new(false, nil, ["Cannot export this file. A subtitle sync is required first!"])]
             end
+          else
+            # File's st_sync_active is false, however subtitles are being
+            # exported. This is unexpected, we raise an exception.
+            # The assumption is that when we export subtitles for a foreign
+            # file we do so with the intention to activate subtitles for that
+            # file. By exporting it, we create the working files, however
+            # st sync will not touch this file until working files have been
+            # imported back. At that point we'll apply any accumulated st ops.
+            raise "You are exporting subtitles for a file that has 'st_sync_active' set to false. Please set it to true first, then try again.\n".color(:red)
           end
 
           # Since the kramdown parser is specified as module in Rtfile,
@@ -222,15 +218,12 @@ class Repositext
           doc.root = root
           subtitle = doc.send(config.kramdown_converter_method(:to_subtitle))
 
-          if use_subtitle_sync_behavior
-            # sync-subtitles behavior
-            # Foreign files with st_sync_active only:
-            # Record sync commit at which subtitles were exported
-            if !config.setting(:is_primary_repo) && file_st_sync_is_active
-              content_at_file.update_file_level_data!(
-                'exported_subtitles_at_st_sync_commit' => st_sync_commit_sha1
-              )
-            end
+          # Foreign files with st_sync_active only:
+          # Record sync commit at which subtitles were exported
+          if !config.setting(:is_primary_repo) && file_st_sync_is_active
+            content_at_file.update_file_level_data!(
+              'exported_subtitles_at_st_sync_commit' => st_sync_commit_sha1
+            )
           end
 
           # Return Outcome
