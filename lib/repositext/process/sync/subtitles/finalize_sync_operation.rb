@@ -29,6 +29,15 @@ class Repositext
             else
               puts "   - All file syncs were successful!".color(:green)
             end
+            if @files_with_autosplit_exceptions.any?
+              puts "   - The following #{ @files_with_autosplit_exceptions.count } files raised an exception during autosplit:".color(:red)
+              @files_with_autosplit_exceptions.each { |f_attrs|
+                print "     - #{ f_attrs[:file].repo_relative_path(true) }: ".ljust(52).color(:red)
+                puts "#{ f_attrs[:message] }".color(:red)
+              }
+            else
+              puts "   - No files raised exceptions during autosplit".color(:green)
+            end
             true
           end
 

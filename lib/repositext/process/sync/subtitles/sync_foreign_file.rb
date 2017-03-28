@@ -84,30 +84,42 @@ class Repositext
           def process_autosplit(f_content_at_file, st_sync_commit)
             puts "     - source: :autosplit"
 
-            # Autosplit subtitles
-            ss_o = Process::Split::Subtitles.new(
-              f_content_at_file.corresponding_primary_file,
-              f_content_at_file
-            ).split
+            # We don't want an error in autosplit to stop the sync process
+            # so we rescue exceptions.
+            begin
+              # Autosplit subtitles
+              ss_o = Process::Split::Subtitles.new(
+                f_content_at_file.corresponding_primary_file,
+                f_content_at_file
+              ).split
 
-            if ss_o.success?
-              new_content_at, st_confidences = ss_o.result
+              if ss_o.success?
+                new_content_at, st_confidences = ss_o.result
 
-              # Update foreign content AT file with new subtitles
-              f_content_at_file.update_contents!(new_content_at)
+                # Update foreign content AT file with new subtitles
+                f_content_at_file.update_contents!(new_content_at)
 
 
-              # Update foreign st_sync related data
-              f_content_at_file.update_file_level_data!(
-                'st_sync_commit' => st_sync_commit,
-                'st_sync_subtitles_to_review' => { 'all' => 'autosplit' },
-              )
+                # Update foreign st_sync related data
+                f_content_at_file.update_file_level_data!(
+                  'st_sync_commit' => st_sync_commit,
+                  'st_sync_subtitles_to_review' => { 'all' => 'autosplit' },
+                )
 
-              @successful_files << f_content_at_file.repo_relative_path(true)
-              puts # terminate log line
-              true
-            else
-              process_unprocessable(f_content_at_file, ss_o.messages.join(' '))
+                @successful_files << f_content_at_file.repo_relative_path(true)
+                puts # terminate log line
+                true
+              else
+                process_unprocessable(f_content_at_file, ss_o.messages.join(' '))
+              end
+            rescue StandardError => e
+              # Capture the file with exception
+              @files_with_autosplit_exceptions << {
+                file: f_content_at_file,
+                message: e.message,
+              }
+              # Print error to console
+              puts "   - Error: #{ e.message }".color(:red)
             end
 
           end

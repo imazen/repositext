@@ -51,6 +51,9 @@ class Repositext
           # Container for any files that could not be synced. Array of Hashes:
           # [{ file: <RFile::ContentAt>, message: <String> },...]
           @unprocessable_files = []
+          # Container for any files that raised an exception during autosplit. Array of Hashes:
+          # [{ file: <RFile::ContentAt>, message: <String> },...]
+          @files_with_autosplit_exceptions = []
           # Container for any files that were synced successfully. Array of Strings
           # ['content/53/spn53-0504.at', ...]
           @successful_files = []
