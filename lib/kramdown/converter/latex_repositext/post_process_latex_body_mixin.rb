@@ -264,6 +264,13 @@ module Kramdown
             "\\nolinebreak[4]-\\nolinebreak[4]…#{ l_ch[:d_quote_close] }"
           )
 
+          # We don't allow linebreaks between an ellipsis and the next word
+          # when it is preceded by an opening quote mark
+          lb.gsub!(
+            "#{ l_ch[:d_quote_open] }\\nolinebreak[4]…\\hspace{0pt}",
+            "#{ l_ch[:d_quote_open] }\\nolinebreak[4]…\\nolinebreak[4]"
+          )
+
           # We don't allow linebreaks between chinese period and closing bracket
           lb.gsub!("。]", "。\\nolinebreak[4]]")
 
