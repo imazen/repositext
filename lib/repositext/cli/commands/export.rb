@@ -202,8 +202,13 @@ class Repositext
               end
             else
               # File's st_sync_active is false, however subtitles are being
-              # exported. This is unexpected, we print a warning.
-              puts "Warning: You are exporting subtitles for a file that has 'st_sync_active' set to false!".color(:red)
+              # exported. This is unexpected, we raise an exception.
+              # The assumption is that when we export subtitles for a foreign
+              # file we do so with the intention to activate subtitles for that
+              # file. By exporting it, we create the working files, however
+              # st sync will not touch this file until working files have been
+              # imported back. At that point we'll apply any accumulated st ops.
+              raise "You are exporting subtitles for a file that has 'st_sync_active' set to false. Please set it to true first, then try again.\n".color(:red)
             end
           end
 
