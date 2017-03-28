@@ -242,7 +242,13 @@ class Repositext
             # the corresponding foreign subtitle_mark.
             p_captions = p_s.split(/(?=@)/)
             f_captions = new_f_s_raw.split(/(?=@)/)
-            if p_captions.length != f_captions.length
+            pcs_starting_with_stm_count = p_captions.find_all { |e| e =~ /\A@/ }.length
+            fcs_starting_with_stm_count = f_captions.find_all { |e| e =~ /\A@/ }.length
+            if pcs_starting_with_stm_count != fcs_starting_with_stm_count
+              puts "p_captions:".color(:red)
+              p p_captions
+              puts "f_captions:".color(:red)
+              p f_captions
               raise ArgumentError.new("Mismatch in captions count: p_captions: #{ p_captions.length }, f_captions: #{ f_captions.length }.")
             end
             sentence_confidence = 1.0
