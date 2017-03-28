@@ -135,15 +135,11 @@ class Repositext
               elsif(s.beginning_of_line? && (pn = s.scan(/\d+ /)))
                 # A paragraph number that is in pt but not in sentence,
                 # append to new_f_pt
-                if debug
-                  puts " - pn match"
-                end
+                puts " - pn match"  if debug
                 new_f_pt << pn
               elsif(ws = s.scan(/[ \n]/))
                 # space or newline, append to new_f_pt
-                if debug
-                  puts " - whitespace match"
-                end
+                puts " - whitespace match"  if debug
                 new_f_pt << ws
               elsif(
                 # NOTE: LF Aligner converts certain unicode characters to regular
@@ -218,10 +214,7 @@ class Repositext
                   # Remove sts (and optional trailing whitespace) from f_s
                   f_s.sub!(/\A@+[[:space:]]?/, '')
                 end
-
-                if debug
-                  puts "   Finished partial match!"
-                end
+                puts "   Finished partial match!"  if debug
 
                 get_next_foreign_sentence = true
                 partial_match_active = false
@@ -235,9 +228,7 @@ class Repositext
                 if working_f_ss.any?
                   # There are more sentences to process, get next one.
                   f_s = working_f_ss.shift # Get next foreign sentence
-                  if debug
-                    puts "starting new f_s: #{ f_s.inspect }"
-                  end
+                  puts "starting new f_s: #{ f_s.inspect }"  if debug
                   f_s_conf = f_s_confs.shift # Get next foreign sentence confidence
                   f_st_confs += [f_s_conf] * f_s.count('@') # Add a confidence value for each subtitle in sentence
                   f_s_wo_st = f_s.gsub('@', '') # Get foreign sentence without subtitles
