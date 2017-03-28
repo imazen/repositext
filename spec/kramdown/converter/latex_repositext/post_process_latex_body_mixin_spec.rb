@@ -193,6 +193,12 @@ module Kramdown
               "word-…” word",
               "word\\nolinebreak[4]-\\nolinebreak[4]…” word"
             ],
+            # No linebreak between ellipsis and the next word when the ellipsis
+            # is preceded by an opening quote mark.
+            [
+              "word “…word",
+              "word “\\nolinebreak[4]…\\nolinebreak[4]word"
+            ],
             # No linebreak between end of latex control sequence and period.
             [
               # Word a.d.
