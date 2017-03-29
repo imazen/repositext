@@ -79,6 +79,7 @@ class Repositext
             { :name => 'indent_for_eagle', :allowed_contexts => [:block] },
             { :name => 'italic', :allowed_contexts => [:span] },
             { :name => 'line_break', :allowed_contexts => [:span] },
+            { :name => 'no_highlight', :allowed_contexts => [:block] },
             { :name => 'normal', :allowed_contexts => [:block] },
             { :name => 'normal_pn', :allowed_contexts => [:block] },
             { :name => 'omit', :allowed_contexts => [:block] },
@@ -92,7 +93,6 @@ class Repositext
             { :name => 'song_break', :allowed_contexts => [:block] },
             { :name => 'stanza', :allowed_contexts => [:block] },
             { :name => 'subscript', :allowed_contexts => [:span] },
-            { :name => 'subtitle', :allowed_contexts => [:block] },
             { :name => 'superscript', :allowed_contexts => [:span] },
             { :name => 'underline', :allowed_contexts => [:span] },
           ]
