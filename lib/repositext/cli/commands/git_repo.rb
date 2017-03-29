@@ -111,6 +111,15 @@ class Repositext
         )
       end
 
+      # Runs `rt report character_inventory` on all content repos
+      def git_repo_report_character_inventory(options)
+        repos_parent_path = File.expand_path('..', Dir.pwd)
+        RepositorySet.new(repos_parent_path).report_character_inventory(
+          :all_content_repos,
+          content_type
+        )
+      end
+
       # Runs `rt report files_that_dont_have_st_sync_active` on all content repos
       def git_repo_report_files_that_dont_have_st_sync_active(options)
         repos_parent_path = File.expand_path('..', Dir.pwd)

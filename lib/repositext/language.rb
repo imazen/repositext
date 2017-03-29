@@ -54,7 +54,7 @@ class Repositext
       when 3
         find_by(:code3, symbolized_lang_code)
       else
-        Raise "Invalid lang_code: #{ lang_code.inspect }"
+        raise "Invalid lang_code: #{ lang_code.inspect }"
       end
       Object.const_get("Repositext::Language::#{ lang_attrs[:name] }").new
     end

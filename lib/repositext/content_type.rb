@@ -22,6 +22,9 @@ class Repositext
              :setting,
              to: :config,
              prefix: :config
+    delegate :name,
+             to: :language,
+             prefix: true
 
     # Returns an array with all available content_types for repo
     # @param repo [Repository]

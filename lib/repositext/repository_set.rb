@@ -267,6 +267,11 @@ class Repositext
     def replace_text(filename, &block)
     end
 
+    # Run `report character_inventory` in all repositories
+    def report_character_inventory(repo_set_spec, content_type)
+      run_repositext_command(repo_set_spec, "rt #{ content_type.name } report character_inventory -g")
+    end
+
     # Run `report content_sources` in all repositories
     def report_content_sources(repo_set_spec, content_type)
       run_repositext_command(repo_set_spec, "rt #{ content_type.name } report content_sources")

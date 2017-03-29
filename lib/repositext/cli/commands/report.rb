@@ -12,6 +12,61 @@ class Repositext
         end
       end
 
+      # Prints an inventory of all characters found in the current language.
+      def report_character_inventory(options)
+        chars = Hash.new(0)
+        total_file_count = 0
+
+        Repositext::Cli::Utils.read_files(
+          config.compute_glob_pattern(
+            options['base-dir'] || :content_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :at_extension
+          ),
+          options['file_filter'],
+          nil,
+          "Reading content AT files",
+          options.merge(
+            use_new_repositext_file_api: true,
+            content_type: content_type,
+          )
+        ) do |content_at_file|
+          total_file_count += 1
+
+          # Build character inventory
+          content_at_file.contents.codepoints.each { |cp|
+            chars[cp] += 1
+          }
+        end
+
+        $stderr.puts "\nCharacter inventory for #{ content_type.language_name }".color(:blue)
+
+        char_groups = chars.group_by { |(code, count)|
+          case code.chr('UTF-8')
+          when /\A[#{ Regexp.escape("#%&*@^_=\"{}") }]\z/
+            "Repositext markup"
+          when /\A[#{ Regexp.escape("\n !()/,-+$.:;?[]–—‘’“”…") }0-9A-Za-z]\z/
+            "English chars and punctuation"
+          else
+            "Language specific characters"
+          end
+        }
+
+        char_groups.each { |group_name, chars|
+          $stderr.puts
+          $stderr.puts group_name
+          $stderr.puts '*' * group_name.length
+
+          chars.sort_by { |k,v|
+            k
+          }.map { |(code,count)|
+            # Don't inspect double quotes (34)
+            char = 34 == code ? '"' : code.chr('UTF-8').inspect.gsub("\"", '')
+            $stderr.puts(sprintf("#{ char.ljust(4) } U+%04x %9d", code, count))
+          }
+        }
+      end
+
       # Compares the files present in the repository with the list of titles from
       # ERP. Lists any files that are missing/added in the repository
       def report_compare_file_inventory_with_erp(options)
