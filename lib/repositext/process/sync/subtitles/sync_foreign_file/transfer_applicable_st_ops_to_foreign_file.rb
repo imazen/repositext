@@ -18,8 +18,16 @@ class Repositext
             # @param applicable_st_ops_for_file [Array<Subtitle::OperationsForFile>]
             def transfer_applicable_st_ops_to_foreign_file!(foreign_content_at_file, applicable_st_ops_for_file)
               if applicable_st_ops_for_file.any?
+                # An st_ops_for_file exists. That means the file is being synced.
+                # NOTE: Not sure why we're passing applicable_st_ops_for_file
+                # as an array as their should really be only one.
+
                 # Iterate over st_ops and incrementally update both content and data
+                found_st_ops = false
                 applicable_st_ops_for_file.each do |st_ops_for_file|
+                  # Detect if there are st_ops for file, or if it's time slice
+                  # changes only.
+                  found_st_ops ||= st_ops_for_file.operations.any?
                   transfer_st_ops_to_foreign_file!(
                     foreign_content_at_file,
                     st_ops_for_file
@@ -28,7 +36,13 @@ class Repositext
                   # disk by #transfer_st_ops_to_foreign_file!
                   foreign_content_at_file.reload_contents!
                 end
-                print " - Synced".color(:green)
+                if found_st_ops
+                  # Actual st ops
+                  print " - Synced".color(:green)
+                else
+                  # Time slice changes only
+                  print " - Synced (Time slice changes only)".color(:green)
+                end
               else
                 # No applicable st ops, just update file level st_sync data
                 update_foreign_file_level_data(
