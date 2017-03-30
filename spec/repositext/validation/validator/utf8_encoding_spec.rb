@@ -44,7 +44,7 @@ class Repositext
           'windows-1255-hebrew.txt',
           'windows-1256-arabic.txt'
         ].each do |file_name|
-          it "flags invalid file #{ file_name }" do
+          it "flags file with invalid encoding #{ file_name }" do
             Utf8Encoding.new(
               File.open(get_test_data_path_for("/repositext/validation/validator/utf8_encoding/invalid/" + file_name)),
               logger,
@@ -54,6 +54,23 @@ class Repositext
             reporter.errors.size.must_equal 1
             reporter.errors.all? { |e|
               e.location.first.index(file_name) && 'Invalid encoding' == e.details.first
+            }.must_equal true
+          end
+        end
+
+        [
+          'utf8_with_bom.txt',
+        ].each do |file_name|
+          it "flags file with bom #{ file_name }" do
+            Utf8Encoding.new(
+              File.open(get_test_data_path_for("/repositext/validation/validator/utf8_encoding/invalid/" + file_name)),
+              logger,
+              reporter,
+              {}
+            ).run
+            reporter.errors.size.must_equal 1
+            reporter.errors.all? { |e|
+              e.location.first.index(file_name) && 'Unexpected BOM' == e.details.first
             }.must_equal true
           end
         end

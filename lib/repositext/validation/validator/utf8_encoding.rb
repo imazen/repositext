@@ -14,8 +14,6 @@ class Repositext
       # List of character strings in many languages: http://en.wikipedia.org/wiki/List_of_pangrams
       class Utf8Encoding < Validator
 
-# TODO: make sure they don't contain BOM
-
         def run
           document_to_validate = @file_to_validate.read
           outcome = utf8_encoded?(document_to_validate)
@@ -23,6 +21,20 @@ class Repositext
         end
 
         def utf8_encoded?(a_string)
+          # Make sure file doesn't contain UTF8 BOM
+          if(a_string =~ /\A\xEF\xBB\xBF/m)
+            # File contains BOM (Byte Order Mark), that's not valid
+            return Outcome.new(
+              false, nil, [],
+              [
+                Reportable.error(
+                  [@file_to_validate.path],
+                  ['Invalid encoding', "Document is UTF8 encoded, however it contains a UTF8 BOM. Repositext expects NO BOM."]
+                )
+              ]
+            )
+          end
+
           begin
             # TODO: is this a good UTF8 encoding test?
             # github uses this: https://github.com/brianmario/charlock_holmes
