@@ -21,20 +21,6 @@ class Repositext
         end
 
         def utf8_encoded?(a_string)
-          # Make sure file doesn't contain UTF8 BOM
-          if(a_string =~ /\A\xEF\xBB\xBF/m)
-            # File contains BOM (Byte Order Mark), that's not valid
-            return Outcome.new(
-              false, nil, [],
-              [
-                Reportable.error(
-                  [@file_to_validate.path],
-                  ['Invalid encoding', "Document is UTF8 encoded, however it contains a UTF8 BOM. Repositext expects NO BOM."]
-                )
-              ]
-            )
-          end
-
           begin
             # TODO: is this a good UTF8 encoding test?
             # github uses this: https://github.com/brianmario/charlock_holmes
@@ -55,7 +41,21 @@ class Repositext
           rescue Exception => e
             logger.info e.inspect
           else
-            Outcome.new(true, nil)
+            # Make sure file doesn't contain UTF8 BOM
+            if(a_string =~ /\A\xEF\xBB\xBF/m)
+              # File contains BOM (Byte Order Mark), that's not valid
+              Outcome.new(
+                false, nil, [],
+                [
+                  Reportable.error(
+                    [@file_to_validate.path],
+                    ['Unexpected BOM', "Document is UTF8 encoded, however it contains a UTF8 BOM. Repositext expects NO BOM."]
+                  )
+                ]
+              )
+            else
+              Outcome.new(true, nil)
+            end
           end
         end
 
