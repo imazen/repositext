@@ -45,15 +45,12 @@ class Repositext
                 file_level_data = content_at_file.read_file_level_data
 
                 # Sync files that
-                # * participate in st-sync,
-                # * require an st_sync, and
-                # * don't have a pending subtitle import.
-                st_sync_required = (
+                # * participate in st-sync and
+                # * require an st_sync
+                if (
                   ct_config.setting(:st_sync_active) &&
                   file_level_data['st_sync_commit'] != @to_git_commit
                 )
-                has_pending_subtitle_import = '' != file_level_data['exported_subtitles_at_st_sync_commit'].to_s
-                if st_sync_required && !has_pending_subtitle_import
                   fts << content_at_file
                 end
               end
