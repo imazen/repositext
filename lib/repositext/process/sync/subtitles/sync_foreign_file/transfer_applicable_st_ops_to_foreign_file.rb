@@ -36,6 +36,16 @@ class Repositext
                   # disk by #transfer_st_ops_to_foreign_file!
                   foreign_content_at_file.reload_contents!
                 end
+                # We need to manually write the @to_git_commit to st_sync_commit.
+                # We can't rely on transfer_st_ops_to_foreign_file! alone since
+                # it will only write sync commits that actually contained st_ops
+                # for the current file. However we want to record on the file
+                # that it has been synced to the current primary st_sync_commit.
+                update_foreign_file_level_data(
+                  foreign_content_at_file,
+                  @to_git_commit,
+                  {} # Don't touch sts that require review
+                )
                 if found_st_ops
                   # Actual st ops
                   print " - Synced".color(:green)
@@ -48,7 +58,7 @@ class Repositext
                 update_foreign_file_level_data(
                   foreign_content_at_file,
                   @to_git_commit,
-                  {} # no sts that require review
+                  {} # Don't touch sts that require review
                 )
                 print " - No applicable st_ops"
               end
