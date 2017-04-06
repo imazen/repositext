@@ -214,6 +214,19 @@ class Repositext
       }
     end
 
+    # Resets all repos
+    # @param repo_set_spec [Symbol, Array<String>] A symbol describing a predefined
+    #     group of repos, or an Array with specific repo names as strings.
+    def git_reset(repo_set_spec)
+      compute_repo_paths(repo_set_spec).each { |repo_path|
+        puts '-' * 80
+        puts "Git reset #{ repo_path }"
+        FileUtils.cd(repo_path)
+        puts `git reset --hard`
+      }
+      true
+    end
+
     # Prints git_status for all repos
     # @param repo_set_spec [Symbol, Array<String>] A symbol describing a predefined
     #     group of repos, or an Array with specific repo names as strings.

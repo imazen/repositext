@@ -138,6 +138,13 @@ class Repositext
         )
       end
 
+      # Resets the git repo for all content repositories
+      # @param [Hash] options
+      def git_repo_reset_all_content(options)
+        repos_parent_path = File.expand_path('..', Dir.pwd)
+        RepositorySet.new(repos_parent_path).git_reset(:all_content_repos)
+      end
+
       # Prints git status for all code repositories.
       # @param [Hash] options
       def git_repo_status_all_code(options)
