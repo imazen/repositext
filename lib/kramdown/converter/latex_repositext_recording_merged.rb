@@ -162,13 +162,13 @@ module Kramdown
         # remove unwanted elements
         contents.gsub!(/@/, '') # subtitle marks
         contents.gsub!(/^\^\^\^[^\n]*\n/, "\n") # record_marks
-        # id_title1, id_title2, id_paragraph
+        # id_title1, id_title2, id_title3, id_paragraph
         contents.gsub!(
           /
             (?<=\n) # preceded by newline
             [^\n]+ # one or more chars that are not a newline
             \n # newline
-            (?=\{\:\s\.(?:id_paragraph|id_title1|id_title2)\}) # followed by id paragraph, id title1 or id title2 class IAL
+            (?=\{\:\s\.(?:id_paragraph|id_title1|id_title2|id_title3)\}) # followed by id paragraph, id title1 or id title2 id title3 class IAL
           /x,
           ''
         )

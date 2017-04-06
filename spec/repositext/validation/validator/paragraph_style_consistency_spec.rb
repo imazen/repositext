@@ -87,6 +87,7 @@ class Repositext
             ["does not modify .id_paragraph\n{: .id_paragraph}", ['', '.id_paragraph']],
             ["does not modify .id_title1\n{: .id_title1}", ['', '.id_title1']],
             ["does not modify .id_title2\n{: .id_title2}", ['', '.id_title2']],
+            ["does not modify .id_title3\n{: .id_title3}", ['', '.id_title3']],
             ["does not modify .normal\n{: .normal}", ['', '.normal']],
             ["does not modify .normal_pn\n{: .normal_pn}", ['', '.normal_pn']],
             ["does not modify .q\n{: .q}", ['', '.q']],

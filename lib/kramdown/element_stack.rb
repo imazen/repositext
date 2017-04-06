@@ -11,6 +11,10 @@ module Kramdown
       detect { |e| :p == e.type && e.has_class?('id_title2') }
     end
 
+    def inside_id_title3?
+      detect { |e| :p == e.type && e.has_class?('id_title3') }
+    end
+
     def inside_title?
       detect { |e| :header == e.type }
     end

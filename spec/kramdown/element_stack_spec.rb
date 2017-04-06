@@ -6,6 +6,7 @@ module Kramdown
     let(:element_stack){ ElementStack.new }
     let(:id_title1_paragraph){ Element.new(:p, nil, 'class' => 'id_title1') }
     let(:id_title2_paragraph){ Element.new(:p, nil, 'class' => 'id_title2') }
+    let(:id_title3_paragraph){ Element.new(:p, nil, 'class' => 'id_title3') }
     let(:normal_paragraph){ Element.new(:p, nil, 'class' => 'normal') }
     let(:title_header){ Element.new(:header, nil) }
 
@@ -40,6 +41,18 @@ module Kramdown
       it "detects negative" do
         element_stack.push(normal_paragraph)
         element_stack.inside_id_title2?.must_equal(nil)
+      end
+    end
+
+    describe "#inside_id_title3?" do
+      it "detects positive" do
+        element_stack.push(id_title3_paragraph)
+        element_stack.inside_id_title3?.must_equal(id_title3_paragraph)
+      end
+
+      it "detects negative" do
+        element_stack.push(normal_paragraph)
+        element_stack.inside_id_title3?.must_equal(nil)
       end
     end
 

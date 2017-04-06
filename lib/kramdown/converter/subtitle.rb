@@ -51,7 +51,7 @@ module Kramdown
             raise "Unhandled header type: #{ el.inspect }"
           end
         when :p
-          if %w[id_title1 id_title2 id_paragraph].any? { |e| el.has_class?(e) }
+          if %w[id_title1 id_title2 id_title3 id_paragraph].any? { |e| el.has_class?(e) }
             # mark for deletion in post processing
             @output << "\n\n<<delete this line>>"
           else
