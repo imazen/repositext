@@ -190,11 +190,26 @@ class Repositext
           # st_sync_commit.
           # NOTE: This process updates the file level st_sync data for
           # `st_sync_commit` and `st_sync_subtitles_to_review` for content_at_file.
-          sync_sts = Repositext::Process::Sync::Subtitles.new(
+          method_args = {
             'config' => primary_config,
             'primary_repository' => primary_repo,
             'to-commit' => primary_repo_sync_commit
-          )
+          }
+          # We use this method as part of subtitle import to re-apply any pending
+          # st_ops since the subtitle export. We accomplish this by providing
+          # the 'from-commit' option with the value of the export git commit:
+          if options['re-apply-st-ops-since-st-export']
+            # During the subtitle import we copied the value of
+            # `exported_subtitles_at_st_sync_commit` to `st_sync_commit`, and
+            # then we set `exported_subtitles_at_st_sync_commit` to null.
+            # So at this point we have to read the export commit from `st_sync_commit`.
+            export_commit = content_at_file.read_file_level_data['st_sync_commit']
+            if '' == export_commit.to_s.strip
+              raise "Missing `st_sync_commit` (effective export git commit), can't re-apply st_ops since st export!"
+            end
+            method_args['from-commit'] = export_commit
+          end
+          sync_sts = Repositext::Process::Sync::Subtitles.new(method_args)
           sync_sts.sync_foreign_file(content_at_file)
         end
       end

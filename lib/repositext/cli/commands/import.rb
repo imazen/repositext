@@ -146,9 +146,12 @@ class Repositext
           # have accumulated since the subtitle export.
           # NOTE: This step has to occur after the post_import validation.
           # Otherwise the validation would fail.
-          sync_subtitles_for_foreign_files(options)
+          # NOTE: When calling this after a subtitle import, we have to re-apply
+          # all st_ops that occurred since the subtitle export.
+          sync_subtitles_for_foreign_files(
+            options.merge('re-apply-st-ops-since-st-export' => true)
+          )
         end
-
       end
 
       def import_subtitle_tagging(options)

@@ -43,9 +43,11 @@ class Repositext
         #         if not successful, #messages contains details.
         def compute
           if is_initial_foreign_sync?
-            if file_has_subtitles?
+            if @foreign_content_at_file.has_pending_subtitle_import?
+              file_is_not_ready_for_initial_st_sync
+            elsif @foreign_content_at_file.has_subtitle_marks?
               use_corresponding_primary_st_sync_commit
-            else # file has no subtitles
+            else # file has no subtitles and no pending subtitle import
               file_requires_initial_subtitle_autosplit
             end
           else # this is a subsequent st sync
@@ -262,12 +264,6 @@ class Repositext
           )
         end
 
-        # Returns true if @foreign_content_at_file has subtitles.
-        # @return [Boolean]
-        def file_has_subtitles?
-          @foreign_content_at_file.has_subtitle_marks?
-        end
-
         # @return [String, nil] the file level st sync git commit
         def get_file_level_st_sync_commit
           @foreign_content_at_file.read_file_level_data['st_sync_commit']
@@ -279,6 +275,20 @@ class Repositext
         # @return [Boolean]
         def is_initial_foreign_sync?
           !get_file_level_st_sync_commit
+        end
+
+        def file_is_not_ready_for_initial_st_sync
+          Outcome.new(
+            false,
+            {},
+            [
+              [
+                "The initial st_sync on this file cannot be performed yet ",
+                "because it has a pending subtitle import ",
+                "(`exported_subtitles_at_st_sync_commit` is not null).",
+              ].join,
+            ]
+          )
         end
 
       end

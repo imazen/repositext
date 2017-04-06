@@ -102,6 +102,10 @@ class Repositext
         plain_text_contents({}).split("\n").first.strip
       end
 
+      def has_pending_subtitle_import?
+        '' != read_file_level_data['exported_subtitles_at_st_sync_commit'].to_s.strip
+      end
+
       # Returns true if contents contain subtitle_marks ('@')
       def has_subtitle_marks?
         !!contents.index('@')
