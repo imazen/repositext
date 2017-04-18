@@ -488,6 +488,10 @@ class Repositext
             # don't include markers files!
             $stderr.puts " - Skip #{ subtitle_import_file_name }"
             next
+          elsif subtitle_import_file_name =~ /report\.txt\z/
+            # don't include validation report files
+            $stderr.puts " - Skip #{ subtitle_import_file_name }"
+            next
           end
 
           total_count += 1
