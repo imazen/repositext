@@ -1,6 +1,17 @@
 # Defines some string constants used throughout repositext.
 class Repositext
 
+  # Returns a Hash with options to be used whenever we generate JSON
+  JSON_FORMATTING_OPTIONS = {
+    indent: '  ',
+    space: '',
+    space_before: '',
+    object_nl: "\n",
+    array_nl: "\n",
+    allow_nan: false,
+    max_nesting: 100,
+  }
+
   # We use this character to delimit sentences, e.g., in Lucene exported plain
   # text proximity
   # 0x256B - Box Drawings Vertical Double And Horizontal Single

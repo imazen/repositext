@@ -67,7 +67,7 @@ class Repositext
         end
 
         def self.write_rtx_lvl_settings(new_settings, data_file_path)
-          new_settings_json = JSON.generate(new_settings, json_opts)
+          new_settings_json = JSON.generate(new_settings, JSON_FORMATTING_OPTIONS)
           File.write(data_file_path, new_settings_json)
         end
 
@@ -86,7 +86,7 @@ class Repositext
         end
 
         def self.write_rpy_lvl_settings(new_settings, data_file_path)
-          new_settings_json = JSON.generate(new_settings, json_opts)
+          new_settings_json = JSON.generate(new_settings, JSON_FORMATTING_OPTIONS)
           File.write(data_file_path, new_settings_json)
         end
 
@@ -210,18 +210,6 @@ class Repositext
                 settings[setting_name] = v
               end
             end
-          }
-        end
-
-        def self.json_opts
-          {
-            indent: '  ',
-            space: '',
-            space_before: '',
-            object_nl: "\n",
-            array_nl: "\n",
-            allow_nan: false,
-            max_nesting: 100,
           }
         end
 

@@ -21,7 +21,7 @@ class Repositext
       # Returns the default contents for a data.json file
       # @return [String] JSON formatted string
       def self.default_file_contents
-        JSON.generate(default_data, json_formatting_options) + "\n"
+        JSON.generate(default_data, JSON_FORMATTING_OPTIONS) + "\n"
       end
 
       # Returns default data as Hash
@@ -29,25 +29,9 @@ class Repositext
         { 'data' => {}, 'settings' => {} }
       end
 
-      def self.json_formatting_options
-        {
-          indent: '  ',
-          space: '',
-          space_before: '',
-          object_nl: "\n",
-          array_nl: "\n",
-          allow_nan: false,
-          max_nesting: 100,
-        }
-      end
-
       # Returns all key value pairs as hash
       def get_all_attributes
         (JSON.load(contents) || self.class.default_data)
-      end
-
-      def json_formatting_options
-        self.class.json_formatting_options
       end
 
       def read_data
@@ -67,7 +51,7 @@ class Repositext
         new_contents = get_all_attributes
         new_contents['data'] ||= {}
         new_contents['data'].merge!(key_val_pairs)
-        JSON.generate(new_contents, json_formatting_options) + "\n"
+        JSON.generate(new_contents, JSON_FORMATTING_OPTIONS) + "\n"
       end
 
       # Updates key_val_pairs under the 'data' key in self.
@@ -88,7 +72,7 @@ class Repositext
         new_contents = get_all_attributes
         new_contents['settings'] ||= {}
         new_contents['settings'].merge!(key_val_pairs)
-        JSON.generate(new_contents, json_formatting_options) + "\n"
+        JSON.generate(new_contents, JSON_FORMATTING_OPTIONS) + "\n"
       end
 
       # Updates key_val_pairs under the 'settings' key in self.
