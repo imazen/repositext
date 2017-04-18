@@ -39,7 +39,7 @@ class Repositext
 
           puts " - Process primary files:".color(:blue)
           # Pick any content_type, doesn't matter which one
-          content_type = ContentType.all(@primary_repository).first
+          content_type = ContentType.any(@primary_repository)
           @file_list.each do |content_at_file_path|
             content_at_file = RFile::ContentAt.new(
               File.read(content_at_file_path),

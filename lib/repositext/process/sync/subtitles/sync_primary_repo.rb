@@ -24,7 +24,7 @@ class Repositext
               # For the initial sync we include all files. This is required so that we
               # restore the STM CSV files to have all columns even for those files that
               # have no subtitle operations
-              content_type = ContentType.all(@primary_repository).last
+              content_type = ContentType.any(@primary_repository)
               Dir.glob(
                 File.join(content_type.base_dir, '**/content/**/*.at')
               ).map { |absolute_file_path|
@@ -60,7 +60,7 @@ class Repositext
             puts "   - Extract subtitle operations"
             subtitle_ops = []
             # Pick any content_type, doesn't matter which one
-            content_type = ContentType.all(@primary_repository).first
+            content_type = ContentType.any(@primary_repository)
             subtitle_ops = Repositext::Process::Compute::SubtitleOperationsForRepository.new(
               content_type,
               @from_git_commit,

@@ -39,6 +39,14 @@ class Repositext
       }
     end
 
+    # Returns any ContentType from repo. This is used where we only care about
+    # repo level data.
+    # @param repo [Repository]
+    # @return [ContentType]
+    def self.any(repo)
+      all(repo).first
+    end
+
     # Returns array of all available names
     def self.all_names
       %w[
