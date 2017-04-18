@@ -143,6 +143,12 @@ class Repositext
           )
         end
 
+        def long_description_for_release
+          %(
+            Releases a product.
+          )
+        end
+
         def long_description_for_report
           %(
             Generates a report for the repository.

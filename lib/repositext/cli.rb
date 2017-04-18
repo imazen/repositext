@@ -19,6 +19,7 @@ class Repositext
     include Cli::Init
     include Cli::Merge
     include Cli::Move
+    include Cli::Release
     include Cli::Report
     include Cli::Split
     include Cli::Sync
@@ -222,6 +223,20 @@ class Repositext
     # @param [String] command_spec Specification of the operation
     def move(command_spec)
       invoke_repositext_command('move', command_spec, options)
+    end
+
+
+    desc 'release SPEC', 'Releases a product'
+    long_desc long_description_for_release
+    method_option :'reproduce-version',
+                  type: :string,
+                  desc: "Argument to re-produce a previously released version"
+    method_option :'update-version',
+                  type: :string,
+                  desc: "Argument to update a previously released version"
+    # @param [String] command_spec Specification of the operation
+    def release(command_spec)
+      invoke_repositext_command('release', command_spec, options)
     end
 
 
