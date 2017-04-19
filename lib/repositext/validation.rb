@@ -8,11 +8,14 @@ class Repositext
     def_delegators :reporter, :errors, :warnings
 
     # Resets the validation report at report_file_path, initializes it with
-    # marker and current time
+    # marker and current time. Creates directories as needed.
     # @param [String] report_file_path
     # @param [String] marker
     # @param [DateTime, optional] time_stamp
     def self.reset_report(report_file_path, marker, time_stamp = Time.now)
+      # First make sure that parent directory exists
+      FileUtils.mkdir_p(File.dirname(report_file_path))
+      # Then truncate report
       File.open(report_file_path, 'w') { |f|
         f.write "Validation report reset by '#{ marker }' at #{ time_stamp.to_s }\n\n"
       }
