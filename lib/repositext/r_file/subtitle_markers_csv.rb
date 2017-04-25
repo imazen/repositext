@@ -36,7 +36,10 @@ class Repositext
         }
       end
 
-      # Returns contents as CSV object
+      # Returns contents as CSV object.
+      # Important: This uses the current value of #contents (rather than
+      # reloading from disk!) so that this also works when we call, e.g.,
+      # `#subtitles` on an StmCsvFile that is checked out at a certain git commit.
       def csv
         csv = CSV.new(contents, self.class.csv_options)
       end

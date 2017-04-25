@@ -56,7 +56,7 @@ module Nokogiri
         self['class'] = class_names.reject{ |e| e == class_name.strip}.join(' ')
       end
 
-      # Wraps self in parent.
+      # Wraps self in parent and puts parent in self's position.
       # NOTE: There is an open pull request on Github to implement this:
       #   https://github.com/sparklemotion/nokogiri/pull/1531
       # @param parent_xn [Nokogiri::XML::Node]
