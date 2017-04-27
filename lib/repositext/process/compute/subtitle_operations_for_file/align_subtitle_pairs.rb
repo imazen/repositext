@@ -76,13 +76,20 @@ class Repositext
               # Assign Subtitle object
               st_obj = if '' == asp[:from][:content]
                 # Subtitle doesn't exist in `from` content, create temp subtitle object
-                ::Repositext::Subtitle.new(
-                  persistent_id: [
+                p_id = if '' == asp[:to][:persistent_id].to_s.strip
+                  # We're computing new st_ops, assign temporary stid
+                  [
                     'tmp-',
                     most_recent_existing_subtitle_id || 'new_file',
                     '+',
                     temp_subtitle_offset += 1,
-                  ].join,
+                  ].join
+                else
+                  # We're re-computing existing st_ops, use existing stid
+                  asp[:to][:persistent_id]
+                end
+                ::Repositext::Subtitle.new(
+                  persistent_id: p_id,
                   tmp_attrs: { index: st_index },
                   record_id: asp[:to][:record_id]
                 )

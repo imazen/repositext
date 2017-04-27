@@ -57,12 +57,11 @@ class Repositext
           self.send("#{ attr_name }=", attrs[attr_name])
         end
         @from_git_commit = attrs[:from_git_commit]
+        raise(ArgumentError.new("No @from_git_commit given"))  if '' == @from_git_commit.to_s.strip
         @to_git_commit = attrs[:to_git_commit]
-        # TODO Check for presence of from_git_commit and to_git_commit
-        if operations.nil?
-          raise(ArgumentError.new("Nil operations given"))
-        end
+        raise(ArgumentError.new("No @to_git_commit given"))  if '' == @to_git_commit.to_s.strip
         self.operations = operations
+        raise(ArgumentError.new("Nil operations given"))  if operations.nil?
       end
 
       # Returns true if self contains any inserts or deletes

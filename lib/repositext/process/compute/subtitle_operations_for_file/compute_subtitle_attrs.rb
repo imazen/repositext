@@ -8,38 +8,66 @@ class Repositext
           class MismatchingSubtitleCountsError < ::StandardError; end
           class EncounteredNilStidError < ::StandardError; end
 
-          def compute_subtitle_attrs_from(content_at_file_to, from_git_commit)
-            content_at_file_from = content_at_file_to.as_of_git_commit(
+          # @param content_at_file [RFile::ContentAt]
+          # @param from_git_commit [String]
+          def compute_subtitle_attrs_from(content_at_file, from_git_commit)
+            # Note: It's ok to check out file as of `from_git_commit` as Content
+            # AT files are not affected by st sync operations.
+            content_at_file_from = content_at_file.as_of_git_commit(
               from_git_commit
-            )
-            stm_csv_file_to = content_at_file_to.corresponding_subtitle_markers_csv_file
-            # We need to grab contents of STM CSV file as of the next commit
-            # after the `from_git_commit` because that's when the updates to
-            # the STM CSV file were made as part of the previous st sync.
-            stm_csv_file_from = stm_csv_file_to.as_of_git_commit(
-              from_git_commit,
-              :at_next_commit
             )
             st_attrs_with_content_only = convert_content_at_to_subtitle_attrs(
               content_at_file_from.contents
             )
-
-            enrich_st_attrs_from(
+            # Note: STM CSV files need to be checked out at_child_or_ref after
+            # the sync reference commit! :at_child_or_ref loads file contents
+            # at ref_commit if there is no child commit affecting the given file.
+            stm_csv_file = content_at_file.corresponding_subtitle_markers_csv_file
+            stm_csv_file_from = stm_csv_file.as_of_git_commit(
+              from_git_commit,
+              :at_child_or_ref
+            )
+            enrich_st_attrs(
               st_attrs_with_content_only,
               stm_csv_file_from.subtitles
             )
           end
 
-          def compute_subtitle_attrs_to(content_at_file_to)
-            r = convert_content_at_to_subtitle_attrs(
+          # @param content_at_file_to [RFile::ContentAt]
+          # @param to_git_commit [String]
+          # @param execution_context [Symbol] one of :compute_new_st_ops or :recompute_existing_st_ops
+          def compute_subtitle_attrs_to(content_at_file_to, to_git_commit, execution_context)
+            st_attrs_with_content_only = convert_content_at_to_subtitle_attrs(
               content_at_file_to.contents
             )
-            # Uncomment this code to collect statistic related to subtitles.
-            # r.each { |e|
+
+            # Uncomment this code to collect statistics related to subtitles.
+            # st_attrs_with_content_only.each { |e|
             #   hkey = e[:content].to_s.length
             #   $repositext_subtitle_length_distribution[hkey] += 1
             # }
-            r
+
+            case execution_context
+            when :compute_new_st_ops
+              # This is part of st_sync, we use st_attrs_with_content_only.
+              # We ignore anything in the corresponding STM CSV file.
+              st_attrs_with_content_only
+            when :recompute_existing_st_ops
+              # This is part of a recomputation of existing st_ops, e.g., as
+              # part of a table release. We enrich the st_attrs with stids
+              # from the corresponding STM CSV file.
+              # Note: STM CSV files need to be checked out at a child commit after
+              # the ref_commit if that commit exists and affects the file in question.
+              # Otherwise we use the contents as of the ref_commit.
+              stm_csv_file = content_at_file_to.corresponding_subtitle_markers_csv_file
+              stm_csv_file_to = stm_csv_file.as_of_git_commit(
+                to_git_commit,
+                :at_child_or_ref
+              )
+              enrich_st_attrs(st_attrs_with_content_only, stm_csv_file_to.subtitles)
+            else
+              raise "Handle this: #{ execution_context.inspect }"
+            end
           end
 
         private
@@ -95,7 +123,7 @@ class Repositext
           # @param st_attrs_list [Array<SubtitleAttrs>]
           # @param st_objects [Array<Subtitle>]
           # @return [Array<SubtitleAttrs>]
-          def enrich_st_attrs_from(st_attrs_list, st_objects)
+          def enrich_st_attrs(st_attrs_list, st_objects)
             if st_attrs_list.length != st_objects.length
               pp st_attrs_list
               pp st_objects

@@ -103,7 +103,7 @@ class Repositext
             corr_stm_csv_file = content_at_file.corresponding_subtitle_markers_csv_file
                                                .as_of_git_commit(
                                                  @from_git_commit,
-                                                 :at_next_commit
+                                                 :at_child_or_current
                                                )
             corr_stm_csv_file.each_row { |e|
               old_stids << { persistent_id: e['persistentId'], record_id: e['recordId'] }

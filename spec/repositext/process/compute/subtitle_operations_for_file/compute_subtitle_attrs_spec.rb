@@ -161,10 +161,10 @@ class Repositext
             end
           end
 
-          describe '#enrich_st_attrs_from' do
+          describe '#enrich_st_attrs' do
             it "Handles default from data" do
               default_computer.send(
-                :enrich_st_attrs_from,
+                :enrich_st_attrs,
                 default_subtitle_attrs_from,
                 default_st_objects_from
               ).must_equal(default_enriched_subtitle_attrs_from)

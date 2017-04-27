@@ -3,6 +3,8 @@ class Repositext
   # Represents an abstract RFile. Use concrete sub class instances!
   class RFile
 
+    include HasGitVersioning
+
     attr_reader :content_type, :contents, :filename, :language
 
     # Optional content_type, without prefix
@@ -71,58 +73,6 @@ class Repositext
       @content_type = content_type
     end
 
-    # Returns copy of self with contents as of a commit relative to git_commit_sha1.
-    # reference can be one of:
-    #   * :at_commit - as of the commit.
-    #   * :at_next_commit - as of next commit that included self, or current
-    #     contents if there is no next commit.
-    # @param git_commit_sha1 [String]
-    # @param reference [Symbol]
-    # @return [RFile]
-    def as_of_git_commit(git_commit_sha1, reference=:at_commit)
-      if !git_commit_sha1.is_a?(String)
-        raise ArgumentError.new("Invalid git_commit_sha1: #{ git_commit_sha1.inspect }")
-      end
-      if '' == git_commit_sha1.to_s
-        raise ArgumentError.new("Invalid git_commit_sha1: #{ git_commit_sha1.inspect }")
-      end
-      # Instantiate copy of self with contents as of the requested version
-      new_contents = case reference
-      when :at_commit
-        # Use git_commit_sha1
-        `git --git-dir=#{ repository.repo_path } --no-pager show #{ git_commit_sha1 }:#{ repo_relative_path }`
-      when :at_next_commit
-        # Find next commit's sha1
-        # Get all commits between git_commit_sha1 and HEAD in reverse order,
-        # starting with the next one after git_commit_sha1, ending with HEAD,
-        # one commit sha1 per line.
-        cmd = [
-          "git",
-          "--git-dir=#{ repository.repo_path }",
-          "log",
-          "--reverse",
-          "--pretty=format:'%H'",
-          "--ancestry-path",
-          "#{git_commit_sha1}..HEAD",
-          "--",
-          filename.sub(repository.base_dir, ''),
-        ].join(' ')
-        all_commit_sha1s, _ = Open3.capture2(cmd)
-        next_commit_sha1 = (all_commit_sha1s.lines.first || '').strip
-        if '' != next_commit_sha1.to_s
-          # Load contents as of next commit
-          `git --git-dir=#{ repository.repo_path } --no-pager show #{ next_commit_sha1 }:#{ repo_relative_path }`
-        else
-          # No next commit, use current file contents
-          is_binary ? File.binread(filename) : File.read(filename)
-        end
-      else
-        raise "Handle this: #{ reference.inspect }"
-      end
-      # Return new instance of self
-      self.class.new(new_contents, language, filename, content_type)
-    end
-
     # Returns just the name without path
     def basename
       File.basename(filename)
@@ -150,15 +100,6 @@ class Repositext
 
     def lang_code_3
       language.code_3_chars
-    end
-
-    # Returns the latest git commit that included self. Before_time is optional
-    # and defaults to now.
-    # @param before_time [Time, optional]
-    # @return [Rugged::Commit]
-    def latest_git_commit(before_time=nil)
-      return nil  if repository.nil?
-      repository.latest_commit(filename, before_time)
     end
 
     # Lock self for a block so only one process can modify it at a time.

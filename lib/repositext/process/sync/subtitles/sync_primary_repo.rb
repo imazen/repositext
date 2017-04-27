@@ -67,7 +67,8 @@ class Repositext
               @to_git_commit,
               @file_list,
               @is_initial_primary_sync,
-              @last_operation_id
+              @last_operation_id,
+              :compute_new_st_ops
             ).compute
 
             puts "   - Assign new subtitle ids"

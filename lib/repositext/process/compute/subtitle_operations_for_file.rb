@@ -1,7 +1,12 @@
 class Repositext
   class Process
     class Compute
-      # Computes subtitle operations for a file and patch.
+
+      # Computes subtitle operations for a file and patch based on
+      # `options[:from_git_commit]` and `options[:to_git_commit]` reference
+      # commits. Note that we may use different actual commits since the reference
+      # commits don't include the changes effected by an st_sync, however the
+      # next child commit does.
       #
       # Data types used in this file
       #
@@ -47,6 +52,8 @@ class Repositext
         # @return [Array<Hash>] with keys :content, :line_no, :subtitles
         def self.compute_content_at_lines_with_subtitles(content_at_file, stm_csv_file)
           r = []
+          # Note: RFile::StmCsv#subtitles uses the current #contents and doesn't
+          # reload from disk. That's a good thing when we work with #as_of_git_commit.
           subtitles = stm_csv_file.subtitles
           content_at_file.contents
                          .split("\n")
@@ -60,10 +67,14 @@ class Repositext
           r
         end
 
-        # @param content_at_file_to [Repositext::RFile::ContentAt]
+        # @param content_at_file_to [Repositext::RFile::ContentAt] with contents
+        #   set to what they were after the `to` git commit.
         # @param repo_base_dir [String]
-        # @param options [Hash] with keys :from_git_commit (SHA1 string),
-        #   :to_git_commit (SHA1 string), :prev_last_operation_id (Integer)
+        # @param options [Hash] with keys
+        #   :from_git_commit (SHA1 string),
+        #   :to_git_commit (SHA1 string),
+        #   :prev_last_operation_id (Integer)
+        #   :execution_context (one of :compute_new_st_ops or :recompute_existing_st_ops)
         def initialize(content_at_file_to, repo_base_dir, options)
           @content_at_file_to = content_at_file_to
           @file_date_code = @content_at_file_to.extract_date_code
@@ -76,11 +87,21 @@ class Repositext
           if debug
             puts ('-' * 80).color(:red)
             puts "content_at_from"
-            puts @content_at_file_to.as_of_git_commit(@options[:from_git_commit]).contents
+            puts(
+              @content_at_file_to.as_of_git_commit(
+                @options[:from_git_commit],
+                :at_child_or_ref
+              ).contents
+            )
 
             puts ('-' * 80).color(:red)
             puts "content_at_to"
-            puts @content_at_file_to.contents
+            puts(
+              @content_at_file_to.as_of_git_commit(
+                @options[:to_git_commit],
+                :at_child_or_ref
+              ).contents
+            )
           end
 
           print "       - compute st attrs"
@@ -95,7 +116,9 @@ class Repositext
           end
 
           subtitle_attrs_to = compute_subtitle_attrs_to(
-            @content_at_file_to
+            @content_at_file_to,
+            @options[:to_git_commit],
+            @options[:execution_context]
           )
           if debug
             puts ('-' * 80).color(:red)

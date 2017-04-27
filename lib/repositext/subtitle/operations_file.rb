@@ -116,6 +116,19 @@ class Repositext
         [from_commit, to_commit]
       end
 
+      # Finds the path to the st-ops file with the given from_commit
+      # @param st_ops_dir [String]
+      # @param from_commit [String] full or truncated are both fine.
+      # @return [String, Nil] path to st_ops file
+      def self.find_path_by_from_git_commit(st_ops_dir, from_commit)
+        Dir.glob(
+          File.join(
+            st_ops_dir,
+            "st-ops-*-#{ truncate_git_commit_sha1(from_commit) }-to-*.json"
+          )
+        ).first
+      end
+
       # Finds the path of the earliest st-ops file if any exist
       # @param st_ops_dir [String]
       # @return [String, Nil]
@@ -162,6 +175,12 @@ class Repositext
           r = all_sync_commits
         end
         r
+      end
+
+      # @param file_path [String] absolute path to st_ops file
+      # @return [Hash{String => Object}]
+      def self.load_data(file_path)
+        JSON.parse(File.read(file_path))
       end
 
       # Returns truncated copy of gc_sha1 fit for st-ops file names.

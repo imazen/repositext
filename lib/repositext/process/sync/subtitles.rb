@@ -24,10 +24,15 @@ class Repositext
         # @option options [Array<String>] 'file_list' can be used at command
         #                                 line via file-selector to limit which
         #                                 files should be synced.
-        # @option options [String, Nil] 'from-commit', optional, defaults to previous `to-commit`
+        # @option options [String, Nil] 'from-commit', optional, defaults to
+        #   previous `to-commit`. NOTE: If you override this, always provide the
+        #   recorded git commit. The software will then use content as of the
+        #   next commit after the specified one to get the changes effected by
+        #   the sync operation.
         # @option options [Repository] 'primary_repository' the primary repo
         # @option options [IO] stids_inventory_file
-        # @option options [String, Nil] 'to-commit', optional, computed if not given
+        # @option options [String, Nil] 'to-commit', optional, computed if not
+        #   given. NOTE: See Note at 'from-commit'
         def initialize(options)
           @config = options['config']
           @file_list = options['file_list']
@@ -123,7 +128,7 @@ class Repositext
         end
 
         # Returns primary subtitle data given a content_at_file, a git_commit,
-        # and a commit_reference.
+        # and a relative_version.
         # Data is stored in a nested Hash in the @primary_subtitle_data_cache i_var:
         #     {
         #       'pid-12345' => {
@@ -143,15 +148,15 @@ class Repositext
         #     }
         # @param content_at_file [RFile::ContentAt] from any repo (primary or foreign)
         # @param git_commit_sha1 [String] complete or first six only
-        # @param commit_reference [Symbol] Note: for from_subtitles we want the
-        #        file contents at the commit (:at_commit), however for to_subtitles
+        # @param relative_version [Symbol] Note: for from_subtitles we want the
+        #        file contents at the commit (:at_ref), however for to_subtitles
         #        we want the file contents as of the next commit after
-        #        git_commit_sha1 (:at_next_commit).
+        #        git_commit_sha1 (:at_child_or_current).
         # @return [Array]
-        def cached_primary_subtitle_data(content_at_file, git_commit_sha1, commit_reference)
+        def cached_primary_subtitle_data(content_at_file, git_commit_sha1, relative_version)
           pii_cache_key = content_at_file.extract_product_identity_id
           gc_cache_key = Subtitle::OperationsFile.truncate_git_commit_sha1(git_commit_sha1)
-          ref_cache_key = commit_reference
+          ref_cache_key = relative_version
 
           if(cached_product_identity_id = @primary_subtitle_data_cache[pii_cache_key])
             if(cached_git_commit = cached_product_identity_id[gc_cache_key])
@@ -167,7 +172,7 @@ class Repositext
           stm_csv_file = primary_content_at_file.corresponding_subtitle_markers_csv_file
                                                 .as_of_git_commit(
                                                   git_commit_sha1,
-                                                  commit_reference
+                                                  relative_version
                                                 )
           # Store data in cache and return it
           @primary_subtitle_data_cache[pii_cache_key] ||= {}

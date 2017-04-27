@@ -8,21 +8,33 @@ class Repositext
       class SubtitleOperationsForRepository
 
         # Initializes a new instance from high level objects.
-        # @param content_type [Repositext::ContentType]
+        # @param any_content_type [Repositext::ContentType]
         # @param from_git_commit [String] SHA1
         # @param to_git_commit [String] SHA1
         # @param file_list [Array<String>] path to files to include
         # @param is_initial_primary_sync [Boolean] set to true for initial sync only
         # @param prev_last_operation_id [Integer] previous sync's last operation_id
-        def initialize(content_type, from_git_commit, to_git_commit, file_list, is_initial_primary_sync, prev_last_operation_id)
-          @content_type = content_type
-          @repository = @content_type.repository
-          @language = @content_type.language
+        # @param execution_context [Symbol] one of :compute_new_st_ops or :recompute_existing_st_ops
+        def initialize(
+          any_content_type,
+          from_git_commit,
+          to_git_commit,
+          file_list,
+          is_initial_primary_sync,
+          prev_last_operation_id,
+          execution_context
+        )
+          @any_content_type = any_content_type
+          @repository = @any_content_type.repository
+          @language = @any_content_type.language
+
           @from_git_commit = from_git_commit
-          @is_initial_primary_sync = is_initial_primary_sync
-          @first_operation_id = prev_last_operation_id + 1
-          @prev_last_operation_id = prev_last_operation_id
           @to_git_commit = to_git_commit
+          @is_initial_primary_sync = is_initial_primary_sync
+          @prev_last_operation_id = prev_last_operation_id
+          @execution_context = execution_context
+
+          @first_operation_id = prev_last_operation_id + 1
           # Convert to repo relative paths
           @file_list = file_list.map { |e| e.sub!(@repository.base_dir, '') }
           # Uncomment this code to collect statistic related to subtitles.
@@ -31,14 +43,31 @@ class Repositext
 
         # @return [Repositext::Subtitle::OperationsForRepository]
         def compute
-          if @repository.latest_commit_sha_local != @to_git_commit
-            raise ArgumentError.new(
-              [
-                "`to_git_commit` is not the latest commit in repo #{ @repository.name }. We haven't confirmed that this works!",
-                "Latest git commit: #{ @repository.latest_commit_sha_local.inspect }",
-                "to_git_commit: #{ @to_git_commit.inspect }",
-              ]
+          case @execution_context
+          when :compute_new_st_ops
+            # Regular st sync: We expect @to_git_commit to be the latest
+            # git commit in the repo.
+            if @repository.latest_commit_sha_local != @to_git_commit
+              raise ArgumentError.new(
+                "`to_git_commit` must be the latest commit in repo #{ @repository.name }: #{ @repository.latest_commit_sha_local.inspect }, however it is #{ @to_git_commit.inspect }."
+              )
+            end
+          when :recompute_existing_st_ops
+            # This is part of table release where we re-compute the combined
+            # st ops since the last table release. In this case we check that
+            # the @to_git_commit is aligned with existing st_sync commits.
+            if !(
+              Repositext::Subtitle::OperationsFile.any_with_git_commit?(
+                @any_content_type.config_compute_base_dir(:subtitle_operations_dir),
+                @to_git_commit
+              )
             )
+              raise ArgumentError.new(
+                "`to_git_commit` must be aligned with an existing sync commit. (#{ @to_git_commit.inspect })"
+              )
+            end
+          else
+            raise "Handle this: #{ @execution_context.inspect }"
           end
 
           operations_for_all_files = if @is_initial_primary_sync
@@ -114,11 +143,14 @@ class Repositext
               raise "shouldn't get here"
             end
 
+            # Note: @any_content_type may be the wrong one, however finding
+            # corresponding STM CSV file will still work as it doesn't rely
+            # on config but das regex replacements on file path only.
             content_at_file_to = Repositext::RFile::ContentAt.new(
               File.read(absolute_file_path),
               @language,
               absolute_file_path,
-              @content_type
+              @any_content_type
             )
 
             puts "     - process #{ content_at_file_to.repo_relative_path(true) }"
@@ -130,6 +162,7 @@ class Repositext
                 from_git_commit: @from_git_commit,
                 to_git_commit: @to_git_commit,
                 prev_last_operation_id: @prev_last_operation_id,
+                execution_context: @execution_context,
               }
             ).compute
 
@@ -151,27 +184,31 @@ class Repositext
         # @return [Array<SubtitleOperationsForFile>]
         def process_primary_files_with_changes_only
           # We get the diff only so that we know which files have changed.
+          # It's ok to use the reference commits because we're dealing with
+          # content AT files only.
           diff = @repository.diff(@from_git_commit, @to_git_commit, context_lines: 0)
           fwc = []
           diff.patches.each { |patch|
             file_name = patch.delta.old_file[:path]
-
             # Skip non content_at files
             next  if !@file_list.include?(file_name)
             # next  if !file_name.index('63-0728')
             unless file_name =~ /\/content\/.+\d{4}\.at\z/
-              raise "shouldn't get here"
+              raise "shouldn't get here: #{ file_name.inspect }"
             end
 
             puts "     - process #{ file_name }"
 
             absolute_file_path = File.join(@repository.base_dir, file_name)
+            # Initialize content AT file `to` with contents as of `to_git_commit`.
+            # It's fine to use the reference sync commit as the sync operation
+            # doesn't touch content AT files, only STM CSV ones.
             content_at_file_to = Repositext::RFile::ContentAt.new(
-              File.read(absolute_file_path),
+              '_', # Contents are initialized later via `#as_of_git_commit`
               @language,
               absolute_file_path,
-              @content_type
-            )
+              @any_content_type
+            ).as_of_git_commit(@to_git_commit)
 
             soff = SubtitleOperationsForFile.new(
               content_at_file_to,
@@ -180,6 +217,7 @@ class Repositext
                 from_git_commit: @from_git_commit,
                 to_git_commit: @to_git_commit,
                 prev_last_operation_id: @prev_last_operation_id,
+                execution_context: @execution_context,
               }
             ).compute
 
@@ -195,28 +233,32 @@ class Repositext
           @file_list.each { |content_at_filename|
             # Skip files that we have captured already
             next  if fwc.any? { |soff| soff.content_at_file.repo_relative_path == content_at_filename }
-            # Skip files that don't have st_sync_required set to true
+            # Skip files that don't have st_sync_required set to true at to_git_commit
             dj_filename = content_at_filename.sub(/\.at\z/, '.data.json')
+            # We use dj file contents at to_git_commit :at_child_or_ref
             dj_file = Repositext::RFile::DataJson.new(
-              File.read(dj_filename),
+              '_', # Contents are initialized later via #as_of_git_commit
               @language,
               dj_filename,
-              @content_type
+              @any_content_type
+            ).as_of_git_commit(
+              @to_git_commit,
+              :at_child_or_ref
             )
-            next  if !dj_file.read_data['st_sync_required']
+            next  if(dj_file.nil? || !dj_file.read_data['st_sync_required'])
             # This file is not in the list of fwc yet, and it has st_sync_required.
             # We add an soff instance with no operations. This could be a file
             # that has changes to subtitle timeslices only.
-            content_at_file = Repositext::RFile::ContentAt.new(
-              File.read(content_at_filename),
+            content_at_file_from = Repositext::RFile::ContentAt.new(
+              '_', # Contents are initialized later via `#as_of_git_commit`
               @language,
               content_at_filename,
-              @content_type
-            )
+              @any_content_type
+            ).as_of_git_commit(@from_git_commit)
             soff = Repositext::Subtitle::OperationsForFile.new(
-              content_at_file,
+              content_at_file_from,
               {
-                file_path: content_at_file.repo_relative_path,
+                file_path: content_at_file_from.repo_relative_path,
                 from_git_commit: @from_git_commit,
                 to_git_commit: @to_git_commit,
               },
