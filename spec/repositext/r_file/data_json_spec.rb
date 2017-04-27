@@ -78,7 +78,7 @@ class Repositext
 
       describe '#update_data' do
         it 'adds a key under data' do
-          JSON.load(
+          JSON.parse(
             default_rfile.update_data(
               'test_key' => 'test val'
             )
@@ -96,7 +96,7 @@ class Repositext
         end
 
         it 'updates a key under data' do
-          JSON.load(
+          JSON.parse(
             default_rfile.update_data(
               'st_sync_required' => false
             )
@@ -119,7 +119,7 @@ class Repositext
 
       describe '#update_settings' do
         it 'adds a key under settings' do
-          JSON.load(
+          JSON.parse(
             default_rfile.update_settings(
               'test_key' => 'test val'
             )
@@ -137,7 +137,7 @@ class Repositext
         end
 
         it 'updates a key under settings' do
-          JSON.load(
+          JSON.parse(
             default_rfile.update_settings(
               'st_sync_active' => false
             )

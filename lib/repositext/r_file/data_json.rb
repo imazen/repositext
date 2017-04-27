@@ -31,7 +31,7 @@ class Repositext
 
       # Returns all key value pairs as hash
       def get_all_attributes
-        (JSON.load(contents) || self.class.default_data)
+        (JSON.parse(contents) || self.class.default_data)
       end
 
       def read_data

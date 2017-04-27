@@ -57,7 +57,7 @@ class Repositext
         def self.initialize_repositext_level_settings(config, data_file_path)
           settings = if(File.exists?(data_file_path))
             # Check if file already exists. If so load initial settings from it
-            JSON.load(File.read(data_file_path))['settings'] || {}
+            JSON.parse(File.read(data_file_path))['settings'] || {}
           else
             # otherwise start with empty hash
             {}
@@ -76,7 +76,7 @@ class Repositext
         def self.initialize_repository_level_settings(config, data_file_path)
           settings = if(File.exists?(data_file_path))
             # Check if file already exists. If so load initial settings from it
-            JSON.load(File.read(data_file_path))['settings'] || {}
+            JSON.parse(File.read(data_file_path))['settings'] || {}
           else
             # otherwise start with empty hash
             {}

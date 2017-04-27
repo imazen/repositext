@@ -215,7 +215,7 @@ class Repositext
           "Reading folio import warnings",
           options
         ) do |contents, filename|
-          warnings = JSON.load(contents)
+          warnings = JSON.parse(contents)
           warnings.each do |warning|
             message_stub = warning['message'].split(':').first || ''
             uniq_warnings[message_stub] += 1

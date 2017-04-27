@@ -12,7 +12,7 @@ class Repositext
 
         # @param json_string_override [String] for testing
         def load(json_string_override=nil)
-          JSON.load(
+          JSON.parse(
             json_string_override || File.read(@json_data_file_path)
           )['settings']
         end

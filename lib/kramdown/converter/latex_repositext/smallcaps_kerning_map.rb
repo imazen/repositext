@@ -20,7 +20,7 @@ module Kramdown
         def initialize(kerning_map_override=nil)
           @kerning_map = (
             kerning_map_override or
-            JSON.load(
+            JSON.parse(
               File.read(
                 self.class.smallcaps_kerning_map_file_path
               )
