@@ -33,14 +33,20 @@ class Repositext
                 .sub(/\.at\z/, '.txt') # update extension
       end
 
+      # Returns the corresponding file while considering #as_of_git_commit_attrs.
       def corresponding_subtitle_export_en_txt_file
         return nil  if !File.exist?(corresponding_subtitle_export_en_txt_filename)
-        RFile::Content.new(
+        r = RFile::Content.new(
           File.read(corresponding_subtitle_export_en_txt_filename),
           language,
           corresponding_subtitle_export_en_txt_filename,
           content_type
         )
+        if as_of_git_commit_attrs
+          r.as_of_git_commit(*as_of_git_commit_attrs)
+        else
+          r
+        end
       end
 
       def corresponding_subtitle_export_en_txt_filename
@@ -49,14 +55,20 @@ class Repositext
                 .sub(/\.at\z/, '.en.txt') # update extension
       end
 
+      # Returns the corresponding file while considering #as_of_git_commit_attrs.
       def corresponding_subtitle_import_markers_file
         return nil  if !File.exist?(corresponding_subtitle_import_markers_filename)
-        RFile::SubtitleMarkersCsv.new(
+        r = RFile::SubtitleMarkersCsv.new(
           File.read(corresponding_subtitle_import_markers_filename),
           language,
           corresponding_subtitle_import_markers_filename,
           content_type
         )
+        if as_of_git_commit_attrs
+          r.as_of_git_commit(*as_of_git_commit_attrs)
+        else
+          r
+        end
       end
 
       def corresponding_subtitle_import_markers_filename
@@ -65,14 +77,20 @@ class Repositext
                 .sub(/\.at\z/, '.markers.txt') # update extension
       end
 
+      # Returns the corresponding file while considering #as_of_git_commit_attrs.
       def corresponding_subtitle_import_txt_file
         return nil  if !File.exist?(corresponding_subtitle_import_txt_filename)
-        RFile::Text.new(
+        r = RFile::Text.new(
           File.read(corresponding_subtitle_import_txt_filename),
           language,
           corresponding_subtitle_import_txt_filename,
           content_type
         )
+        if as_of_git_commit_attrs
+          r.as_of_git_commit(*as_of_git_commit_attrs)
+        else
+          r
+        end
       end
 
       def corresponding_subtitle_import_txt_filename
@@ -80,16 +98,61 @@ class Repositext
                 .sub(/\/content\//, '/subtitle_import/') # update path
                 .sub(/\.at\z/, ".#{ language.code_2_chars }.txt") # update extension w/ lang code
       end
+
       # Returns the corresponding subtitle markers csv file or nil if it
-      # doesn't exist
+      # doesn't exist.
+      # This method considers #as_of_git_commit_attrs and also handles symlinked
+      # foreign STM CSV file correctly.
       def corresponding_subtitle_markers_csv_file
         return nil  if !File.exist?(corresponding_subtitle_markers_csv_filename)
-        RFile::SubtitleMarkersCsv.new(
+
+        r = RFile::SubtitleMarkersCsv.new(
           File.read(corresponding_subtitle_markers_csv_filename),
           language,
           corresponding_subtitle_markers_csv_filename,
           content_type
         )
+
+        if as_of_git_commit_attrs
+          ref_commit, relative_version = as_of_git_commit_attrs
+          if is_primary?
+            # We're staying in the same repo, just use as_of_git_commit_attrs as is.
+            r.as_of_git_commit(ref_commit, relative_version)
+          else
+            # We're jumping from a foreign to the primary repo, so we have to
+            # find the latest commit prior or equal to ref_commit in the primary
+            # repo.
+            foreign_symlinked_stm_csv_file = r
+
+            # Compute ref_commit datetime
+            foreign_ref_commit_obj = repository.lookup(ref_commit)
+            foreign_ref_commit_datetime = foreign_ref_commit_obj.time.utc
+
+            # Find latest commit for corresponding primary file
+            primary_stm_csv_file_shell = foreign_symlinked_stm_csv_file.corresponding_primary_file
+            corresponding_primary_ref_commit_obj = primary_stm_csv_file_shell.latest_git_commit(
+              foreign_ref_commit_datetime
+            )
+
+            primary_stm_csv_file_as_of_git_commit = primary_stm_csv_file_shell.as_of_git_commit(
+              corresponding_primary_ref_commit_obj.oid,
+              :at_ref
+            )
+
+            # Create new instance of STM CSV file with updated attrs
+            r = RFile::SubtitleMarkersCsv.new(
+              primary_stm_csv_file_as_of_git_commit.contents,
+              language,
+              corresponding_subtitle_markers_csv_filename,
+              content_type
+            )
+            r.as_of_git_commit_attrs = as_of_git_commit_attrs
+            # Return new file instance
+            r
+          end
+        else
+          r
+        end
       end
 
       def corresponding_subtitle_markers_csv_filename

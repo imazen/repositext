@@ -5,6 +5,10 @@ class Repositext
 
       extend ActiveSupport::Concern
 
+      included do
+        attr_accessor :as_of_git_commit_attrs
+      end
+
       # Returns copy of self with contents as of a ref_commit or one of its
       # children.
       # relative_version can be one of:
@@ -79,9 +83,16 @@ class Repositext
           # Return nil, not a new instance of self
           nil
         else
-          # Return new instance of self with updated contents
-          self.class.new(new_contents, language, filename, content_type)
+          # Return new instance of self with updated contents and attrs
+          r = self.class.new(new_contents, language, filename, content_type)
+          r.as_of_git_commit_attrs = [ref_commit, relative_version]
+          r
         end
+      end
+
+      # Returns true if self was instantiated via #as_of_git_commit
+      def is_git_versioned?
+        !as_of_git_commit_attrs.nil?
       end
 
       # Returns the latest git commit that included self. Before_time is optional

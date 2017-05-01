@@ -7,6 +7,9 @@ class Repositext
 
       # Returns the corresponding primary content AT file for foreign text files
       # that are not content AT. E.g., DOCX imported at files.
+      # NOTE: This method does not take #as_of_git_commit_attrs into consideration.
+      # It always returns the current version of the file. This is because
+      # it's in a different repo and this repo's git commits don't apply.
       def corresponding_primary_content_at_file
         cpct = corresponding_primary_content_type
         self.class.new(

@@ -31,6 +31,9 @@ class Repositext
         corresponding_primary_file.contents
       end
 
+      # NOTE: This method does not take #as_of_git_commit_attrs into consideration.
+      # It always returns the current version of the file. This is because
+      # it's in a different repo and this repo's git commits don't apply.
       def corresponding_primary_file
         return self  if is_primary?
 

@@ -6,6 +6,7 @@ class Repositext
       extend ActiveSupport::Concern
 
       # Returns the corresponding data.json file. Can create if it doesn't exist.
+      # It considers #as_of_git_commit_attrs.
       # @param create_if_it_doesnt_exist [Boolean, Optional] default: false
       # @return [RFile]
       def corresponding_data_json_file(create_if_it_doesnt_exist=false)
@@ -16,12 +17,17 @@ class Repositext
             return nil
           end
         end
-        RFile::DataJson.new(
+        r = RFile::DataJson.new(
           File.read(corresponding_data_json_filename),
           language,
           corresponding_data_json_filename,
           content_type
         )
+        if as_of_git_commit_attrs
+          r.as_of_git_commit(*as_of_git_commit_attrs)
+        else
+          r
+        end
       end
 
       # Finds the corresponding data.json file if self is a content AT file.

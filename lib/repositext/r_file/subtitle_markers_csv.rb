@@ -14,6 +14,14 @@ class Repositext
         { col_sep: "\t", headers: :first_row }
       end
 
+      # Returns contents as CSV object.
+      # Important: This uses the current value of #contents (rather than
+      # reloading from disk!) so that this also works when we call, e.g.,
+      # `#subtitles` on an StmCsvFile that is checked out at a certain git commit.
+      def csv
+        csv = CSV.new(contents, self.class.csv_options)
+      end
+
       # Yields each row as hash with stringified keys to block
       def each_row
         csv.each do |row|
@@ -34,14 +42,6 @@ class Repositext
             record_id: row['recordId'],
           })
         }
-      end
-
-      # Returns contents as CSV object.
-      # Important: This uses the current value of #contents (rather than
-      # reloading from disk!) so that this also works when we call, e.g.,
-      # `#subtitles` on an StmCsvFile that is checked out at a certain git commit.
-      def csv
-        csv = CSV.new(contents, self.class.csv_options)
       end
 
       # @param new_subtitle_markers_data [Array<Hash>]
