@@ -470,7 +470,7 @@ class Repositext
       end
 
       # Copy repository level data.json file from code template
-      repo_dir_name = repo_root_path.split('/').last.sub(/\Avgr\-/, '')
+      repo_dir_name = repo_root_path.split('/').last
       language = Language.find_by_repo_dir_name(repo_dir_name)
       @langcode_2 = language.code_2_chars
       @langcode_3 = language.code_3_chars
