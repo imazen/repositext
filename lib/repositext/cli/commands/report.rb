@@ -60,8 +60,16 @@ class Repositext
           chars.sort_by { |k,v|
             k
           }.map { |(code,count)|
-            # Don't inspect double quotes (34)
-            char = 34 == code ? '"' : code.chr('UTF-8').inspect.gsub("\"", '')
+            char = case code
+            when 34
+              # Don't inspect double quotes
+              '"'
+            when 37
+              # Escape percent for sprintf
+              '%%'
+            else
+              code.chr('UTF-8').inspect.gsub("\"", '')
+            end
             $stderr.puts(sprintf("#{ char.ljust(4) } U+%04x %9d", code, count))
           }
         }
