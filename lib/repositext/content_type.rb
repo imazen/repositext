@@ -35,8 +35,12 @@ class Repositext
           repo.base_dir,
           "ct-#{ content_type_name }"
         )
-        new(content_type_base_dir, repo)
-      }
+        if File.exists?(content_type_base_dir)
+          new(content_type_base_dir, repo)
+        else
+          nil
+        end
+      }.compact
     end
 
     # Returns any ContentType from repo. This is used where we only care about
