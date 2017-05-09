@@ -11,6 +11,8 @@ class Repositext
         # @param any_content_type [Repositext::ContentType]
         # @param from_git_commit [String] SHA1
         # @param to_git_commit [String] SHA1
+        # @param from_table_release_version [String, Nil] just passed through to st_ops file. Can be nil if not applicable.
+        # @param to_table_release_version [String, Nil] just passed through to st_ops file. Can be nil if not applicable.
         # @param file_list [Array<String>] path to files to include
         # @param is_initial_primary_sync [Boolean] set to true for initial sync only
         # @param prev_last_operation_id [Integer] previous sync's last operation_id
@@ -19,6 +21,8 @@ class Repositext
           any_content_type,
           from_git_commit,
           to_git_commit,
+          from_table_release_version,
+          to_table_release_version,
           file_list,
           is_initial_primary_sync,
           prev_last_operation_id,
@@ -114,8 +118,11 @@ class Repositext
               repository: @repository.name,
               from_git_commit: @from_git_commit,
               to_git_commit: @to_git_commit,
+              from_table_release_version: @from_table_release_version,
+              to_table_release_version: @to_table_release_version,
               first_operation_id: first_operation_id,
               last_operation_id: last_operation_id,
+              language: @language.code_3_chars,
             },
             operations_for_all_files
           )

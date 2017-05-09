@@ -33,9 +33,7 @@ class Repositext
         new(
           content_at_file,
           hash,
-          ops.map { |op_hash|
-            Operation.new_from_hash(op_hash)
-          }
+          ops.map { |op_hash| Operation.new_from_hash(op_hash) }
         )
       end
 
@@ -140,7 +138,6 @@ class Repositext
           m
         }
         r[:product_identity_id] = product_identity_id
-        r[:language] = lang_code_3_chars
         r[:operations] = operations.map { |e| e.to_hash }
         r
       end

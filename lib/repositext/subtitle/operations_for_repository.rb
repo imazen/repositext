@@ -10,9 +10,12 @@ class Repositext
       ATTR_NAMES = [
         :first_operation_id,
         :from_git_commit,
+        :from_table_release_version,
+        :language,
         :last_operation_id,
         :repository,
         :to_git_commit,
+        :to_table_release_version,
       ]
 
       attr_accessor :operations_for_files
