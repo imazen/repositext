@@ -33,6 +33,7 @@ class Repositext
       # Returns an array of the contained subtitles
       # @return [Array<Repositext::Subtitle>]
       def subtitles
+        idx = 0
         csv.to_a.map { |row|
           Subtitle.new({
             relative_milliseconds: row['relativeMS'],
@@ -40,6 +41,7 @@ class Repositext
             char_length: row['charLength'],
             persistent_id: row['persistentId'],
             record_id: row['recordId'],
+            tmp_attrs: { index: idx += 1 },
           })
         }
       end
