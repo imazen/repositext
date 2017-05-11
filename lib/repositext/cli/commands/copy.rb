@@ -106,12 +106,13 @@ class Repositext
           options['file_filter'] || /\.subtitle_markers\.csv\z/,
           "Copying subtitle marker CSV files from content_dir to subtitle_export_dir",
           options.merge(
-            :output_path_lambda => lambda { |input_filename|
-              input_filename.gsub(primary_repo_input_base_dir, output_base_dir)
-                            .gsub(
-                              /\/[[:alpha:]]{3}([^\/\.]+)\.subtitle_markers\.csv/,
-                              '/\1.markers.txt'
-                            )
+            output_path_lambda: lambda { |input_filename|
+              Service::Filename::ConvertStmCsvToStExport(
+                source_filename: input_filename.sub(
+                  primary_repo_input_base_dir,
+                  output_base_dir
+                )
+              )[:result]
             }
           )
         )
