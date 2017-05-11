@@ -110,8 +110,8 @@ class Repositext
         else
           ".#{ convert_language_code(input_lang_code) }"
         end
-        rt_filename.gsub(/\/#{ input_lang_code }/, '/')
-                   .gsub(/\.at\z/, "#{ output_lang_code }.#{ extension }")
+        rt_filename.sub(/\/#{ input_lang_code }(?=\d)/, '/')
+                   .sub(/\.at\z/, "#{ output_lang_code }.#{ extension }")
       end
 
       # Converts a repositext filename to the corresponding subtitle_import one
@@ -124,8 +124,8 @@ class Repositext
       # @return [String] the corresponding subtitle filename
       def self.convert_from_repositext_to_subtitle_import(rt_filename)
         lang_code = rt_filename.split('/').last[0,3] # should be 'eng'
-        rt_filename.gsub(/\/#{ lang_code }/, '/')
-                   .gsub(/\.at\z/, ".#{ convert_language_code(lang_code) }.txt")
+        rt_filename.sub(/\/#{ lang_code }(?=\d)/, '/')
+                   .sub(/\.at\z/, ".#{ convert_language_code(lang_code) }.txt")
       end
 
       # Converts a subtitle filename to the corresponding repositext one
@@ -139,11 +139,11 @@ class Repositext
       # @return [String] the corresponding repositext filename
       def self.convert_from_subtitle_import_to_repositext(st_filename)
         lang_code = st_filename.match(/(?<=\.)[[:alpha:]]{2}(?=\.txt\z)/).to_s # should be 'en'
-        st_filename.gsub(
+        st_filename.sub(
                      /(?<=\/)(\d\d|cab)(?=[\-\_])/, # handle year digits or cab prefix
                      [convert_language_code(lang_code), '\1'].join
                    )
-                   .gsub(/\.#{ lang_code }\.txt\z/, '.at')
+                   .sub(/\.#{ lang_code }\.txt\z/, '.at')
       end
 
     private
