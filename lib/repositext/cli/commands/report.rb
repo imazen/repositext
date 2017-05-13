@@ -16,6 +16,7 @@ class Repositext
       def report_character_inventory(options)
         chars = Hash.new(0)
         total_file_count = 0
+        lines = []
 
         Repositext::Cli::Utils.read_files(
           config.compute_glob_pattern(
@@ -34,36 +35,53 @@ class Repositext
           total_file_count += 1
 
           # Build character inventory
-          content_at_file.contents.codepoints.each { |cp|
+          content_at_file.plain_text_contents({}).codepoints.each { |cp|
             chars[cp] += 1
           }
         end
 
-        $stderr.puts "\nCharacter inventory for #{ content_type.language_name }".color(:blue)
+        lines << "Character inventory for #{ content_type.language_name }"
 
         char_groups = chars.group_by { |(code, count)|
           case code.chr('UTF-8')
-          when /\A[#{ Regexp.escape("#%&*@^_=\"{}") }]\z/
-            "Repositext markup"
+          # We switched to using plain text instead of content AT, so we don't
+          # need this char_group.
+          # when /\A[#{ Regexp.escape("#%&*@^_=\"{}") }]\z/
+          #   "Repositext markup"
           when /\A[#{ Regexp.escape("\n !()/,-+$.:;?[]–—‘’“”…") }0-9A-Za-z]\z/
             "English chars and punctuation"
           else
             "Language specific characters"
           end
         }
-
         char_groups.each { |group_name, chars|
-          $stderr.puts
-          $stderr.puts group_name
-          $stderr.puts '*' * group_name.length
+          lines << ''
+          lines << group_name
+          lines << '*' * group_name.length
 
           chars.sort_by { |k,v|
             k
           }.map { |(code,count)|
-            # Don't inspect double quotes (34)
-            char = 34 == code ? '"' : code.chr('UTF-8').inspect.gsub("\"", '')
-            $stderr.puts(sprintf("#{ char.ljust(4) } U+%04x %9d", code, count))
+            char = case code
+            when 34
+              # Don't inspect double quotes
+              '"'
+            when 37
+              # Escape percent for sprintf
+              '%%'
+            else
+              code.chr('UTF-8').inspect.gsub("\"", '')
+            end
+            lines << sprintf("#{ char.ljust(4) } U+%04x %9d", code, count)
           }
+        }
+        $stderr.puts
+        lines.each { |e| $stderr.puts(e) }
+        report_file_path = File.join(config.base_dir(:reports_dir), 'character_inventory_report.txt')
+        File.open(report_file_path, 'w') { |f|
+          f.write lines.join("\n")
+          f.write "\n\n"
+          f.write "Command to generate this file: `repositext report character_inventory`\n"
         }
       end
 
