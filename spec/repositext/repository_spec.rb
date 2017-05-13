@@ -62,7 +62,7 @@ class Repositext
         r.must_equal(
           [
             {
-              commit_hash: "2501853",
+              commit_hash: "250185",
               author: "Jo Hund",
               date: "2015-10-26",
               message: "Initial commit",

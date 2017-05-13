@@ -6,21 +6,26 @@ class Repositext
       extend ActiveSupport::Concern
 
       included do
+        # [ref_commit, relative_version] where ref_commit is the commit SHA1
+        # and relative_version see #as_of_git_commit.
         attr_accessor :as_of_git_commit_attrs
       end
 
       # Returns copy of self with contents as of a ref_commit or one of its
       # children.
       # relative_version can be one of:
-      #   * :at_ref - Returns contents as of the ref_commit.
+      #   * :at_ref - Returns contents as of the ref_commit, or Nil if file
+      #     didn't exist at commit.
       #   * :at_child_or_current
       #     Returns contents at a child commit if it affected self, otherwise
-      #     current file contents.
+      #     current file contents. Raises file not found error if current file
+      #     does not exist.
       #   * :at_child_or_nil
       #     Returns contents at a child commit if it affected self, otherwise nil.
       #   * :at_child_or_ref
       #     Returns contents at a child commit if it affected self, otherwise the
-      #     contents at reference commit.
+      #     contents at reference commit. Returns nil if file didn't exist at
+      #     either of the two commits.
       # @param ref_commit [String]
       # @param relative_version [Symbol]
       # @return [RFile, nil]

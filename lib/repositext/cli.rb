@@ -64,6 +64,9 @@ class Repositext
       valid_content_type_names.include?(content_type_name)
     end
 
+    class_option :'at-commit',
+                 :type => :string,
+                 :desc => "For commands that require git commit information (e.g., exporting files at a certain commit)"
     class_option :'base-dir',
                  :type => :string,
                  :desc => 'Specifies the input file base directory. Expects a named base_dir from Rtfile or an absolute directory path.'
@@ -228,12 +231,9 @@ class Repositext
 
     desc 'release SPEC', 'Releases a product'
     long_desc long_description_for_release
-    method_option :'reproduce-version',
+    method_option :'release-version',
                   type: :string,
-                  desc: "Argument to re-produce a previously released version"
-    method_option :'update-version',
-                  type: :string,
-                  desc: "Argument to update a previously released version"
+                  desc: "Argument to specify what version should be released"
     # @param [String] command_spec Specification of the operation
     def release(command_spec)
       invoke_repositext_command('release', command_spec, options)

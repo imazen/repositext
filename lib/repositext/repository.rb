@@ -123,10 +123,10 @@ class Repositext
         s.split("\n").map do |line|
           commit_hash, author, date, message = line.split('|')
           {
-            :commit_hash => commit_hash,
-            :author => author,
-            :date => date,
-            :message => message,
+            commit_hash: Subtitle::OperationsFile.truncate_git_commit_sha1(commit_hash),
+            author: author,
+            date: date,
+            message: message,
           }
         end
       else

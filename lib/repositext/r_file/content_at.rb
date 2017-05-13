@@ -220,33 +220,58 @@ class Repositext
 
       # Returns subtitles based on content in self and attrs in corresponding
       # subtitle markers csv file, or subtitle_attrs_overrides if given.
-      # @param with_content [Boolean, optional] defaults to false. If true,
+      # @param options [Hash{Symbol => Object}] with the following keys:
+      #   with_content [Boolean, optional] defaults to false. If true,
       #     returned subtitles will have their content attribute populated.
-      # @param subtitle_attrs_override [Array<Subtitle>, optional]
+      #   content_format [Symbol] one of :content_at, :plain_text. Defaults to :content_at
+      #   subtitle_attrs_override [Array<Subtitle>, optional] if given will be
+      #     used instead of attrs from stm_csv file.
       # @return [Array<Subtitle>] with attrs and content
-      def subtitles(with_content=false, subtitle_attrs_override=nil)
-        subtitle_attrs = if subtitle_attrs_override
-          subtitle_attrs_override
+      def subtitles(options={})
+        options = {
+          content_format: :content_at,
+          subtitle_attrs_override: nil,
+          with_content: false,
+        }.merge(options)
+        subtitle_attrs = if options[:subtitle_attrs_override]
+          options[:subtitle_attrs_override]
         elsif (csmcf = corresponding_subtitle_markers_csv_file)
           csmcf.subtitles
         else
           []
         end
         return []  if subtitle_attrs.empty?
-        if with_content
+        if options[:with_content]
           # merge content and attrs
           subtitle_attrs_pool = subtitle_attrs.dup
-          contents.split(/(?<=\n\n)|(?=@)/).map { |e|
-            if e =~ /\A@/
-              # starts with subtitle_mark, merge content with next attrs
-              s = subtitle_attrs_pool.shift
-              s.content = e
-              s
-            else
-              # Not inside a subtitle, add blank attrs
-              Subtitle.new(content: e)
-            end
-          }
+          case options[:content_format]
+          when :content_at
+            contents.split(/(?<=\n\n)|(?=@)/).map { |e|
+              if e =~ /\A@/
+                # starts with subtitle_mark, merge content with next attrs
+                s = subtitle_attrs_pool.shift
+                s.content = e
+                s
+              else
+                # Not inside a subtitle, add blank attrs
+                Subtitle.new(content: e)
+              end
+            }
+          when :plain_text
+            plain_text_with_subtitles_contents({}).split(/(?<=\n)|(?=@)/).map { |e|
+              if e =~ /\A@/
+                # starts with subtitle_mark, merge content with next attrs
+                s = subtitle_attrs_pool.shift
+                s.content = e
+                s
+              else
+                # Not inside a subtitle, add blank attrs
+                Subtitle.new(content: e)
+              end
+            }
+          else
+            raise "Handle this: #{ options[:content_format].inspect }"
+          end
         else
           # return just attrs
           subtitle_attrs
