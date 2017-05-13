@@ -8,7 +8,7 @@ class Repositext
         # @param spot_corrections_file_contents [String]
         # @return [Array<Hash>] a hash describing the corrections
         def self.extract(spot_corrections_file_contents)
-          editor_initials = %w[JSR NCH RMM]
+          editor_initials = %w[JSR NCH RMM TRNReads]
           correction_number_regex = /^\d+[a-z]?/
           segment_start_regexes = [
             { key: :becomes, regex: /^Becomes:/ }, # `Becomes:` segment
