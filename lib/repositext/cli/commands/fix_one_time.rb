@@ -28,7 +28,7 @@ class Repositext
           options['file_filter'],
           "Adding .first_par classes",
           options.merge(
-            use_new_repositext_file_api: true,
+            use_new_r_file_api: true,
             content_type: content_type,
           )
         ) do |content_at_file|
@@ -67,7 +67,7 @@ class Repositext
           options['file_filter'] || /\.subtitle_markers\.csv\z/i,
           "Adding initial persistent subtitle ids",
           options.merge(
-            use_new_repositext_file_api: true,
+            use_new_r_file_api: true,
             content_type: content_type,
           )
         ) do |stm_csv_file|
@@ -103,7 +103,7 @@ class Repositext
           nil,
           "Reading content AT files",
           options.merge(
-            use_new_repositext_file_api: true,
+            use_new_r_file_api: true,
             content_type: content_type,
           )
         ) do |content_at_file|

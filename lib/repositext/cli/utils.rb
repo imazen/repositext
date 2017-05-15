@@ -184,7 +184,7 @@ class Repositext
       #     :output_is_binary
       #     :'changed-only'
       #     :repository
-      #     :use_new_repositext_file_api
+      #     :use_new_r_file_api
       # @param block [Proc] A Proc that performs the desired operation on each file.
       #     Arguments to the proc are each file's name and contents.
       #     Calling block is expected to return an Array of Outcome objects, one
@@ -217,7 +217,7 @@ class Repositext
               else
                 File.read(filename).freeze
               end
-              outcomes = if options[:use_new_repositext_file_api]
+              outcomes = if options[:use_new_r_file_api]
                 # use new api
                 # TODO: once all calls use new API, move assignment of repo and language out of loop
                 content_type = options[:content_type]
@@ -378,7 +378,7 @@ class Repositext
       #     :'changed-only'
       #     :ignore_missing_file2 set to true if you quietly want to ignore missing file2, defaults to false
       #     :repository
-      #     :use_new_repositext_file_api
+      #     :use_new_r_file_api
       # @param [Proc] block A Proc that performs the desired operation on each file.
       #     Arguments to the proc are each file's name and contents.
       def self.read_files_helper(file_pattern, file_filter, file_name_2_proc, description, options, &block)
@@ -416,7 +416,7 @@ class Repositext
                   else
                     File.read(filename_2).freeze
                   end
-                  if options[:use_new_repositext_file_api]
+                  if options[:use_new_r_file_api]
                     # use new api
                     # TODO: once all calls use new API, move assignment of repo and language out of loop
                     repository = options[:repository]
@@ -442,7 +442,7 @@ class Repositext
                   raise  unless ignore_missing_file2
                 end
               else
-                if options[:use_new_repositext_file_api]
+                if options[:use_new_r_file_api]
                   # use new api
                   # TODO: once all calls use new API, move assignment of repo and language out of loop
                   content_type = options[:content_type]

@@ -27,7 +27,7 @@ class Repositext
           options['file_filter'] || /\.subtitle_markers\.csv\z/i,
           "Adding initial persistent subtitle ids",
           options.merge(
-            use_new_repositext_file_api: true,
+            use_new_r_file_api: true,
             content_type: content_type,
           )
         ) do |stm_csv_file|
@@ -319,7 +319,7 @@ class Repositext
           options['file_filter'],
           "Renumbering paragraphs",
           options.merge(
-            use_new_repositext_file_api: true,
+            use_new_r_file_api: true,
             content_type: content_type,
           )
         ) do |content_at_file|
@@ -341,7 +341,7 @@ class Repositext
           options['file_filter'],
           "Replacing invalid unicode locations",
           options.merge(
-            use_new_repositext_file_api: true,
+            use_new_r_file_api: true,
             content_type: content_type,
           )
         ) do |content_at_file|

@@ -22,7 +22,7 @@ class Repositext
           /\.data\.json\z/,
           "Setting `st_sync_active` to false",
           options.merge(
-            use_new_repositext_file_api: true,
+            use_new_r_file_api: true,
             content_type: content_type,
           )
         ) do |data_json_file|

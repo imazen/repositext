@@ -129,7 +129,7 @@ class Repositext
           options['file_filter'],
           "Exporting AT files to plain text for subtitle autosplit",
           options.merge(
-            use_new_repositext_file_api: true,
+            use_new_r_file_api: true,
             content_type: content_type,
           )
         ) do |content_at_file|
@@ -178,7 +178,7 @@ class Repositext
                 output_file_attrs
               )
             },
-            use_new_repositext_file_api: true,
+            use_new_r_file_api: true,
             content_type: content_type,
           )
         ) do |content_at_file|

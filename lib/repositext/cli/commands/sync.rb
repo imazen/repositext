@@ -21,7 +21,7 @@ class Repositext
           nil,
           "syncing file level data",
           options.merge(
-            use_new_repositext_file_api: true,
+            use_new_r_file_api: true,
             content_type: content_type,
           )
         ) do |content_at_file|
@@ -82,7 +82,7 @@ class Repositext
           nil,
           "Reading content AT files",
           options.merge(
-            use_new_repositext_file_api: true,
+            use_new_r_file_api: true,
             content_type: content_type,
           )
         ) do |content_at_file|
@@ -181,7 +181,7 @@ class Repositext
           nil,
           "Reading content AT files",
           options.merge(
-            use_new_repositext_file_api: true,
+            use_new_r_file_api: true,
             content_type: content_type,
           )
         ) do |content_at_file|

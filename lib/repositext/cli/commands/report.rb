@@ -28,7 +28,7 @@ class Repositext
           nil,
           "Reading content AT files",
           options.merge(
-            use_new_repositext_file_api: true,
+            use_new_r_file_api: true,
             content_type: content_type,
           )
         ) do |content_at_file|
@@ -225,7 +225,7 @@ class Repositext
           nil,
           "Reading data.json files",
           options.merge(
-            use_new_repositext_file_api: true,
+            use_new_r_file_api: true,
             content_type: content_type,
           )
         ) do |data_json_file|
@@ -265,7 +265,7 @@ class Repositext
           nil,
           "Reading data.json files",
           options.merge(
-            use_new_repositext_file_api: true,
+            use_new_r_file_api: true,
             content_type: content_type,
           )
         ) do |data_json_file|
@@ -304,7 +304,7 @@ class Repositext
           nil,
           "Reading data.json files",
           options.merge(
-            use_new_repositext_file_api: true,
+            use_new_r_file_api: true,
             content_type: content_type,
           )
         ) do |data_json_file|
@@ -887,7 +887,7 @@ class Repositext
           nil,
           "Reading content AT files",
           options.merge(
-            use_new_repositext_file_api: true,
+            use_new_r_file_api: true,
             content_type: content_type,
           )
         ) do |repositext_file|
@@ -1014,7 +1014,7 @@ class Repositext
           nil,
           "Reading content AT files",
           options.merge(
-            use_new_repositext_file_api: true,
+            use_new_r_file_api: true,
             content_type: content_type,
           )
         ) do |repositext_file|

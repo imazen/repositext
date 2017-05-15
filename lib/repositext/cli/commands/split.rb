@@ -32,7 +32,7 @@ class Repositext
           options['file_filter'],
           "Splitting subtitles",
           options.merge(
-            use_new_repositext_file_api: true,
+            use_new_r_file_api: true,
             content_type: content_type,
           )
         ) do |f_content_at_file|

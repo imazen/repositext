@@ -18,7 +18,7 @@ class Repositext
           options.merge(
             input_is_binary: true,
             content_type: content_type,
-            use_new_repositext_file_api: true,
+            use_new_r_file_api: true,
           )
         ) do |zip_binary_r_file|
           document_xml_contents = zip_binary_r_file.extract_docx_document_xml
