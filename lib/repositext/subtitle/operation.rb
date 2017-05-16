@@ -149,7 +149,7 @@ class Repositext
       # Returns nicely formatted representation of self as String.
       # NOTE: Don't call this method #pretty_print as it conflicts with pp
       def print_pretty
-        PP.pp(to_hash, "")
+        to_hash.ai(indent: -2)
       end
 
       # Returns the subtitle to be reviewed after self has been applied

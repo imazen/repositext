@@ -125,8 +125,8 @@ class Repositext
           # @return [Array<SubtitleAttrs>]
           def enrich_st_attrs(st_attrs_list, st_objects)
             if st_attrs_list.length != st_objects.length
-              pp st_attrs_list
-              pp st_objects
+              puts st_attrs_list.ai(indent: -2)
+              puts st_objects.ai(indent: -2)
               raise(
                 MismatchingSubtitleCountsError.new(
                   "Mismatch in counts: st_attrs_list: #{ st_attrs_list.length }, st_objects: #{ st_objects.length }"

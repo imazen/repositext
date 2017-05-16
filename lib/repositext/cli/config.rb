@@ -182,13 +182,13 @@ class Repositext
       def pretty_print
         puts
         puts "settings_hierarchy"
-        pp @settings_hierarchy
+        puts @settings_hierarchy.ai(indent: -2)
         puts
         puts "execution context"
-        pp execution_context
+        puts @execution_context.ai(indent: -2)
         puts
         puts "effective_settings"
-        pp @effective_settings
+        puts @effective_settings.ai(indent: -2)
         puts
       end
 

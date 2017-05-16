@@ -169,8 +169,8 @@ class Repositext
               puts "  f_segs (befor): #{ f_segs.inspect }"
             end
             if p_segs.length != f_segs.length
-              pp p_segs
-              pp f_segs
+              puts p_segs.ai(indent: -2)
+              puts f_segs.ai(indent: -2)
               raise "Handle this!"
             end
             new_f_segs = []
@@ -255,9 +255,9 @@ class Repositext
 
             if debug
               puts "  p_captions:"
-              pp p_captions
+              puts p_captions.ai(indent: -2)
               puts "  f_captions (after interpolate):"
-              pp f_captions
+              puts f_captions.ai(indent: -2)
             end
 
             # Set max_snap_distance based on total sentence length. Range for
@@ -421,7 +421,7 @@ class Repositext
             f_st_count = asp_w_f_sts.inject(0) { |m,e| m += e[1].count('@') }
             if p_st_count != f_st_count
               if debug
-                pp asp_w_f_sts
+                puts asp_w_f_sts.ai(indent: -2)
                 puts "\n\n\n\n"
                 puts "mismatches:".color(:red)
                 asp_w_f_sts.each { |(primary,foreign,conf)|

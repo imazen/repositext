@@ -113,7 +113,7 @@ class Repositext
           if debug
             puts ('-' * 80).color(:red)
             puts "subtitle_attrs_from"
-            pp subtitle_attrs_from
+            puts subtitle_attrs_from.ai(indent: -2)
           end
 
           subtitle_attrs_to = compute_subtitle_attrs_to(
@@ -124,7 +124,7 @@ class Repositext
           if debug
             puts ('-' * 80).color(:red)
             puts "subtitle_attrs_to"
-            pp subtitle_attrs_to
+            puts subtitle_attrs_to.ai(indent: -2)
           end
 
           print " - align st pairs"
@@ -135,7 +135,7 @@ class Repositext
           if debug
             puts ('-' * 80).color(:red)
             puts "aligned_subtitle_pairs"
-            pp aligned_subtitle_pairs
+            puts aligned_subtitle_pairs.ai(indent: -2)
           end
 
           puts " - extract ops"
@@ -147,7 +147,7 @@ class Repositext
           if debug
             puts ('-' * 80).color(:red)
             puts "operations"
-            pp operations.map { |e| e.to_hash }
+            puts operations.map { |e| e.to_hash }.ai(indent: -2)
           end
 
           Repositext::Subtitle::OperationsForFile.new(
