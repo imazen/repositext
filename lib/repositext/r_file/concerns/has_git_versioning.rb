@@ -48,7 +48,7 @@ class Repositext
           %(| grep -F " #{ ref_commit }"),
           '| cut -f1 -d" "',
         ].join(' ')
-        all_child_commit_sha1s, _ = Open3.capture2(cmd)
+        all_child_commit_sha1s, std_error, status = Open3.capture3(cmd)
         child_commit_including_self = (all_child_commit_sha1s.lines.first || '').strip
 
         # Instantiate copy of self with contents as of the requested relative_version
@@ -117,7 +117,7 @@ class Repositext
       # @return [String, Nil]
       def get_contents_as_of_git_commit(git_commit)
         cmd = "git --git-dir=#{ repository.repo_path } --no-pager show #{ git_commit }:#{ repo_relative_path }"
-        file_contents, process_status = Open3.capture2(cmd)
+        file_contents, std_err, process_status = Open3.capture3(cmd)
         process_status.success? ? file_contents : nil
       end
 

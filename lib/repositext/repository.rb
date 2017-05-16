@@ -66,7 +66,7 @@ class Repositext
     # @param before_time [Time, optional] defaults to Time.now
     # @return [String] the sha1 of the commit
     def latest_commit_sha_local(filename = '', before_time=nil)
-      s, _ = Open3.capture2(
+      stdout, stderr, status = Open3.capture3(
         [
           "git",
           "--git-dir=#{ repo_path }",
@@ -78,7 +78,7 @@ class Repositext
           filename.sub(base_dir, ''),
         ].join(' ')
       )
-      s
+      stdout
     end
 
     # Returns the latest commit oid from origin_master. Fetches origin master.
@@ -105,7 +105,7 @@ class Repositext
     # Returns an array of hashes, one for each of the 10 most recent commits in @repo
     # @param [String, optional] filepath
     def latest_commits_local(filepath = '', max_number_of_commits = 20)
-      s, _ = Open3.capture2(
+      stdout, stderr, status = Open3.capture3(
         [
           "git",
           "--git-dir=#{ repo_path }",
@@ -118,9 +118,9 @@ class Repositext
           filepath.sub(/#{ @repo.workdir }\//, ''),
         ].join(' ')
       )
-      if s.index('|')
+      if stdout.index('|')
         # Contains commits
-        s.split("\n").map do |line|
+        stdout.split("\n").map do |line|
           commit_hash, author, date, message = line.split('|')
           {
             commit_hash: Subtitle::OperationsFile.truncate_git_commit_sha1(commit_hash),
