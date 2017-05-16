@@ -242,6 +242,9 @@ class Repositext
         r = r.join("\n")
         $stderr.puts r
         if(report_file_path)
+          if !File.exist?(File.dirname(report_file_path))
+            FileUtils.mkdir_p(File.dirname(report_file_path))
+          end
           File.open(report_file_path, 'a') { |f|
             f.write '-' * 40
             f.write "\n\Validation '#{ marker }' at #{ Time.now.to_s }:\n\n"
