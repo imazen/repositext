@@ -5,6 +5,8 @@ class Repositext
 
       extend ActiveSupport::Concern
 
+      class FileDidNotExistAtRefCommitError < StandardError; end
+
       included do
         # [ref_commit, relative_version] where ref_commit is the commit SHA1
         # and relative_version see #as_of_git_commit.
@@ -14,8 +16,6 @@ class Repositext
       # Returns copy of self with contents as of a ref_commit or one of its
       # children.
       # relative_version can be one of:
-      #   * :at_ref - Returns contents as of the ref_commit, or Nil if file
-      #     didn't exist at commit.
       #   * :at_child_or_current
       #     Returns contents at a child commit if it affected self, otherwise
       #     current file contents. Raises file not found error if current file
@@ -26,6 +26,10 @@ class Repositext
       #     Returns contents at a child commit if it affected self, otherwise the
       #     contents at reference commit. Returns nil if file didn't exist at
       #     either of the two commits.
+      #   * :at_ref_or_nil - Returns contents as of the ref_commit, or Nil if
+      #     file didn't exist at commit.
+      #   * :at_ref_or_raise - Returns contents as of the ref_commit, or raises
+      #     exception if file didn't exist at commit.
       # @param ref_commit [String]
       # @param relative_version [Symbol]
       # @return [RFile, nil]
@@ -53,9 +57,6 @@ class Repositext
 
         # Instantiate copy of self with contents as of the requested relative_version
         new_contents = case relative_version
-        when :at_ref
-          # Use contents as of ref_commit
-          get_contents_as_of_git_commit(ref_commit)
         when :at_child_or_current
           if '' == child_commit_including_self
             # Use current file contents
@@ -81,6 +82,18 @@ class Repositext
             # Use file contents at child commit
             get_contents_as_of_git_commit(child_commit_including_self)
           end
+        when :at_ref_or_nil
+          # Use contents as of ref_commit, or nil
+          get_contents_as_of_git_commit(ref_commit)
+        when :at_ref_or_raise
+          # Use contents as of ref_commit, or raise exception
+          r = get_contents_as_of_git_commit(ref_commit)
+          if r.nil?
+            raise FileDidNotExistAtRefCommitError.new(
+              "File #{ filename.inspect } did not exist at git commit #{ ref_commit.inspect }".color(:red)
+            )
+          end
+          r
         else
           raise "Handle this: #{ relative_version.inspect }"
         end

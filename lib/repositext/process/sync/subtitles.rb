@@ -149,7 +149,7 @@ class Repositext
         # @param content_at_file [RFile::ContentAt] from any repo (primary or foreign)
         # @param git_commit_sha1 [String] complete or first six only
         # @param relative_version [Symbol] Note: for from_subtitles we want the
-        #        file contents at the commit (:at_ref), however for to_subtitles
+        #        file contents at the commit (:at_ref_or_nil), however for to_subtitles
         #        we want the file contents as of the next commit after
         #        git_commit_sha1 (:at_child_or_current).
         # @return [Array]
