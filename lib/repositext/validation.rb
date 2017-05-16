@@ -35,7 +35,11 @@ class Repositext
     #     * 'logger' => 'Logger' (default) or 'LoggerTest'
     #     * 'report_file' => If given will write report to file at this location
     #     * 'run_options' => Array of custom run options for validations (e.g., 'pre_import', 'post_import')
-    #     * 'strictness' => :strict, :loose/liberal/lax
+    #     * 'strictness' => :strict, :loose/liberal/lax,
+    #     * 'use_new_r_file_api' => If true, uses new API based on Repositext::RFile instead of just paths.
+    #       When using new r_file api, then these to options apply:
+    #         * 'as_of_git_commit_attrs' => optional, see RFile#as_of_git_commit for details.
+    #         * 'content_type' => required, ContentType that applies to all validated files.
     def initialize(file_specs, options)
       @file_specs = file_specs
       @options = options
@@ -79,22 +83,86 @@ class Repositext
   private
 
     # @param [Symbol] file_spec_name
-    def validate_files(file_spec_name, &block)
+    def validate_files(file_spec_name, option_overrides={}, &block)
+      options = @options.merge(option_overrides)
       base_dir, file_selector, file_extension = @file_specs[file_spec_name]
-      Dir.glob([base_dir, file_selector, file_extension].join).each do |file_name|
-        yield(file_name)
+      if options['use_new_r_file_api']
+        # Use RFile based API
+        content_type = options['content_type']
+        language = content_type.language
+        Dir.glob([base_dir, file_selector, file_extension].join).each do |file_name|
+          r_file = if options['as_of_git_commit_attrs']
+            Repositext::RFile.get_class_for_filename(
+              file_name
+            ).new(
+              '_',
+              language,
+              file_name,
+              content_type
+            ).as_of_git_commit(*options['as_of_git_commit_attrs'])
+          else
+            Repositext::RFile.get_class_for_filename(
+              file_name
+            ).new(
+              File.read(file_name),
+              language,
+              file_name,
+              content_type
+            )
+          end
+          yield(r_file)
+        end
+      else
+        # Use legacy file path based approach
+        Dir.glob([base_dir, file_selector, file_extension].join).each do |file_name|
+          yield(file_name)
+        end
       end
     end
 
     # @param [Symbol] file_spec_name
-    # @param [Proc] paired_file_proc a proc that given the primary file path returns
-    #     the path to the paired file
-    def validate_file_pairs(file_spec_name, paired_file_proc, &block)
+    # @param paired_file_proc_or_method_name [Proc] Depending on whether
+    #   the legacy or new_r_file_based_api is used, provide one of the following:
+    #   legacy: A proc that given the primary file path returns the path to the paired file.
+    #   new_r_file: A proc that given the r_file returns the paired RFile.
+    def validate_file_pairs(file_spec_name, paired_file_proc, option_overrides={}, &block)
+      options = @options.merge(option_overrides)
       base_dir, file_selector, file_extension = @file_specs[file_spec_name]
-      Dir.glob([base_dir, file_selector, file_extension].join).each do |file_name_one|
-        file_name_two = paired_file_proc.call(file_name_one, @file_specs)
-        yield(file_name_one, file_name_two)
+      if options['use_new_r_file_api']
+        # Use RFile based API
+        content_type = options['content_type']
+        language = content_type.language
+        Dir.glob([base_dir, file_selector, file_extension].join).each do |file_name|
+          r_file = if options['as_of_git_commit_attrs']
+            Repositext::RFile.get_class_for_filename(
+              file_name
+            ).new(
+              '_',
+              language,
+              file_name,
+              content_type
+            ).as_of_git_commit(*options['as_of_git_commit_attrs'])
+          else
+            Repositext::RFile.get_class_for_filename(
+              file_name
+            ).new(
+              File.read(file_name),
+              language,
+              file_name,
+              content_type
+            )
+          end
+          paired_r_file = paired_file_proc.call(r_file)
+          yield(r_file, paired_r_file)
+        end
+      else
+        # Use legacy file path based approach
+        Dir.glob([base_dir, file_selector, file_extension].join).each do |file_name_one|
+          file_name_two = paired_file_proc.call(file_name_one, @file_specs)
+          yield(file_name_one, file_name_two)
+        end
       end
+
     end
 
   end
