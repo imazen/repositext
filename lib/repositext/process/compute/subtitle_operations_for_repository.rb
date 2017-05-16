@@ -37,6 +37,7 @@ class Repositext
           @is_initial_primary_sync = is_initial_primary_sync
           @prev_last_operation_id = prev_last_operation_id
           @execution_context = execution_context
+          @logger = Repositext::Utils::CommandLogger.new
 
           @first_operation_id = prev_last_operation_id + 1
           # Convert to repo relative paths
@@ -160,7 +161,7 @@ class Repositext
               @any_content_type
             )
 
-            puts "     - process #{ content_at_file_to.repo_relative_path(true) }"
+            @logger.info("     - process #{ content_at_file_to.repo_relative_path(true) }")
 
             soff = SubtitleOperationsForFile.new(
               content_at_file_to,
@@ -204,7 +205,7 @@ class Repositext
               raise "shouldn't get here: #{ file_name.inspect }"
             end
 
-            puts "     - process #{ file_name }"
+            @logger.info("     - process #{ file_name }")
 
             absolute_file_path = File.join(@repository.base_dir, file_name)
             # Initialize content AT file `to` with contents as of `to_git_commit`.

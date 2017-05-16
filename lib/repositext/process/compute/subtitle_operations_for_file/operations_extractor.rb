@@ -452,7 +452,7 @@ class Repositext
           end
 
           def debug
-            true
+            false
           end
 
         end

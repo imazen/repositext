@@ -80,6 +80,7 @@ class Repositext
           @file_date_code = @content_at_file_to.extract_date_code
           @repo_base_dir = repo_base_dir
           @options = options
+          @logger = Repositext::Utils::CommandLogger.new
         end
 
         # @return [Repositext::Subtitle::OperationsForFile]
