@@ -107,7 +107,7 @@ class Repositext
           "Copying subtitle marker CSV files from content_dir to subtitle_export_dir",
           options.merge(
             output_path_lambda: lambda { |input_filename|
-              Service::Filename::ConvertStmCsvToStExport(
+              Service::Filename::ConvertStmCsvToStExport.call(
                 source_filename: input_filename.sub(
                   primary_repo_input_base_dir,
                   output_base_dir
