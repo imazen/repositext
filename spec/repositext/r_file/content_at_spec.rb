@@ -5,7 +5,7 @@ class Repositext
     describe ContentAt do
       let(:contents) { "# title\n\nparagraph 1" }
       let(:language) { Language::English.new }
-      let(:filename) { '/content/57/eng0103-1234.at' }
+      let(:filename) { '/path-to/rt-english/ct-general/content/57/eng57-0103_1234.at' }
       let(:path_to_repo) { Repository::Test.create!('rt-english').first }
       let(:content_type) { ContentType.new(File.join(path_to_repo, 'ct-general')) }
       let(:default_rfile) {
@@ -16,6 +16,16 @@ class Repositext
         # TODO
       end
 
+      describe '#corresponding_json_lucene_export_filename' do
+        it 'handles the default case' do
+          default_rfile.corresponding_json_lucene_export_filename.must_equal(
+            '/path-to/rt-english/lucene_table_export/json_export/ct-general/57/eng57-0103_1234.json'
+          )
+        end
+      end
+      #                                 ct-general/content/63/eng-1234.at
+      # lucene_table_export/json_export/ct-general        /63/eng-1234.json
+
       describe '#corresponding_subtitle_markers_csv_file' do
         # TODO
       end
@@ -23,7 +33,7 @@ class Repositext
       describe '#corresponding_subtitle_markers_csv_filename' do
         it 'handles the default case' do
           default_rfile.corresponding_subtitle_markers_csv_filename.must_equal(
-            '/content/57/eng0103-1234.subtitle_markers.csv'
+            '/path-to/rt-english/ct-general/content/57/eng57-0103_1234.subtitle_markers.csv'
           )
         end
       end
