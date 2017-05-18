@@ -64,7 +64,7 @@ class Repositext
       valid_content_type_names.include?(content_type_name)
     end
 
-    class_option :'at-commit',
+    class_option :'at-git-commit',
                  :type => :string,
                  :desc => "For commands that require git commit information (e.g., exporting files at a certain commit)"
     class_option :'base-dir',
