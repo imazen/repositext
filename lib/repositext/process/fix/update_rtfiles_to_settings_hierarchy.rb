@@ -68,7 +68,10 @@ class Repositext
 
         def self.write_rtx_lvl_settings(new_settings, data_file_path)
           new_settings_json = JSON.generate(new_settings, JSON_FORMATTING_OPTIONS)
-          File.write(data_file_path, new_settings_json)
+          Cli::Utils.write_file_unless_path_is_blank(
+            data_file_path,
+            new_settings_json
+          )
         end
 
         # @param data_file_path [String] path to where data.json file is expected to be
@@ -87,7 +90,10 @@ class Repositext
 
         def self.write_rpy_lvl_settings(new_settings, data_file_path)
           new_settings_json = JSON.generate(new_settings, JSON_FORMATTING_OPTIONS)
-          File.write(data_file_path, new_settings_json)
+          Cli::Utils.write_file_unless_path_is_blank(
+            data_file_path,
+            new_settings_json
+          )
         end
 
         def self.remove_rtfile_entries(old_rtfile_contents)
@@ -99,7 +105,10 @@ class Repositext
         end
 
         def self.write_rtfile_contents(rtfile_path, new_rtfile_contents)
-          File.write(rtfile_path, new_rtfile_contents)
+          Cli::Utils.write_file_unless_path_is_blank(
+            rtfile_path,
+            new_rtfile_contents
+          )
         end
 
         # @return [Hash] with levels as keys and file_paths as values

@@ -545,7 +545,7 @@ class Repositext
 
       # Writes file_contents to file at file_path. Overwrites existing file.
       # Doesn't write to file if file_path is blank (nil, empty string, or string
-      # with only whitespace)
+      # with only whitespace). Creates any missing folders in file_path.
       # @param [String] file_path
       # @param [String] file_contents
       # @return [Integer, Nil] the number of bytes written or false if nothing was written
