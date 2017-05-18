@@ -1075,6 +1075,71 @@ class Repositext
         l.each { |e| $stderr.puts e }
       end
 
+      # Prints an inventory of all words found in the current language, sorted
+      # by word frequency and alphabetically.
+      def report_terms_inventory(options)
+        terms = Hash.new(0)
+        total_file_count = 0
+        lines = []
+
+        Repositext::Cli::Utils.read_files(
+          config.compute_glob_pattern(
+            options['base-dir'] || :content_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :at_extension
+          ),
+          options['file_filter'],
+          nil,
+          "Reading content AT files",
+          options.merge(
+            use_new_r_file_api: true,
+            content_type: content_type,
+          )
+        ) do |content_at_file|
+          total_file_count += 1
+
+          # Build character inventory
+          content_at_file.plain_text_contents({}).split(/[^[[:word:]]]+/).each { |term|
+            terms[term.unicode_downcase] += 1
+          }
+        end
+
+        lines << "Terms inventory for #{ content_type.language_name }"
+        lines << "=================================="
+        lines << ''
+        lines << 'Sorted by frequency first'
+        lines << '-------------------------'
+        sorted_by_freq = terms.sort { |(term_a, freq_a), (term_b, freq_b)|
+          [freq_a, term_a] <=> [freq_b, term_b]
+        }
+        longest_freq = sorted_by_freq.map(&:first).max.to_s.length
+        sorted_by_freq.each { |term, freq|
+          lines << "#{ freq.to_s.rjust(longest_freq) } #{ term }"
+        }
+        lines << ''
+        lines << 'Sorted alphabetically'
+        lines << '---------------------'
+        sorted_alpha = terms.sort { |(term_a, freq_a), (term_b, freq_b)|
+          term_a <=> term_b
+        }
+        longest_term = sorted_alpha.map { |term, freq| term.length }.max
+        sorted_alpha.each { |term, freq|
+          lines << "#{ term.to_s.ljust(longest_term) } #{ freq }"
+        }
+        lines << ''
+        lines << '-' * 40
+        lines << "Found #{ terms.count } terms in #{ total_file_count } files at #{ Time.now.to_s }."
+
+        $stderr.puts
+        lines.each { |e| $stderr.puts(e) }
+        report_file_path = File.join(config.base_dir(:reports_dir), 'terms_inventory_report.txt')
+        File.open(report_file_path, 'w') { |f|
+          f.write lines.join("\n")
+          f.write "\n\n"
+          f.write "Command to generate this file: `repositext report terms_inventory`\n"
+        }
+      end
+
       def report_words_with_apostrophe(options)
         # TODO: add report that shows all words starting with apostrophe that have only one character
         apostrophe_at_beginning = {}
