@@ -33,7 +33,7 @@ class Repositext
       # @param ref_commit [String]
       # @param relative_version [Symbol]
       # @return [RFile, nil]
-      def as_of_git_commit(ref_commit, relative_version=:at_ref)
+      def as_of_git_commit(ref_commit, relative_version=:at_ref_or_nil)
         if !ref_commit.is_a?(String)
           raise ArgumentError.new("Invalid ref_commit: #{ ref_commit.inspect }")
         end

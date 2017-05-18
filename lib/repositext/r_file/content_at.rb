@@ -159,7 +159,7 @@ class Repositext
 
             primary_stm_csv_file_as_of_git_commit = primary_stm_csv_file_shell.as_of_git_commit(
               corresponding_primary_ref_commit_obj.oid,
-              :at_ref
+              :at_ref_or_raise
             )
 
             # Create new instance of STM CSV file with updated attrs
