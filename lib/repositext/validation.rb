@@ -152,7 +152,12 @@ class Repositext
               content_type
             )
           end
-          paired_r_file = paired_file_proc.call(r_file)
+          paired_r_file = if r_file
+            paired_file_proc.call(r_file)
+          else
+            # r_file may be nil. In that case there can't be a paired_r_file
+            nil
+          end
           yield(r_file, paired_r_file)
         end
       else
