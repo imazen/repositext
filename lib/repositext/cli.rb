@@ -304,6 +304,9 @@ class Repositext
     method_option :'include-version-control-info',
                   type: :boolean,
                   desc: 'Adds a version control info page to an exported PDF'
+    method_option :'erp-data-file-path',
+                  type: :string,
+                  desc: "path to the ERP Data json file"
     # @param [String] command_spec Specification of the operation
     def export(command_spec)
       check_that_current_branch_is_up_to_date_with_origin_master

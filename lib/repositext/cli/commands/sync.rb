@@ -68,7 +68,12 @@ class Repositext
       # language repos. Only symlinks those files that have an entry in
       # erp_data in the foreign language.
       def sync_subtitle_marker_csv_file_symlinks(options)
-        erp_data_json_filename = File.join(config.base_dir(:data_dir), 'erp_data.json')
+        # Prefer erp data file passed in via option 'erp-data-file-path',
+        # otherwise fall back to standard erp file location.
+        erp_data_json_filename = (
+          options['erp-data-file-path'] ||
+          File.join(config.base_dir(:data_dir), 'erp_data.json')
+        )
         erp_api = Vgr::ErpApi.new(erp_data_json_filename)
         results = []
         file_count = 0
