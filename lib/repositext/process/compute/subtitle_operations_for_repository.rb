@@ -34,6 +34,8 @@ class Repositext
 
           @from_git_commit = from_git_commit
           @to_git_commit = to_git_commit
+          @from_table_release_version = from_table_release_version
+          @to_table_release_version = to_table_release_version
           @is_initial_primary_sync = is_initial_primary_sync
           @prev_last_operation_id = prev_last_operation_id
           @execution_context = execution_context
@@ -218,15 +220,26 @@ class Repositext
               @any_content_type
             ).as_of_git_commit(@to_git_commit)
 
+            compute_st_ops_attrs = {
+              from_git_commit: @from_git_commit,
+              to_git_commit: @to_git_commit,
+              prev_last_operation_id: @prev_last_operation_id,
+              execution_context: @execution_context,
+            }
+
+            compute_st_ops_attrs = refine_compute_st_ops_attrs(
+              compute_st_ops_attrs,
+              {
+                from_table_release_version: @from_table_release_version,
+                to_table_release_version: @to_table_release_version,
+                absolute_file_path: absolute_file_path
+              }
+            )
+
             soff = SubtitleOperationsForFile.new(
               content_at_file_to,
               @repository.base_dir,
-              {
-                from_git_commit: @from_git_commit,
-                to_git_commit: @to_git_commit,
-                prev_last_operation_id: @prev_last_operation_id,
-                execution_context: @execution_context,
-              }
+              compute_st_ops_attrs
             ).compute
 
             if soff.operations.any?
@@ -276,6 +289,15 @@ class Repositext
           }
           # Return list of unique files with changes
           fwc.uniq
+        end
+
+        # Hook for subclasses to modify compute_st_ops_attrs
+        # @param compute_st_ops_attrs [Hash{Symbol => Object}]
+        # @param context [Hash{Symbol => Object}]
+        # @return [Hash] copy of original hash with possible modifications.
+        def refine_compute_st_ops_attrs(compute_st_ops_attrs, context)
+          # No modifications here. Override in subclasses.
+          compute_st_ops_attrs
         end
 
       end
