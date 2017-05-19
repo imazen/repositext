@@ -85,7 +85,7 @@ class Repositext
     end
 
     def inspect
-      attrs = [
+      r = [
         %(#<#{ self.class.name }:#{ object_id }),
         %(@contents=#{ is_binary ? '<binary>' : contents.truncate(50).inspect }),
         %(@filename=#{ filename.inspect }),
@@ -93,9 +93,9 @@ class Repositext
         %(@content_type=#{ content_type.inspect }),
       ]
       if is_git_versioned?
-        attrs << %(@as_of_git_commit_attrs=#{ as_of_git_commit_attrs.inspect })
+        r << %(@as_of_git_commit_attrs=#{ as_of_git_commit_attrs.inspect })
       end
-      attrs.join(' ')
+      r.join(' ') + '>'
     end
 
     def is_binary

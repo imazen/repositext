@@ -38,7 +38,7 @@ class Repositext
     end
 
     def inspect
-      %(#<#{ self.class.name }:#{ object_id } #name=#{ name.inspect })
+      %(#<#{ self.class.name }:#{ object_id } #name=#{ name.inspect }>)
     end
 
     # Returns sha of latest commit that included filename.

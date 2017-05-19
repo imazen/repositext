@@ -84,9 +84,9 @@ class Repositext
       str.index('.') || str.index('!') || str.index('?')
     end
 
-    # def inspect
-    #   %(#<#{ self.class.name }:#{ object_id } @name=#{ name.inspect } @code_2_chars=#{ code_2_chars.inspect } @code_3_chars=#{ code_3_chars.inspect })
-    # end
+    def inspect
+      %(#<#{ self.class.name }:#{ object_id } @name=#{ name.inspect } @code_2_chars=#{ code_2_chars.inspect } @code_3_chars=#{ code_3_chars.inspect }>)
+    end
 
     # @return [String]
     def name

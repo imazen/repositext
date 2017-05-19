@@ -121,6 +121,10 @@ class Repositext
       ) + '/'
     end
 
+    def inspect
+      %(#<#{ self.class.name }:#{ object_id } #name=#{ name.inspect } #base_dir=#{ base_dir.inspect }>)
+    end
+
     def is_primary_repo
       config_setting(:is_primary_repo)
     end
