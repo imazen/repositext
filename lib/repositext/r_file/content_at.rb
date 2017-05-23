@@ -33,29 +33,6 @@ class Repositext
                 .sub(/\.at\z/, '.txt') # update extension
       end
 
-
-      # Returns corresponding json_lucene_export_file.
-      # NOTE: Since this is used during json_lucene export validation, we ignore
-      # any as_of_git_commit_attrs on self and return the current version of
-      # the json_lucene_export file.
-      def corresponding_json_lucene_export_file
-        return nil  if !File.exist?(corresponding_json_lucene_export_filename)
-        RFile::Json.new(
-          File.read(corresponding_json_lucene_export_filename),
-          language,
-          corresponding_json_lucene_export_filename,
-          content_type
-        )
-      end
-
-      # Converts
-      #                                      ct-general/content/63/eng-1234.at
-      #   => lucene_table_export/json_export/ct-general        /63/eng-1234.json
-      def corresponding_json_lucene_export_filename
-        filename.sub(/(\/ct-[^\/]+\/)content\//, '/lucene_table_export/json_export\1') # prepend json_export path, remove content segment
-                .sub(/\.at\z/, '.json') # update extension
-      end
-
       # Returns the corresponding file while considering #as_of_git_commit_attrs.
       def corresponding_subtitle_export_en_txt_file
         return nil  if !File.exist?(corresponding_subtitle_export_en_txt_filename)

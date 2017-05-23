@@ -16,16 +16,6 @@ class Repositext
         # TODO
       end
 
-      describe '#corresponding_json_lucene_export_filename' do
-        it 'handles the default case' do
-          default_rfile.corresponding_json_lucene_export_filename.must_equal(
-            '/path-to/rt-english/lucene_table_export/json_export/ct-general/57/eng57-0103_1234.json'
-          )
-        end
-      end
-      #                                 ct-general/content/63/eng-1234.at
-      # lucene_table_export/json_export/ct-general        /63/eng-1234.json
-
       describe '#corresponding_subtitle_markers_csv_file' do
         # TODO
       end
