@@ -43,6 +43,8 @@ class Repositext
         RFile::Pdf
       when /\.at\z/
         RFile::ContentAt
+      when /\.json\z/
+        RFile::Json
       when /\-\d{4}.?_\d{4}\./
         # Date code followed by product identity id
         RFile::Content
