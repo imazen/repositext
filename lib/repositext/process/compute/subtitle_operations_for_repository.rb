@@ -235,7 +235,6 @@ class Repositext
                 absolute_file_path: absolute_file_path
               }
             )
-
             soff = SubtitleOperationsForFile.new(
               content_at_file_to,
               @repository.base_dir,
