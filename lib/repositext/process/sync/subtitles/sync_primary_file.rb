@@ -111,7 +111,7 @@ class Repositext
 
             # new_time_slices: extract time_slices from corresponding_subtitle_import_markers_file
             new_time_slices = []
-            corr_st_import_markers_file = content_at_file.corresponding_subtitle_import_markers_file
+            corr_st_import_markers_file = content_at_file.corresponding_subtitle_import_markers_file(false)
             if corr_st_import_markers_file.nil?
               # No corresponding subtitle import markers file exists.
               # This is unexpected since we ran Fix::PrepareInitialPrimarySubtitleSync

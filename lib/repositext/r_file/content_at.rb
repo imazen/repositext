@@ -56,7 +56,7 @@ class Repositext
       end
 
       # Returns the corresponding file while considering #as_of_git_commit_attrs.
-      def corresponding_subtitle_import_markers_file
+      def corresponding_subtitle_import_markers_file(respect_as_of_git_commit_attrs=true)
         return nil  if !File.exist?(corresponding_subtitle_import_markers_filename)
         r = RFile::SubtitleMarkersCsv.new(
           File.read(corresponding_subtitle_import_markers_filename),
@@ -64,7 +64,7 @@ class Repositext
           corresponding_subtitle_import_markers_filename,
           content_type
         )
-        if as_of_git_commit_attrs
+        if respect_as_of_git_commit_attrs && as_of_git_commit_attrs
           r.as_of_git_commit(*as_of_git_commit_attrs)
         else
           r
