@@ -159,18 +159,19 @@ class Repositext
       repos_with_issues
     end
 
-    # Fetches all branches in all repos and pulls current branch
+    # Fetches all branches (including new ones on remote) in all repos and pulls
+    # all local tracking branches.
     # @param repo_set_spec [Symbol, Array<String>] A symbol describing a predefined
     #     group of repos, or an Array with specific repo names as strings.
     def git_fetch_and_pull(repo_set_spec)
       compute_repo_paths(repo_set_spec).each { |repo_path|
-        cmd = %(cd #{ repo_path } && git fetch && git pull)
+        cmd = %(cd #{ repo_path } && git remote update && git pull --all)
         Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
           exit_status = wait_thr.value
           if exit_status.success?
             puts " - Fetched and pulled #{ repo_path }"
           else
-            msg = %(Could not fetch and pull ull #{ repo_path }:\n\n).color(:red)
+            msg = %(Could not fetch and pull #{ repo_path }:\n\n).color(:red)
             puts(msg + stderr.read)
           end
         end
