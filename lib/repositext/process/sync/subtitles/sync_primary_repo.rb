@@ -65,6 +65,8 @@ class Repositext
               any_content_type,
               @from_git_commit,
               @to_git_commit,
+              nil,
+              nil,
               @file_list,
               @is_initial_primary_sync,
               @last_operation_id,
