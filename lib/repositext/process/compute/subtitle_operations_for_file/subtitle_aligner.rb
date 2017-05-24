@@ -23,6 +23,20 @@ class Repositext
               return default_gap_penalty * 2
             end
 
+            case @options[:alignment_strategy]
+            when :use_contents
+              compute_score_using_contents(left_el, right_el)
+            when :use_stids
+              compute_score_using_stids(left_el, right_el)
+            else
+              raise "Handle this: #{ @options[:alignment_strategy].inspect }"
+            end
+          end
+
+          # @param left_el [SubtitleAttrs]
+          # @param right_el [SubtitleAttrs]
+          # @return [Float]
+          def compute_score_using_contents(left_el, right_el)
             left_txt = left_el[:content_sim]
             right_txt = right_el[:content_sim]
 
@@ -94,6 +108,19 @@ class Repositext
             else
               highest_score
             end
+          end
+
+          # @param left_el [SubtitleAttrs]
+          # @param right_el [SubtitleAttrs]
+          # @return [Float]
+          def compute_score_using_stids(left_el, right_el)
+            # We compute score based on stid only. A mismatch of non-nil stids
+            # scores worse than a gap!
+            Repositext::Service::ScoreSubtitleAlignmentUsingStid.call(
+              left_stid: left_el[:persistent_id],
+              right_stid: right_el[:persistent_id],
+              default_gap_penalty: default_gap_penalty,
+            )[:result]
           end
 
           def default_gap_penalty

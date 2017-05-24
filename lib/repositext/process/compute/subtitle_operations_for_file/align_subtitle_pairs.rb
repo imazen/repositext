@@ -5,22 +5,53 @@ class Repositext
         # Namespace for methods related to aligning subtitle pairs.
         module AlignSubtitlePairs
 
-          # Aligns subtitle pairs.
+          # Aligns subtitle pairs. Handles two scenarios:
+          #  1. Initial sync: Subtitles that weren't aligned previously.
+          #     In this scenario we look at subtitle content for alignment,
+          #     and we have to perform various post processing steps.
+          #  2. Recomputing st_ops: Subtitles that were aligned previously.
+          #     In this scenario both `from` and `to` subtitles have stids.
+          #     This allows for simpler alignment using stids, and eliminates
+          #     the need for certain post-processing steps.
           # @param sts_from [Array<SubtitleAttrs>]
           # @param sts_to [Array<SubtitleAttrs>]
           # @return [Array<AlignedSubtitlePair>]
           def align_subtitle_pairs(sts_from, sts_to)
-            asps = compute_aligned_subtitle_pairs(sts_from, sts_to)
+            alignment_strategy = compute_alignment_strategy(sts_to)
+            asps = compute_aligned_subtitle_pairs(sts_from, sts_to, alignment_strategy)
             enriched_asps = enrich_aligned_subtitle_pair_attributes(asps)
-            post_processed_asps = post_process_aligned_subtitle_pairs!(enriched_asps)
+
+            final_asps = case alignment_strategy
+            when :use_contents
+              post_process_aligned_subtitle_pairs!(enriched_asps)
+            when :use_stids
+              # no post processing required
+              enriched_asps
+            else
+              raise "Handle this: #{ alignment_strategy.inspect }"
+            end
           end
 
         private
 
+          # Determines what approach to take for subtitle alignment.
+          # @param sts_to [Array<SubtitleAttrs>]
+          # @return [Symbol]
+          def compute_alignment_strategy(sts_to)
+            if sts_to.all? { |e| '' != e[:persistent_id].to_s.strip }
+              # All `to` subtitles already have an stid, use it for alignment.
+              :use_stids
+            else
+              # `To` subtitles don't have stids, have to use content for alignment.
+              :use_contents
+            end
+          end
+
           # @param sts_from [Array<SubtitleAttrs>]
           # @param sts_to [Array<SubtitleAttrs>]
+          # @param alignment_strategy [Symbol]
           # @return [Array<AlignedSubtitlePair>]
-          def compute_aligned_subtitle_pairs(sts_from, sts_to)
+          def compute_aligned_subtitle_pairs(sts_from, sts_to, alignment_strategy)
             st_count_from = sts_from.inject(0) { |m,e| m += e[:subtitle_count] }
             st_count_to = sts_to.inject(0) { |m,e| m += e[:subtitle_count] }
             total_subtitle_count_change = st_count_to - st_count_from
@@ -32,8 +63,12 @@ class Repositext
             aligner = SubtitleAligner.new(
               sts_from,
               sts_to,
-              { diagonal_band_range: diagonal_band_range }
+              {
+                alignment_strategy: alignment_strategy,
+                diagonal_band_range: diagonal_band_range,
+              }
             )
+
             print " with diagonal_band_range #{ diagonal_band_range }"
             aligned_subtitles_from, aligned_subtitles_to = aligner.get_optimal_alignment
 
