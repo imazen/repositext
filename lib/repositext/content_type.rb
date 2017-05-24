@@ -22,7 +22,8 @@ class Repositext
              :setting,
              to: :config,
              prefix: :config
-    delegate :name,
+    delegate :code_3_chars,
+             :name,
              to: :language,
              prefix: true
 
