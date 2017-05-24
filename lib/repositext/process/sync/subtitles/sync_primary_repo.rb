@@ -60,9 +60,9 @@ class Repositext
             puts "   - Extract subtitle operations"
             subtitle_ops = []
             # Pick any content_type, doesn't matter which one
-            content_type = ContentType.any(@primary_repository)
+            any_content_type = ContentType.any(@primary_repository)
             subtitle_ops = Repositext::Process::Compute::SubtitleOperationsForRepository.new(
-              content_type,
+              any_content_type,
               @from_git_commit,
               @to_git_commit,
               @file_list,

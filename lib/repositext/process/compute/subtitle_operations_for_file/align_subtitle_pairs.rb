@@ -60,6 +60,11 @@ class Repositext
             r
           end
 
+          # Adds further attributes to aligned_subtitle_pairs:
+          #  * subtitle object
+          #  * before and after contents
+          #  * similarity metrics
+          #  * attribute flags
           # @param aligned_subtitle_pairs [Array<AlignedSubtitlePair>]
           # @return [Array<AlignedSubtitlePair>]
           def enrich_aligned_subtitle_pair_attributes(aligned_subtitle_pairs)
@@ -94,7 +99,7 @@ class Repositext
                   record_id: asp[:to][:record_id]
                 )
               else
-                # Subtitle id exists in `from` content, use it
+                # Subtitle id exists in `from` content, use it.
                 # NOTE: We use record_id from `to`!
                 most_recent_existing_subtitle_id = asp[:from][:persistent_id]
                 ::Repositext::Subtitle.new(
