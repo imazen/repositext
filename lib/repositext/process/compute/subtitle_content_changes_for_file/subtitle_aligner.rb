@@ -24,7 +24,11 @@ class Repositext
             end
 
             # We compute score based on stid only
-            left_el.persistent_id == right_el.persistent_id ? 10 : 0
+            Repositext::Service::ScoreSubtitleAlignmentUsingStid.call(
+              left_el: left_el[:persistent_id],
+              right_el: right_el[:persistent_id],
+              default_gap_penalty: default_gap_penalty,
+            )[:result]
           end
 
           def default_gap_penalty
