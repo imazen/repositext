@@ -259,10 +259,10 @@ class Repositext
                 s.content = e
                 s
               else
-                # Not inside a subtitle, add blank attrs
-                Subtitle.new(content: e)
+                # Not inside a subtitle, return nil, to be removed
+                nil
               end
-            }
+            }.compact
           when :plain_text
             plain_text_with_subtitles_contents({}).split(/(?<=\n)|(?=@)/).map { |e|
               if e =~ /\A@/
@@ -271,10 +271,9 @@ class Repositext
                 s.content = e
                 s
               else
-                # Not inside a subtitle, add blank attrs
-                Subtitle.new(content: e)
+                # Not inside a subtitle, return nil, to be removed
               end
-            }
+            }.compact
           else
             raise "Handle this: #{ options[:content_format].inspect }"
           end
