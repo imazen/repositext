@@ -242,16 +242,17 @@ class Repositext
         end
         return []  if subtitle_attrs.empty?
 
+        # Check that counts between content AT and stm csv match
+        if contents.count('@') != subtitle_attrs.count
+          raise "Mismatch in subtitle counts: content AT: #{ contents.count('@') }, subtitle_attrs: #{ subtitle_attrs.count }."
+        end
+
         if options[:with_content]
           # merge content and attrs
           subtitle_attrs_pool = subtitle_attrs.dup
           case options[:content_format]
           when :content_at
-            split_contents = contents.split(/(?<=\n\n)|(?=@)/)
-            if split_contents.count != subtitle_attrs.count
-              raise "Mismatch in subtitle counts: content AT: #{ split_contents.count }, subtitle_attrs: #{ subtitle_attrs.count }."
-            end
-            split_contents.map { |e|
+            contents.split(/(?<=\n\n)|(?=@)/).map { |e|
               if e =~ /\A@/
                 # starts with subtitle_mark, merge content with next attrs
                 s = subtitle_attrs_pool.shift
@@ -263,11 +264,7 @@ class Repositext
               end
             }
           when :plain_text
-            split_plain_text = plain_text_with_subtitles_contents({}).split(/(?<=\n)|(?=@)/)
-            if split_plain_text.count != subtitle_attrs.count
-              raise "Mismatch in subtitle counts: plain text: #{ split_plain_text.count }, subtitle_attrs: #{ subtitle_attrs.count }."
-            end
-            split_plain_text.map { |e|
+            plain_text_with_subtitles_contents({}).split(/(?<=\n)|(?=@)/).map { |e|
               if e =~ /\A@/
                 # starts with subtitle_mark, merge content with next attrs
                 s = subtitle_attrs_pool.shift
