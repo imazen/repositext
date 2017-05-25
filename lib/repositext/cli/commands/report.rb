@@ -420,6 +420,54 @@ class Repositext
         }
       end
 
+      def report_subtitle_mark_count(options)
+        file_count = 0
+        files_with_subtitle_marks = []
+        Repositext::Cli::Utils.read_files(
+          config.compute_glob_pattern(
+            options['base-dir'] || :content_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :at_extension
+          ),
+          options['file_filter'],
+          nil,
+          "Reading AT files",
+          options
+        ) do |contents, filename|
+          subtitle_mark_count = contents.scan(/(?<!\\)@/).size
+          date_code = Repositext::Utils::FilenamePartExtractor.extract_date_code(filename)
+          if subtitle_mark_count > 0
+            files_with_subtitle_marks << {
+              subtitle_mark_count: subtitle_mark_count,
+              filename: filename,
+              date_code: date_code,
+            }
+          end
+          file_count += 1
+        end
+        lines = []
+        files_with_subtitle_marks.sort { |a,b| a[:date_code] <=> b[:date_code] }.each do |attrs|
+          l = " - #{ attrs[:date_code].ljust(10) } - #{ attrs[:subtitle_mark_count].to_s.rjust(5) }"
+          $stderr.puts l
+          lines << l
+        end
+        summary_line = "Found #{ lines.length } of #{ file_count } files with subtitle_marks at #{ Time.now.to_s }."
+        $stderr.puts summary_line
+        report_file_path = File.join(config.base_dir(:reports_dir), 'subtitle_mark_count.txt')
+        File.open(report_file_path, 'w') { |f|
+          f.write "Subtitle_mark count\n"
+          f.write '-' * 40
+          f.write "\n"
+          f.write lines.join("\n")
+          f.write "\n"
+          f.write '-' * 40
+          f.write "\n"
+          f.write summary_line
+          f.write "\n\n"
+          f.write "Command to generate this file: `repositext report subtitle_mark_count`\n"
+        }
+      end
+
       # Prints report that counts all html tag/class combinations it encounters.
       def report_html_tag_classes_inventory(options)
         file_count = 0
