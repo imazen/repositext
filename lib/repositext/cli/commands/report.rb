@@ -310,7 +310,7 @@ class Repositext
         ) do |data_json_file|
           total_file_count += 1
           rrfn = data_json_file.repo_relative_path(true)
-          if data_json_file.contents.index('"st_sync_required":true')
+          if data_json_file.read_data['st_sync_required']
             ftrss << rrfn
             $stderr.puts "   - has st_sync_required".color(:blue)
           end
