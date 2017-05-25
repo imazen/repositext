@@ -138,7 +138,7 @@ class Repositext
             puts aligned_subtitle_pairs.ai(indent: -2)
           end
 
-          puts " - extract ops"
+          puts "       - extract ops"
           operations = OperationsExtractor.new(
             aligned_subtitle_pairs,
             @file_date_code,
