@@ -64,17 +64,15 @@ class Repositext
             insert_at_index = insert_after_st_index + 1
             stid_to_insert = op.affected_stids.last.persistent_id
             st_to_insert = to_subtitles.detect { |e| e.persistent_id == stid_to_insert }
-            case op.operation_type
-            when 'insert'
-              # nothing to do
-            when 'split'
-              # split contents
-              first, second = insert_after_st.content.split_into_two
-              insert_after_st.content = first
-              st_to_insert.content = ['@', second].join # prefix with subtitle_mark
-            else
-              raise "Handle this: #{ op.inspect }"
-            end
+            # For foreign files, we want to treat inserts like splits, i.e.
+            # we don't insert any content, we just use the second half of the
+            # previous subtitle's content.
+
+            # split contents
+            first, second = insert_after_st.content.split_into_two
+            insert_after_st.content = first
+            st_to_insert.content = ['@', second].join # prefix with subtitle_mark
+
             foreign_subtitles_with_content.insert(
               insert_at_index,
               st_to_insert
