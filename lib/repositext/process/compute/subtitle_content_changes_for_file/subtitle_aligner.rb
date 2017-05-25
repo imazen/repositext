@@ -7,8 +7,8 @@ class Repositext
 
           # Get score for alignment pair of subtitle attrs.
           #
-          # @param left_el [SubtitleAttrs]
-          # @param right_el [SubtitleAttrs]
+          # @param left_el [Subtitle]
+          # @param right_el [Subtitle]
           # @param row_index [Integer] in score matrix
           # @param col_index [Integer] in score matrix
           # @return [Float]
@@ -25,8 +25,8 @@ class Repositext
 
             # We compute score based on stid only
             Repositext::Service::ScoreSubtitleAlignmentUsingStid.call(
-              left_el: left_el[:persistent_id],
-              right_el: right_el[:persistent_id],
+              left_el: left_el.persistent_id,
+              right_el: right_el.persistent_id,
               default_gap_penalty: default_gap_penalty,
             )[:result]
           end
