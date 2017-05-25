@@ -103,7 +103,7 @@ class Repositext
                 # Update foreign st_sync related data
                 f_content_at_file.update_file_level_data!(
                   'st_sync_commit' => st_sync_commit,
-                  'st_sync_subtitles_to_review' => { 'all' => 'autosplit' },
+                  'st_sync_subtitles_to_review' => { 'all' => ['autosplit'] },
                 )
 
                 @successful_files << f_content_at_file.repo_relative_path(true)

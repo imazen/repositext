@@ -124,7 +124,7 @@ class Repositext
       def subtitles_that_require_review
         operations.inject({}) { |m,op|
           op.affected_stids.each { |subtitle|
-            m[subtitle.persistent_id] = op.operation_type
+            (m[subtitle.persistent_id] ||= []) << op.operation_type
           }
           m
         }

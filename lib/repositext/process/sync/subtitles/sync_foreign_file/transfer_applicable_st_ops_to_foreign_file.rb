@@ -122,8 +122,19 @@ class Repositext
             )
               existing_data = foreign_content_at_file.read_file_level_data
               already_flagged_sts = existing_data['st_sync_subtitles_to_review'] || {}
-              new_flagged_sts = already_flagged_sts.merge(sts_that_require_review)
 
+              new_flagged_sts = already_flagged_sts.dup
+              # Convert existing data in json file from scalar String to Array of Strings.
+              new_flagged_sts.each { |stid, ops_type_or_types|
+                new_flagged_sts[stid] = [*ops_type_or_types]
+              }
+              # Add new sts that require review, or add more ops types to existing ones.
+              sts_that_require_review.each { |stid, ops_types|
+                new_flagged_sts[stid] ||= []
+                new_flagged_sts[stid] += ops_types
+                new_flagged_sts[stid].uniq!
+                new_flagged_sts[stid].sort!
+              }
               foreign_content_at_file.update_file_level_data!(
                 existing_data.merge({
                   'st_sync_commit' => sync_commit,

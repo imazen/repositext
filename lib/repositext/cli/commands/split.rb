@@ -48,7 +48,7 @@ class Repositext
           if o.success
             f_content_at_file.update_file_level_data!(
               'st_sync_commit' => primary_repo_sync_commit,
-              'st_sync_subtitles_to_review' => { 'all' => 'autosplit' }
+              'st_sync_subtitles_to_review' => { 'all' => ['autosplit'] }
             )
           end
           new_c_at, st_confs = o.result
