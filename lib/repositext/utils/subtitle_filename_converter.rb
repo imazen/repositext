@@ -103,15 +103,17 @@ class Repositext
       # @return [String] the corresponding subtitle_export filename
       def self.convert_from_repositext_to_subtitle_export(rt_filename, output_file_attrs)
         extension = output_file_attrs[:extension]
-        input_lang_code = rt_filename.split('/').last[0,3] # should be 'eng'
+        file_basename = File.basename(rt_filename)
+        input_lang_code = file_basename[0,3] # should be 'eng'
         output_lang_code = if(['markers.txt', 'subtitle_markers.csv'].include?(extension))
           # don't include language extension for markers file
           ''
         else
           ".#{ convert_language_code(input_lang_code) }"
         end
-        rt_filename.sub(/\/#{ input_lang_code }(?=\d)/, '/')
-                   .sub(/\.at\z/, "#{ output_lang_code }.#{ extension }")
+        output_file_basename = file_basename.sub(/\A#{ input_lang_code }/, '')
+                                            .sub(/\.at\z/, "#{ output_lang_code }.#{ extension }")
+        rt_filename.sub(file_basename, output_file_basename)
       end
 
       # Converts a repositext filename to the corresponding subtitle_import one
@@ -123,9 +125,11 @@ class Repositext
       # @param [String] rt_filename the repositext filename
       # @return [String] the corresponding subtitle filename
       def self.convert_from_repositext_to_subtitle_import(rt_filename)
-        lang_code = rt_filename.split('/').last[0,3] # should be 'eng'
-        rt_filename.sub(/\/#{ lang_code }(?=\d)/, '/')
-                   .sub(/\.at\z/, ".#{ convert_language_code(lang_code) }.txt")
+        file_basename = File.basename(rt_filename)
+        lang_code = file_basename[0,3] # should be 'eng'
+        output_file_basename = file_basename.sub(/\A#{ lang_code }/, '')
+                                            .sub(/\.at\z/, ".#{ convert_language_code(lang_code) }.txt")
+        rt_filename.sub(file_basename, output_file_basename)
       end
 
       # Converts a subtitle filename to the corresponding repositext one

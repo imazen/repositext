@@ -22,6 +22,11 @@ class Repositext
             "/47-0412_0002.markers.txt",
           ],
           [
+            "/eng47-0412_0002.at",
+            { extension: 'subtitle_markers.csv' },
+            "/47-0412_0002.subtitle_markers.csv",
+          ],
+          [
             "/engcab_05_-_title_1234.at",
             { extension: 'txt' },
             "/cab_05_-_title_1234.en.txt",
@@ -30,6 +35,11 @@ class Repositext
             "/engcab_05_-_title_1234.at",
             { extension: 'markers.txt' },
             "/cab_05_-_title_1234.markers.txt",
+          ],
+          [
+            "/engcab_05_-_title_1234.at",
+            { extension: 'subtitle_markers.csv' },
+            "/cab_05_-_title_1234.subtitle_markers.csv",
           ],
         ].each do |(rt_filename, output_file_attrs, xpect)|
           it "handles #{ rt_filename.inspect }" do
