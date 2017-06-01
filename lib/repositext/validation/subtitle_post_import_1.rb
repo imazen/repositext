@@ -18,6 +18,11 @@ class Repositext
             Validator::SubtitleMarkSpacing.new(
               File.open(path), @logger, @reporter, @options
             ).run
+          else
+            # Foreign files
+            Validator::SubtitleMarkSequenceSyntax.new(
+              File.open(path), @logger, @reporter, @options
+            ).run
           end
         end
 
