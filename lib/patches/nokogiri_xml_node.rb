@@ -6,12 +6,16 @@ module Nokogiri
       # @param class_name [String]
       def add_class(class_name)
         self['class'] = (class_names << class_name.strip).uniq.join(' ')
+        # TODO: When we sort class_names alphabetically, use this:
+        # self['class'] = (class_names << class_name.strip).uniq.sort.join(' ')
       end
 
-      # Returns own classes
+      # Returns own classes, sorted alphabetically.
       # @return [Array<String>]
       def class_names
         (self['class'] || '').split(' ')
+        # TODO: When we sort class_names alphabetically, use this:
+        # (self['class'] || '').downcase.split(' ').sort
       end
 
       # Returns true if other_xn has same name, class, and type as self
