@@ -13,8 +13,9 @@ class Repositext
         # @return [String] modified contents of foreign_content_at_file with st ops applied
         def apply_to_foreign_content_at_file(foreign_content_at_file, from_subtitles, to_subtitles)
           foreign_subtitles_with_content = foreign_content_at_file.subtitles(
-            with_content: true,
-            subtitle_attrs_override: from_subtitles
+            include_content_not_inside_a_subtitle: true,
+            subtitle_attrs_override: from_subtitles,
+            with_content: true
           )
           apply_self_to_foreign_subtitles!(
             foreign_subtitles_with_content,

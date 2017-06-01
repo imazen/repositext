@@ -221,18 +221,23 @@ class Repositext
       # Returns subtitles based on content in self and attrs in corresponding
       # subtitle markers csv file, or subtitle_attrs_overrides if given.
       # @param options [Hash{Symbol => Object}] with the following keys:
-      #   with_content [Boolean, optional] defaults to false. If true,
-      #     returned subtitles will have their content attribute populated.
       #   content_format [Symbol] one of :content_at, :plain_text. Defaults to :content_at
       #   subtitle_attrs_override [Array<Subtitle>, optional] if given will be
       #     used instead of attrs from stm_csv file.
+      #   include_content_not_inside_a_subtitle [Boolean] if true will return
+      #     all contents, even those not inside subtitles (e.g., record marks and headers)
+      #     They will be wrapped inside a dummy Subtitle object.
+      #   with_content [Boolean, optional] defaults to false. If true,
+      #     returned subtitles will have their content attribute populated.
       # @return [Array<Subtitle>] with attrs and content
       def subtitles(options={})
         options = {
           content_format: :content_at,
+          include_content_not_inside_a_subtitle: false,
           subtitle_attrs_override: nil,
           with_content: false,
         }.merge(options)
+
         subtitle_attrs = if options[:subtitle_attrs_override]
           options[:subtitle_attrs_override]
         elsif (csmcf = corresponding_subtitle_markers_csv_file)
@@ -242,7 +247,7 @@ class Repositext
         end
         return []  if subtitle_attrs.empty?
 
-        # Check that counts between content AT and stm csv match
+        # Check that counts between content AT and subtitle_attrs match
         if contents.count('@') != subtitle_attrs.count
           raise "Mismatch in subtitle counts: content AT: #{ contents.count('@') }, subtitle_attrs: #{ subtitle_attrs.count }."
         end
@@ -259,8 +264,12 @@ class Repositext
                 s.content = e
                 s
               else
-                # Not inside a subtitle, return nil, to be removed
-                nil
+                # Not inside a subtitle, return nil, to be removed or subtitle shell
+                if options[:include_content_not_inside_a_subtitle]
+                  Subtitle.new(content: e)
+                else
+                  nil
+                end
               end
             }.compact
           when :plain_text
@@ -271,7 +280,12 @@ class Repositext
                 s.content = e
                 s
               else
-                # Not inside a subtitle, return nil, to be removed
+                # Not inside a subtitle, return nil, to be removed or subtitle shell
+                if options[:include_content_not_inside_a_subtitle]
+                  Subtitle.new(content: e)
+                else
+                  nil
+                end
               end
             }.compact
           else
