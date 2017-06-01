@@ -29,6 +29,9 @@ class Repositext
 
         # Applies self's operations to foreign_subtitles_with_content, makes
         # changes in place.
+        # Only insert/split and delete/merge operations change foreign contents.
+        # Moves and content_changes are just recorded under the
+        # `st_sync_subtitles_to_review` key in the data.json file.
         # @param foreign_subtitles_with_content [Array<Subtitle>]
         # @param to_subtitles [Array<Subtitle>]
         def apply_self_to_foreign_subtitles!(foreign_subtitles_with_content, to_subtitles)
