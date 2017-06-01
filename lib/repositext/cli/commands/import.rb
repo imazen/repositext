@@ -139,7 +139,7 @@ class Repositext
         end
 
         options['append_to_validation_report'] = true
-        validate_subtitle_import(options.merge('run_options' => %w[post_import]))
+        validate_subtitle_import(options.merge('run_options' => %w[post_import_1]))
 
         if !config.setting(:is_primary_repo)
           # We're in a foreign repo, we transfer any subtitle operations that
@@ -152,6 +152,8 @@ class Repositext
             options.merge('re-apply-st-ops-since-st-export' => true)
           )
         end
+
+        validate_subtitle_import(options.merge('run_options' => %w[post_import_2]))
       end
 
       def import_subtitle_tagging(options)

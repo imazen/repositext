@@ -343,8 +343,11 @@ class Repositext
         if options['run_options'].include?('pre_import')
           Repositext::Validation::SubtitlePreImport.new(file_specs, validation_options).run
         end
-        if options['run_options'].include?('post_import')
-          Repositext::Validation::SubtitlePostImport.new(file_specs, validation_options).run
+        if options['run_options'].include?('post_import_1')
+          Repositext::Validation::SubtitlePostImport1.new(file_specs, validation_options).run
+        end
+        if options['run_options'].include?('post_import_2')
+          Repositext::Validation::SubtitlePostImport2.new(file_specs, validation_options).run
         end
       end
 
