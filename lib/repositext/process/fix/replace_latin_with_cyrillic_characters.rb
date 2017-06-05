@@ -40,6 +40,10 @@ class Repositext
           "ï" => "ї",
         }
 
+        LATIN_CHARS_TO_IGNORE = %w[
+          ó
+        ]
+
         # @param content_at_contents [String]
         # @param filename [String] for location reporting
         # @return [Outcome] with
@@ -48,6 +52,7 @@ class Repositext
         def self.fix(content_at_contents, filename)
           new_contents = ""
           latin_chars_that_were_not_replaced = []
+          replaced_chars = Hash.new(0)
           latin_chars = LATIN_TO_CYRILLIC_MAP.keys | []
 
           # Separate id_page out
@@ -60,7 +65,6 @@ class Repositext
           isolated_latin_char_rx = /(?<!#{ latin_char_rx })#{ latin_char_rx }(?!#{ latin_char_rx })/
           multi_latin_chars_rx = /#{ latin_char_rx }{2,}/
 
-
           s = StringScanner.new(cat_wo_id)
           while !s.eos? do
             # Regexes go from specific to general
@@ -69,20 +73,24 @@ class Repositext
               new_contents << ial
             elsif isolated_latin_char = s.scan(isolated_latin_char_rx)
               # Replace with equivalent cyrillic char, raise if no match found
-              ce = LATIN_TO_CYRILLIC_MAP[isolated_latin_char]
-              if ce.nil?
+              cc = LATIN_TO_CYRILLIC_MAP[isolated_latin_char]
+              if cc.nil?
                 # Keep as is
                 new_contents << isolated_latin_char
-                # Report this unmapped char as not replaced
-                latin_chars_that_were_not_replaced << {
-                  filename: filename,
-                  line: new_contents.count("\n") + 1,
-                  latin_chars: isolated_latin_char,
-                  reason: "No mapping for this character provided."
-                }
+                if !LATIN_CHARS_TO_IGNORE.include?(isolated_latin_char)
+                  # Report this unmapped char
+                  latin_chars_that_were_not_replaced << {
+                    filename: filename,
+                    line: new_contents.count("\n") + 1,
+                    latin_chars: isolated_latin_char,
+                    reason: "Unhandled latin character."
+                  }
+                end
               else
                 # Replace latin with cyrillic char
-                new_contents << ce
+                new_contents << cc
+                # Report the replacement
+                replaced_chars[cc] += 1
               end
             elsif multi_latin_chars = s.scan(multi_latin_chars_rx)
               # Keep as is
@@ -100,14 +108,14 @@ class Repositext
             end
           end
 
-          Outcome.new(
-            true,
-            {
-              contents: new_contents + id_page,
-              lctwnr: latin_chars_that_were_not_replaced
-            },
-            []
-          )
+          r = {
+            contents: new_contents + id_page,
+            lctwnr: latin_chars_that_were_not_replaced,
+          }
+          if replaced_chars.any?
+            r[:replaced] = { filename: filename, replaced_chars: replaced_chars }
+          end
+          Outcome.new(true, r, [])
         end
 
       end

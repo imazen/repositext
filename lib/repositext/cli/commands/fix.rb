@@ -191,38 +191,6 @@ class Repositext
         end
       end
 
-      # Finds and replaces latin characters that should have been cyrillic ones.
-      def fix_replace_latin_with_cyrillic_characters(options)
-        latin_chars_that_were_not_replaced = []
-        Repositext::Cli::Utils.change_files_in_place(
-          config.compute_glob_pattern(
-            options['base-dir'] || :content_dir,
-            options['file-selector'] || :all_files,
-            options['file-extension'] || :at_extension
-          ),
-          options['file_filter'],
-          "Replacing latin with cyrillic characters",
-          options.merge(
-            use_new_r_file_api: true,
-            content_type: content_type,
-          )
-        ) do |content_at_file|
-          outcome = Repositext::Process::Fix::ReplaceLatinWithCyrillicCharacters.fix(
-            content_at_file.contents,
-            content_at_file.basename
-          )
-          latin_chars_that_were_not_replaced += outcome.result[:lctwnr]
-          [outcome]
-        end
-        if latin_chars_that_were_not_replaced.any?
-          puts "The following latin character sequences were not touched:".color(:blue)
-          ap latin_chars_that_were_not_replaced
-        else
-          puts "No latin character sequences were found".color(:blue)
-        end
-      end
-
-
       # Set file permissions to standard permissions on all newly imported files
       def fix_import_file_permissions
         # set to 644
@@ -381,6 +349,45 @@ class Repositext
             content_at_file.contents
           )
           [outcome]
+        end
+      end
+
+      # Finds and replaces latin characters that should have been cyrillic ones.
+      def fix_replace_latin_with_cyrillic_characters(options)
+        latin_chars_that_were_not_replaced = []
+        replaced_latin_chars = []
+        Repositext::Cli::Utils.change_files_in_place(
+          config.compute_glob_pattern(
+            options['base-dir'] || :content_dir,
+            options['file-selector'] || :all_files,
+            options['file-extension'] || :at_extension
+          ),
+          options['file_filter'],
+          "Replacing latin with cyrillic characters",
+          options.merge(
+            use_new_r_file_api: true,
+            content_type: content_type,
+          )
+        ) do |content_at_file|
+          outcome = Repositext::Process::Fix::ReplaceLatinWithCyrillicCharacters.fix(
+            content_at_file.contents,
+            content_at_file.basename
+          )
+          latin_chars_that_were_not_replaced += outcome.result[:lctwnr]
+          replaced_latin_chars << outcome.result[:replaced]
+          [outcome]
+        end
+        if replaced_latin_chars.any?
+          puts "The following latin characters were replaced:".color(:blue)
+          ap replaced_latin_chars
+        else
+          puts "No latin characters were replaced".color(:blue)
+        end
+        if latin_chars_that_were_not_replaced.any?
+          puts "The following latin character sequences were not touched:".color(:blue)
+          ap latin_chars_that_were_not_replaced
+        else
+          puts "No latin character sequences were found".color(:blue)
         end
       end
 
