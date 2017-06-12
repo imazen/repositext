@@ -43,9 +43,14 @@ class Repositext
     end
 
     def code_repo_names
+      core_code_repo_names + %w[
+        suspension
+      ]
+    end
+
+    def core_code_repo_names
       %w[
         repositext
-        suspension
       ]
     end
 
@@ -402,6 +407,8 @@ class Repositext
         all_repo_names
       when :code_repos
         code_repo_names
+      when :core_code_repos
+        core_code_repo_names
       when :foreign_content_repos
         foreign_content_repo_names
       when :primary_repo

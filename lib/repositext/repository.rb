@@ -3,6 +3,8 @@ class Repositext
   # Represents a generic git repository.
   class Repository
 
+    class NotUpToDateWithRemoteError < RuntimeError; end
+
     delegate :diff, to: :@repo
 
     # @param dir_in_repo [String] path to a dir in the repo (can be nested)
@@ -149,6 +151,11 @@ class Repositext
       @repo.workdir.split('/').last
     end
 
+    # Returns the name and current branch of the local repository
+    def name_and_current_branch
+      [name, current_branch_name].join('/')
+    end
+
     # Returns the repo's parent directory
     def parent_dir
       File.expand_path('..', base_dir)
@@ -156,6 +163,18 @@ class Repositext
 
     def repo_path
       @repo.path
+    end
+
+    # Returns true if remote's latest commit is present in local repo at
+    # current branch.
+    def up_to_date_with_remote?
+      begin
+        latest_local_commit = lookup(latest_commit_sha_remote)
+      rescue Rugged::OdbError => e
+        # Couldn't find remote's latest commit in local repo, return false
+        return false
+      end
+      true
     end
 
   end

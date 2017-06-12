@@ -3,7 +3,6 @@ class Repositext
   class Cli < Thor
 
     class RtfileError < RuntimeError; end
-    class GitRepoNotUpToDateError < RuntimeError; end
 
     include Thor::Actions
     include Cli::LongDescriptionsForCommands
@@ -236,6 +235,7 @@ class Repositext
                   desc: "Argument to specify what version should be released"
     # @param [String] command_spec Specification of the operation
     def release(command_spec)
+      check_that_current_branch_is_up_to_date_with_origin_master
       invoke_repositext_command('release', command_spec, options)
     end
 
@@ -376,16 +376,11 @@ class Repositext
     # Raises an exception if it is not.
     def check_that_current_branch_is_up_to_date_with_origin_master
       return true  if options['skip-git-up-to-date-check']
-      latest_commit_sha_remote = repository.latest_commit_sha_remote
-      begin
-        latest_local_commit = repository.lookup(latest_commit_sha_remote)
-      rescue Rugged::OdbError => e
-        # Couldn't find remote's latest commit in local repo, raise error
-        raise GitRepoNotUpToDateError.new([
+      if !repository.up_to_date_with_remote?
+        raise Repository::NotUpToDateWithRemoteError.new([
           '',
-          "Your local '#{ repository.current_branch_name }' branch is not up-to-date with origin/master.",
+          "Your local '#{ repository.name_and_current_branch }' branch is not up-to-date with origin/master.",
           'Please get the updates from origin/master first before running a repositext command.',
-          "The remote reported #{ latest_commit_sha_remote } as its latest commit sha1.",
           'You can bypass this check by appending "--skip-git-up-to-date-check=true" to the repositext command'
         ].join("\n"))
       end
