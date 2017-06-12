@@ -38,10 +38,20 @@ class Repositext
           "ë" => "ё",
           "Ï" => "Ї",
           "ï" => "ї",
+          "Ë" => "Ё",
         }
 
         LATIN_CHARS_TO_IGNORE = %w[
+          á
+          Á
+          é
           ó
+          Q
+          L
+          ì
+          ý
+          É
+          ò
         ]
 
         # @param content_at_contents [String]
