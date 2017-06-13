@@ -167,7 +167,10 @@ class Repositext
       # @return [Hash]
       def to_hash
         r = ATTR_NAMES.inject({}) { |m,e|
-          m[e] = self.send(e)
+          # Record :after_stid only if it's not null
+          if :after_stid != e || self.send(e)
+            m[e] = self.send(e)
+          end
           m
         }
         r[:affected_stids] = affected_stids.map { |e| e.to_hash }
