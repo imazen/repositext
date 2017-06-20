@@ -88,13 +88,15 @@ class Repositext
         end
       end
 
-      # @param [Validator] _validator
-      # @param [IO, String, Array<IO, String>] _io the source file (or path as String) in which the validation step was defined
-      # @param [Boolean] _success
-      def log_validation_step(_validator, _io, _success)
-        # find longest common prefix between @input_base_dir and _io's filename
-        # to remove it from logging output
-        io_or_string_array = _io.is_a?(Array) ? _io : [_io] # cast _io to array
+      # @param _validator [Validator]
+      # @param _io_or_string_or_array [IO, String, RFile, Array<IO, String, RFile>] the source
+      #   file (or path as String) in which the validation step was defined.
+      # @param _success [Boolean]
+      def log_validation_step(_validator, _io_or_string_or_array, _success)
+        # We want to keep the full path names so that we can open the files
+        # easily in sublime text by command clicking them in the terminal.
+        # Cast _io_or_string_or_array to array
+        io_or_string_array = [*_io_or_string_or_array]
         string_array = io_or_string_array.map { |e|
           case e
           when IO
@@ -107,13 +109,9 @@ class Repositext
             raise "Handle this: #{ e.inspect }"
           end
         }
-        longest_common_prefix = string_array.inject(@input_base_dir.dup) {|lcp, a_path|
-          lcp = lcp.chop while lcp != a_path[0...lcp.length]
-          lcp
-        }
         parts = [
           '  ',
-          string_array.join(', ').gsub(longest_common_prefix, '').ljust(40),
+          string_array.join(', '),
           ' ',
           _validator.class.name.split(/::/).last.ljust(30)
         ]
