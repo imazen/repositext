@@ -16,10 +16,6 @@ class Repositext
       # So that it returns an instance of Collection, and not Array.
       def_delegators :@coll, :count
 
-      def initialize(coll = [])
-        @coll = coll
-      end
-
       # Initialize new instance of self for content_type, file_selector, and
       # date_codes. Collection is the intersection of file_selector and date_codes.
       # @param content_type [ContentType]
@@ -66,6 +62,14 @@ class Repositext
             )
           }
         )
+      end
+
+      def initialize(coll = [])
+        @coll = coll
+      end
+
+      def basenames
+        @coll.map { |e| e.basename }
       end
 
       def date_codes
