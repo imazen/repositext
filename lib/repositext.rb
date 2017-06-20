@@ -2,6 +2,15 @@
 
 # 3rd party libraries
 
+# Load dotenv first so that we have all config values available.
+# repositext.env contains standard settings. Each setting can be overwritten
+# via repositext_local_overrides.env.
+require 'dotenv'
+env_files = %w[repositext.env repositext_local_overrides.env].map { |e|
+  File.expand_path("../../data/#{ e }", __FILE__)
+}
+Dotenv.load(*env_files)
+
 # Have to require awesome_print before activesupport
 # otherwise I get
 # undefined method `on_load' for ActiveSupport:Module (NoMethodError)

@@ -196,8 +196,10 @@ class Repositext
       def self.process_files_helper(file_pattern, file_filter, output_path_lambda, description, options, &block)
         with_console_output(description, file_pattern) do |counts|
           changed_files = compute_list_of_changed_files(options[:'changed-only'])
-          # TODO: When running parallel, use all but one processors so that the computer doesn't become completely unresponsive
-          Parallel.each(Dir.glob(file_pattern), options[:parallel] ? {} : { in_threads: 0 }) do |filename|
+          Parallel.each(
+            Dir.glob(file_pattern),
+            { in_threads: options[:parallel] ? Repositext::PARALLEL_CORES : 0 }
+          ) do |filename|
 
             if file_filter && !(file_filter === filename) # file_filter has to be LHS of `===`
               $stderr.puts " - Skipping #{ filename } - doesn't match file_filter"

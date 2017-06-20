@@ -3,3 +3,4 @@
 .yardoc
 doc/scratchpad.md
 spec/git_test/repos/*
+repositext_local_overrides.env

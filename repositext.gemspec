@@ -25,6 +25,7 @@ Gem::Specification.new do |s|
   # I would have liked to use diff_match_patch which we already use for suspension, however
   # there was no simple way to do line diffing in DMP, so I use this gem for now.
   s.add_dependency('diff-lcs')
+  s.add_dependency('dotenv')
   s.add_dependency('kramdown')
   s.add_dependency('logging')
   s.add_dependency('micromachine')

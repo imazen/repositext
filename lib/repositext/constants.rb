@@ -12,6 +12,19 @@ class Repositext
     max_nesting: 100,
   }
 
+  PARALLEL_CORES = case ENV['NUMBER_OF_CORES_FOR_PARALLEL_PROCESSING']
+  when /\A\d+\z/
+    # Set to numeric value
+    ENV['NUMBER_OF_CORES_FOR_PARALLEL_PROCESSING'].to_i
+  when 'all'
+    Parallel.processor_count
+  when 'all_but_one'
+    Parallel.processor_count - 1
+  else
+    raise "Invalid value for NUMBER_OF_CORES_FOR_PARALLEL_PROCESSING: #{ ENV['NUMBER_OF_CORES_FOR_PARALLEL_PROCESSING'].inspect }"
+  end
+
+
   # We use this character to delimit sentences, e.g., in Lucene exported plain
   # text proximity
   # 0x256B - Box Drawings Vertical Double And Horizontal Single
