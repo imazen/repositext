@@ -17,7 +17,7 @@ class Repositext
           file_path = Dir.glob(
             File.join(
               content_type.base_dir,
-              "content/**/*#{ date_code }_*#{ extension }"
+              "content/**/[a-z]{3}?#{ date_code }_*#{ extension }"
             )
           ).first
           return nil  if file_path.nil?
@@ -55,7 +55,11 @@ class Repositext
 
       # Returns self's date_code
       def extract_date_code
-        basename.match(/\d{2}-\d{4}[[:alpha:]]?/).to_s
+        if(m = basename.match(/(?:[a-z]{3}?)(\d{2}-\d{4}[[:alpha:]]?|[a-z]{3}_\d{2}(?=_-_))/))
+          m[1]
+        else
+          ''
+        end
       end
 
       # Extracts a 4-digit product identity id from filename
@@ -67,9 +71,9 @@ class Repositext
         r
       end
 
-      # Extracts a 2-digit year from filename
+      # Extracts a 2-digit year or 3 letter content type identifier from filename
       def extract_year
-        extract_date_code.match(/\A\d{2}/).to_s
+        extract_date_code.match(/\A(\d{2}|[a-z]{3})/).to_s
       end
 
       def filename_without_dispensable_segment
