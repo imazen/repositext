@@ -235,7 +235,8 @@ class Repositext
                   desc: "Argument to specify what version should be released"
     # @param [String] command_spec Specification of the operation
     def release(command_spec)
-      check_that_current_branch_is_up_to_date_with_origin_master
+      # NOTE: we run git-up-to-date-check as part of Process::Release on a
+      # number of repositories, so we don't have to do it here.
       invoke_repositext_command('release', command_spec, options)
     end
 
