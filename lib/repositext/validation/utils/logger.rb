@@ -96,7 +96,11 @@ class Repositext
         # We want to keep the full path names so that we can open the files
         # easily in sublime text by command clicking them in the terminal.
         # Cast _io_or_string_or_array to array
-        io_or_string_array = [*_io_or_string_or_array]
+        io_or_string_array = if _io_or_string_or_array.is_a?(Array)
+          _io_or_string_or_array
+        else
+          [_io_or_string_or_array]
+        end
         string_array = io_or_string_array.map { |e|
           case e
           when IO
