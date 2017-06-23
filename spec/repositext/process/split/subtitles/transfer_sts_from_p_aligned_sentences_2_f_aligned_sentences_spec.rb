@@ -47,6 +47,18 @@ class Repositext
                 'ward wardwardward ward',
                 '@ward @wardwardward ward',
               ],
+              [
+                'Moves subtitles to beginning of word with accented character',
+                '@word word @word word',
+                'ward ward wàrdward ward',
+                '@ward ward @wàrdward ward',
+              ],
+              [
+                'Moves subtitles to beginning of word with escaped character',
+                '@word word @word word',
+                'ward ward&#x00A0;ward&#x202F;ward',
+                '@ward @ward&#x00A0;ward&#x202F;ward',
+              ],
             ].each do |(desc, p_s, f_s, xpect)|
               it "handles #{ desc }" do
                 default_split_instance.interpolate_subtitle_positions(
