@@ -247,12 +247,30 @@ class Repositext
       end
 
       # Reports all foreign files with subtitles that require review.
+      # Objective: To know what files require review and haven't been sent out.
+      # We distinguish between files that have been exported and those that
+      # have not been.
+      # We can tell if a file has been exported when exported_subtitles_at_st_sync_commit
+      # is not null.
+      # For those files that haven't been exported, we further distinguish the
+      # following three groups:
+      #     * File has subtitle operations (+ optional content changes)
+      #     * File has just content changes
+      #     * File was autosplit
       def report_files_with_subtitles_that_require_review(options)
         if config.setting(:is_primary_repo)
           raise "This command can only be used in foreign repos."
         end
 
-        fwstrr = []
+        fwstrr = {
+          subtitles_not_exported: {
+            st_ops_and_content_changes: [],
+            content_changes_only: [],
+            autosplit: []
+          },
+          subtitles_exported: []
+        }
+        files_found_count = 0
         total_file_count = 0
 
         Repositext::Cli::Utils.read_files(
@@ -270,20 +288,62 @@ class Repositext
           )
         ) do |data_json_file|
           total_file_count += 1
+          fd = data_json_file.read_data
           rrfn = data_json_file.repo_relative_path(true)
-          if(st_cnt = (data_json_file.read_data['st_sync_subtitles_to_review'] || {}).keys.count) > 0
-            fwstrr << [rrfn, st_cnt]
-            $stderr.puts "   - has #{ st_cnt } subtitles to review".color(:blue)
+          subtitles_have_been_exported = '' != fd['exported_subtitles_at_st_sync_commit'].to_s.strip
+          st_tr = (fd['st_sync_subtitles_to_review'] || {})
+          next  if st_tr.none?
+          st_tr_keys = st_tr.keys
+          st_tr_cnt = st_tr_keys.count
+          desc = nil
+          if subtitles_have_been_exported
+            # No further distinction required
+            files_found_count += 1
+            fwstrr[:subtitles_exported] << [rrfn, st_tr_cnt]
+            desc = "   - subtitles have been exported, has #{ st_tr_cnt } subtitles to review".color(:blue)
+          else
+            # subtitles have not been exported, further distinguish kinds of changes
+            if st_tr.any? { |stid,ops| 'all' == stid && ops.include?('autosplit') }
+              # This file is autosplit
+              files_found_count += 1
+              st_tr_cnt = 'all'
+              fwstrr[:subtitles_not_exported][:autosplit] << [rrfn, st_tr_cnt]
+              desc = "   - subtitles have not been exported, was autosplit".color(:blue)
+            elsif st_tr.all? { |stid,ops| ops.all? { |op| 'content_change' == op } }
+              # content_changes only
+              files_found_count += 1
+              fwstrr[:subtitles_not_exported][:content_changes_only] << [rrfn, st_tr_cnt]
+              desc = "   - subtitles have not been exported, #{ st_tr_cnt } content_changes to review".color(:blue)
+            else
+              # st ops and content_changes
+              files_found_count += 1
+              fwstrr[:subtitles_not_exported][:st_ops_and_content_changes] << [rrfn, st_tr_cnt]
+              desc = "   - subtitles have not been exported, #{ st_tr_cnt } st_ops and content_changes to review".color(:blue)
+            end
           end
+          $stderr.puts desc
         end
-        if fwstrr.any?
-          $stderr.puts "\n\n#{ fwstrr.length } files that have subtitles requiring review:"
+        if files_found_count > 0
+          $stderr.puts "\nThe following #{ files_found_count } files have subtitles requiring review".color(:blue)
           $stderr.puts '-' * 80
-          fwstrr.each { |(fn, cnt)| $stderr.puts " * #{ fn } (#{ cnt })" }
+          if(fs = fwstrr[:subtitles_not_exported][:st_ops_and_content_changes]).any?
+            $stderr.puts "  With st ops (subtitles not exported yet):".color(:blue)
+            fs.each { |(fn, cnt)| $stderr.puts "   * #{ fn } (#{ cnt })" }
+          end
+          if(fs = fwstrr[:subtitles_not_exported][:content_changes_only]).any?
+            $stderr.puts "  With content_changes (subtitles not exported yet):".color(:blue)
+            fs.each { |(fn, cnt)| $stderr.puts "   * #{ fn } (#{ cnt })" }
+          end
+          if(fs = fwstrr[:subtitles_not_exported][:autosplit]).any?
+            $stderr.puts "  Autosplit (subtitles not exported yet):".color(:blue)
+            fs.each { |(fn, cnt)| $stderr.puts "   * #{ fn } (#{ cnt })" }
+          end
+          if(fs = fwstrr[:subtitles_exported]).any?
+            $stderr.puts "  Subtitles already exported:".color(:blue)
+            fs.each { |(fn, cnt)| $stderr.puts "   * #{ fn } (#{ cnt })" }
+          end
           $stderr.puts
         end
-        summary_line = "Found #{ fwstrr.length } of #{ total_file_count } files that have subtitles requiring review at #{ Time.now.to_s }."
-        $stderr.puts summary_line
       end
 
       # Reports all primary content AT files that require an st_sync.
