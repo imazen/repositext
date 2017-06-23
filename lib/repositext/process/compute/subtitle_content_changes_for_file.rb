@@ -71,7 +71,7 @@ class Repositext
             (total_subtitle_count_change.abs * 1.2).round,
             25
           ].max
-          aligner = SubtitleAligner.new(
+          aligner = SubtitleContentChangesForFile::SubtitleAligner.new(
             subtitles_from,
             subtitles_to,
             { diagonal_band_range: diagonal_band_range }

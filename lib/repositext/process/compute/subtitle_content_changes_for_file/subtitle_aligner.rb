@@ -25,8 +25,8 @@ class Repositext
 
             # We compute score based on stid only
             Repositext::Service::ScoreSubtitleAlignmentUsingStid.call(
-              left_el: left_el.persistent_id,
-              right_el: right_el.persistent_id,
+              left_stid: left_el.persistent_id,
+              right_stid: right_el.persistent_id,
               default_gap_penalty: default_gap_penalty,
             )[:result]
           end
@@ -37,6 +37,10 @@ class Repositext
 
           def gap_indicator
             nil
+          end
+
+          def element_for_inspection_display(element, col_width = nil)
+            element.persistent_id
           end
 
         end
