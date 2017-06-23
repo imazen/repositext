@@ -82,9 +82,11 @@ class Repositext
       def to_file_selector(options={})
         if date_codes.any?
           # Create glob pattern containing all included date_codes
+          # Append underscore to date_code to avoid inclusion of unwanted
+          # date codes (e.g., '65-0103' vs. '65-0103x')
           [
             "**/*{",
-            date_codes.join(','),
+            date_codes.map { |e| "#{ e }_" }.join(','),
             "}*",
             options[:extension]
           ].compact.join
