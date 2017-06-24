@@ -113,13 +113,13 @@ class Repositext
               nil
             end
           elsif subtitle_from
-            # subtitle_from was removed
+            # subtitle_from was removed, leave index empty
             {
               "stid": subtitle_from.persistent_id,
               "before": subtitle_from.content.sub(/\A@/, ''),
               "after": '',
               "record_id": subtitle_from.record_id,
-              "index": subtitle_from.tmp_attrs[:index],
+              "index": nil,
             }
           elsif subtitle_to
             # subtitle_to was added
