@@ -62,6 +62,9 @@ class Repositext
           # Container for any files that were synced successfully. Array of Strings
           # ['content/53/spn53-0504.at', ...]
           @successful_files = []
+          # Container for any files that were autosplit, grouped by language
+          # { eng: ['54-0403', '65-0101'] }
+          @auto_split_files_collector = Hash.new([])
         end
 
         def sync
@@ -104,6 +107,16 @@ class Repositext
 
           puts " - Finalize sync operation".color(:blue)
           finalize_sync_operation
+          puts "\n"
+          if @auto_split_files_collector.any?
+            puts "File selectors for autosplit files:".color(:blue)
+            @auto_split_files_collector.each { |lang_code, date_codes|
+              dcs = date_codes.map { |e| "#{ e }_" }.join(',')
+              puts "#{ lang_code }: **/*{#{ dcs }}*"
+            }
+          else
+            puts "No files were autosplit.".color(:blue)
+          end
         end
 
         # Public Bang! wrapper around compute_to_git_commit to assign the instance

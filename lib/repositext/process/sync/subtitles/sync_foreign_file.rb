@@ -35,6 +35,7 @@ class Repositext
             elsif :autosplit == fgc_o.result[:source]
               # This file requires autosplit. After autosplit, file will be
               # synced to primary repo's current @to_git_commit.
+              @auto_split_files_collector[f_content_at_file.language_code_3_chars] << f_content_at_file.extract_date_code
               process_autosplit(f_content_at_file, @to_git_commit)
             else
               # This file can't be processed

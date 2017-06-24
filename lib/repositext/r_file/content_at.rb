@@ -197,6 +197,10 @@ class Repositext
         language.code_2_chars
       end
 
+      def language_code_3_chars
+        language.code_3_chars
+      end
+
       def plain_text_contents(options)
         kramdown_doc(options).to_plain_text
       end
