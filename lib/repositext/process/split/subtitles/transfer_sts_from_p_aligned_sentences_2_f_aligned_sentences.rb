@@ -224,9 +224,10 @@ class Repositext
             # Re-build foreign sentence with subtitle_marks added
             r = foreign_chars.join
             puts "  new raw f_s:       #{ r.inspect }"  if debug
-            # Move subtitle marks to beginning of word if they are inside a word
+            # Move subtitle marks to beginning of word if they are inside or
+            # after a word.
             # Also handles accented and escaped chars (e.g., '&#x00A0;')
-            r.gsub!(/((?:&#x[[:xdigit:]]+;|[[:word:]])+)@([[:word:]]+)/, '@\1\2')
+            r.gsub!(/((?:&#x[[:xdigit:]]+;|[[:word:]])+)@/, '@\1')
             puts "  new sanitized f_s: #{ r.inspect }"  if debug
             r
           end
