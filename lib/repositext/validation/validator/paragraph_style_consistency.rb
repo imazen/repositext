@@ -27,7 +27,6 @@ class Repositext
 
           foreign_doc_paragraph_styles = extract_paragraph_styles(foreign_doc)
           primary_doc_paragraph_styles = extract_paragraph_styles(primary_doc)
-
           mismatching_paragraph_styles = compute_paragraph_style_diff(
             foreign_doc_paragraph_styles,
             primary_doc_paragraph_styles
@@ -134,7 +133,7 @@ class Repositext
         end
 
         def foreign_has_paragraph_numbers?(foreign_doc)
-          paragraph_number_count = foreign_doc.scan(/^[^\d\n]{0,2}\d+(?![\d\.])/).size
+          paragraph_number_count = foreign_doc.scan(/^[^[:digit:]\n]{0,2}[[:digit:]]+(?![[:digit:]\.])/).size
           block_level_elements_count = foreign_doc.split("\n\n").length
 
           return false  if 0 == block_level_elements_count
