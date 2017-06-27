@@ -10,6 +10,27 @@ class Repositext
         include SharedSpecBehaviors
 
         describe 'validate_corrections_file' do
+
+          let(:language) { Language::English.new }
+          let(:default_date_code) { '16-0101' }
+          let(:filename) { '/content/16/eng#{ default_date_code }-1234.at' }
+          let(:path_to_repo) { Repository::Test.create!('rt-english').first }
+          let(:content_type) { ContentType.new(File.join(path_to_repo, 'ct-general')) }
+          let(:content_at_file) {
+            RFile::ContentAt.new('The title', language, filename, content_type)
+          }
+          let(:corrections_file_preamble){
+            [
+              "ACCEPTED Corrections",
+              "Title: The title",
+              "Date: #{ default_date_code }",
+              "Revision: 1a2b3c4d",
+              "",
+              "ACCEPTED CHANGES TO ENGLISH TEXT",
+              "",
+            ].join("\n")
+          }
+
           [
             [
               'valid file',
@@ -43,8 +64,20 @@ class Repositext
               errors = []
               warnings = []
 
+              corrections_file = RFile::Content.new(
+                corrections_file_preamble + test_string,
+                language,
+                "path/to/#{ default_date_code }",
+                content_type
+              )
+
               validator.send(
-                :validate_corrections_file, test_string, errors, warnings
+                :validate_corrections_file,
+                corrections_file,
+                corrections_file_preamble + test_string,
+                content_at_file,
+                errors,
+                warnings
               )
               errors.size.must_equal(num_errors)
               errors.all? { |e|
@@ -54,6 +87,13 @@ class Repositext
           end
 
           it "raises exception on error when part of `merge`" do
+            corrections_file = RFile::Content.new(
+              corrections_file_preamble + 'invalid file with straight double quote: "',
+              language,
+              "path/to/#{ default_date_code }",
+              content_type
+            )
+
             validator, logger, reporter = build_validator_logger_and_reporter(
               SpotSheet,
               FileLikeStringIO.new('_path', '_txt'),
@@ -67,7 +107,9 @@ class Repositext
             lambda {
               validator.send(
                 :validate_corrections_file,
-                'invalid file with straight double quote: "',
+                corrections_file,
+                corrections_file_preamble + 'invalid file with straight double quote: "',
+                content_at_file,
                 errors,
                 warnings
               )

@@ -241,7 +241,7 @@ class Repositext
                 [Outcome.new(false, {}, ['msg'])]
               end
             }
-            err.must_match /\n  x  Error:/
+            err.must_match(/  x  Error:/)
           end
         end
 

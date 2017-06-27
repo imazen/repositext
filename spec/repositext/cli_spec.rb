@@ -8,8 +8,8 @@ class Repositext
     end
 
     it "prints help when invoked without subcommand or argument" do
-      out = capture_io { Cli.start(['--rtfile', nil, '--content-type-name', nil]) }.join
-      out.must_match /Commands:\n/
+      out = capture_io { Cli.start(['--rtfile', '/path/to/rtfile', '--content-type-name', 'general']) }.join
+      out.must_match(/\[COMMAND\]/)
     end
 
     describe 'class_options' do

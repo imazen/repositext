@@ -155,9 +155,9 @@ class Repositext
                 :last_in_para=>nil,
                 :sim_abs=>[0.5454545454545454, 1.0],
                 :sim_left=>[1.0, 1.0],
-                :sim_right=>[0.16666666666666666, 1.0],
+                :sim_right=>[0.2, 1.0],
                 :subtitle_count_change=>0,
-                :subtitle_object => ::Repositext::Subtitle.new(persistent_id: "1000001", tmp_attrs: {:before=>"Abcd Efgh Ijkl Mnop Qrst ", :after=>"Abcd Efgh Ijkl Mnop Qrst Vwxy Z123 A456 B789 "}),
+                :subtitle_object => ::Repositext::Subtitle.new(persistent_id: "1000001", tmp_attrs: {:before=>"Abcd Efgh Ijkl Mnop Qrst ", :after=>"Abcd Efgh Ijkl Mnop Qrst Vwxy Z123 A456 B789 ", :index=>1}),
                 :type=>:left_aligned,
               },
               {
@@ -169,7 +169,7 @@ class Repositext
                 :sim_left=>[0.0, 0.0],
                 :sim_right=>[0.0, 0.0],
                 :subtitle_count_change=>-1,
-                :subtitle_object => ::Repositext::Subtitle.new(persistent_id: "1000002", tmp_attrs: {:before=>"Vwxy Z123 A456 B789 C012 ", :after=>""}),
+                :subtitle_object => ::Repositext::Subtitle.new(persistent_id: "1000002", tmp_attrs: {:before=>"Vwxy Z123 A456 B789 C012 ", :after=>"", :index=>2}),
                 :type=>:st_removed,
               },
               {
@@ -178,10 +178,10 @@ class Repositext
                 :index=>3,
                 :last_in_para=>nil,
                 :sim_abs=>[0.9074074074074074, 1.0],
-                :sim_left=>[0.8333333333333334, 1.0],
+                :sim_left=>[0.6666666666666666, 1.0],
                 :sim_right=>[1.0, 1.0],
                 :subtitle_count_change=>0,
-                :subtitle_object => ::Repositext::Subtitle.new(persistent_id: "1000003", tmp_attrs: {:before=>"D345 Qwer Tyui Opas Dfgh Jklz Xcvb Nmqw Erty Uiop", :after=>"C012 D345 Qwer Tyui Opas Dfgh Jklz Xcvb Nmqw Erty Uiop "}),
+                :subtitle_object => ::Repositext::Subtitle.new(persistent_id: "1000003", tmp_attrs: {:before=>"D345 Qwer Tyui Opas Dfgh Jklz Xcvb Nmqw Erty Uiop", :after=>"C012 D345 Qwer Tyui Opas Dfgh Jklz Xcvb Nmqw Erty Uiop ", :index=>3}),
                 :type=>:right_aligned,
               },
               {
@@ -193,7 +193,7 @@ class Repositext
                 :sim_left=>[0.0, 0.0],
                 :sim_right=>[0.0, 0.0],
                 :subtitle_count_change=>1,
-                :subtitle_object =>  ::Repositext::Subtitle.new(persistent_id: "tmp-1000003+1", tmp_attrs: {:before=>"", :after=>"Uiop Asdf Mnbv Cxzl"}),
+                :subtitle_object =>  ::Repositext::Subtitle.new(persistent_id: "tmp-1000003+1", tmp_attrs: {:before=>"", :after=>"Uiop Asdf Mnbv Cxzl", :index=>4}),
                 :type=>:st_added,
               },
             ]
@@ -209,7 +209,8 @@ class Repositext
               default_computer.send(
                 :compute_aligned_subtitle_pairs,
                 default_subtitle_attrs_from,
-                default_subtitle_attrs_to
+                default_subtitle_attrs_to,
+                :use_contents
               ).must_equal(default_aligned_subtitle_pairs)
             end
           end

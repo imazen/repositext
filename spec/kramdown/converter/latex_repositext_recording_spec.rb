@@ -34,7 +34,7 @@ module Kramdown
             [
               'eagle',
               "#{ tmp_gap_mark_complete } word",
-              "\\RtFirstEagle{}\\RtGapMarkNumber{} \\RtGapMarkText{word}"
+              "\\RtFirstEagle{}\\RtGapMarkNumber{}\\RtGapMarkText{word}"
             ],
           ].each do |(name, test_string, xpect)|
             it "moves gap_mark numbers after #{ name}" do

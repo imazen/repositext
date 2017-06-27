@@ -81,8 +81,8 @@ class Repositext
         # @param corrections_file [RFile::Content]
         # @param sanitized_corrections_txt [String] sanitized contents of corrections file
         # @param content_at_file [RFile::ContentAt] the corresponding content AT file
-        # @param [Array] errors collector for errors
-        # @param [Array] warnings collector for warnings
+        # @param errors [Array] collector for errors
+        # @param warnings [Array] collector for warnings
         def validate_corrections_file(corrections_file, sanitized_corrections_txt, content_at_file, errors, warnings)
           # Validate that the `Title` key matches the primary title.
           corr_prim_content_at_file = content_at_file.corresponding_primary_file

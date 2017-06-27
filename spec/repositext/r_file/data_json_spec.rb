@@ -14,7 +14,7 @@ class Repositext
         }
       }
       let(:contents) {
-        JSON.generate(default_data, DataJson.json_formatting_options) + "\n"
+        JSON.generate(default_data, JSON_FORMATTING_OPTIONS) + "\n"
       }
       let(:language) { Language::English.new }
       let(:filename) { '/content/57/eng0103-1234.data.json' }
@@ -38,7 +38,7 @@ class Repositext
 
       describe '.json_formatting_options' do
         it 'handles default case' do
-          DataJson.json_formatting_options[:indent].must_equal('  ')
+          JSON_FORMATTING_OPTIONS[:indent].must_equal('  ')
         end
       end
 
@@ -52,7 +52,7 @@ class Repositext
 
       describe '#json_formatting_options' do
         it 'handles default case' do
-          DataJson.json_formatting_options[:indent].must_equal('  ')
+          JSON_FORMATTING_OPTIONS[:indent].must_equal('  ')
         end
       end
 

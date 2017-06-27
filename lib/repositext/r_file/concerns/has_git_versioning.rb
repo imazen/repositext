@@ -11,6 +11,7 @@ class Repositext
         # [ref_commit, relative_version] where ref_commit is the commit SHA1
         # and relative_version see #as_of_git_commit.
         attr_accessor :as_of_git_commit_attrs
+        attr_accessor :do_not_load_contents_from_disk_for_testing
       end
 
       # Returns copy of self with contents as of a ref_commit or one of its
@@ -34,6 +35,8 @@ class Repositext
       # @param relative_version [Symbol]
       # @return [RFile, nil]
       def as_of_git_commit(ref_commit, relative_version=:at_ref_or_nil)
+        return self  if do_not_load_contents_from_disk_for_testing
+
         if !ref_commit.is_a?(String)
           raise ArgumentError.new("Invalid ref_commit: #{ ref_commit.inspect }")
         end

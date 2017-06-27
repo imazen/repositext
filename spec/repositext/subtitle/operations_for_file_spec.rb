@@ -8,19 +8,22 @@ class Repositext
       let(:filename) { '/content/57/eng57-0103_1234.at' }
 
       let(:default_content_at_file) {
-        RFile::ContentAt.new(contents, language, filename)
+        f = RFile::ContentAt.new(contents, language, filename)
+        f.do_not_load_contents_from_disk_for_testing = true
+        f
       }
 
       let(:default_json) {
 %({
   "file_path": null,
+  "from_git_commit": "1234",
+  "to_git_commit": "2345",
   "product_identity_id": "1234",
   "language": "eng",
   "operations": [
     {
       "operation_id": "0-1",
       "operation_type": "split",
-      "after_stid": null,
       "affected_stids": [
         {
           "stid": "4329043",
@@ -39,7 +42,6 @@ class Repositext
     {
       "operation_id": "0-2",
       "operation_type": "move_right",
-      "after_stid": null,
       "affected_stids": [
         {
           "stid": "1250739",
@@ -58,7 +60,6 @@ class Repositext
     {
       "operation_id": "2-4",
       "operation_type": "merge",
-      "after_stid": null,
       "affected_stids": [
         {
           "stid": "6303325",

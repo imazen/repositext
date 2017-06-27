@@ -8,7 +8,7 @@ class Repositext
         [
           [
             "# title\n\n@word1\n@word2\n@word3",
-            " title\n\n@word1\n@word2\n@word3"
+            "title\n\n@word1\n@word2\n@word3"
           ],
           [
             "@word1\n@word2\n@word3\ncontent of id_title, will be stripped\n{: .id_title1 }\nmore id content that will be stripped",
@@ -20,7 +20,7 @@ class Repositext
           ],
           [
             "# title\n@word1\n@word2\n\n### @subtitle\n@word3\n",
-            " title\n@word1\n@word2\n @subtitle\n@word3\n"
+            "title\n@word1\n@word2\n\n@subtitle\n@word3\n"
           ],
           [
             %(\n\n@para1 *with other tokens*{: .italic}\n\n^^^ {: .rid #rid-64080029 kpn="002"}\n\n@para2),

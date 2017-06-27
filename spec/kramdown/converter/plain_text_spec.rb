@@ -8,22 +8,73 @@ module Kramdown
       # a) repositext can handle the element type OR
       # b) repositext's behavior is different from kramdown proper
       [
-        [%(the body), %(the body)],
-        [%(# the header), %(the header)],
-        [%(## the header), %(the header)],
-        [%(### the header), %(the header)],
-        [%(*the em*), %(the em)],
-        [%(**the strong**), %(the strong)],
-        [%(para 1\n\npara 2), %(para 1\npara 2)],
-        [%(para 1\n\n***), %(para 1\n* * * * * * *)],
         [
-          %(# header 1\n\n## header 2 *with em*\n\npara 1\n\npara 2 **with strong**.),
-          %(header 1\nheader 2 with em\npara 1\npara 2 with strong.)
+          'Simple text',
+          %(the body),
+          %(the body)
         ],
-        [%(some text with \\[escaped brackets\\]), %(some text with [escaped brackets])],
-        [%(some text with non-ascii char ), %(some text with non-ascii char )],
-      ].each_with_index do |(kramdown, expected), idx|
-        it "converts example #{ idx + 1 } to plain text" do
+        [
+          'Level 1 header (without prefix)',
+          %(# the header),
+          %(the header)
+        ],
+        [
+          'Level 2 header (without prefix)',
+          %(## the header),
+          %(the header)
+        ],
+        [
+          'Level 3 header (without prefix)',
+          %(### the header),
+          %(the header)
+        ],
+        [
+          'em',
+          %(*the em*),
+          %(the em)
+        ],
+        [
+          'strong',
+          %(**the strong**),
+          %(the strong)
+        ],
+        [
+          'two paragraphs',
+          %(para 1\n\npara 2),
+          %(para 1\npara 2)
+        ],
+        [
+          'paragraph and horizontal rule',
+          %(para 1\n\n***),
+          %(para 1\n* * * * * * *)
+        ],
+        [
+          'complex mix of elements',
+          %(# header 1\n\n## header 2 *with em*\n\n### header 3\n\npara 1\n\npara 2 **with strong**.),
+          %(header 1\nheader 2 with em\nheader 3\npara 1\npara 2 with strong.)
+        ],
+        [
+          'paragraph between level 3 headers',
+          %(# header 1\n\npara 1\n\n### header 3a\n\npara 2\n\n### header 3b\n\npara 3.),
+          %(header 1\npara 1\nheader 3a\npara 2\nheader 3b\npara 3.)
+        ],
+        [
+          'regression 1',
+          "### @word\n\n@word word d.C.\n{: .normal}\n\n### @word\n\n@*2*{: .pn} word",
+          "word\nword word d.C.\nword\n2 word"
+        ],
+        [
+          'escaped brackets',
+          %(some text with \\[escaped brackets\\]),
+          %(some text with [escaped brackets])
+        ],
+        [
+          'non-ascii char',
+          %(some text with non-ascii char ),
+          %(some text with non-ascii char )
+        ],
+      ].each_with_index do |(description, kramdown, expected), idx|
+        it "handles #{ description }" do
           doc = Document.new(
             kramdown, { :input => 'KramdownRepositext' }
           )

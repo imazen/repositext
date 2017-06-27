@@ -24,8 +24,12 @@ class Repositext
               "Default case with all mapped chars",
               %(AА aа BВ CС cс EЕ eе HН IІ jј JЈ KК MМ OО oо PР pр SЅ sѕ TТ VѴ vѵ XХ xх YУ yу ëё ÏЇ ïї),
               {
-                contents: "АА аа ВВ СС сс ЕЕ ее НН ІІ јј ЈЈ КК ММ ОО оо РР рр ЅЅ ѕѕ ТТ ѴѴ ѵѵ ХХ хх УУ уу ёё ЇЇ її",
-                lctwnr: []
+                :contents=>"АА аа ВВ СС сс ЕЕ ее НН ІІ јј ЈЈ КК ММ ОО оо РР рр ЅЅ ѕѕ ТТ ѴѴ ѵѵ ХХ хх УУ уу ёё ЇЇ її",
+                :lctwnr=>[],
+                :replaced=>{
+                  :filename=>"filename",
+                  :replaced_chars=>{"А"=>1, "а"=>1, "В"=>1, "С"=>1, "с"=>1, "Е"=>1, "е"=>1, "Н"=>1, "І"=>1, "ј"=>1, "Ј"=>1, "К"=>1, "М"=>1, "О"=>1, "о"=>1, "Р"=>1, "р"=>1, "Ѕ"=>1, "ѕ"=>1, "Т"=>1, "Ѵ"=>1, "ѵ"=>1, "Х"=>1, "х"=>1, "У"=>1, "у"=>1, "ё"=>1, "Ї"=>1, "ї"=>1}
+                }
               },
             ],
             [
@@ -41,7 +45,7 @@ class Repositext
               %(СурІ\nd СурІ),
               {
                 contents: "СурІ\nd СурІ",
-                lctwnr: [{:filename=>"filename", :line=>2, :latin_chars=>"d", :reason=>"No mapping for this character provided."}]
+                lctwnr: [{:filename=>"filename", :line=>2, :latin_chars=>"d", :reason=>"Unhandled latin character."}]
               },
             ],
           ].each do |description, test_string, xpect|

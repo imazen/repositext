@@ -22,7 +22,7 @@ class Repositext
             [
               "replaces html entities",
               "&ldquo; &rdquo; &lsquo; &rsquo; &hellip; &nbsp; &mdash;",
-              "“ ” ‘ ’ …   —",
+              %(" " ' ' …   —),
             ],
             [
               "removes <em> tags",

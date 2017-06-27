@@ -48,7 +48,7 @@ class Repositext
             ["%word\n{: .class1}\n", "word\n{: .class1}\n", "%word\n{: .class1}\n"],
             ["%word\n{: .class1}\n", "word%\n{: .class1}\n", "%word\n{: .class1}\n"],
             [
-              " Header\n\n%word\n{: .class1}\n",
+              "\nHeader\n\n%word\n{: .class1}\n",
               "^^^ {: .rid}\n\n# Header\n\nword\n{: .class1}\n",
               "^^^ {: .rid}\n\n# Header\n\n%word\n{: .class1}\n"
             ],

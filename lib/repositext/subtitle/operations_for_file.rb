@@ -137,7 +137,10 @@ class Repositext
           m[e] = self.send(e)
           m
         }
+        r[:from_git_commit] = @from_git_commit
+        r[:to_git_commit] = @to_git_commit
         r[:product_identity_id] = product_identity_id
+        r[:language] = lang_code_3_chars
         r[:operations] = operations.map { |e| e.to_hash }
         r
       end

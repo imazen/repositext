@@ -58,7 +58,8 @@ class Repositext
                 aligner = SubtitleAligner.new(
                   sts_from,
                   sts_to,
-                  diagonal_band_range: 100
+                  diagonal_band_range: 100,
+                  alignment_strategy: :use_contents
                 )
                 aligner.get_optimal_alignment.must_equal(xpect)
               end
@@ -144,7 +145,8 @@ class Repositext
                 aligner = SubtitleAligner.new(
                   [],
                   [],
-                  diagonal_band_range: 10
+                  diagonal_band_range: 10,
+                  alignment_strategy: :use_contents
                 )
                 aligner.compute_score(
                   { content_sim: left_txt },
@@ -169,7 +171,8 @@ class Repositext
               aligner = SubtitleAligner.new(
                 repeating_sequence,
                 repeating_sequence,
-                diagonal_band_range: 100
+                diagonal_band_range: 100,
+                alignment_strategy: :use_contents
               )
               trb_mtrx = aligner.inspect_matrix(:traceback)
               trb_mtrx.must_equal([
@@ -195,7 +198,8 @@ class Repositext
               aligner = SubtitleAligner.new(
                 repeating_sequence,
                 repeating_sequence,
-                diagonal_band_range: 2
+                diagonal_band_range: 2,
+                alignment_strategy: :use_contents
               )
               trb_mtrx = aligner.inspect_matrix(:traceback)
               trb_mtrx.must_equal([

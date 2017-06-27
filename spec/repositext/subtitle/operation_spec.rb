@@ -14,7 +14,6 @@ class Repositext
               after: nil,
             },
           ],
-          after_stid: nil,
           operation_id: '123',
           operation_type: :delete,
         }
@@ -50,7 +49,6 @@ class Repositext
               after: nil,
             },
           ],
-          after_stid: nil,
           operation_id: '123',
           operation_type: :merge,
         }
@@ -71,7 +69,6 @@ class Repositext
               after: "@word2 word3 word4",
             },
           ],
-          after_stid: nil,
           operation_id: '123',
           operation_type: :move_left,
         }
@@ -92,7 +89,6 @@ class Repositext
               after: "@word4",
             },
           ],
-          after_stid: nil,
           operation_id: '123',
           operation_type: :move_left,
         }
@@ -113,7 +109,6 @@ class Repositext
               after: "@word3 word4",
             },
           ],
-          after_stid: nil,
           operation_id: '123',
           operation_type: :split,
         }

@@ -47,12 +47,12 @@ module Kramdown
           [
             "level 1 header",
             "# header level 1\n\n",
-            "\\begin{RtTitle}%\nheader level~1%\n\\end{RtTitle}\n"
+            "\\begin{RtTitle}%\nheader level 1%\n\\end{RtTitle}\n"
           ],
           [
             "level 2 header (must be preceded by level 1)",
             "# header level 1\n\n## header level 2\n\n",
-            "\\begin{RtTitle}%\nheader level~1%\n\\end{RtTitle}\n\\begin{RtTitle2}%\nheader level~2%\n\\end{RtTitle2}\n"
+            "\\begin{RtTitle}%\nheader level 1%\n\\end{RtTitle}\n\\begin{RtTitle2}%\nheader level 2%\n\\end{RtTitle2}\n"
           ],
         ].each do |desc, test_string, xpect|
           it "handles #{ desc }" do

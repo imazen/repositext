@@ -154,7 +154,7 @@ class Repositext
             end
           end
 
-          describe '#post_process_plain_text' do
+          describe '#post_process_f_plain_text' do
             [
               [
                 'Simple case',
@@ -230,7 +230,7 @@ class Repositext
               ],
             ].each do |(desc, f_pt, f_s_confs, xpect)|
               it "handles #{ desc }" do
-                default_split_instance.post_process_plain_text(
+                default_split_instance.post_process_f_plain_text(
                   f_pt, f_s_confs
                 ).result.must_equal(xpect)
               end

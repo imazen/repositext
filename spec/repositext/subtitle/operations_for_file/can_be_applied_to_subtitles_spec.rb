@@ -9,12 +9,16 @@ class Repositext
         let(:filename) { '/content/57/eng57-0103_1234.at' }
 
         let(:default_content_at_file) {
-          RFile::ContentAt.new(contents, language, filename)
+          f = RFile::ContentAt.new(contents, language, filename)
+          f.do_not_load_contents_from_disk_for_testing = true
+          f
         }
 
         let(:default_json) {
 %({
   "file_path": null,
+  "from_git_commit": "1234",
+  "to_git_commit": "2345",
   "product_identity_id": "1234",
   "language": "eng",
   "operations": [
