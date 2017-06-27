@@ -18,7 +18,7 @@ PATH
 PATH
   remote: ../suspension
   specs:
-    suspension (0.0.1)
+    suspension (1.0.0)
       diff_match_patch_native
 
 PATH
