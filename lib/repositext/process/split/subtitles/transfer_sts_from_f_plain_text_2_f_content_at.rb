@@ -56,15 +56,8 @@ class Repositext
           def pre_process_plain_text(pt)
             new_pt = pt.dup
 
-            # Modify title lines:
-            # * Add second newline after any header line that is not followed
-            #   by another header line.
-            new_pt.gsub!(/^(@?\#[^\n]+\n)(?!@?\#)/, '\1' + "\n")
-            # * Remove hash mark prefixes (with optional preceding newline)
-            #   See comment above Suspension::RepositextTokens::BLOCK_START for
-            #   reason of leading newline removal.
-            # * Leave optional subtitle_mark and leading space
-            new_pt.gsub!(/(?:\n|\A)(@?)\#/, '\1')
+            # Modify title lines: Add second newline after any header line.
+            new_pt.gsub!(/^(@?\#[^\n]+\n)/, '\1' + "\n")
 
             # Modify horizontal rules so they match content AT:
             # Replace 7 asterisks with placeholder. Also append extra newline
@@ -78,6 +71,8 @@ class Repositext
             # Encode entities
             new_pt = Repositext::Utils::EntityEncoder.encode(new_pt)
 
+            # Prepend a leading newline.
+            new_pt.prepend("\n")
             # Append newline at the end
             new_pt << "\n"
             new_pt
@@ -107,6 +102,8 @@ class Repositext
             r.gsub!(/\n+\z/, "\n")
             # Put period inside .line_break IAL back
             r.gsub!("**{: .line_break}", "*.*{: .line_break}")
+            # Move subtitles from before to after header hash marks
+            r.gsub!(/^(@+)(#+)(\s+)/, '\2\3\1')
             r
           end
 
