@@ -303,7 +303,7 @@ class Repositext
             desc = "   - subtitles have been exported, has #{ st_tr_cnt } subtitles to review".color(:blue)
           else
             # subtitles have not been exported, further distinguish kinds of changes
-            if st_tr.any? { |stid,ops| 'all' == stid && ops.include?('autosplit') }
+            if data_json_file.is_autosplit?
               # This file is autosplit
               files_found_count += 1
               st_tr_cnt = 'all'

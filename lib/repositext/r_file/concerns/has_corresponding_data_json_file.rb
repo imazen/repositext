@@ -36,6 +36,10 @@ class Repositext
         filename.sub(/\.at\z/, '.data.json')
       end
 
+      def is_autosplit?
+        corresponding_data_json_file.is_autosplit?
+      end
+
       # Returns all key value pairs of corresponding data_json file
       # under the 'data' key as Hash with stringified keys.
       def read_file_level_data

@@ -34,6 +34,13 @@ class Repositext
         (JSON.parse(contents) || self.class.default_data)
       end
 
+      # Returns true if subtitles were autosplit and have not been reviewed yet.
+      def is_autosplit?
+        (read_data['st_sync_subtitles_to_review'] || {}).any? { |stid,ops|
+          'all' == stid && ops.include?('autosplit')
+        }
+      end
+
       def read_data
         get_all_attributes['data'] || {}
       end
