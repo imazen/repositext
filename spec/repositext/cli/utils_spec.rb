@@ -157,12 +157,12 @@ class Repositext
           end
 
           it 'prints console output' do
-            out, err = capture_io {
+            _out, err = capture_io {
               mod.dry_run_process(in_file_pattern, out_dir, in_file_filter, desc, {}) do |contents, filename|
                 [Outcome.new(true, { :contents => out_cont, :extension => 'out' }, ['msg'])]
               end
             }
-            err.must_match /\n - Skipping/
+            err.must_match(/\n - Skipping/)
           end
         end
 
@@ -180,29 +180,29 @@ class Repositext
           }
 
           it 'Processes empty file set' do
-            out, err = capture_io {
+            _out, err = capture_io {
               mod.process_files_helper('', '', output_path_lambda, '', {}) { '' }
             }
-            err.must_match /Finished processing 0 of 0 files/
+            err.must_match(/Finished processing 0 of 0 files/)
           end
 
           it "skips input files that don't match the file_filter" do
             in_file_filter = /test2/
-            out, err = capture_io {
+            _out, err = capture_io {
               mod.process_files_helper(in_file_pattern, in_file_filter, output_path_lambda, desc, {}) do |contents, filename|
                 [Outcome.new(true, { :contents => out_cont, :extension => 'out' }, ['msg'])]
               end
             }
-            err.must_match /\n - Skipping .*test1\.in/
+            err.must_match(/\n - Skipping .*test1\.in/)
           end
 
           it "creates new output files if they don't exist yet" do
-            out, err = capture_io {
+            _out, err = capture_io {
               mod.process_files_helper(in_file_pattern, in_file_filter, output_path_lambda, desc, {}) do |contents, filename|
                 [Outcome.new(true, { :contents => out_cont, :extension => 'out' }, ['msg'])]
               end
             }
-            err.must_match /\n  \* Create: .*test1\.out/
+            err.must_match(/\n  \* Create: .*test1\.out/)
           end
 
           it "updates output files that exist if new content is different" do
@@ -212,31 +212,30 @@ class Repositext
             mod.process_files_helper(in_file_pattern, in_file_filter, output_path_lambda, desc, {}) do |contents, filename|
               [Outcome.new(true, { :contents => old_content, :extension => 'out' }, ['msg'])]
             end
-            out, err = capture_io {
+            _out, err = capture_io {
               mod.process_files_helper(in_file_pattern, in_file_filter, output_path_lambda, desc, {}) do |contents, filename|
                 [Outcome.new(true, { :contents => new_content, :extension => 'out' }, ['msg'])]
               end
             }
-            err.must_match /\n  \* Update: .*test1\.out/
+            err.must_match(/\n  \* Update: .*test1\.out/)
           end
 
           it "leaves as is output files that exist if new content is same as existing" do
             # First create existing output files with old content
             old_content = 'Old content'
-            new_content = 'New content'
             mod.process_files_helper(in_file_pattern, in_file_filter, output_path_lambda, desc, {}) do |contents, filename|
               [Outcome.new(true, { :contents => old_content, :extension => 'out' }, ['msg'])]
             end
-            out, err = capture_io {
+            _out, err = capture_io {
               mod.process_files_helper(in_file_pattern, in_file_filter, output_path_lambda, desc, {}) do |contents, filename|
                 [Outcome.new(true, { :contents => old_content, :extension => 'out' }, ['msg'])]
               end
             }
-            err.must_match /\n    Leave as is: .*test1\.out/
+            err.must_match(/\n    Leave as is: .*test1\.out/)
           end
 
           it "prints an error message if processing is not successful" do
-            out, err = capture_io {
+            __out, err = capture_io {
               mod.process_files_helper(in_file_pattern, in_file_filter, output_path_lambda, desc, {}) do |contents, filename|
                 [Outcome.new(false, {}, ['msg'])]
               end

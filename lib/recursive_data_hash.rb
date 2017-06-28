@@ -26,18 +26,18 @@ class RecursiveDataHash < Hash
 
   # Aggregates error and warning counts into top level hash keys
   def summarize(collecting_hash = self.class.new, collecting_key = nil)
-    self.inject(collecting_hash) { |collecting_hash,(k,v)|
+    self.inject(collecting_hash) { |m,(k,v)|
       if :errors == k
-        collecting_hash[collecting_key][:errors_count] += v.size
-        collecting_hash
+        m[collecting_key][:errors_count] += v.size
+        m
       elsif :stats == k
-        collecting_hash[collecting_key][:stats_count] += v.size
-        collecting_hash
+        m[collecting_key][:stats_count] += v.size
+        m
       elsif :warnings == k
-        collecting_hash[collecting_key][:warnings_count] += v.size
-        collecting_hash
+        m[collecting_key][:warnings_count] += v.size
+        m
       else
-        v.summarize(collecting_hash, collecting_key || k)
+        v.summarize(m, collecting_key || k)
       end
     }
   end

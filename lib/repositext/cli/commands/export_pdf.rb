@@ -94,7 +94,7 @@ class Repositext
         skip_file_proc = Proc.new { |contents, filename| !contents.index('%') }
         # Merge contents of target language and primary language for interleaved
         # printing
-        pre_process_content_proc = lambda { |contents, filename, options|
+        pre_process_content_proc = lambda { |contents, filename, _opts|
           primary_filename = Repositext::Utils::CorrespondingPrimaryFileFinder.find(
             filename: filename,
             language_code_3_chars: config.setting(:language_code_3_chars),
@@ -108,7 +108,7 @@ class Repositext
           )
         }
         # Adjust latex template
-        post_process_latex_proc = lambda { |latex, options|
+        post_process_latex_proc = lambda { |latex, _opts|
           Kramdown::Converter::LatexRepositextRecordingMerged.custom_post_process_latex(
             latex
           )

@@ -19,7 +19,7 @@ class Repositext
         # Run pairwise validation
         validate_file_pairs(:idml_import_at_files, content_at_file_name_proc) do |iia, ca|
           # skip if corresponding primary file doesn't exist
-          next  if !File.exists?(ca)
+          next  if !File.exist?(ca)
           Validator::IdmlImportConsistency.new(
             [File.open(iia), File.open(ca)], @logger, @reporter, @options
           ).run

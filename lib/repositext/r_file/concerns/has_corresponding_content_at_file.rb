@@ -12,7 +12,7 @@ class Repositext
       # Returns the corresponding file while considering #as_of_git_commit_attrs
       def corresponding_content_at_file
         ccat_filename = corresponding_content_at_filename
-        return nil  if !File.exists?(ccat_filename)
+        return nil  if !File.exist?(ccat_filename)
         r = RFile::ContentAt.new(
           File.read(corresponding_content_at_filename),
           content_type.language,

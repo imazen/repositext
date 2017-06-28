@@ -12,7 +12,7 @@ class Repositext
         describe '#run' do
 
           it 'reports no errors for consistent paragraph styles' do
-            validator, logger, reporter = build_validator_logger_and_reporter(
+            validator, _logger, reporter = build_validator_logger_and_reporter(
               ParagraphStyleConsistency,
               [
                 FileLikeStringIO.new('_path_f', "foreign para\n{: .normal}"),
@@ -24,7 +24,7 @@ class Repositext
           end
 
           it 'reports errors for inconsistent paragraph styles' do
-            validator, logger, reporter = build_validator_logger_and_reporter(
+            validator, _logger, reporter = build_validator_logger_and_reporter(
               ParagraphStyleConsistency,
               [
                 FileLikeStringIO.new('_path_f', "foreign para\n{: .normal1}\n"),
@@ -51,7 +51,7 @@ class Repositext
             ],
           ].each do |test_string_f, test_string_p, xpect|
             it "handles #{ test_string_f.inspect }" do
-              validator, logger, reporter = build_validator_logger_and_reporter(
+              validator, _logger, _reporter = build_validator_logger_and_reporter(
                 ParagraphStyleConsistency,
                 [
                   FileLikeStringIO.new('_path', '_txt'),
@@ -96,7 +96,7 @@ class Repositext
             ["does not modify .stanza\n{: .stanza}", ['', '.stanza']],
           ].each do |test_string, xpect|
             it "handles #{ test_string.inspect }" do
-              validator, logger, reporter = build_validator_logger_and_reporter(
+              validator, _logger, _reporter = build_validator_logger_and_reporter(
                 ParagraphStyleConsistency,
                 [
                   FileLikeStringIO.new('_path', '_txt'),
@@ -120,7 +120,7 @@ class Repositext
             [['{: .normal}'], ['{: .normal_pn}'], false, []],
           ].each do |test_styles_f, test_styles_p, distinguish_between_normal_and_normal_pn, xpect|
             it "handles #{ test_styles_f.inspect }" do
-              validator, logger, reporter = build_validator_logger_and_reporter(
+              validator, _logger, _reporter = build_validator_logger_and_reporter(
                 ParagraphStyleConsistency,
                 [
                   FileLikeStringIO.new('_path', '_txt'),
@@ -144,7 +144,7 @@ class Repositext
             ["1 para 1\n\npara 2\n\npara 3\n\npara 4", false],
           ].each do |foreign_test_doc, xpect|
             it "handles #{ foreign_test_doc.inspect }" do
-              validator, logger, reporter = build_validator_logger_and_reporter(
+              validator, _logger, _reporter = build_validator_logger_and_reporter(
                 ParagraphStyleConsistency,
                 [
                   FileLikeStringIO.new('_path', '_txt'),

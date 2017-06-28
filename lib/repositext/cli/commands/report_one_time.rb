@@ -36,11 +36,11 @@ class Repositext
                                          .gsub(/\.at/, '.folio.at')
           idml_input_filename = filename.gsub(content_base_dir, idml_import_base_dir)
                                         .gsub(/\.at/, '.idml.at')
-          if File.exists?(idml_input_filename)
+          if File.exist?(idml_input_filename)
             idml_sourced << filename
-          elsif File.exists?(folio_input_filename)
+          elsif File.exist?(folio_input_filename)
             folio_sourced << filename
-          elsif File.exists?(docx_input_filename)
+          elsif File.exist?(docx_input_filename)
             docx_sourced << filename
           else
             other_sourced << filename

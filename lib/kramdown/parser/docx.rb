@@ -13,7 +13,7 @@ module Kramdown
     #   use a sub-class named Kramdown::ElementRt
     # * ke: l_var that refers to a kramdown element
     # * xn: l_var that refers to an XML node
-   class Docx
+    class Docx
 
       include Kramdown::AdjacentElementMerger
       include Kramdown::ImportWhitespaceSanitizer
@@ -42,7 +42,7 @@ module Kramdown
           underline
         ].sort
 
-        attr_reader *SUPPORTED_TEXT_RUN_FORMAT_ATTRS
+        attr_reader(*SUPPORTED_TEXT_RUN_FORMAT_ATTRS)
 
         # @param text_run [Nokogiri::XML::Node] the text_run's XML node
         def initialize(text_run)

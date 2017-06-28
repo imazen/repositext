@@ -10,7 +10,7 @@ class Repositext
       ATTR_NAMES = [:comments, :from_git_commit, :to_git_commit]
 
       attr_accessor :content_at_file, :mappings
-      attr_accessor *ATTR_NAMES
+      attr_accessor(*ATTR_NAMES)
 
       # Instantiates a new instance of self from json string
       # @param json [String]

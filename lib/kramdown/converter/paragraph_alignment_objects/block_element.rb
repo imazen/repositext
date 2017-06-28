@@ -15,7 +15,7 @@ module Kramdown
           type
         ].freeze
 
-        attr_accessor *ATTRIBUTE_NAMES
+        attr_accessor(*ATTRIBUTE_NAMES)
 
         # @param attrs [Hash]
         def initialize(attrs)

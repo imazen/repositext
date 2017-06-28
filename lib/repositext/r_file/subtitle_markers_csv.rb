@@ -19,7 +19,7 @@ class Repositext
       # reloading from disk!) so that this also works when we call, e.g.,
       # `#subtitles` on an StmCsvFile that is checked out at a certain git commit.
       def csv
-        csv = CSV.new(contents, self.class.csv_options)
+        CSV.new(contents, self.class.csv_options)
       end
 
       # Yields each row as hash with stringified keys to block

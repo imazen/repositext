@@ -54,12 +54,12 @@ class Repositext
             "Language specific characters"
           end
         }
-        char_groups.each { |group_name, chars|
+        char_groups.each { |group_name, chrs|
           lines << ''
           lines << group_name
           lines << '*' * group_name.length
 
-          chars.sort_by { |k,v|
+          chrs.sort_by { |k,v|
             k
           }.map { |(code,count)|
             char = case code
@@ -861,14 +861,14 @@ class Repositext
             }
           ],
         ]
-        group_counts = discrepancy_groups.map { |heading, discrepancies|
-          [discrepancies.count, heading].join(' ')
+        group_counts = discrepancy_groups.map { |heading, discrepncs|
+          [discrepncs.count, heading].join(' ')
         }.join(', ')
         $stderr.puts "Quote Of The Day discrepancies"
         $stderr.puts "-" * 40
-        discrepancy_groups.each do |heading, discrepancies|
+        discrepancy_groups.each do |heading, discrepncs|
           $stderr.puts "#{ heading } discrepancies:".color(:blue)
-          discrepancies.each { |qotd_record|
+          discrepncs.each { |qotd_record|
             $stderr.puts
             $stderr.puts " - #{ qotd_record[:date_code] }, #{ qotd_record[:posting_date_time] }, #{ qotd_record[:type] }:".color(:blue)
             $stderr.puts "   - QOTD:".color(:blue)
@@ -885,9 +885,9 @@ class Repositext
           f.write "QOTD discrepancies\n"
           f.write '-' * 40
           f.write "\n"
-          discrepancy_groups.each do |heading, discrepancies|
+          discrepancy_groups.each do |heading, discrepncs|
             f.write "\n#{ heading }:\n\n"
-            discrepancies.each do |d|
+            discrepncs.each do |d|
               f.write d[:date_code]
               f.write "\t"
               f.write d[:posting_date_time]
@@ -896,8 +896,8 @@ class Repositext
           end
           f.write '-' * 40
           f.write "\n"
-          group_counts = discrepancy_groups.map { |heading, discrepancies|
-            [discrepancies.count, heading].join(' ')
+          group_counts = discrepancy_groups.map { |heading, discrepncs|
+            [discrepncs.count, heading].join(' ')
           }.join(', ')
           f.write "Found #{ group_counts } discrepancies in #{ qotd_records.length } QOTDs.\n"
           f.write "Command to generate this file: `repositext report quote_of_the_day_discrepancies`\n"
@@ -920,8 +920,8 @@ class Repositext
             sequences[key] << { :extract => extract, :filename => attrs[:filename] }
           end
           quote_instances_count = 0
-          sequences.to_a.sort { |a,b| a.first <=> b.first }.each do |(key, instances)|
-            instances.each { |quote_instance|
+          sequences.to_a.sort { |a,b| a.first <=> b.first }.each do |(key, instncs)|
+            instncs.each { |quote_instance|
               output_lines << " #{ key } - #{ quote_instance[:extract].ljust(45, ' ') } - #{ quote_instance[:filename] }"
               quote_instances_count += 1
             }

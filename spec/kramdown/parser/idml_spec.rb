@@ -6,7 +6,7 @@ module Kramdown
 
       [
         ['select_longest_story_1.idml', ["u1dc"], ["u712", "u6fa", "u1dc"]],
-      ].each do |(file_name, stories_to_import, all_stories)|
+      ].each do |(_file_name, stories_to_import, all_stories)|
 
         let(:parser) {
           path = File.expand_path('../../../../test_data/idml/select_longest_story_1.idml', __FILE__)

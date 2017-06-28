@@ -25,7 +25,7 @@ class Repositext
         # Run pairwise validation
         validate_file_pairs(:content_at_files, stm_csv_file_name_proc) do |ca, stm_csv|
           # skip if subtitle_markers CSV file doesn't exist
-          next  if !File.exists?(stm_csv)
+          next  if !File.exist?(stm_csv)
           Validator::SubtitleMarkCountsMatch.new(
             [File.open(ca), File.open(stm_csv)], @logger, @reporter, @options
           ).run

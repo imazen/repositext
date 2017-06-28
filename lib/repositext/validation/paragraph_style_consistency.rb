@@ -23,7 +23,7 @@ class Repositext
         # Run pairwise validation
         validate_file_pairs(:content_at_files, corresponding_primary_file_name_proc) do |ca, cpf|
           # skip if corresponding primary file doesn't exist
-          next  if !File.exists?(cpf)
+          next  if !File.exist?(cpf)
           Validator::ParagraphStyleConsistency.new(
             [File.open(ca), File.open(cpf)], @logger, @reporter, @options
           ).run

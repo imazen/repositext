@@ -32,7 +32,7 @@ class Repositext
         # @param [String] corresponding_filename of the source file in primary repo
         # @return [Outcome]
         def self.insert_record_mark(text, filename, corresponding_filename)
-          if !File.exists?(corresponding_filename)
+          if !File.exist?(corresponding_filename)
             return Outcome.new(false, nil, ["Corresponding primary file not found: #{ corresponding_filename.inspect }"])
           end
           primary_text = File.read(corresponding_filename)

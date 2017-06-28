@@ -11,7 +11,7 @@ class Repositext
       attr_accessor :affected_stids # [Array<Repositext::Subtitle>]
 
       ATTR_NAMES = [:after_stid, :operation_id, :operation_type]
-      attr_accessor *ATTR_NAMES
+      attr_accessor(*ATTR_NAMES)
 
       # Instantiates a new instance of self from a Hash
       # @param attrs [Hash]

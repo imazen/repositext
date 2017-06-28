@@ -98,7 +98,7 @@ class Repositext
     def git_clone_missing_repos(repo_set_spec)
       compute_repo_paths(repo_set_spec).each { |repo_path|
         repo_name = repo_path.split('/').last
-        if File.exists?(repo_path)
+        if File.exist?(repo_path)
           puts " -   Skipping #{ repo_name }"
           next
         end
@@ -251,7 +251,7 @@ class Repositext
     def initialize_empty_content_repos(primary_language_repo_path)
       compute_repo_paths(:all_content_repos).each { |repo_path|
         repo_name = repo_path.split('/').last
-        if File.exists?(File.join(repo_path, 'data.json'))
+        if File.exist?(File.join(repo_path, 'data.json'))
           puts " -   Skipping #{ repo_name } (`data.json` file already exists)"
           next
         end

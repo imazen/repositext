@@ -54,7 +54,7 @@ class Repositext
             ],
           ].each do |test_string, (num_errors, error_detail)|
             it "handles #{ test_string.inspect }" do
-              validator, logger, reporter = build_validator_logger_and_reporter(
+              validator, _logger, _reporter = build_validator_logger_and_reporter(
                 SpotSheet,
                 FileLikeStringIO.new('_path', '_txt'),
                 nil,
@@ -94,7 +94,7 @@ class Repositext
               content_type
             )
 
-            validator, logger, reporter = build_validator_logger_and_reporter(
+            validator, _logger, _reporter = build_validator_logger_and_reporter(
               SpotSheet,
               FileLikeStringIO.new('_path', '_txt'),
               nil,
@@ -241,7 +241,7 @@ class Repositext
             ],
           ].each do |corrections, (num_errors, error_detail)|
             it "handles #{ corrections.inspect }" do
-              validator, logger, reporter = build_validator_logger_and_reporter(
+              validator, _logger, _reporter = build_validator_logger_and_reporter(
                 SpotSheet,
                 FileLikeStringIO.new('_path', '_txt'),
                 nil,
@@ -348,7 +348,7 @@ class Repositext
             ],
           ].each do |corrections, xpect_error|
             it "handles #{ corrections.inspect }" do
-              validator, logger, reporter = build_validator_logger_and_reporter(
+              validator, _logger, _reporter = build_validator_logger_and_reporter(
                 SpotSheet,
                 FileLikeStringIO.new('_path', '_txt'),
                 nil,
@@ -431,7 +431,7 @@ class Repositext
             ],
           ].each do |correction, content_at, (num_errors, error_detail)|
             it "handles #{ content_at.inspect }" do
-              validator, logger, reporter = build_validator_logger_and_reporter(
+              validator, _logger, _reporter = build_validator_logger_and_reporter(
                 SpotSheet,
                 FileLikeStringIO.new('_path', '_txt'),
                 nil,
@@ -489,7 +489,7 @@ class Repositext
             ],
           ].each do |test_string, xpect|
             it "handles #{ test_string.inspect }" do
-              validator, logger, reporter = build_validator_logger_and_reporter(
+              validator, _logger, _reporter = build_validator_logger_and_reporter(
                 SpotSheet,
                 FileLikeStringIO.new('_path', '_txt'),
               )

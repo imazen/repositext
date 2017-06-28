@@ -55,7 +55,7 @@ class Repositext
         # @param data_file_path [String] path to where data.json file is expected to be
         # @return [Hash] data structure that represents settings at the given level
         def self.initialize_repositext_level_settings(config, data_file_path)
-          settings = if(File.exists?(data_file_path))
+          settings = if(File.exist?(data_file_path))
             # Check if file already exists. If so load initial settings from it
             JSON.parse(File.read(data_file_path))['settings'] || {}
           else
@@ -77,7 +77,7 @@ class Repositext
         # @param data_file_path [String] path to where data.json file is expected to be
         # @return [Hash] data structure that represents settings at the given level
         def self.initialize_repository_level_settings(config, data_file_path)
-          settings = if(File.exists?(data_file_path))
+          settings = if(File.exist?(data_file_path))
             # Check if file already exists. If so load initial settings from it
             JSON.parse(File.read(data_file_path))['settings'] || {}
           else

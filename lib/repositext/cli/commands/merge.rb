@@ -213,7 +213,7 @@ class Repositext
           at_folio_file_name = output_file_name.gsub(output_base_dir, input_folio_base_dir).gsub(/\.at\z/, '.folio.at')
           at_idml_file_name = output_file_name.gsub(output_base_dir, input_idml_base_dir).gsub(/\.at\z/, '.idml.at')
 
-          if File.exists?(at_folio_file_name) && File.exists?(at_idml_file_name)
+          if File.exist?(at_folio_file_name) && File.exist?(at_idml_file_name)
             # Both files are present, merge tokens
             begin
               at_folio = File.read(at_folio_file_name)
@@ -230,7 +230,7 @@ class Repositext
               errors_count += 1
               $stderr.puts " x Error: #{ at_folio_file_name }: #{ e.class.name } - #{ e.message } - #{ e.backtrace.join("\n") }"
             end
-          elsif File.exists?(at_folio_file_name)
+          elsif File.exist?(at_folio_file_name)
             # IDML file is not present, use Folio import as authority
             FileUtils.mkdir_p(File.dirname(output_file_name))
             at_with_merged_tokens = File.read(at_folio_file_name)
@@ -239,7 +239,7 @@ class Repositext
             success_count += 1
             idml_not_present_count += 1
             $stderr.puts "   Use #{ at_folio_file_name }"
-          elsif File.exists?(at_idml_file_name)
+          elsif File.exist?(at_idml_file_name)
             # Folio file is not present, use Idml import as authority
             FileUtils.mkdir_p(File.dirname(output_file_name))
             at_with_merged_tokens = File.read(at_idml_file_name)
@@ -425,7 +425,7 @@ class Repositext
           at_folio_file_name = output_file_name.gsub(output_base_dir, input_folio_base_dir).gsub(/\.at\z/, '.folio.at')
           at_idml_file_name = output_file_name.gsub(output_base_dir, input_idml_base_dir).gsub(/\.at\z/, '.idml.at')
 
-          if File.exists?(at_idml_file_name)
+          if File.exist?(at_idml_file_name)
             # Idml is present, use it
             FileUtils.mkdir_p(File.dirname(output_file_name))
             idml_at = File.read(at_idml_file_name)
@@ -434,7 +434,7 @@ class Repositext
             success_count += 1
             idml_used_count += 1
             $stderr.puts "   Use #{ at_idml_file_name }"
-          elsif File.exists?(at_folio_file_name)
+          elsif File.exist?(at_folio_file_name)
             # IDML file is not present, bt folio is, use it
             FileUtils.mkdir_p(File.dirname(output_file_name))
             folio_at = File.read(at_folio_file_name)

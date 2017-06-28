@@ -36,7 +36,7 @@ class Repositext
           repo.base_dir,
           "ct-#{ content_type_name }"
         )
-        if File.exists?(content_type_base_dir)
+        if File.exist?(content_type_base_dir)
           new(content_type_base_dir, repo)
         else
           nil

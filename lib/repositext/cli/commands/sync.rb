@@ -45,7 +45,7 @@ class Repositext
           if contents.index('@')
             # This file contains subtitle_marks: Create subtitle_markers CSV file.
             stm_csv_path = filename.gsub(/\.at\z/, '.subtitle_markers.csv')
-            previous_stm_csv = if File.exists?(stm_csv_path)
+            previous_stm_csv = if File.exist?(stm_csv_path)
               File.read(stm_csv_path)
             else
               nil

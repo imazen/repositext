@@ -19,7 +19,7 @@ class Repositext
       ]
 
       attr_accessor :operations_for_files
-      attr_accessor *ATTR_NAMES
+      attr_accessor(*ATTR_NAMES)
 
       # Initializes self from operations serialized to JSON
       # @param json [String]

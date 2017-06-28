@@ -12,7 +12,7 @@ class Repositext
         describe '#run' do
 
           it 'reports no errors for valid kramdown AT' do
-            validator, logger, reporter = build_validator_logger_and_reporter(
+            validator, _logger, reporter = build_validator_logger_and_reporter(
               KramdownSyntaxAt,
               FileLikeStringIO.new('_path', 'valid kramdown AT')
             )
@@ -21,7 +21,7 @@ class Repositext
           end
 
           it 'reports errors for invalid kramdown AT' do
-            validator, logger, reporter = build_validator_logger_and_reporter(
+            validator, _logger, reporter = build_validator_logger_and_reporter(
               KramdownSyntaxAt,
               FileLikeStringIO.new('_path', 'invalid kramdown AT with gap_mark in%side a word')
             )
@@ -41,7 +41,7 @@ class Repositext
             ["line break at end of file }\n", true],
           ].each do |test_string, xpect|
             it "handles #{ test_string.inspect }" do
-              validator, logger, reporter = build_validator_logger_and_reporter(
+              validator, _logger, _reporter = build_validator_logger_and_reporter(
                 KramdownSyntaxAt,
                 FileLikeStringIO.new('_path', '_txt')
               )
@@ -57,7 +57,7 @@ class Repositext
             ["escaped bracket \\[", false],
           ].each do |test_string, xpect|
             it "handles #{ test_string.inspect }" do
-              validator, logger, reporter = build_validator_logger_and_reporter(
+              validator, _logger, _reporter = build_validator_logger_and_reporter(
                 KramdownSyntaxAt,
                 FileLikeStringIO.new('_path', '_txt')
               )
@@ -102,7 +102,7 @@ class Repositext
             ["Multiple adjacent  spaces", 1],
           ].each do |test_string, xpect|
             it "handles #{ test_string.inspect }" do
-              validator, logger, reporter = build_validator_logger_and_reporter(
+              validator, _logger, _reporter = build_validator_logger_and_reporter(
                 KramdownSyntaxAt,
                 FileLikeStringIO.new('_path', '_txt')
               )
@@ -130,7 +130,7 @@ class Repositext
             ["record_mark followed by three newlines\n\n^^^\n\n\nnext line", 1],
           ].each do |test_string, xpect|
             it "handles #{ test_string.inspect }" do
-              validator, logger, reporter = build_validator_logger_and_reporter(
+              validator, _logger, _reporter = build_validator_logger_and_reporter(
                 KramdownSyntaxAt,
                 FileLikeStringIO.new('_path', '_txt')
               )
@@ -153,7 +153,7 @@ class Repositext
             ["p.normal without pn\n{: .normal}", 0],
           ].each do |test_string, xpect|
             it "handles #{ test_string.inspect }" do
-              validator, logger, reporter = build_validator_logger_and_reporter(
+              validator, _logger, _reporter = build_validator_logger_and_reporter(
                 KramdownSyntaxAt,
                 FileLikeStringIO.new('_path', '_txt')
               )

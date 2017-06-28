@@ -324,14 +324,14 @@ class Repositext
             %(
               <tr>
                 <td style="width: 40%">
-                  <div class="#{ collapse_css_class }">#{ e[:source_1].split("\n").map { |e| "<p>#{ e }</p>"}.join }</div>
+                  <div class="#{ collapse_css_class }">#{ e[:source_1].split("\n").map { |f| "<p>#{ f }</p>"}.join }</div>
                 </td>
                 <td style="width: 20%">
                   <button data-toggle="collapse" data-target=".record-#{ idx }">#{ e[:record_id] }</button>
                   #{ confidence_widget }
                 </td>
                 <td style="width: 40%">
-                  <div class="#{ collapse_css_class }">#{ e[:source_2].split("\n").map { |e| "<p>#{ e }</p>"}.join }</div>
+                  <div class="#{ collapse_css_class }">#{ e[:source_2].split("\n").map { |f| "<p>#{ f }</p>"}.join }</div>
                 </td>
               </tr>
             )

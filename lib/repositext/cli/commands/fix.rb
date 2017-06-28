@@ -5,67 +5,6 @@ class Repositext
 
     private
 
-      # Adds initial persistent subtitle ids and record ids to
-      # subtitle_marker.csv files.
-      # This should only be run once on the primary repo.
-      def fix_add_initial_persistent_subtitle_ids(options)
-        stids_inventory_file = File.open(
-          File.join(config.base_dir(:data_dir), 'subtitle_ids.txt'),
-          'r+'
-        )
-        if stids_inventory_file.read.present?
-          # We expect inventory file to be empty when we run this command
-          raise ArgumentError.new("SPID inventory file is not empty!")
-        end
-
-        Repositext::Cli::Utils.change_files_in_place(
-          config.compute_glob_pattern(
-            options['base-dir'] || :content_dir,
-            options['file-selector'] || :all_files,
-            options['file-extension'] || :csv_extension
-          ),
-          options['file_filter'] || /\.subtitle_markers\.csv\z/i,
-          "Adding initial persistent subtitle ids",
-          options.merge(
-            use_new_r_file_api: true,
-            content_type: content_type,
-          )
-        ) do |stm_csv_file|
-          ccafn = stm_csv_file.filename.sub('.subtitle_markers.csv', '.at')
-          corresponding_content_at_file = RFile::ContentAt.new(
-            File.read(ccafn),
-            stm_csv_file.language,
-            ccafn
-          )
-          outcome = Repositext::Process::Fix::AddInitialPersistentSubtitleIds.new(
-            stm_csv_file,
-            corresponding_content_at_file,
-            stids_inventory_file
-          ).fix
-          [Outcome.new(outcome.success, { contents: outcome.result })]
-        end
-      end
-
-      # Adds line breaks into file's text
-      def fix_add_line_breaks(options)
-        Repositext::Cli::Utils.change_files_in_place(
-          config.compute_glob_pattern(
-            options['base-dir'] || :content_type_dir,
-            options['file-selector'] || :all_files,
-            options['file-extension'] || :html_extension
-          ),
-          options['file_filter'],
-          "Adjusting :gap_mark positions",
-          options
-        ) do |contents, filename|
-          with_line_breaks = contents.gsub('</p><p>', "</p>\n<p>")
-                                     .gsub('</p><blockquote>', "</p>\n<blockquote>")
-                                     .gsub('</blockquote><blockquote>', "</blockquote>\n<blockquote>")
-                                     .gsub('</blockquote><p>', "</blockquote>\n<p>")
-          [Outcome.new(true, { contents: with_line_breaks }, [])]
-        end
-      end
-
       # Move gap_marks (%) to the outside of
       # * asterisks
       # * quotes (primary or secondary)

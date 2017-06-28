@@ -13,7 +13,7 @@ class Repositext
       ATTR_NAMES = [:file_path]
 
       attr_accessor :content_at_file, :from_git_commit, :operations, :to_git_commit
-      attr_accessor *ATTR_NAMES
+      attr_accessor(*ATTR_NAMES)
 
       # Instantiates a new instance of self from json string
       # @param content_at_file [RFile::ContentAt]

@@ -161,7 +161,7 @@ class Repositext
           describe 'diagonal_band_range' do
 
             let(:base_sequence){
-              base_sequence = [
+              [
                 {content_sim: 'ABCD'}, {content_sim: 'EFGH'}, {content_sim: 'IJKL'}
               ]
             }

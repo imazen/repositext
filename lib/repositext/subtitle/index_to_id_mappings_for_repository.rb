@@ -10,7 +10,7 @@ class Repositext
       ATTR_NAMES = [:from_git_commit, :repository, :to_git_commit]
 
       attr_accessor :mappings_for_files
-      attr_accessor *ATTR_NAMES
+      attr_accessor(*ATTR_NAMES)
 
       # @param attrs [Hash]
       #   {

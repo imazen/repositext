@@ -65,7 +65,7 @@ class Repositext
         repo_names = repo_name ? [repo_name] : all_repo_names
         repo_names.each { |name|
           file_path = File.join(repos_folder, name)
-          next  if !File.exists?(file_path)
+          next  if !File.exist?(file_path)
           FileUtils.rm_r(file_path)
         }
       end

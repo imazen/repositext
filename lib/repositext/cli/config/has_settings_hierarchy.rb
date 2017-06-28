@@ -11,7 +11,7 @@ class Repositext
           compute_required_setting_file_candidates(rtfile_path).each { |attrs|
             rsh[attrs['level']][attrs['identifier']] ||= { 'settings' => {} }
             attrs['files'].each { |file_candidate|
-              if File.exists?(file_candidate)
+              if File.exist?(file_candidate)
                 rsh[attrs['level']][attrs['identifier']]['settings'].merge!(
                   load_settings(file_candidate)
                 )
@@ -46,7 +46,7 @@ class Repositext
         def update_for_file(data_json_file_path)
           # Update file_level_identifier so that correct execution context is used.
           @file_level_identifier = data_json_file_path
-          if File.exists?(data_json_file_path)
+          if File.exist?(data_json_file_path)
             # Assign settings from data.json file
             file_level_settings = load_settings(data_json_file_path)
             @settings_hierarchy['file'][@file_level_identifier] = { 'settings' => file_level_settings }

@@ -103,7 +103,7 @@ class Repositext
             ],
           ].each do |content_at_plain_text, pdf_raw_text|
             it "handles #{ pdf_raw_text.inspect }" do
-              validator, logger, reporter = build_validator_logger_and_reporter(
+              validator, _logger, _reporter = build_validator_logger_and_reporter(
                 PdfExportConsistency,
                 [
                   FileLikeStringIO.new('_path', '_txt'),
@@ -145,7 +145,7 @@ class Repositext
             ],
           ].each do |content_at_plain_text, pdf_raw_text|
             it "handles #{ pdf_raw_text.inspect }" do
-              validator, logger, reporter = build_validator_logger_and_reporter(
+              validator, _logger, _reporter = build_validator_logger_and_reporter(
                 PdfExportConsistency,
                 [
                   FileLikeStringIO.new('_path', '_txt'),
@@ -207,7 +207,7 @@ class Repositext
             ],
           ].each do |pdf_raw_text, xpect|
             it "handles #{ pdf_raw_text.inspect }" do
-              validator, logger, reporter = build_validator_logger_and_reporter(
+              validator, _logger, _reporter = build_validator_logger_and_reporter(
                 PdfExportConsistency,
                 [
                   FileLikeStringIO.new('_path', '_txt'),
@@ -237,7 +237,7 @@ class Repositext
             ],
           ].each do |pdf_raw_text, xpect|
             it "handles #{ pdf_raw_text.inspect }" do
-              validator, logger, reporter = build_validator_logger_and_reporter(
+              validator, _logger, _reporter = build_validator_logger_and_reporter(
                 PdfExportConsistency,
                 [
                   FileLikeStringIO.new('_path', '_txt'),
