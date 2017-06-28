@@ -6,9 +6,9 @@ GIT
 
 GIT
   remote: https://github.com/lsegal/yard.git
-  revision: 884a529f8a31b324ea8edf2ffc3ed83e69d0306b
+  revision: 1505386b3ca14857a24f840c0f8d0cb717dc09d4
   specs:
-    yard (0.8.7.6)
+    yard (0.9.9)
 
 PATH
   remote: ../kramdown
@@ -54,7 +54,7 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (4.2.8)
+    activesupport (4.2.9)
       i18n (~> 0.7)
       minitest (~> 5.1)
       thread_safe (~> 0.3, >= 0.3.4)
@@ -71,7 +71,7 @@ GEM
     diff_match_patch_native (1.0.2)
       rice (>= 1.4.2)
     dotenv (2.2.1)
-    fakefs (0.6.7)
+    fakefs (0.11.0)
     i18n (0.8.4)
     little-plugger (1.1.4)
     logging (2.2.2)
@@ -79,7 +79,7 @@ GEM
       multi_json (~> 1.10)
     micromachine (2.0.0)
     mini_portile2 (2.2.0)
-    minitest (5.8.3)
+    minitest (5.10.2)
     minitest-spec-expect (2.0.0)
       minitest (~> 5.0)
     multi_json (1.12.1)
@@ -90,14 +90,14 @@ GEM
     os (1.0.0)
     outcome (1.0.1)
     parallel (1.11.2)
-    pragmatic_segmenter (0.3.13)
+    pragmatic_segmenter (0.3.15)
       unicode
     rainbow (2.2.2)
       rake
-    rake (10.4.2)
-    rice (2.0.0)
+    rake (12.0.0)
+    rice (2.1.1)
     ruby-graphviz (1.2.3)
-    ruby-prof (0.15.9)
+    ruby-prof (0.16.2)
     rubyzip (1.2.1)
     rugged (0.25.1.1)
     thor (0.19.4)
@@ -126,4 +126,4 @@ DEPENDENCIES
   yard!
 
 BUNDLED WITH
-   1.14.5
+   1.15.1
