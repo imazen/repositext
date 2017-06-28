@@ -25,39 +25,39 @@ PATH
   remote: .
   specs:
     repositext (0.0.1)
-      activesupport (~> 4.2)
+      activesupport (~> 5.1.2)
       alignment
-      amatch
-      awesome_print
-      builder
-      caracal (~> 1.0)
-      diff-lcs
-      dotenv
+      amatch (~> 0.3.1)
+      awesome_print (~> 1.8.0)
+      builder (~> 3.2.3)
+      caracal (~> 1.0.12)
+      diff-lcs (~> 1.3)
+      dotenv (~> 2.2.1)
       kramdown
-      logging
-      micromachine
+      logging (~> 2.2.2)
+      micromachine (~> 2.0.0)
       multi_ruby_runner (~> 1.0.2)
       needleman_wunsch_aligner (~> 1.1.1)
-      nokogiri
-      os
-      outcome
-      parallel
-      pragmatic_segmenter (~> 0.3.7)
-      rainbow
-      ruby-graphviz
-      rubyzip
-      rugged (~> 0.24)
+      nokogiri (~> 1.8.0)
+      os (~> 1.0.0)
+      outcome (~> 1.0.1)
+      parallel (~> 1.11.2)
+      pragmatic_segmenter (~> 0.3.15)
+      rainbow (~> 2.2.2)
+      ruby-graphviz (~> 1.2.3)
+      rubyzip (~> 1.2.1)
+      rugged (~> 0.25.1.1)
       suspension
-      thor
-      unicode_utils
+      thor (~> 0.19.4)
+      unicode_utils (~> 1.4.0)
 
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (4.2.9)
+    activesupport (5.1.2)
+      concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (~> 0.7)
       minitest (~> 5.1)
-      thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
     amatch (0.3.1)
       tins (~> 1.0)
@@ -67,6 +67,7 @@ GEM
       nokogiri (~> 1.6)
       rubyzip (~> 1.1)
       tilt (>= 1.4)
+    concurrent-ruby (1.0.5)
     diff-lcs (1.3)
     diff_match_patch_native (1.0.2)
       rice (>= 1.4.2)
