@@ -198,7 +198,7 @@ class Repositext
           changed_files = compute_list_of_changed_files(options[:'changed-only'])
           Parallel.each(
             Dir.glob(file_pattern),
-            { in_threads: options[:parallel] ? Repositext::PARALLEL_CORES : 0 }
+            { in_processes: options[:parallel] ? Repositext::PARALLEL_CORES : 0 }
           ) do |filename|
 
             if file_filter && !(file_filter === filename) # file_filter has to be LHS of `===`
