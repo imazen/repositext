@@ -73,8 +73,11 @@ class Repositext
               f_content_at_file,
               applicable_st_ops
             )
-
-            @successful_files << f_content_at_file.repo_relative_path(true)
+            if applicable_st_ops.any?
+              @successful_files_with_st_ops << f_content_at_file.repo_relative_path(true)
+            else
+              @successful_files_without_st_ops << f_content_at_file.repo_relative_path(true)
+            end
             puts # terminate log line
             true
           end
@@ -107,7 +110,7 @@ class Repositext
                   'st_sync_subtitles_to_review' => { 'all' => ['autosplit'] },
                 )
 
-                @successful_files << f_content_at_file.repo_relative_path(true)
+                @successful_files_with_autosplit << f_content_at_file.repo_relative_path(true)
                 puts # terminate log line
                 true
               else

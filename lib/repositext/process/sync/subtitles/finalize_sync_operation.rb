@@ -14,11 +14,23 @@ class Repositext
             @st_ops_cache_file.keys.each { |from_git_commit, to_git_commit|
               puts "     - #{ from_git_commit } to #{ to_git_commit }"
             }
-            if @successful_files.any?
-              puts "   - The following #{ @successful_files.count } files were synced successfully:".color(:green)
-              @successful_files.each { |file_path| puts "     - #{ file_path }" }
+            if @successful_files_with_st_ops.any?
+              puts "   - The following #{ @successful_files_with_st_ops.count } files with st operations were synced successfully:".color(:green)
+              @successful_files_with_st_ops.each { |file_path| puts "     - #{ file_path }" }
             else
-              puts "   - No files were synced successfully".color(:red)
+              puts "   - No files with st operations were synced successfully".color(:red)
+            end
+            if @successful_files_with_autosplit.any?
+              puts "   - The following #{ @successful_files_with_autosplit.count } files with autosplit were synced successfully:".color(:green)
+              @successful_files_with_autosplit.each { |file_path| puts "     - #{ file_path }" }
+            else
+              puts "   - No files with autosplit were synced successfully".color(:red)
+            end
+            if @successful_files_without_st_ops.any?
+              puts "   - The following #{ @successful_files_without_st_ops.count } files without st operations were synced successfully:".color(:green)
+              @successful_files_without_st_ops.each { |file_path| puts "     - #{ file_path }" }
+            else
+              puts "   - No files without st operations were synced successfully".color(:red)
             end
             if @unprocessable_files.any?
               puts "   - The following #{ @unprocessable_files.count } files could not be synced:".color(:red)

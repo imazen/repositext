@@ -1,4 +1,3 @@
-# encoding UTF-8
 class Repositext
   class Process
     class Sync
@@ -61,7 +60,9 @@ class Repositext
           @files_with_autosplit_exceptions = []
           # Container for any files that were synced successfully. Array of Strings
           # ['content/53/spn53-0504.at', ...]
-          @successful_files = []
+          @successful_files_with_autosplit = []
+          @successful_files_with_st_ops = []
+          @successful_files_without_st_ops = []
           # Container for any files that were autosplit, grouped by language
           # { eng: ['54-0403', '65-0101'] }
           @auto_split_files_collector = Hash.new([])
@@ -97,25 +98,28 @@ class Repositext
             )
           )
 
-          if !@is_initial_primary_sync
-            # Syncronize all foreign repos that participate in st sync
-            all_synced_foreign_repos.each do |foreign_repo|
-              puts " - Sync foreign repo '#{ foreign_repo.name }'".color(:blue)
-              sync_foreign_repo(foreign_repo)
+          begin
+            if !@is_initial_primary_sync
+              # Syncronize all foreign repos that participate in st sync
+              all_synced_foreign_repos.each do |foreign_repo|
+                puts " - Sync foreign repo '#{ foreign_repo.name }'".color(:blue)
+                sync_foreign_repo(foreign_repo)
+              end
             end
-          end
-
-          puts " - Finalize sync operation".color(:blue)
-          finalize_sync_operation
-          puts "\n"
-          if @auto_split_files_collector.any?
-            puts "File selectors for autosplit files:".color(:blue)
-            @auto_split_files_collector.each { |lang_code, date_codes|
-              dcs = date_codes.map { |e| "#{ e }_" }.join(',')
-              puts "#{ lang_code }: **/*{#{ dcs }}*"
-            }
-          else
-            puts "No files were autosplit.".color(:blue)
+          ensure
+            puts
+            puts " - Finalize sync operation".color(:blue)
+            finalize_sync_operation
+            puts "\n"
+            if @auto_split_files_collector.any?
+              puts "File selectors for autosplit files:".color(:blue)
+              @auto_split_files_collector.each { |lang_code, date_codes|
+                dcs = date_codes.map { |e| "#{ e }_" }.join(',')
+                puts "#{ lang_code }: **/*{#{ dcs }}*"
+              }
+            else
+              puts "No files were autosplit.".color(:blue)
+            end
           end
         end
 
