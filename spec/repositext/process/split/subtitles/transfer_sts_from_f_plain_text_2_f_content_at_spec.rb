@@ -14,7 +14,7 @@ class Repositext
             [
               [
                 'Simple case',
-                "\nHeader\n\n@1 word @word word.\n@2 word word word.",
+                "Header\n\n@1 word @word word.\n@2 word word word.",
                 [
                   %(^^^ {: .rid #rid-12345678}),
                   %(),
