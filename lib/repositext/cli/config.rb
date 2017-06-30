@@ -16,6 +16,7 @@ class Repositext
         @rtfile_path = rtfile_path
         @effective_settings = {}
         @settings_hierarchy = {}
+        @file_level_identifier = nil
       end
 
       # Checks from repositext level down to content_type level for JSON data
