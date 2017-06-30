@@ -35,7 +35,7 @@ class Repositext
           # `doc = Kramdown::Document.new(contents, :input => 'kramdown_repositext')`
           # We have to patch a base Kramdown::Document with the root to be able
           # to convert it.
-          root, warnings = @options['kramdown_parser_class'].parse(html_imported_at)
+          root, _warnings = @options['kramdown_parser_class'].parse(html_imported_at)
           doc = Kramdown::Document.new('')
           doc.root = root
 

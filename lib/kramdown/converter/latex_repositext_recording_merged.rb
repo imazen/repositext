@@ -30,7 +30,7 @@ module Kramdown
              pair.map(&:strip).join("\n\n")
            }.join("\n\n***\n\n") + "\n\n***\n"
           r
-        rescue IndexError => e
+        rescue IndexError
           primary_contents_splits.each_with_index do |pcs, idx|
             tcs = target_contents_splits[idx]
             puts '-'
@@ -273,9 +273,9 @@ module Kramdown
           next_split_starts_with_gap_mark = para_split[:starts_with_gap_mark]
           while !str_sc.eos? do
             # check the varios options, going from specific to general
-            if(gap_mark = str_sc.scan(/%/))
+            if str_sc.scan(/%/)
               next_split_starts_with_gap_mark = true
-            elsif(strong_span_start = str_sc.scan(/\*\*/))
+            elsif str_sc.scan(/\*\*/)
               # a strong span begins
               strong_span_contents_and_end = str_sc.scan_until(/\*\*/)
               raise "Unclosed strong span"  if(strong_span_contents_and_end).nil?
@@ -290,7 +290,7 @@ module Kramdown
                 parents: para_split[:parents] + ['**', '**'],
                 starts_with_gap_mark: swgm,
               }
-            elsif(em_span_start = str_sc.scan(/\*/))
+            elsif str_sc.scan(/\*/)
               # an em span begins
               em_span_contents_and_end = str_sc.scan_until(/\*/)
               raise "Unclosed strong span"  if(em_span_contents_and_end).nil?

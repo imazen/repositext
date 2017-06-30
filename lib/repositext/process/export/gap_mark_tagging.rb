@@ -38,7 +38,7 @@ class Repositext
         end
 
         def suspend_unwanted_tokens(txt)
-          gmt = Suspension::TokenRemover.new(
+          Suspension::TokenRemover.new(
             txt,
             Suspension::REPOSITEXT_TOKENS.find_all { |e|
               ![

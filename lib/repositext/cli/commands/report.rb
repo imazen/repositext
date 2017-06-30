@@ -42,7 +42,7 @@ class Repositext
 
         lines << "Character inventory for #{ content_type.language_name }"
 
-        char_groups = chars.group_by { |(code, count)|
+        char_groups = chars.keys.group_by { |code|
           case code.chr('UTF-8')
           # We switched to using plain text instead of content AT, so we don't
           # need this char_group.
@@ -147,7 +147,6 @@ class Repositext
 
       # Generates two counts of files: those with gap_marks and those with subtitle_marks
       def report_count_files_with_gap_marks_and_subtitle_marks(options)
-        content_base_dir = config.base_dir(:content_dir)
         total_count = 0
         with_gap_marks = 0
         with_subtitle_marks = 0
@@ -206,7 +205,6 @@ class Repositext
           subtitle_marks_count += contents.count('@')
           file_count += 1
         end
-        lines = []
         $stderr.puts "Found #{ subtitle_marks_count } subtitle_marks in #{ file_count } files at #{ Time.now.to_s }."
       end
 
@@ -609,7 +607,7 @@ class Repositext
           # We have to patch a base Kramdown::Document with the root to be able
           # to convert it.
           contents_without_id_page, _ = Repositext::Utils::IdPageRemover.remove(contents)
-          root, warnings = config.kramdown_parser(:kramdown).parse(contents_without_id_page)
+          root, _warnings = config.kramdown_parser(:kramdown).parse(contents_without_id_page)
           doc = Kramdown::Document.new('')
           doc.root = root
           file_issues = doc.to_report_invalid_eagles
@@ -716,7 +714,7 @@ class Repositext
           # `doc = Kramdown::Document.new(contents, :input => 'kramdown_repositext')`
           # We have to patch a base Kramdown::Document with the root to be able
           # to convert it.
-          root, warnings = config.kramdown_parser(:kramdown).parse(contents)
+          root, _warnings = config.kramdown_parser(:kramdown).parse(contents)
           doc = Kramdown::Document.new('')
           doc.root = root
           doc_class_combinations = doc.to_report_kramdown_element_classes_inventory
@@ -753,7 +751,6 @@ class Repositext
       # Generates a report of all editor notes in content AT with more than
       # char_cutoff characters
       def report_long_editor_notes(options)
-        content_base_dir = config.base_dir(:content_dir)
         total_file_count = 0
         total_editor_notes_count = 0
         long_editor_notes_count = 0
@@ -1169,14 +1166,14 @@ class Repositext
         l << ''
         l << "Operations:"
         l << "-" * 24
-        operations.to_a.sort { |(k_a, v_a),(k_b, v_b)|
+        operations.to_a.sort { |(k_a, _v_a),(k_b, _v_b)|
           k_a <=> k_b
         }.each { |k,v|
           number_with_delimiter = v.to_s.reverse.gsub(/(\d{3})(?=\d)/, '\\1,').reverse
           l << "#{ k.ljust(16) } #{ number_with_delimiter.rjust(7) }"
         }
         l << "-" * 24
-        total_ops_count = operations.inject(0) { |m,(k,v)| m += v; m }
+        total_ops_count = operations.values.inject(0) { |m,v| m += v; m }
         l << "Total: #{ total_ops_count.to_s.reverse.gsub(/(\d{3})(?=\d)/, '\\1,').reverse.rjust(17) }"
         l << ''
 
@@ -1227,7 +1224,7 @@ class Repositext
         lines << ''
         lines << 'Sorted alphabetically'
         lines << '---------------------'
-        sorted_alpha = terms.sort { |(term_a, freq_a), (term_b, freq_b)|
+        sorted_alpha = terms.sort { |(term_a, _freq_a), (term_b, _freq_b)|
           term_a <=> term_b
         }
         longest_term = sorted_alpha.map { |term, freq| term.length }.max
@@ -1352,7 +1349,7 @@ class Repositext
           # iterate over all straight quotes
           # Don't include straight quotes inside IALs (remove all ials)
           contents.gsub(/\{[^\{\}]*\}/, ' ')
-                  .scan(/(.{0,20})((?<!\=)#{ quote_char }(?!\}))(.{0,20})/m) { |(pre, quote, post)|
+                  .scan(/(.{0,20})((?<!\=)#{ quote_char }(?!\}))(.{0,20})/m) { |(pre, _quote, post)|
             # add to array
             instances << { :pre => pre, :post => post, :filename => filename }
           }

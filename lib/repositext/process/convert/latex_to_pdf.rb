@@ -39,7 +39,6 @@ class Repositext
             )
           end
           pdf = ''
-          log = ''
           Dir.mktmpdir { |tmp_dir|
             max_num_loops = 4
             has_overfull_hboxes = true
@@ -53,9 +52,9 @@ class Repositext
               end
               puts s
               convert_latex_to_pdf(tmp_dir, latex)
-              tex_file_contents = File.read(File.join(tmp_dir, 'tmp.tex'))
               log_file_contents = File.read(File.join(tmp_dir, 'tmp.log'))
 
+              # tex_file_contents = File.read(File.join(tmp_dir, 'tmp.tex'))
               # puts '-' * 80
               # puts Dir.entries(tmp_dir)
               # puts '-' * 80

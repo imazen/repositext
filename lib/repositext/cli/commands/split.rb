@@ -51,7 +51,7 @@ class Repositext
               'st_sync_subtitles_to_review' => { 'all' => ['autosplit'] }
             )
           end
-          new_c_at, st_confs = o.result
+          new_c_at, _st_confs = o.result
 
           [Outcome.new(o.success, { contents: new_c_at }, o.messages)]
         end

@@ -7,7 +7,6 @@ module Kramdown
     describe "recursively_clean_up_nested_ems!" do
 
       em1 = ElementRt.new(:em, nil, 'id' => 'em1')
-      em2 = ElementRt.new(:em, nil, 'id' => 'em2')
       em_sc1 = ElementRt.new(:em, nil, 'class' => 'smcaps', 'id' => 'em_sc1')
       em_sc2 = ElementRt.new(:em, nil, 'class' => 'smcaps', 'id' => 'em_sc2')
       p1 = ElementRt.new(:p, nil, 'id' => 'p1')
@@ -16,7 +15,6 @@ module Kramdown
       text3 = ElementRt.new(:text, "text3")
       text4 = ElementRt.new(:text, "text4")
       text5 = ElementRt.new(:text, "text5")
-      text_b1 = ElementRt.new(:text, " ", 'id' => 'text_b1')
 
       [
         [

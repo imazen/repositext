@@ -26,11 +26,14 @@ describe Array do
     [
       [[1,2,3], 2],
       [[1,2,3,5,6,7], 4],
-      [[], nil],
     ].each do |(test_data, xpect)|
       it "handles #{ test_data.inspect }" do
         test_data.mean.must_equal(xpect)
       end
+    end
+
+    it 'handles empty array' do
+      [].mean.must_be_nil
     end
   end
 
@@ -38,11 +41,14 @@ describe Array do
     [
       [[1,2,3], 2],
       [[1,2,3,5,6,7], 4],
-      [[], nil],
     ].each do |(test_data, xpect)|
       it "handles #{ test_data.inspect }" do
         test_data.median.must_equal(xpect)
       end
+    end
+
+    it 'handles empty array' do
+      [].median.must_be_nil
     end
   end
 

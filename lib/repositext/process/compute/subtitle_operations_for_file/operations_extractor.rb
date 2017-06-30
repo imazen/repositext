@@ -68,7 +68,7 @@ class Repositext
                   (st_attrs[:last_in_para] ? 'last_ip' : nil)
                 ].compact.join(', ')
               }
-              from_record_id = if(r = curr[:from][:record_id]) != curr[:subtitle_object].record_id
+              from_record_id = if curr[:from][:record_id] != curr[:subtitle_object].record_id
                 "rid:#{ curr[:from][:record_id] || 'N/A' }"
               else
                 ''

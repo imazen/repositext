@@ -229,7 +229,7 @@ class Repositext
           # `doc = Kramdown::Document.new(contents, :input => 'kramdown_repositext')`
           # We have to patch a base Kramdown::Document with the root to be able
           # to convert it.
-          root, warnings = @config.kramdown_parser(:kramdown).parse(exported_corr_prim_content_at_file.contents)
+          root, _warnings = @config.kramdown_parser(:kramdown).parse(exported_corr_prim_content_at_file.contents)
           doc = Kramdown::Document.new('')
           doc.root = root
           exp_corr_prim_plain_txt_with_sts = doc.send(@config.kramdown_converter_method(:to_subtitle))

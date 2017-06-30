@@ -183,7 +183,7 @@ class Repositext
           prev_zero_diff = nil
           all_diffs_with_context.each { |diff|
 
-            ins_del, txt_diff, location, context = diff
+            ins_del, _txt_diff, _location, _context = diff
             case ins_del
             when -1
               if current_diff_group.nil?

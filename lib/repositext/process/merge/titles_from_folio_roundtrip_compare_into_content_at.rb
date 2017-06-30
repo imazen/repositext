@@ -9,7 +9,7 @@ class Repositext
         # @return [Outcome] the merged document is returned as #result if successful.
         def self.merge(folio_roundtrip_compare, content_at)
           title_from_folio_roundtrip_compare = extract_title(folio_roundtrip_compare)
-          outcome = merge_title_into_content_at(title_from_folio_roundtrip_compare, content_at)
+          merge_title_into_content_at(title_from_folio_roundtrip_compare, content_at)
         end
 
       protected

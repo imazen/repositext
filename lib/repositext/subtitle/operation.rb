@@ -88,7 +88,7 @@ class Repositext
       # @return [Array<String>]
       def added_subtitle_ids
         return []  unless %w[insert split].include?(operation_type)
-        r = affected_stids.inject([]) { |m,e|
+        affected_stids.inject([]) { |m,e|
           before = e.tmp_before.to_s.strip
           pers_id = e.persistent_id.to_s
           if '' == before || before =~ /\A\^\^\^ {: \.rid/
@@ -114,7 +114,7 @@ class Repositext
       # @return [Array<String>]
       def deleted_subtitle_ids
         return []  unless %w[delete merge].include?(operation_type)
-        r = affected_stids.inject([]) { |m,e|
+        affected_stids.inject([]) { |m,e|
           after = e.tmp_after.to_s.strip
           pers_id = e.persistent_id.to_s
           if '' == after || after =~ /\A\^\^\^ {: \.rid/

@@ -57,7 +57,7 @@ class Repositext
           # `doc = Kramdown::Document.new(contents, :input => 'kramdown_repositext')`
           # We have to patch a base Kramdown::Document with the root to be able
           # to convert it.
-          root, warnings = config.kramdown_parser(:kramdown).parse(md)
+          root, _warnings = config.kramdown_parser(:kramdown).parse(md)
           doc = Kramdown::Document.new('')
           doc.root = root
           icml = doc.send(config.kramdown_converter_method(:to_icml))
@@ -107,7 +107,7 @@ class Repositext
           # `doc = Kramdown::Document.new(contents, :input => 'kramdown_repositext')`
           # We have to patch a base Kramdown::Document with the root to be able
           # to convert it.
-          root, warnings = config.kramdown_parser(:kramdown).parse(contents)
+          root, _warnings = config.kramdown_parser(:kramdown).parse(contents)
           doc = Kramdown::Document.new('')
           doc.root = root
           txt = doc.send(config.kramdown_converter_method(:to_plain_text))
@@ -213,7 +213,7 @@ class Repositext
           # `doc = Kramdown::Document.new(contents, :input => 'kramdown_repositext')`
           # We have to patch a base Kramdown::Document with the root to be able
           # to convert it.
-          root, warnings = config.kramdown_parser(:kramdown).parse(content_at_file.contents)
+          root, _warnings = config.kramdown_parser(:kramdown).parse(content_at_file.contents)
           doc = Kramdown::Document.new('')
           doc.root = root
           subtitle = doc.send(config.kramdown_converter_method(:to_subtitle))
@@ -292,7 +292,7 @@ class Repositext
           # `doc = Kramdown::Document.new(contents, :input => 'kramdown_repositext')`
           # We have to patch a base Kramdown::Document with the root to be able
           # to convert it.
-          root, warnings = config.kramdown_parser(:kramdown).parse(contents)
+          root, _warnings = config.kramdown_parser(:kramdown).parse(contents)
           doc = Kramdown::Document.new('')
           doc.root = root
           subtitle_tagging = doc.send(config.kramdown_converter_method(:to_subtitle_tagging))

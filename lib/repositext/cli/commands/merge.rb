@@ -116,7 +116,6 @@ class Repositext
         content_base_dir = config.compute_base_dir(
           options['base-dir-2'] || :content_dir
         )
-        output_base_dir = options['output'] || config.base_dir(:content_dir)
 
         $stderr.puts ''
         $stderr.puts '-' * 80
@@ -188,7 +187,6 @@ class Repositext
         errors_count = 0
         idml_not_present_count = 0
         folio_not_present_count = 0
-        filtered_text_mismatch_count = 0
 
         # First get union of all Folio and Idml files
         folio_files = Dir.glob([input_folio_base_dir, input_file_selector, input_file_extension].join)
@@ -271,7 +269,6 @@ class Repositext
           options['file-extension'] || :txt_extension
         )
         content_base_dir = config.compute_base_dir(options['base-dir-2'] || :content_dir)
-        output_base_dir = options['output'] || config.base_dir(:content_dir)
 
         $stderr.puts ''
         $stderr.puts '-' * 80
@@ -296,7 +293,6 @@ class Repositext
           options['file-extension'] || :txt_extension
         )
         content_base_dir = config.compute_base_dir(options['base-dir-2'] || :content_dir)
-        output_base_dir = options['output'] || config.base_dir(:content_dir)
 
         $stderr.puts ''
         $stderr.puts '-' * 80
@@ -319,7 +315,6 @@ class Repositext
           'folio_source/with_folio_import'
         )
         folio_import_base_dir = config.compute_base_dir(options['base-dir-2'] || :folio_import_dir)
-        markers_file_regex = /(?<!markers)\.txt\z/
 
         $stderr.puts ''
         $stderr.puts '-' * 80
@@ -396,7 +391,6 @@ class Repositext
         start_time = Time.now
         total_count = 0
         success_count = 0
-        errors_count = 0
         idml_used_count = 0
         folio_used_count = 0
 

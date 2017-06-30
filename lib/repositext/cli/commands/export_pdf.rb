@@ -189,7 +189,7 @@ class Repositext
           vspace_below_title1_required: true,
         })
 
-        root, warnings = config.kramdown_parser(:kramdown).parse(pdf_test_contents)
+        root, _warnings = config.kramdown_parser(:kramdown).parse(pdf_test_contents)
         kramdown_doc = Kramdown::Document.new('', options)
         kramdown_doc.root = root
         latex = kramdown_doc.send(:to_latex_repositext_book)
@@ -367,7 +367,7 @@ class Repositext
           # `doc = Kramdown::Document.new(contents, :input => 'kramdown_repositext')`
           # We have to patch a base Kramdown::Document with the root to be able
           # to convert it.
-          root, warnings = config.kramdown_parser(:kramdown).parse(contents)
+          root, _warnings = config.kramdown_parser(:kramdown).parse(contents)
           kramdown_doc = Kramdown::Document.new('', options)
           kramdown_doc.root = root
           latex_converter_method = variant.sub(/\Apdf/, 'to_latex_repositext')

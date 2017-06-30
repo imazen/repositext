@@ -47,7 +47,6 @@ class Repositext
           def update_primary_subtitle_marker_csv_file(content_at_file_to, st_ops_for_file)
             # Get content_at_file as of from_git_commit
             content_at_file = content_at_file_to.as_of_git_commit(@from_git_commit)
-            csv_file = content_at_file.corresponding_subtitle_markers_csv_file
             old_stids, new_time_slices = extract_primary_stm_csv_file_input_data(
               content_at_file,
               st_ops_for_file

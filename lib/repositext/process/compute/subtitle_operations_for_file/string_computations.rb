@@ -82,7 +82,7 @@ class Repositext
               start_pos += 1
             end
 
-            max_rep_count = ngrams.inject(0) { |m,(k,v)| [m, v.length].max }
+            max_rep_count = ngrams.values.inject(0) { |m,v| [m, v.length].max }
             return {}  if max_rep_count <= 1
 
             reps = ngrams.inject({}) { |m,(k,v)|

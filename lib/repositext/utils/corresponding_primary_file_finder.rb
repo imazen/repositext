@@ -20,7 +20,7 @@ class Repositext
           params[:relative_path_to_primary_content_type],
           params[:content_type_dir]
         ) + '/'
-        primary_filename = params[:filename].gsub(
+        params[:filename].gsub(
           params[:content_type_dir],
           primary_content_type_base_dir
         ).gsub(

@@ -20,8 +20,8 @@ class Repositext
           # TODO STID: check for meaning of auto_insert_missing_subtitle_marks and this if/else construct
           tmp_csv_array = if existing_stm_csv && !auto_insert_missing_subtitle_marks
             # Load existing CSV, extract existing vals
-            csv = CSV.new(existing_stm_csv, col_sep: "\t", headers: :first_row)
-            csv.to_a.map { |row|
+            tmp_csv = CSV.new(existing_stm_csv, col_sep: "\t", headers: :first_row)
+            tmp_csv.to_a.map { |row|
               r = row.to_hash
               Repositext::Utils::SubtitleMarkTools.csv_headers.map { |header| r[header] }
             }

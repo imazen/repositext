@@ -36,8 +36,8 @@ class Repositext
               %(--review="n"),
               %(--tmx="n"),
             ].join(' ')
-            stdout_and_stderr_str, status = Open3.capture2e(lf_aligner_cmd)
-  # TODO: check successful result (using lf_aligner console output)
+            _stdout_and_stderr_str, _status = Open3.capture2e(lf_aligner_cmd)
+            # TODO: check successful result (using lf_aligner console output)
 
             # Read aligned sentences back
             # <primary sentence>\t<foreign_sentence>\t<primary_filename>-<foreign_filename>

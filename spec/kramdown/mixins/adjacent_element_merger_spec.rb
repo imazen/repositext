@@ -10,14 +10,11 @@ module Kramdown
       em_a1 = ElementRt.new(:em, nil, 'class' => 'a', 'id' => 'em_a1')
       em_a2 = ElementRt.new(:em, nil, 'class' => 'a', 'id' => 'em_a2')
       em_b1 = ElementRt.new(:em, nil, 'class' => 'b', 'id' => 'em_b1')
-      em_b2 = ElementRt.new(:em, nil, 'class' => 'b', 'id' => 'em_b2')
       p1 = ElementRt.new(:p, nil, 'id' => 'p1')
       strong_a1 = ElementRt.new(:strong, nil, 'class' => 'a', 'id' => 'strong_a1')
       strong_a2 = ElementRt.new(:strong, nil, 'class' => 'a', 'id' => 'strong_a2')
       text1 = ElementRt.new(:text, "text1")
       text2 = ElementRt.new(:text, "text2")
-      text3 = ElementRt.new(:text, "text3")
-      text4 = ElementRt.new(:text, "text4")
       text_b1 = ElementRt.new(:text, " ", 'id' => 'text_b1')
 
       [

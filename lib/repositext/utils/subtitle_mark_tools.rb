@@ -30,7 +30,7 @@ class Repositext
           content_without_blocks
         )
         # Remove all tokens but :subtitle_mark from content_at
-        content_with_subtitle_marks_only = Suspension::TokenRemover.new(
+        Suspension::TokenRemover.new(
           content_with_decoded_entities,
           Suspension::REPOSITEXT_TOKENS.find_all { |e| :subtitle_mark != e.name }
         ).remove

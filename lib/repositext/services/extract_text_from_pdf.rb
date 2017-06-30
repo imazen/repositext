@@ -46,7 +46,7 @@ class Repositext
 
         mrr = MultiRubyRunner.new
         server_root_path = File.expand_path("../../../../servers/extract_text_from_pdf", __FILE__)
-        child_pid = mrr.execute_command_in_directory(
+        _child_pid = mrr.execute_command_in_directory(
           "#{ File.join(server_root_path, "bin/extract-text-from-pdf") } --port #{ @port }",
           server_root_path,
           { blocking: false }
@@ -71,7 +71,7 @@ class Repositext
             puts "Exceeded #{ max_attempts } attempts to connect to PDF text extraction server, giving up."
             exit
           end
-        rescue Errno::ECONNREFUSED => e
+        rescue Errno::ECONNREFUSED
           # Exponential backoff
           sleep(2**connection_attempt)
           retry
@@ -88,7 +88,7 @@ class Repositext
             connection.close # send EOF
             puts " - stopped"
           end
-        rescue Errno::ECONNREFUSED => e
+        rescue Errno::ECONNREFUSED
           puts " - Server was stopped already"
         end
       end

@@ -114,7 +114,7 @@ class Repositext
             }
 
             # Determine and apply snapping strategy
-            new_f_s_snapped_to_punctuation_o = if(
+            if(
               all_sts_are_preceded_by_punct &&
               (
                 p_punct_sig = p_s.scan(/([#{ regex_punctuation_chars }])|([^#{ regex_punctuation_chars }]+)/).map { |m1, m2|

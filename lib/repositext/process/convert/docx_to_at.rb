@@ -20,7 +20,7 @@ class Repositext
         # Converts document_xml to content_at
         # @return [Outcome] with imported content AT String as result
         def convert
-          root, warnings = @docx_kramdown_parser.parse(@document_xml)
+          root, _warnings = @docx_kramdown_parser.parse(@document_xml)
           kramdown_doc = Kramdown::Document.new(
             '',
             { line_width: 100000 } # set to very large value so that each para is on a single line

@@ -98,7 +98,7 @@ class Repositext
               ).split
 
               if ss_o.success?
-                new_content_at, st_confidences = ss_o.result
+                new_content_at, _st_confidences = ss_o.result
 
                 # Update foreign content AT file with new subtitles
                 f_content_at_file.update_contents!(new_content_at)

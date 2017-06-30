@@ -20,7 +20,7 @@ class Repositext
           subtitles = @content_file.subtitles
           return Outcome.new(false, nil)  if subtitles.empty?
 
-          root, warnings = Kramdown::Parser::KramdownVgr.parse(@content_file.contents)
+          root, _warnings = Kramdown::Parser::KramdownVgr.parse(@content_file.contents)
           doc = Kramdown::Document.new('', subtitles: subtitles)
           doc.root = root
           report = doc.to_report_record_boundary_locations

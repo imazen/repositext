@@ -21,7 +21,7 @@ class Repositext
             asps = compute_aligned_subtitle_pairs(sts_from, sts_to, alignment_strategy)
             enriched_asps = enrich_aligned_subtitle_pair_attributes(asps)
 
-            final_asps = case alignment_strategy
+            case alignment_strategy
             when :use_contents
               post_process_aligned_subtitle_pairs!(enriched_asps)
             when :use_stids
@@ -253,10 +253,6 @@ class Repositext
               .find_all { |e| '' != e }
             prev_reps_aligned, cur_reps_aligned, nxt_reps_aligned = [prev, cur, nxt].map { |asp|
               return true  if asp.nil?
-
-              # Determine if repetitions are aligned
-              asp_joined_content_sim = [:from, :to].map { |e| asp[e][:content_sim] }.join(' ')
-
               if asp[:has_repetitions]
                 # ASP has repetitions. Return true if they are balanced.
                 asp[:from][:repetitions].values.length == asp[:to][:repetitions].values.length

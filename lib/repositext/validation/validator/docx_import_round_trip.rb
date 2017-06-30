@@ -26,7 +26,7 @@ class Repositext
 
           document_xml_contents = docx_file.extract_docx_document_xml
           # parse Docx
-          docx_based_kramdown_root, warnings = @options['docx_parser_class'].parse(
+          docx_based_kramdown_root, _warnings = @options['docx_parser_class'].parse(
             document_xml_contents,
           )
           docx_based_kramdown_doc = Kramdown::Document.new('_')

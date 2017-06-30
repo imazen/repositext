@@ -12,7 +12,7 @@ class Repositext
           # undo subtitle_import customizations
           si = undo_subtitle_import_modifications(subtitle_import, content_at)
           # merge subtitle_marks from subtitle_import into content_at
-          outcome = merge_subtitle_marks(si, content_at)
+          merge_subtitle_marks(si, content_at)
         end
 
       protected

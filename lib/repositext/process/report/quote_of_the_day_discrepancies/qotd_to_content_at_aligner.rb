@@ -27,10 +27,8 @@ class Repositext
             else
               [content_at]
             end
-
-            similarity = ca_segments.map { |e|
-              qotd.longest_subsequence_similar(e)
-            }.max
+            # Return max similarity
+            ca_segments.map { |e| qotd.longest_subsequence_similar(e) }.max
           end
 
           def default_gap_penalty

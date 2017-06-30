@@ -68,7 +68,7 @@ class Repositext
     # @param before_time [Time, optional] defaults to Time.now
     # @return [String] the sha1 of the commit
     def latest_commit_sha_local(filename = '', before_time=nil)
-      stdout, stderr, status = Open3.capture3(
+      stdout, _stderr, _status = Open3.capture3(
         [
           "git",
           "--git-dir=#{ repo_path }",
@@ -107,7 +107,7 @@ class Repositext
     # Returns an array of hashes, one for each of the 10 most recent commits in @repo
     # @param [String, optional] filepath
     def latest_commits_local(filepath = '', max_number_of_commits = 20)
-      stdout, stderr, status = Open3.capture3(
+      stdout, _stderr, _status = Open3.capture3(
         [
           "git",
           "--git-dir=#{ repo_path }",
@@ -141,7 +141,7 @@ class Repositext
     # @return [Rugged::Commit, possibly others]
     def lookup(oid)
       @repo.lookup(oid)
-    rescue Rugged::InvalidError => e
+    rescue Rugged::InvalidError
       puts "Lookup of oid in remote didn't work. If this is a new repository, at least two commits need to be at the remote."
       raise
     end
@@ -169,8 +169,8 @@ class Repositext
     # current branch.
     def up_to_date_with_remote?
       begin
-        latest_local_commit = lookup(latest_commit_sha_remote)
-      rescue Rugged::OdbError => e
+        lookup(latest_commit_sha_remote)
+      rescue Rugged::OdbError
         # Couldn't find remote's latest commit in local repo, return false
         return false
       end

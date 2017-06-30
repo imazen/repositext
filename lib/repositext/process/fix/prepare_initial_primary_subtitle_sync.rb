@@ -63,9 +63,8 @@ class Repositext
 
           # Load time slices from STM CSV file
           stm_csv_file = content_at_file.corresponding_subtitle_markers_csv_file
-          time_slices = []
-          stm_csv_time_slices = stm_csv_file.each_row { |e|
-            time_slices << [e['relativeMS'], e['samples']]
+          time_slices = stm_csv_file.each_row.map { |e|
+            [e['relativeMS'], e['samples']]
           }
 
           # Write time slices to st_imp_filename

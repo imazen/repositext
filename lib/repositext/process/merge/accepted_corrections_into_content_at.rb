@@ -70,7 +70,7 @@ class Repositext
         # @return [Outcome] the merged document is returned as #result if successful.
         def self.merge_auto(accepted_corrections, content_at, content_at_filename)
           corrections = extract_corrections(accepted_corrections)
-          outcome = merge_corrections_into_content_at(:auto, corrections, content_at, content_at_filename)
+          merge_corrections_into_content_at(:auto, corrections, content_at, content_at_filename)
         end
 
         # Manually merges accepted_corrections into content_at in corrections that
@@ -81,7 +81,7 @@ class Repositext
         # @return [Outcome] the merged document is returned as #result if successful.
         def self.merge_manually(accepted_corrections, content_at, content_at_filename)
           corrections = extract_corrections(accepted_corrections)
-          outcome = merge_corrections_into_content_at(:manual, corrections, content_at, content_at_filename)
+          merge_corrections_into_content_at(:manual, corrections, content_at, content_at_filename)
         end
 
       protected

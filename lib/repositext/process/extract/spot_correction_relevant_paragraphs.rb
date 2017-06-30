@@ -89,7 +89,7 @@ class Repositext
             #{ dynamic_paragraph_number_regex(paragraph_number, txt) } # match paragraph number span
           /xm # multiline
           text_before_paragraph = txt.match(regex).to_s
-          line_number = text_before_paragraph.count("\n") + 1
+          text_before_paragraph.count("\n") + 1
         end
 
       end

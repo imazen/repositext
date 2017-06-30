@@ -22,7 +22,7 @@ class Repositext
           gap_mark_outcome = merge_gap_marks(gap_mark_tagging_import, content_at)
           return gap_mark_outcome  if !gap_mark_outcome.success?
           # Merge .omit classes from gmt_import into content_at
-          omit_outcome = merge_omit_classes(gap_mark_tagging_import, gap_mark_outcome.result)
+          merge_omit_classes(gap_mark_tagging_import, gap_mark_outcome.result)
         end
 
       protected

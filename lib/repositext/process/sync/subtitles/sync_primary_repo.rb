@@ -89,7 +89,7 @@ class Repositext
             persist_primary_st_ops!(st_ops_file_path, json_with_persistent_stids)
 
             # Now we read back the JSON so that we get st_ops with new stids
-            st_ops = Subtitle::OperationsForRepository.from_json(
+            Subtitle::OperationsForRepository.from_json(
               json_with_persistent_stids,
               @primary_repository.base_dir
             )
@@ -112,7 +112,7 @@ class Repositext
           # @return [String]
           def compute_primary_from_git_commit(commit_sha1_override, config, primary_repository)
             # Use override if given
-            return o  if '' != (o = commit_sha1_override.to_s)
+            return commit_sha1_override  if '' != commit_sha1_override.to_s.strip
 
             # Load from primary_repository's data.json file
             from_repo_level_data = primary_repository.read_repo_level_data['st_sync_commit']

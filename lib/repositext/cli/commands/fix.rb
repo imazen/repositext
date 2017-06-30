@@ -116,7 +116,6 @@ class Repositext
         date_codes_to_deactivate = all_date_codes - sync_enabled_date_codes
 
         # Deactivate date codes
-        content_dir = config.compute_base_dir(:content_dir)
         puts
         puts "Setting st_sync_active to false for the following files:".color(:blue)
         date_codes_to_deactivate.each do |date_code|

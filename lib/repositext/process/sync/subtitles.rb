@@ -274,7 +274,7 @@ class Repositext
         # @return [String] the sha1 of the commit
         def compute_to_git_commit(commit_sha1_override, primary_repository)
           # Use override if given
-          return o  if '' != (o = commit_sha1_override.to_s)
+          return commit_sha1_override  if '' != commit_sha1_override.to_s.strip
 
           if @primary_repository.read_repo_level_data['st_sync_required']
             # We're going to sync primary and create a new st_ops file with

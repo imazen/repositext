@@ -102,7 +102,7 @@ class Repositext
           # Transfer subtitles from foreign plain text to foreign content AT
           f_pt, f_st_confs = tsf_f_as2f_pt_o.result
           f_cat = @f_content_at_file.contents
-          o = transfer_sts_from_f_plain_text_2_f_content_at(
+          transfer_sts_from_f_plain_text_2_f_content_at(
             f_pt,
             f_cat,
             f_st_confs,

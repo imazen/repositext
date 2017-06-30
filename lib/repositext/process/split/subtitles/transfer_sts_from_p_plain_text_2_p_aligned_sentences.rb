@@ -31,7 +31,7 @@ class Repositext
             return p_ss_w_st_o  if !p_ss_w_st_o.success?
             p_ss_w_st = p_ss_w_st_o.result
 
-            asp_w_sts_o = merge_new_p_sentences_into_asp(p_ss_w_st, asp)
+            merge_new_p_sentences_into_asp(p_ss_w_st, asp)
           end
 
           # Transfers subtitles from primary plain text (p_pt) to primary

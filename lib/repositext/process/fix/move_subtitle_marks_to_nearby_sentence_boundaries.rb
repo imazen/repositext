@@ -113,8 +113,8 @@ class Repositext
         # @param ss [StringScanner] positioned 3 words before subtitle_mark
         # @return [Array<String, Nil>] an array with an entry for each surrounding position.
         def extract_subtitle_mark_and_surroundings!(ss)
-          r = ss.scan(subtitle_mark_and_surroundings_regex)
-          # TODO: We should raise if r is no match! return []  if r.nil?
+          _r = ss.scan(subtitle_mark_and_surroundings_regex)
+          # TODO: We should raise if _r is no match! return []  if _r.nil?
           %i[word-3 word-2 word-1 word-0 word+1 word+2].map { |e| ss[e] }
         end
 

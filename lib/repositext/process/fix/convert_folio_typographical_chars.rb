@@ -82,7 +82,7 @@ class Repositext
           newline_ = '\n'
           open_ = '\(\[' # I leave out curly braces (see above)
           punctuation_ = '\.\,\;\:\?\!'
-          quote_right_ = "\"'#{ language.chars[:d_quote_close] }#{ language.chars[:s_quote_close] }"
+          quote_right_ = "\"'#{ [language.chars[:d_quote_close], language.chars[:s_quote_close]].uniq }"
           separator_ = "\\*—\\-#{ language.chars[:elipsis] }"
           space_ = '\ \t'
           ellquell_ = '…?…'

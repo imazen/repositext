@@ -49,7 +49,7 @@ class Repositext
       def corresponding_primary_filename
         return filename  if is_primary?
 
-        primary_filename = filename.sub(
+        filename.sub(
           content_type.base_dir,
           corresponding_primary_content_type.base_dir
         ).sub(

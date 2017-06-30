@@ -61,7 +61,7 @@ module Kramdown
       it "adds other as child to self if different" do
         p = ElementRt.new(:em)
         c = ElementRt.new(:strong)
-        r = p.add_child_or_reuse_if_same(c)
+        p.add_child_or_reuse_if_same(c)
         c.parent.must_equal p
         p.children.must_equal [c]
       end
@@ -147,7 +147,6 @@ module Kramdown
         r.insert_sibling_after(t1).must_equal nil
       end
       it "raises if you try to insert self as sibling after" do
-        r = ElementRt.new(:root)
         t1 = ElementRt.new(:text, 'text1')
         lambda { t1.insert_sibling_after(t1) }.must_raise ArgumentError
       end
@@ -168,7 +167,6 @@ module Kramdown
         r.insert_sibling_before(t1).must_equal nil
       end
       it "raises if you try to insert self as sibling after" do
-        r = ElementRt.new(:root)
         t1 = ElementRt.new(:text, 'text1')
         lambda { t1.insert_sibling_before(t1) }.must_raise ArgumentError
       end

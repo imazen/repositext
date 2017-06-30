@@ -307,7 +307,7 @@ class Repositext
           # `doc = Kramdown::Document.new(contents, :input => 'kramdown_repositext')`
           # We have to patch a base Kramdown::Document with the root to be able
           # to convert it.
-          root, warnings = config.kramdown_parser(:kramdown).parse(contents)
+          root, _warnings = config.kramdown_parser(:kramdown).parse(contents)
           doc = Kramdown::Document.new('')
           doc.root = root
           misaligned_paras += doc.to_report_misaligned_question_paragraphs.map { |mp|

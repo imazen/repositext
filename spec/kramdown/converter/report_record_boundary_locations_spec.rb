@@ -49,15 +49,13 @@ module Kramdown
           'too few',
           %(@word word\n\nword word),
           ['rid-1', 'rid-2'],
-          { root: 2, paragraph: 0, span: 0 },
         ],
         [
           'too many',
           %(@word @word\n\n@word @word),
           ['rid-1', 'rid-2', 'rid-2'],
-          { root: nil, paragraph: 0, span: 0 },
         ],
-      ].each do |(description, kramdown, subtitle_rids, xpect)|
+      ].each do |(description, kramdown, subtitle_rids)|
         it "raises on subtitle count mismatch #{ description }" do
           doc = Document.new(
             kramdown,

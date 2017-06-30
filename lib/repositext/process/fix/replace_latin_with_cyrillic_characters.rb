@@ -63,7 +63,6 @@ class Repositext
           new_contents = ""
           latin_chars_that_were_not_replaced = []
           replaced_chars = Hash.new(0)
-          latin_chars = LATIN_TO_CYRILLIC_MAP.keys | []
 
           # Separate id_page out
           cat_wo_id, id_page = Repositext::Utils::IdPageRemover.remove(content_at_contents)

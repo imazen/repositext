@@ -7,23 +7,23 @@ module Kramdown
     describe "recursively_push_out_whitespace!" do
 
       em1 = ElementRt.new(:em, nil, 'id' => 'em1')
-      em2 = ElementRt.new(:em, nil, 'id' => 'em2')
+      # em2 = ElementRt.new(:em, nil, 'id' => 'em2')
       p1 = ElementRt.new(:p, nil, 'id' => 'p1')
-      strong1 = ElementRt.new(:strong, nil, 'id' => 'strong1')
-      strong2 = ElementRt.new(:strong, nil, 'id' => 'strong2')
+      # strong1 = ElementRt.new(:strong, nil, 'id' => 'strong1')
+      # strong2 = ElementRt.new(:strong, nil, 'id' => 'strong2')
       text1 = ElementRt.new(:text, "text1")
-      text2 = ElementRt.new(:text, "text2")
-      text3 = ElementRt.new(:text, "text3")
-      text4 = ElementRt.new(:text, "text4")
+      # text2 = ElementRt.new(:text, "text2")
+      # text3 = ElementRt.new(:text, "text3")
+      # text4 = ElementRt.new(:text, "text4")
       text_w_leading_space = ElementRt.new(:text, " leading")
       text_w_trailing_space = ElementRt.new(:text, "trailing ")
       space_only = ElementRt.new(:text, ' ')
       # TODO: write specs that use these:
-      leading_tab = ElementRt.new(:text, "\tleading")
-      trailing_tab = ElementRt.new(:text, "trailin\t")
-      leading_nl = ElementRt.new(:text, "\nleading")
-      trailing_nl = ElementRt.new(:text, "trailing\n")
-      leading_dbl_space = ElementRt.new(:text, "  leading")
+      # leading_tab = ElementRt.new(:text, "\tleading")
+      # trailing_tab = ElementRt.new(:text, "trailin\t")
+      # leading_nl = ElementRt.new(:text, "\nleading")
+      # trailing_nl = ElementRt.new(:text, "trailing\n")
+      # leading_dbl_space = ElementRt.new(:text, "  leading")
 
       [
         [

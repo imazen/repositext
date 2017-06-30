@@ -13,7 +13,7 @@ class Repositext
         # @return [Outcome]
         def self.fix(text, filename, corresponding_filename)
           text = text.dup
-          outcome = if contains_no_record_marks?(text)
+          if contains_no_record_marks?(text)
             insert_record_mark(text, filename, corresponding_filename)
           else
             Outcome.new(true, { contents: text }, ['File already contains record_marks'])
