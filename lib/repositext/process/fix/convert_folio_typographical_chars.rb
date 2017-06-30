@@ -105,15 +105,15 @@ class Repositext
             quote_specs_for_nesting_level = nested_sequence.take(nesting_level)
             [quote_specs_for_nesting_level, quote_specs_for_nesting_level.reverse].each do |direction|
               # Nested opening quotes
-              before = [newline_, open_, space_].join
-              after = [alnum_, open_, separator_].join
+              before = [newline_, open_, space_].uniq.join
+              after = [alnum_, open_, separator_].uniq.join
               text.gsub!(
                 /(?<=[#{ before }])#{ direction.map { |e| e[:char] }.join }(?=[#{ after }])/,
                 direction.map { |e| e[:substitute_open] }.join
               )
               # Nested closing quotes
-              before = [alnum_, close_, punctuation_, separator_].join
-              after = [close_, newline_, punctuation_, space_, language.chars[:em_dash]].join
+              before = [alnum_, close_, punctuation_, separator_].uniq.join
+              after = [close_, newline_, punctuation_, space_, language.chars[:em_dash]].uniq.join
               text.gsub!(
                 /(?<=[#{ before }])#{ direction.map { |e| e[:char] }.join }(?=[#{ after }])/,
                 direction.map { |e| e[:substitute_close] }.join
@@ -130,45 +130,45 @@ class Repositext
 
           [double_quote_spec, single_quote_spec].each { |quote_spec|
             # Opening quotes
-            before = [close_, newline_, open_, separator_, space_].join
+            before = [close_, newline_, open_, separator_, space_].uniq.join
             after = alnum_
             quote_replacer.call(text, before, after, quote_spec, :substitute_open)
 
-            before = [space_, newline_].join
-            after = [open_, punctuation_, separator_].join
+            before = [space_, newline_].uniq.join
+            after = [open_, punctuation_, separator_].uniq.join
             quote_replacer.call(text, before, after, quote_spec, :substitute_open)
 
-            before = [open_].join
-            after = [open_, punctuation_, separator_, space_].join
+            before = [open_].uniq.join
+            after = [open_, punctuation_, separator_, space_].uniq.join
             quote_replacer.call(text, before, after, quote_spec, :substitute_open)
 
-            before = [space_].join
+            before = [space_].uniq.join
             after = language.chars[:apostrophe] # Words like ’cause at beginning of a quote
             quote_replacer.call(text, before, after, quote_spec, :substitute_open)
 
             # Closing quotes
             before =  alnum_
-            after = [close_, newline_, open_, punctuation_, separator_, space_].join
+            after = [close_, newline_, open_, punctuation_, separator_, space_].uniq.join
             quote_replacer.call(text, before, after, quote_spec, :substitute_close)
 
             # Editors notes
             text.gsub!(/#{ quote_spec[:char] }(?=—Ed\.\])/, quote_spec[:substitute_close])
 
-            before = [close_, punctuation_, separator_].join
-            after = [close_, newline_, punctuation_, space_].join
+            before = [close_, punctuation_, separator_].uniq.join
+            after = [close_, newline_, punctuation_, space_].uniq.join
             quote_replacer.call(text, before, after, quote_spec, :substitute_close)
 
-            after = [close_, newline_, punctuation_].join
+            after = [close_, newline_, punctuation_].uniq.join
             text.gsub!(
               /#{ quote_spec[:char] }(?=[#{ after }])/,
               quote_spec[:substitute_close]
             )
 
-            before = [punctuation_, separator_, space_].join
+            before = [punctuation_, separator_, space_].uniq.join
             after = close_
             quote_replacer.call(text, before, after, quote_spec, :substitute_close)
 
-            before = [punctuation_, close_, separator_, ellquell_].join
+            before = [punctuation_, close_, separator_, ellquell_].uniq.join
             after = ellquell_
             quote_replacer.call(text, before, after, quote_spec, :substitute_close)
 
@@ -177,7 +177,7 @@ class Repositext
             quote_replacer.call(text, before, after, quote_spec, :substitute_close)
 
             # Close to end of line
-            after = [close_, punctuation_, quote_right_, separator_, space_].join
+            after = [close_, punctuation_, quote_right_, separator_, space_].uniq.join
             text.gsub!(
               /#{ quote_spec[:char] }(?=[#{ after }]+#{ newline_ })/,
               quote_spec[:substitute_close]
