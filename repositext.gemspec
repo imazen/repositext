@@ -40,7 +40,7 @@ Gem::Specification.new do |s|
   s.add_dependency('ruby-graphviz', '~> 1.2.3')
   s.add_dependency('rubyzip', '~> 1.2.1')
   s.add_dependency('rugged', '~> 0.25.1.1')
-  s.add_dependency('suspension') # from local repo
+  s.add_dependency('suspension', '1.0.2') # from local repo
   s.add_dependency('thor', '~> 0.19.4')
   s.add_dependency('unicode_utils', '~> 1.4.0')
 

@@ -18,7 +18,7 @@ PATH
 PATH
   remote: ../suspension
   specs:
-    suspension (1.0.1)
+    suspension (1.0.2)
       diff_match_patch_native
 
 PATH
@@ -47,7 +47,7 @@ PATH
       ruby-graphviz (~> 1.2.3)
       rubyzip (~> 1.2.1)
       rugged (~> 0.25.1.1)
-      suspension
+      suspension (= 1.0.2)
       thor (~> 0.19.4)
       unicode_utils (~> 1.4.0)
 
