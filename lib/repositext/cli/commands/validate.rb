@@ -28,8 +28,8 @@ class Repositext
         Repositext::Validation::Content.new(file_specs, validation_options).run
       end
 
-      # Validates all files related to docx import
-      def validate_docx_import(options)
+      # Validates all files related to docx import (pre)
+      def validate_docx_pre_import(options)
         options['report_file'] ||= config.compute_glob_pattern(
           :docx_import_dir, :validation_report_file, ''
         )
@@ -42,23 +42,48 @@ class Repositext
         file_specs = config.compute_validation_file_specs(
           primary: [input_base_dir, input_file_selector, docx_file_extension], # for reporting only
           docx_files: [input_base_dir, input_file_selector, docx_file_extension],
-          imported_at_files: [input_base_dir, input_file_selector, :at_extension],
-          imported_repositext_files: [input_base_dir, input_file_selector, :repositext_extensions],
         )
+
         validation_options = {
+          'content_type' => content_type,
           'docx_parser_class' => config.kramdown_parser(:docx),
           'docx_validation_parser_class' => config.kramdown_parser(:docx_validation),
           'kramdown_converter_method_name' => config.kramdown_converter_method(:to_at),
           'kramdown_parser_class' => config.kramdown_parser(:kramdown),
           'kramdown_validation_parser_class' => config.kramdown_parser(:kramdown_validation),
-          'content_type' => content_type,
         }.merge(options)
-        if options['run_options'].include?('pre_import')
-          Repositext::Validation::DocxPreImport.new(file_specs, validation_options).run
-        end
-        if options['run_options'].include?('post_import')
-          Repositext::Validation::DocxPostImport.new(file_specs, validation_options).run
-        end
+
+        Repositext::Validation::DocxPreImport.new(file_specs, validation_options).run
+      end
+
+      # Validates all files related to docx import (post)
+      # Runs validations on content AT files so that they can be opened from
+      # console log with single click for corrections.
+      def validate_docx_post_import(options)
+        options['report_file'] ||= config.compute_glob_pattern(
+          :docx_import_dir, :validation_report_file, ''
+        )
+        input_base_dir = config.compute_base_dir(options['base-dir'] || :docx_import_dir)
+        content_base_dir = config.compute_base_dir(:content_dir)
+        input_file_selector = config.compute_file_selector(options['file-selector'] || :all_files)
+        docx_file_extension = config.compute_file_extension(
+          options['file-extension'] || :docx_extension
+        )
+        file_specs = config.compute_validation_file_specs(
+          primary: [input_base_dir, input_file_selector, docx_file_extension], # for reporting only
+          docx_files: [input_base_dir, input_file_selector, docx_file_extension],
+          imported_at_files: [content_base_dir, input_file_selector, :at_extension],
+          imported_repositext_files: [content_base_dir, input_file_selector, :repositext_extensions],
+        )
+
+        validation_options = {
+          'content_type' => content_type,
+          'kramdown_converter_method_name' => config.kramdown_converter_method(:to_at),
+          'kramdown_parser_class' => config.kramdown_parser(:kramdown),
+          'kramdown_validation_parser_class' => config.kramdown_parser(:kramdown_validation),
+        }.merge(options)
+
+        Repositext::Validation::DocxPostImport.new(file_specs, validation_options).run
       end
 
       # Validates all files related to folio xml import

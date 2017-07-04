@@ -25,7 +25,7 @@ class Repositext
         )
         options['append_to_validation_report'] = false
         reset_validation_report(options, 'import_docx')
-        validate_docx_import(options.merge('run_options' => %w[pre_import]))
+        validate_docx_pre_import(options)
         convert_docx_to_at(options)
         fix_normalize_trailing_newlines(options)
         fix_adjust_gap_mark_positions(options)
@@ -33,13 +33,17 @@ class Repositext
         #   options.merge({ 'base-dir' => :idml_import_dir, 'file-extension' => :at_extension })
         # )
         options['append_to_validation_report'] = true
-        validate_docx_import(options.merge('run_options' => %w[post_import]))
         # fix_convert_abbreviations_to_lower_case(options) # run after merge_record_marks...
         # fix_normalize_subtitle_mark_before_gap_mark_positions(
         #   options.merge({ 'base-dir' => :staging_dir, 'file-extension' => :at_extension })
         # )
         fix_normalize_trailing_newlines(options)
         copy_docx_import_to_content(options)
+        # Run post_import validation after docx.at file has been copied into
+        # content. This is so that the validation console prints out the content
+        # AT file path which is where corrections have to be made.
+        # We want to be able to open content AT file with single click in editor.
+        validate_docx_post_import(options)
         # Make sure that any newly created content AT files also have a
         # data.json file.
         # Deactivate st_sync for this new file by default
