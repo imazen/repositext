@@ -150,7 +150,7 @@ class Repositext
               default_computer.send(
                 :convert_content_at_to_subtitle_attrs,
                 "^^^ {: .rid #rid-54040019}\n\n@1    word1 word2 word3",
-              ).first[:content].must_equal("word1 word2 word3\n")
+              ).first[:content].must_equal("1 word1 word2 word3\n")
             end
 
             it "Removes trailing newlines" do
