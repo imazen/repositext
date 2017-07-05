@@ -99,7 +99,10 @@ class Repositext
         def diff_subtitles_pair(subtitle_from, subtitle_to)
           if subtitle_from && subtitle_to
             # Both exist
-            if subtitle_from.content != subtitle_to.content
+            if(
+              (subtitle_from.content != subtitle_to.content) ||
+              (subtitle_from.record_id != subtitle_to.record_id)
+            )
               # They are different, return diff object
               {
                 "stid": subtitle_from.persistent_id,
@@ -107,19 +110,21 @@ class Repositext
                 "after": subtitle_to.content.sub(/\A@/, ''),
                 "record_id": subtitle_to.record_id,
                 "index": subtitle_to.tmp_attrs[:index],
+                "subtitle_change_type": 'update',
               }
             else
               # They are identical, return nil
               nil
             end
           elsif subtitle_from
-            # subtitle_from was removed, leave index empty
+            # subtitle_from was removed, leave index and record_id empty
             {
               "stid": subtitle_from.persistent_id,
               "before": subtitle_from.content.sub(/\A@/, ''),
               "after": '',
-              "record_id": subtitle_from.record_id,
+              "record_id": nil,
               "index": nil,
+              "subtitle_change_type": 'remove',
             }
           elsif subtitle_to
             # subtitle_to was added
@@ -129,6 +134,7 @@ class Repositext
               "after": subtitle_to.content.sub(/\A@/, ''),
               "record_id": subtitle_to.record_id,
               "index": subtitle_to.tmp_attrs[:index],
+              "subtitle_change_type": 'add',
             }
           else
             raise "Handle this: #{ [subtitle_from, subtitle_to].inspect }"
