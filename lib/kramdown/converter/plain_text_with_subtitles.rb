@@ -3,6 +3,12 @@ module Kramdown
     # Converts kramdown element tree to plain text with subtitles.
     class PlainTextWithSubtitles < PlainText
 
+      # Return false to ignore id
+      # @param options [Hash]
+      def self.include_id_elements?(options)
+        false
+      end
+
       # Override this in subclass to include subtitles in plain_text export
       # @param options [Hash]
       # @return [Array<String, Nil>, Nil] tuple of before and after text or nil if nothing to do
