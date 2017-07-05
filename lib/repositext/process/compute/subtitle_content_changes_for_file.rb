@@ -47,8 +47,13 @@ class Repositext
           )
           asps = align_subtitle_pairs(subtitles_from, subtitles_to)
           sts_with_changes = []
+          prev_stid = nil
           asps.each { |(st_from, st_to)|
-            st_changes = diff_subtitles_pair(st_from, st_to)
+            st_changes = diff_subtitles_pair(st_from, st_to, prev_stid)
+            # Update prev_stid so that we can use it as after_stid for `add` changes.
+            if(st_to && ('' != st_to.persistent_id.to_s.strip))
+              prev_stid = st_to.persistent_id
+            end
             next  if st_changes.nil?
             sts_with_changes << st_changes
           }
@@ -88,6 +93,7 @@ class Repositext
         # Otherwise returns nil.
         # @param subtitle_from [Repositext::Subtitle]
         # @param subtitle_to [Repositext::Subtitle]
+        # @param prev_stid [String, nil] the persistent id of the previous subtitle.
         # @return [Hash, Nil]
         #   {
         #     "stid": "1054463",
@@ -96,7 +102,7 @@ class Repositext
         #     "record_id": "47010099",
         #     "index": 77
         #   }
-        def diff_subtitles_pair(subtitle_from, subtitle_to)
+        def diff_subtitles_pair(subtitle_from, subtitle_to, prev_stid)
           if subtitle_from && subtitle_to
             # Both exist
             if(
@@ -135,6 +141,7 @@ class Repositext
               "record_id": subtitle_to.record_id,
               "index": subtitle_to.tmp_attrs[:index],
               "subtitle_change_type": 'add',
+              "after_stid": prev_stid,
             }
           else
             raise "Handle this: #{ [subtitle_from, subtitle_to].inspect }"
