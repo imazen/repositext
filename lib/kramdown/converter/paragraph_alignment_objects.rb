@@ -69,9 +69,9 @@ module Kramdown
         # Possibly to indicate that this is not part of an ordered list.
         # We have to remove that since we're not working with proper kramdown,
         # but with plain text contents in this class.
-        @current_block.contents.sub!(/\A@?(\d+)\\(?=\.)/, '\1')
+        @current_block.contents.sub!(/\A@*(\d+)\\(?=\.)/, '\1')
 
-        if(m = @current_block.contents.match(/\A@?(\d+)\s/))
+        if(m = @current_block.contents.match(/\A@*(\d+)\s/))
           # TODO: old regex from TreeExtractor checked for absence of hyphen. Investigate: key: pn !~ /\A-/ ? pn : nil
           # starts with digit, use paragraph number as key
           @current_block.key = m[1].to_i
