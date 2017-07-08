@@ -41,27 +41,27 @@ module Kramdown
         [
           'two paragraphs',
           %(para 1\n\npara 2),
-          %(para 1\npara 2)
+          %(para 1\n\npara 2)
         ],
         [
           'paragraph and horizontal rule',
           %(para 1\n\n***),
-          %(para 1\n* * * * * * *)
+          %(para 1\n\n* * * * * * *)
         ],
         [
           'complex mix of elements',
           %(# header 1\n\n## header 2 *with em*\n\n### header 3\n\npara 1\n\npara 2 **with strong**.),
-          %(header 1\nheader 2 with em\nheader 3\npara 1\npara 2 with strong.)
+          %(header 1\nheader 2 with em\nheader 3\npara 1\n\npara 2 with strong.)
         ],
         [
           'paragraph between level 3 headers',
           %(# header 1\n\npara 1\n\n### header 3a\n\npara 2\n\n### header 3b\n\npara 3.),
-          %(header 1\npara 1\nheader 3a\npara 2\nheader 3b\npara 3.)
+          %(header 1\npara 1\n\nheader 3a\npara 2\n\nheader 3b\npara 3.)
         ],
         [
           'regression 1',
           "### @word\n\n@word word d.C.\n{: .normal}\n\n### @word\n\n@*2*{: .pn} word",
-          "word\nword word d.C.\nword\n2 word"
+          "word\nword word d.C.\n\nword\n2 word"
         ],
         [
           'escaped brackets',

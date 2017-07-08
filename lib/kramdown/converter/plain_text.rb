@@ -64,8 +64,8 @@ module Kramdown
             return nil # Don't render a line break.
           end
 
-          # add a new line for each paragraph
-          return [nil, "\n"]
+          # add a double new line for each paragraph
+          return [nil, "\n\n"]
         when :record_mark
           # nothing to do
         when :root

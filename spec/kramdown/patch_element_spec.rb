@@ -153,7 +153,7 @@ module Kramdown
           Element.new(:text, 'word2'),
         ]
         child.children = grand_children
-        p.to_plain_text.must_equal("word1 word2\n")
+        p.to_plain_text.must_equal("word1 word2\n\n")
       end
     end
 
