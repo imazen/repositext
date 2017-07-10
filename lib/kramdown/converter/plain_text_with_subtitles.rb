@@ -3,6 +3,12 @@ module Kramdown
     # Converts kramdown element tree to plain text with subtitles.
     class PlainTextWithSubtitles < PlainText
 
+      # Return true to include line breaks for `.line_break` IAL classes.
+      # @param options [Hash]
+      def self.handle_line_break_class?(options)
+        false
+      end
+
       # Return false to ignore id
       # @param options [Hash]
       def self.include_id_elements?(options)
