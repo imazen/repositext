@@ -90,7 +90,7 @@ module Kramdown
       # Return true to include line breaks for `.line_break` IAL classes.
       # @param options [Hash]
       def self.handle_line_break_class?(options)
-        false
+        true
       end
 
       # Return true to include id
