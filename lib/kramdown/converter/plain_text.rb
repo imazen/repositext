@@ -160,7 +160,7 @@ module Kramdown
       # @param options [Hash]
       # @return [String]
       def post_process_export(raw_plain_text, options)
-        raw_plain_text.strip
+        raw_plain_text.sub(/\n*+\z/, "\n")
       end
 
     end
