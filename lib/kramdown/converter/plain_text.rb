@@ -49,14 +49,14 @@ module Kramdown
         when :header
           if prefix_header_lines?(options)
             # Prepend line with hash mark, append newline
-            return ['# ', "\n"]
+            return ['# ', "\n\n"]
           else
             # add a new line for each header
-            return [nil, "\n"]
+            return [nil, "\n\n"]
           end
         when :hr
           # put 7 asterisks on new line.
-          ["* * * * * * *\n", nil]
+          ["* * * * * * *\n\n", nil]
         when :p
           if !include_id_elements?(options) && el.is_id?
             # Don't export id elements
@@ -90,7 +90,7 @@ module Kramdown
       # Return true to include line breaks for `.line_break` IAL classes.
       # @param options [Hash]
       def self.handle_line_break_class?(options)
-        true
+        false
       end
 
       # Return true to include id
