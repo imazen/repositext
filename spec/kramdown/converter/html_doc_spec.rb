@@ -18,7 +18,8 @@ module Kramdown
         ).to_html_doc
         r.must_equal %(
           <html>
-            <head><title>The Title</title></head>
+            <head><title>The Title
+          </title></head>
             <body><h1 id=\"the-title\">The Title</h1>
 
           <p>The Body</p>
@@ -29,8 +30,8 @@ module Kramdown
       describe 'compute_title' do
 
         [
-          ["# The Title\n\nThe Body", 'The Title'],
-          ["# *The* Title\n\nThe Body", 'The Title'],
+          ["# The Title\n\nThe Body", "The Title\n"],
+          ["# *The* Title\n\nThe Body", "The Title\n"],
         ].each_with_index do |(doc, exp), idx|
           it "uses the first :header element (Example #{ idx + 1 }" do
             template_io = StringIO.new('<%= @title %>', 'r')

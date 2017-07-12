@@ -86,7 +86,7 @@ module Kramdown
           c.send(:convert_header, header_el_1, {})
           c.send(:convert_header, header_el_2, {})
           c.instance_variable_get(:@document_title_latex).must_equal('header level 1 — header level 2')
-          c.instance_variable_get(:@document_title_plain_text).must_equal("header level 1 — header level 2\n")
+          c.instance_variable_get(:@document_title_plain_text).must_equal("header level 1 — header level 2\n\n")
         end
 
       end

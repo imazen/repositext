@@ -42,7 +42,7 @@ class Repositext
 
       describe '#plain_text_contents' do
         it 'handles the default case' do
-          default_rfile.plain_text_contents({}).must_equal("title\nparagraph 1")
+          default_rfile.plain_text_contents({}).must_equal("title\n\nparagraph 1\n")
         end
       end
 
