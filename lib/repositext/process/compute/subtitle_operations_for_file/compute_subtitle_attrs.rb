@@ -8,7 +8,7 @@ class Repositext
           class MismatchingSubtitleCountsError < ::StandardError; end
           class EncounteredNilStidError < ::StandardError; end
 
-          # @param content_at_file [RFile::ContentAt]
+          # @param content_at_file [RFile::ContentAt] Will always be primary!
           # @param from_git_commit [String]
           def compute_subtitle_attrs_from(content_at_file, from_git_commit)
             # Note: It's ok to check out file as of `from_git_commit` as Content
@@ -33,7 +33,7 @@ class Repositext
             )
           end
 
-          # @param content_at_file_to [RFile::ContentAt]
+          # @param content_at_file_to [RFile::ContentAt] Will always be primary!
           # @param to_git_commit [String]
           # @param execution_context [Symbol] one of :compute_new_st_ops or :recompute_existing_st_ops
           def compute_subtitle_attrs_to(content_at_file_to, to_git_commit, execution_context)
@@ -73,7 +73,7 @@ class Repositext
         private
 
           # Converts a content AT string into an array of subtitle attrs.
-          # @param content_at [String]
+          # @param content_at [String] Will always be primary!
           # @return [Array<SubtitleAttrs>]
           def convert_content_at_to_subtitle_attrs(content_at)
             doc = Kramdown::Document.new(
@@ -87,15 +87,16 @@ class Repositext
             para_index = -1
             # rid_regex is synced with Kramdown::Converter::Subtitle#convert
             rid_regex = /\srid-([[:alnum:]]+)$/
-              next []  if e !~ /\A@/
-              next []  if '' == e.strip
             # ImplementationTag #splitting_text_for_subtitles
             subtitle_export_text.split(/(?<=\n\n)/).map { |e|
+              next []  if e !~ /\A@/ # skip lines that don't start with subtitle_mark
+              next []  if '' == e.strip # skip empty lines
               para_index += 1
               # Capture and remove record_id from end of line
               para_record_id = e.match(rid_regex)[1]
               e.sub!(rid_regex, '')
 
+              # ImplementationTag #splitting_text_for_subtitles
               para_sts = e.split('@').map { |f|
                 next nil  if '' == f
                 # compress multiple spaces after paragraph numbers into one
