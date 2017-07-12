@@ -42,7 +42,8 @@ class Repositext
               if 0 == @context_size
                 # include entire lines, including the preceding paragraph number,
                 # don't truncate in the middle
-                start_position = match.rindex(/\n[@%]*\*\d+\*\{: \.pn\}/, position_of_previous_quote) || 0
+                # ImplementationTag #paragraph_numbers_regex
+                start_position = match.rindex(/^[@%]*\*\d+[a-z]?\*\{: \.pn\}/, position_of_previous_quote) || 0
                 excerpt = match[start_position..-1]
                 text_until_following_newline = str_sc.check_until(/\n/) || ''
                 excerpt << text_until_following_newline

@@ -195,6 +195,7 @@ class Repositext
         # @param txt_s2 [String] the text from the second source
         # @return [Array] A tuple with [<description>, <metric>]
         def self.compute_paragraph_number_similarity(txt_s1, txt_s2)
+          # ImplementationTag #paragraph_numbers_regex
           pn_s1, pn_s2 = [txt_s1, txt_s2].map { |e| e.strip.scan(/\A\d+[a-z]?/).first }
           case
           when pn_s1 && pn_s2

@@ -95,6 +95,7 @@ class Repositext
           # remove paragraph numbers
           # strip surrounding whitespace
           # NOTE: We temporarily ignore quotemark differences
+          # ImplementationTag #paragraph_numbers_regex
           content_at_plain_text.gsub(/(@?)\d+ /, '\1')
                                .strip
                                .gsub(/[#{ @double_opening_quote }#{ @double_closing_quote }]+/, '"')

@@ -98,7 +98,8 @@ class Repositext
               para_sts = e.split('@').map { |f|
                 next nil  if '' == f
                 # compress multiple spaces after paragraph numbers into one
-                f.sub!(/\A(@?\d+)\s{4}(?!\s)/, '\1 ')
+                # ImplementationTag #paragraph_numbers_regex
+                f.sub!(/\A([@%]*\d+[a-z]?)\s{4}(?!\s)/, '\1 ')
                 # Compute content for similarity computation:
                 content_sim = f.gsub(/[^[:alnum:]]+/, ' ') # Remove everything except eagles, letters, numbers, and space
                                .strip

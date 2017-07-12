@@ -85,9 +85,10 @@ module Kramdown
         # when target uses non-ascii text (e.g., chinese), however it will
         # break if target language uses ascii chars and we may have to find
         # a different way of doing this.
+        # ImplementationTag #paragraph_numbers_regex
         l.gsub!(
           /
-            (\\RtParagraphNumber\{\d+\}) # RtParagraphNumber command
+            (\\RtParagraphNumber\{\d+[a-z]?\}) # RtParagraphNumber command
             (?!\.RtPrimaryFontStart\.) # not followed by .RtPrimaryFontStart.
             (?=[\[]*[a-zA-Z]) # followed by optional control char and required ascii char to detect english in contrast to chinese
           /x,
@@ -157,7 +158,8 @@ module Kramdown
             (?=\n#{ Regexp.escape("{: .id_paragraph}") }) # followed by id paragraph class IAL
           /x
         ).to_s.strip
-        paragraph_number_regex = /\*\d+\*\{: \.pn\}\s/
+        # ImplementationTag #paragraph_numbers_regex
+        paragraph_number_regex = /\*\d+[a-z]?\*\{: \.pn\}\s/
 
         # remove unwanted elements
         contents.gsub!(/@/, '') # subtitle marks

@@ -55,7 +55,8 @@ class Repositext
           txt.scan(PARA_NUM_REGEX).last.first
         end
 
-        PARA_NUM_REGEX = /^[@%]{0,2}\*(\d+[a-z]?)\*\{\: \.pn\}/
+        # ImplementationTag #paragraph_numbers_regex
+        PARA_NUM_REGEX = /^[@%]*+\*(\d+[a-z]?)\*\{\: \.pn\}/
 
         # Returns the number of the first paragraph. Normally '1', however there
         # are exceptions.

@@ -132,7 +132,8 @@ class Repositext
                 end
                 new_f_pt << f_s
                 get_next_foreign_sentence = true
-              elsif(s.beginning_of_line? && (pn = s.scan(/\d+ /)))
+              elsif(s.beginning_of_line? && (pn = s.scan(/\d+[a-z]? /)))
+                # ImplementationTag #paragraph_numbers_regex
                 # A paragraph number that is in pt but not in sentence,
                 # append to new_f_pt
                 puts " - pn match"  if debug
@@ -272,7 +273,8 @@ class Repositext
               end
 
               # Move subtitle marks to before pargraph numbers
-              pt_line.gsub!(/\A(\d+) @/, '@\1 ')
+              # ImplementationTag #paragraph_numbers_regex
+              pt_line.gsub!(/\A(\d+[a-z]?) @/, '@\1 ')
 
               # If line still doesn't start with subtitle mark, move it there
               # from somewhere else (the previous line, or a later stm on current)

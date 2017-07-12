@@ -69,9 +69,14 @@ module Kramdown
         # Possibly to indicate that this is not part of an ordered list.
         # We have to remove that since we're not working with proper kramdown,
         # but with plain text contents in this class.
-        @current_block.contents.sub!(/\A@*(\d+)\\(?=\.)/, '\1')
+        # This only applies to pns that are at the beginning of line, not preceded
+        # by subtitle_mark or gap_mark, and not followed by letter. So the regex
+        # can be kept simpler.
+        # ImplementationTag #paragraph_numbers_regex
+        @current_block.contents.sub!(/\A(\d+)\\(?=\.)/, '\1')
 
-        if(m = @current_block.contents.match(/\A@*(\d+)\s/))
+        # ImplementationTag #paragraph_numbers_regex
+        if(m = @current_block.contents.match(/\A[@%]*(\d+[a-z]?)\s/))
           # TODO: old regex from TreeExtractor checked for absence of hyphen. Investigate: key: pn !~ /\A-/ ? pn : nil
           # starts with digit, use paragraph number as key
           @current_block.key = m[1].to_i
