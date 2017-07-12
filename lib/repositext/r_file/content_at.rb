@@ -258,17 +258,18 @@ class Repositext
 
         if options[:with_content]
           # merge content and attrs
+          # ImplementationTag #splitting_text_for_subtitles
+          split_regex = if is_primary?
+            # For primary files we split both on paragraph boundaries (double
+            # newline) and subtitle_marks.
+            /(?<=\n\n)|(?=@)/
+          else
+            # For foreign files we split on subtitle_marks only.
+            /(?=@)/
+          end
           subtitle_attrs_pool = subtitle_attrs.dup
           case options[:content_format]
           when :content_at
-            split_regex = if is_primary?
-              # For primary files we split both on paragraph boundaries (double
-              # newline) and subtitle_marks.
-              /(?<=\n\n)|(?=@)/
-            else
-              # For foreign files we split on subtitle_marks only.
-              /(?=@)/
-            end
             contents.split(split_regex).map { |e|
               if e =~ /\A@/
                 # starts with subtitle_mark, merge content with next attrs
@@ -285,14 +286,6 @@ class Repositext
               end
             }.compact
           when :plain_text
-            split_regex = if is_primary?
-              # For primary files we split both on line breaks (single newline)
-              # and subtitle_marks.
-              /(?<=\n)|(?=@)/
-            else
-              # For foreign files we split on subtitle_marks only.
-              /(?=@)/
-            end
             plain_text_with_subtitles_contents({}).split(split_regex).map { |e|
               if e =~ /\A@/
                 # starts with subtitle_mark, merge content with next attrs
