@@ -42,6 +42,14 @@ class Repositext
           def transfer_sts_from_plain_text_2_sentences(p_pt, p_ss)
             s = StringScanner.new(p_pt)
 
+            if debug
+              puts
+              puts "p_pt:"
+              puts p_pt
+              puts "p_ss:"
+              ap p_ss
+            end
+
             # Iterate over all sentences and insert subtitles as needed
             p_ss_w_st = p_ss.map { |p_s|
               next ''  if '' == p_s # return gaps as is
@@ -50,6 +58,7 @@ class Repositext
               finalize_sentence = false
 
               if debug
+                puts
                 puts
                 puts "New p_s: #{ p_s.inspect }"
                 puts "s.rest:  #{ s.rest[0,100].inspect }"
