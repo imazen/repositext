@@ -65,10 +65,10 @@ class Repositext
                 [
                   '@foreign sentence para1. foreign sentence para2.',
                 ],
-                "foreign sentence para1.\nforeign sentence para2.",
+                "foreign sentence para1.\n\nforeign sentence para2.",
                 [1],
                 [
-                  "@foreign sentence para1.\nforeign sentence para2.",
+                  "@foreign sentence para1.\n\nforeign sentence para2.",
                   [1],
                 ],
               ],
@@ -158,73 +158,73 @@ class Repositext
             [
               [
                 'Simple case',
-                "# Header\n@foreign sentence 1.",
+                "# Header\n\n@foreign sentence 1.",
                 [1],
                 [
-                  "# Header\n@foreign sentence 1.",
+                  "# Header\n\n@foreign sentence 1.",
                   [1],
                 ],
               ],
               [
                 'Move stm after pn to before pn',
-                "# Header\n12 @foreign sentence 1.",
+                "# Header\n\n12 @foreign sentence 1.",
                 [1],
                 [
-                  "# Header\n@12 foreign sentence 1.",
+                  "# Header\n\n@12 foreign sentence 1.",
                   [1],
                 ],
               ],
               [
                 'Move stm from previous line',
-                "# Header\n@line1 word word @word\nline2 word word word @word",
+                "# Header\n\n@line1 word word @word\n\nline2 word word word @word",
                 [1],
                 [
-                  "# Header\n@line1 word word word\n@line2 word word word @word",
+                  "# Header\n\n@line1 word word word\n\n@line2 word word word @word",
                   [1],
                 ],
               ],
               [
                 'Move stm from current line',
-                "# Header\n@line1 word @word word\nline2 @word word word word",
+                "# Header\n\n@line1 word @word word\n\nline2 @word word word word",
                 [1],
                 [
-                  "# Header\n@line1 word @word word\n@line2 word word word word",
+                  "# Header\n\n@line1 word @word word\n\n@line2 word word word word",
                   [1],
                 ],
               ],
               [
                 'Move stm up to beginning of word',
-                "# Header\n@line1 word.@ word word",
+                "# Header\n\n@line1 word.@ word word",
                 [1],
                 [
-                  "# Header\n@line1 word. @word word",
+                  "# Header\n\n@line1 word. @word word",
                   [1],
                 ],
               ],
               [
                 'Move stm up to beginning of quote',
-                "# Header\n@line1 word.@ “word word",
+                "# Header\n\n@line1 word.@ “word word",
                 [1],
                 [
-                  "# Header\n@line1 word. @“word word",
+                  "# Header\n\n@line1 word. @“word word",
                   [1],
                 ],
               ],
               [
                 'Move spaces inside stm sequences to the left',
-                "# Header\n@line1 word.@@@@@@ @word word",
+                "# Header\n\n@line1 word.@@@@@@ @word word",
                 [1],
                 [
-                  "# Header\n@line1 word. @@@@@@@word word",
+                  "# Header\n\n@line1 word. @@@@@@@word word",
                   [1],
                 ],
               ],
               [
                 'Move stm to the outside of closing quotes',
-                "# Header\n@line1 word.@” word word",
+                "# Header\n\n@line1 word.@” word word",
                 [1],
                 [
-                  "# Header\n@line1 word.” @word word",
+                  "# Header\n\n@line1 word.” @word word",
                   [1],
                 ],
               ],
@@ -240,8 +240,8 @@ class Repositext
           describe '#validate_that_no_plain_text_content_was_changed' do
             it "doesn't raise if plain text hasn't changed" do
               default_split_instance.validate_that_no_plain_text_content_was_changed(
-                "# Foreign plain text\n@with headers and subtitles.",
-                "# Foreign plain text\n@with headers and subtitles.",
+                "# Foreign plain text\n\n@with headers and subtitles.",
+                "# Foreign plain text\n\n@with headers and subtitles.",
               )
               1.must_equal(1)
             end
@@ -249,8 +249,8 @@ class Repositext
             it "raises if plain text has changed" do
               lambda {
                 default_split_instance.validate_that_no_plain_text_content_was_changed(
-                  "# Foreign plain text\n@with headers and subtitles.",
-                  "# Changed foreign plain text\n@with headers and subtitles.",
+                  "# Foreign plain text\n\n@with headers and subtitles.",
+                  "# Changed foreign plain text\n\n@with headers and subtitles.",
                 )
               }.must_raise(RuntimeError)
             end

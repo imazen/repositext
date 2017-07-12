@@ -69,7 +69,7 @@ class Repositext
                 elsif(
                   (
                     # match up to first subtitle_mark, excluding optional preceding whitespace
-                    partial_sentence_caption = s.check_until(/(?=(@|\s@))/)
+                    partial_sentence_caption = s.check_until(/(?=\s*+@)/)
                   ) &&
                   ('' != partial_sentence_caption) &&
                   (
@@ -110,8 +110,8 @@ class Repositext
                     new_s << leading_ws.to_s
                     p_s.lstrip!
                   end
-                elsif s.scan(/\n/)
-                  # Newline between two paragraphs. It exists in plain text only,
+                elsif s.scan(/\n\n/)
+                  # Double newline between two paragraphs. It exists in plain text only,
                   # just consume, nothing else to do
                 elsif s.scan(/[ \u00A0\uFEFF]/)
                   # A space character between two sentences:

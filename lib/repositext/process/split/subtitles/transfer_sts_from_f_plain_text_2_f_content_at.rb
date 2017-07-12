@@ -56,13 +56,15 @@ class Repositext
           def pre_process_plain_text(pt)
             new_pt = pt.dup
 
+            # Reduce all double newlines to single ones
+            new_pt.gsub!("\n\n", "\n")
+
             # Modify title lines: Add second newline after any header line.
             new_pt.gsub!(/^(@?\#[^\n]+\n)/, '\1' + "\n")
 
             # Modify horizontal rules so they match content AT:
-            # Replace 7 asterisks with placeholder. Also append extra newline
-            # to satisfy Suspention::TokenReplacer.
-            new_pt.gsub!('* * * * * * *', repositext_hr_placeholder + "\n")
+            # Replace 7 asterisks with placeholder.
+            new_pt.gsub!('* * * * * * *', repositext_hr_placeholder)
 
             # Move any subtitles that were placed before horizontal rules to the
             # end of the previous line:

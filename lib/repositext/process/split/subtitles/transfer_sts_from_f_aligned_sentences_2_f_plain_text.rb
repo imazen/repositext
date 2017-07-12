@@ -138,7 +138,7 @@ class Repositext
                 # append to new_f_pt
                 puts " - pn match"  if debug
                 new_f_pt << pn
-              elsif(ws = s.scan(/[ \n]/))
+              elsif(ws = s.scan(/[ \n]+/))
                 # space or newline, append to new_f_pt
                 puts " - whitespace match"  if debug
                 new_f_pt << ws
@@ -256,7 +256,7 @@ class Repositext
             puts "fas2fpt: post_process_f_plain_text"  if debug
 
             p_f_pt_lines = []
-            raw_f_pt.split("\n").each_with_index { |pt_line, idx|
+            raw_f_pt.split("\n\n").each_with_index { |pt_line, idx|
               puts "  pt_line: #{ pt_line.inspect }"  if debug
               # Skip any header lines
               if pt_line =~ /\A\#/
@@ -353,7 +353,7 @@ class Repositext
               p_f_pt_lines << pt_line
             }
 
-            Outcome.new(true, [p_f_pt_lines.join("\n"), f_st_confs])
+            Outcome.new(true, [p_f_pt_lines.join("\n\n"), f_st_confs])
           end
 
           # Raises an exception if any content was changed
