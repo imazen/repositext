@@ -87,9 +87,10 @@ class Repositext
             para_index = -1
             # rid_regex is synced with Kramdown::Converter::Subtitle#convert
             rid_regex = /\srid-([[:alnum:]]+)$/
-            subtitle_export_text.lines.map { |e|
               next []  if e !~ /\A@/
               next []  if '' == e.strip
+            # ImplementationTag #splitting_text_for_subtitles
+            subtitle_export_text.split(/(?<=\n\n)/).map { |e|
               para_index += 1
               # Capture and remove record_id from end of line
               para_record_id = e.match(rid_regex)[1]
