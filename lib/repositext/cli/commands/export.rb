@@ -5,6 +5,34 @@ class Repositext
 
     private
 
+      # Export AT files in `/content` to DOCX.
+      def export_docx(options)
+        input_base_dir = config.compute_base_dir(options['base-dir'] || :content_dir)
+        input_file_selector = config.compute_file_selector(options['file-selector'] || :all_files)
+        input_file_extension = config.compute_file_extension(options['file-extension'] || :at_extension)
+        Repositext::Cli::Utils.read_files(
+          config.compute_glob_pattern(
+            input_base_dir,
+            input_file_selector,
+            input_file_extension
+          ),
+          options['file_filter'],
+          nil,
+          "Exporting AT files to DOCX",
+          options.merge(
+            content_type: content_type,
+            use_new_r_file_api: true,
+          )
+        ) do |content_at_file|
+          Process::Export::Docx.new(
+            content_at_file,
+            content_at_file.corresponding_docx_export_filename,
+            config.kramdown_parser(:kramdown),
+            config.kramdown_converter_method(:to_docx)
+          ).export
+        end
+      end
+
       # Export AT files in `/content` for Gap mark tagging.
       def export_gap_mark_tagging(options)
         input_base_dir = config.compute_base_dir(options['base-dir'] || :content_dir)

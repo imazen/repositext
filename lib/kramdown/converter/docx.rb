@@ -91,9 +91,7 @@ module Kramdown
       # @param options [Hash{Symbol => Object}]
       def initialize(root, options = {})
         super
-        @options = {
-          :output_file => File.new("docx_output.docx", 'w')
-        }.merge(options)
+        @options = options
         @current_document = nil # initialized in convert_root
         @current_block_el = nil # para, header, hr
         @current_run_text_contents = nil # NOTE: we assume there are no nested ems in repositext_kramdown!
@@ -118,20 +116,31 @@ module Kramdown
 
     protected
 
-      # Writes a DOCX file to disk (using @options[:output_file_name]).
-      # @param el [Kramdown::Element] the kramdown root element
-      # @return [? String with filename or outcome?]
-      def convert_root(el)
-        Caracal::Document.save(options[:output_file]) do |docx|
-          @current_document = docx
-          # Add style definitions
-          paragraph_style_mappings.each do |_, style_attrs|
-            docx.style(style_attrs)
-          end
-          # All convert methods are based on side effects on docx, not return values
-          inner(el)
-          @current_document = nil
+      # Adds text either to @current_run_text_contents or @current_block_el
+      # @param text [String]
+      def add_text(text)
+        if @current_run_text_contents.nil?
+          # This is a text node not inside an em. Create a run.
+          @current_block_el.text(text)
+        else
+          # We're inside a span, append contents
+          @current_run_text_contents << text
         end
+      end
+
+      # Computes a hash with text run attributes based on em_classes
+      # @param em_classes [Array<String>]
+      def compute_text_run_attrs_from_em(em_classes)
+        # Handle em with no classes: results in plain italics
+        return { italic: true } if em_classes.empty?
+        r = {}
+        r[:bold] = true  if em_classes.include?('bold')
+        r[:italic] = true  if em_classes.include?('italic')
+        r[:small_caps] = true  if em_classes.include?('smcaps')
+        r[:underline] = true  if em_classes.include?('underline')
+        r[:vert_align] = 'subscript'  if em_classes.include?('subscript')
+        r[:vert_align] = 'superscript'  if em_classes.include?('superscript')
+        r
       end
 
       # @param el [Kramdown::Element]
@@ -193,13 +202,16 @@ module Kramdown
 
       # @param el [Kramdown::Element]
       def convert_p(el)
-        para_style_id = if (el_class = el.attr['class'])
+        el_classes = (el.attr['class'] || '').split
+        para_style_id = if el_classes.any?
           # para has class
-          para_style_mapping = paragraph_style_mappings["p.#{ el_class }"]
+          para_style_mapping = el_classes.map { |e|
+            paragraph_style_mappings["p.#{ e }"]
+          }.compact.first
           if para_style_mapping.nil? || (ps_id = para_style_mapping[:id]).nil?
             raise(
               InvalidElementException.new(
-                "DOCX converter can't output p with class #{ el.attr['class'].inspect }"
+                "DOCX converter can't output p with class #{ el_classes.inspect }"
               )
             )
           end
@@ -218,10 +230,43 @@ module Kramdown
         end
       end
 
+      # Hook to add specialized behavior to convert_p.
+      def convert_p_additions(ke)
+        # Override in subclasses.
+      end
+
       # @param el [Kramdown::Element]
       def convert_record_mark(el)
         # Pull element
         inner(el)
+      end
+
+      # Writes a DOCX file to disk (using @options[:output_file_name]).
+      # @param el [Kramdown::Element] the kramdown root element
+      # @return [? String with filename or outcome?]
+      def convert_root(el)
+        output_filename = options[:output_filename]
+        if '' == output_filename.to_s.strip
+          raise ArgumentError.new("Invalid option :output_filename: #{ output_filename.inspect }")
+        end
+        # Caracal expects a relative path
+        caracal_base_path = File.expand_path('./')
+        rel_output_path = Repositext::RFile.relative_path_from_to(
+          caracal_base_path,
+          output_filename
+        )
+
+        FileUtils.mkdir_p(File.dirname(output_filename))
+        Caracal::Document.save(rel_output_path) do |docx|
+          @current_document = docx
+          # Add style definitions
+          paragraph_style_mappings.each do |_, style_attrs|
+            docx.style(style_attrs)
+          end
+          # All convert methods are based on side effects on docx, not return values
+          inner(el)
+          @current_document = nil
+        end
       end
 
       # @param [Kramdown::Element] el
@@ -244,11 +289,6 @@ module Kramdown
         add_text(txt)
       end
 
-      # Delegate to class method
-      def paragraph_style_mappings
-        self.class.paragraph_style_mappings
-      end
-
       # @param [Kramdown::Element] el
       def convert_xml_comment(el)
         # noop
@@ -269,36 +309,9 @@ module Kramdown
         end
       end
 
-      # Adds text either to @current_run_text_contents or @current_block_el
-      # @param text [String]
-      def add_text(text)
-        if @current_run_text_contents.nil?
-          # This is a text node not inside an em. Create a run.
-          @current_block_el.text(text)
-        else
-          # We're inside a span, append contents
-          @current_run_text_contents << text
-        end
-      end
-
-      # Computes a hash with text run attributes based on em_classes
-      # @param em_classes [Array<String>]
-      def compute_text_run_attrs_from_em(em_classes)
-        # Handle em with no classes: results in plain italics
-        return { italic: true } if em_classes.empty?
-        r = {}
-        r[:bold] = true  if em_classes.include?('bold')
-        r[:italic] = true  if em_classes.include?('italic')
-        r[:small_caps] = true  if em_classes.include?('smcaps')
-        r[:underline] = true  if em_classes.include?('underline')
-        r[:vert_align] = 'subscript'  if em_classes.include?('subscript')
-        r[:vert_align] = 'superscript'  if em_classes.include?('superscript')
-        r
-      end
-
-      # Hook to add specialized behavior to convert_p.
-      def convert_p_additions(ke)
-        # Override in subclasses.
+      # Delegate to class method
+      def paragraph_style_mappings
+        self.class.paragraph_style_mappings
       end
 
     end

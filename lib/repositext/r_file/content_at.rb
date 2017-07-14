@@ -28,6 +28,11 @@ class Repositext
         ).compute
       end
 
+      def corresponding_docx_export_filename
+        filename.sub(/\/content\//, '/docx_export/') # update path
+                .sub(/\.at\z/, '.docx') # update extension
+      end
+
       def corresponding_st_autosplit_filename
         filename.sub(/\/content\//, '/autosplit_subtitles/') # update path
                 .sub(/\.at\z/, '.txt') # update extension
