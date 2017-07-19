@@ -15,7 +15,6 @@ module Kramdown
       end
 
       describe 'test helpers' do
-
         describe '#kramdown_as_docx_xml_string' do
 
           it 'converts kramdown to document.xml string' do
@@ -25,7 +24,6 @@ module Kramdown
           end
 
         end
-
       end
 
       describe '#process_node_p' do
@@ -66,6 +64,16 @@ module Kramdown
         [
           ['em with no class', %(word *italic*\n{: .normal}\n\n)],
           ['Strong', %(word **strong**\n{: .normal}\n\n)],
+          [
+            'Italic nested inside strong',
+            %(word1 **word2 *word3* word4** word5\n{: .normal}\n\n),
+            %(word1 **word2** *word3*{: .bold .italic} **word4** word5\n{: .normal}\n\n)
+          ],
+          [
+            'Strong nested inside italic',
+            %(word1 *word2 **word3** word4* word5\n{: .normal}\n\n),
+            %(word1 *word2* *word3*{: .bold .italic} *word4* word5\n{: .normal}\n\n)
+          ],
           [
             'em.italic',
             %(word1 *word2*{: .italic}\n{: .normal}\n\n),

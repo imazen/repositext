@@ -31,6 +31,8 @@ class Repositext
             config.kramdown_converter_method(:to_docx)
           ).export
         end
+
+        validate_docx_post_export(options)
       end
 
       # Export AT files in `/content` for Gap mark tagging.
