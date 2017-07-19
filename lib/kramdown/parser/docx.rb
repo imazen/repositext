@@ -1,4 +1,3 @@
-# TODO: Add .first_par class to first paragraph
 require 'kramdown/document'
 
 module Kramdown
@@ -13,6 +12,8 @@ module Kramdown
     #   use a sub-class named Kramdown::ElementRt
     # * ke: l_var that refers to a kramdown element
     # * xn: l_var that refers to an XML node
+    #
+    # Spec for DOCX: http://officeopenxml.com/anatomyofOOXML.php
     class Docx
 
       include Kramdown::AdjacentElementMerger

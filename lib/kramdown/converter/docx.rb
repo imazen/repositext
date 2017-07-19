@@ -1,6 +1,47 @@
 module Kramdown
   module Converter
     # Converts kramdown element tree to Docx file saved to options[:output_file].
+    #
+    # Naming conventions
+    #
+    # * node: refers to a Caracal node (DOCX/XML space).
+    # * element: refers to a Kramdown::Element (kramdown space).
+    # * ke: l_var that refers to a kramdown element
+    # * xn: l_var that refers to an XML node
+    #
+    # How to handle nested spans
+    #
+    # Nested spans in kramdown AT need to be converted into sequences of text
+    # runs since docx does not allow for nested runs.
+    #
+    # Example:
+    #
+    #     word1 **word2 *word3* word4** word5
+    #
+    # gets converted to
+    #
+    #     <w:p>
+    #       <w:r>
+    #         <w:t>word1 <w:t>
+    #       </w:r>
+    #       <w:r>
+    #         <w:rPr [bold]>
+    #         <w:t>word2 <w:t>
+    #       </w:r>
+    #       <w:r>
+    #         <w:rPr [bold italic]>
+    #         <w:t>word3<w:t>
+    #       </w:r>
+    #       <w:r>
+    #         <w:rPr [bold]>
+    #         <w:t> word4<w:t>
+    #       </w:r>
+    #       <w:r>
+    #         <w:t> word5<w:t>
+    #       </w:r>
+    #     </w:p>
+    #
+    # Spec for DOCX: http://officeopenxml.com/anatomyofOOXML.php
     class Docx < Base
 
       # Custom error.
@@ -91,40 +132,52 @@ module Kramdown
       # @param options [Hash{Symbol => Object}]
       def initialize(root, options = {})
         super
-        @options = options
-        @current_document = nil # initialized in convert_root
-        @current_block_el = nil # para, header, hr
-        @current_run_text_contents = nil # NOTE: we assume there are no nested ems in repositext_kramdown!
+        @rt_options = options
+        @rt_current_document = nil # initialized in convert_root
+        @rt_current_block_node = nil # para, header, hr
+        @rt_run_context = OpenStruct.new(
+          inside_a_run: false,
+          collected_text: '',
+          run_attributes_stack: []
+        )
       end
 
-      # Converts el and causes side effects on @current_[document|paragraph|run]
-      # @param el [Kramdown::Element]
-      def convert(el)
-        send(DISPATCHER[el.type], el)
+      # Converts ke and causes side effects on @current_[document|paragraph|run]
+      # @param ke [Kramdown::Element]
+      def convert(ke)
+        send(DISPATCHER[ke.type], ke)
       end
 
-      # @return [String] the name of the converter method for element_type
+      # @return [String] the name of the converter method for kramdown element_type
       DISPATCHER = Hash.new { |h,element_type|
         h[element_type] = "convert_#{ element_type }"
       }
 
-      # Converts el's child elements
-      # @param el [Kramdown::Element]
-      def inner(el)
-        el.children.each { |child| convert(child) }
+      # Converts ke's child elements
+      # @param ke [Kramdown::Element]
+      def inner(ke)
+        ke.children.each { |child| convert(child) }
       end
 
     protected
 
-      # Adds text either to @current_run_text_contents or @current_block_el
+      # Adds text either to @rt_current_block_node or @rt_run_context.collected_text_for_current_run
       # @param text [String]
       def add_text(text)
-        if @current_run_text_contents.nil?
-          # This is a text node not inside an em. Create a run.
-          @current_block_el.text(text)
-        else
+        if @rt_run_context.inside_a_run
           # We're inside a span, append contents
-          @current_run_text_contents << text
+          @rt_run_context.collected_text << text
+        else
+          # This is a text node not inside an em. Create a run.
+          @rt_current_block_node.text(text)
+        end
+      end
+
+      # Call this method at the beginning of every convert_[block el] method
+      # to make sure that no text runs are active.
+      def check_that_no_text_run_is_active
+        if @rt_run_context.inside_a_run
+          raise "Unexpected run! #{ @rt_run_context.inspect }"
         end
       end
 
@@ -143,46 +196,47 @@ module Kramdown
         r
       end
 
-      # @param el [Kramdown::Element]
-      def convert_br(el)
-        @current_block_el.br
+      # @param ke [Kramdown::Element]
+      def convert_br(ke)
+        @rt_current_block_node.br
       end
 
-      # @param [Kramdown::Element] el
-      def convert_em(el)
-        @current_run_text_contents = ''
-        inner(el)
-        em_attrs = compute_text_run_attrs_from_em(el.get_classes)
-        @current_block_el.text @current_run_text_contents, em_attrs
-        @current_run_text_contents = nil
+      # @param ke [Kramdown::Element]
+      def convert_em(ke)
+        # We ignore .line_break spans and their contents
+        return ''  if ke.has_class?('line_break')
+
+        text_run_start(compute_text_run_attrs_from_em(ke.get_classes))
+        inner(ke)
+        text_run_finalize
       end
 
-      # @param [Kramdown::Element] el
-      def convert_entity(el)
+      # @param ke [Kramdown::Element]
+      def convert_entity(ke)
         # TODO: decide if we want to decode entities
-        add_text(Repositext::Utils::EntityEncoder.decode(el.options[:original]))
+        add_text(Repositext::Utils::EntityEncoder.decode(ke.options[:original]))
       end
 
-      # @param el [Kramdown::Element]
-      def convert_gap_mark(el)
+      # @param ke [Kramdown::Element]
+      def convert_gap_mark(ke)
         # Nothing to do
       end
 
-      # @param el [Kramdown::Element]
-      def convert_header(el)
-        header_style_id = case el.options[:level]
+      # @param ke [Kramdown::Element]
+      def convert_header(ke)
+        check_that_no_text_run_is_active
+        header_style_id = case ke.options[:level]
         when 1 then paragraph_style_mappings['header-1'][:id]
         when 2 then paragraph_style_mappings['header-2'][:id]
         when 3 then paragraph_style_mappings['header-3'][:id]
         else
           raise InvalidElementException, "DOCX converter can't output header with levels != 1 | 2 | 3"
         end
-        # TODO: wrap in italics manually?
-        @current_document.p do |p|
-          @current_block_el = p
+        @rt_current_document.p do |p|
+          @rt_current_block_node = p
           p.style(header_style_id)
-          inner(el)
-          @current_block_el = nil
+          inner(ke)
+          @rt_current_block_node = nil
         end
       end
 
@@ -190,43 +244,56 @@ module Kramdown
       # empty paragraph with a top border. It doesn't allow assignment of
       # any classes/styles. This makes it hard to parse. So we implement our own
       # version of this with the added ability to assign a style/class.
-      # @param [Kramdown::Element] el
-      def convert_hr(el)
-        @current_document.p do |p|
-          @current_block_el = p
+      # @param ke [Kramdown::Element]
+      def convert_hr(ke)
+        check_that_no_text_run_is_active
+        @rt_current_document.p do |p|
+          @rt_current_block_node = p
           p.style(paragraph_style_mappings['hr'][:id])
-          inner(el)
-          @current_block_el = nil
+          inner(ke)
+          @rt_current_block_node = nil
         end
       end
 
-      # @param el [Kramdown::Element]
-      def convert_p(el)
-        el_classes = (el.attr['class'] || '').split
+      # @param ke [Kramdown::Element]
+      def convert_p(ke)
+        check_that_no_text_run_is_active
+        el_classes = (ke.attr['class'] || '').split
         para_style_id = if el_classes.any?
           # para has class
-          para_style_mapping = el_classes.map { |e|
+          para_style_mapping_ids = el_classes.map { |e|
             paragraph_style_mappings["p.#{ e }"]
-          }.compact.first
-          if para_style_mapping.nil? || (ps_id = para_style_mapping[:id]).nil?
+          }.compact.map{ |e| e[:id] }
+          case para_style_mapping_ids.size
+          when 0
+            # No mappings found
             raise(
               InvalidElementException.new(
                 "DOCX converter can't output p with class #{ el_classes.inspect }"
               )
             )
+          when 1
+            # Exactly one mapping found
+            para_style_mapping_ids.first
+          else
+            # Multiple mappings found
+            raise(
+              InvalidElementException.new(
+                "DOCX converter found multiple paragraph mapping ids for #{ el_classes.inspect }: #{ para_style_mapping_ids.inspect }"
+              )
+            )
           end
-          ps_id
         else
           # para doesn't have class
           nil
         end
         # Hook to add specialized behavior in sub classes
-        convert_p_additions(el)
-        @current_document.p do |p|
-          @current_block_el = p
+        convert_p_additions(ke)
+        @rt_current_document.p do |p|
+          @rt_current_block_node = p
           p.style(para_style_id)  if para_style_id
-          inner(el)
-          @current_block_el = nil
+          inner(ke)
+          @rt_current_block_node = nil
         end
       end
 
@@ -235,17 +302,18 @@ module Kramdown
         # Override in subclasses.
       end
 
-      # @param el [Kramdown::Element]
-      def convert_record_mark(el)
+      # @param ke [Kramdown::Element]
+      def convert_record_mark(ke)
         # Pull element
-        inner(el)
+        check_that_no_text_run_is_active
+        inner(ke)
       end
 
-      # Writes a DOCX file to disk (using @options[:output_file_name]).
-      # @param el [Kramdown::Element] the kramdown root element
+      # Writes a DOCX file to disk (using @rt_options[:output_file_name]).
+      # @param ke [Kramdown::Element] the kramdown root element
       # @return [? String with filename or outcome?]
-      def convert_root(el)
-        output_filename = options[:output_filename]
+      def convert_root(ke)
+        output_filename = @rt_options[:output_filename]
         if '' == output_filename.to_s.strip
           raise ArgumentError.new("Invalid option :output_filename: #{ output_filename.inspect }")
         end
@@ -258,39 +326,38 @@ module Kramdown
 
         FileUtils.mkdir_p(File.dirname(output_filename))
         Caracal::Document.save(rel_output_path) do |docx|
-          @current_document = docx
+          @rt_current_document = docx
           # Add style definitions
           paragraph_style_mappings.each do |_, style_attrs|
             docx.style(style_attrs)
           end
           # All convert methods are based on side effects on docx, not return values
-          inner(el)
-          @current_document = nil
+          inner(ke)
+          check_that_no_text_run_is_active
+          @rt_current_document = nil
         end
       end
 
-      # @param [Kramdown::Element] el
-      def convert_strong(el)
-        @current_run_text_contents = ''
-        inner(el)
-        em_attrs = { bold: true }
-        @current_block_el.text @current_run_text_contents, em_attrs
-        @current_run_text_contents = nil
+      # @param ke [Kramdown::Element]
+      def convert_strong(ke)
+        text_run_start(bold: true)
+        inner(ke)
+        text_run_finalize
       end
 
-      # @param el [Kramdown::Element]
-      def convert_subtitle_mark(el)
+      # @param ke [Kramdown::Element]
+      def convert_subtitle_mark(ke)
         # Nothing to do
       end
 
-      # @param [Kramdown::Element] el
-      def convert_text(el)
-        txt = el.value.gsub(/\n/, ' ') # Remove newlines from text nodes.
+      # @param ke [Kramdown::Element]
+      def convert_text(ke)
+        txt = ke.value.gsub(/\n/, ' ') # Remove newlines from text nodes.
         add_text(txt)
       end
 
-      # @param [Kramdown::Element] el
-      def convert_xml_comment(el)
+      # @param ke [Kramdown::Element]
+      def convert_xml_comment(ke)
         # noop
       end
       alias_method :convert_xml_pi, :convert_xml_comment
@@ -312,6 +379,68 @@ module Kramdown
       # Delegate to class method
       def paragraph_style_mappings
         self.class.paragraph_style_mappings
+      end
+
+      # Finalizes current text run if it exists and starts a new (nested one).
+      # @param run_attrs [Hash{Symbol => Object}]
+      def text_run_continue_existing
+        if @rt_run_context.run_attributes_stack.any?
+          # Prepare attrs for new run (will be added to docx in finalize method)
+          @rt_run_context.inside_a_run = true
+        end
+        true
+      end
+
+      # Finalizes current text run if it exists.
+      # @param preserve_run_attrs [Boolean] Defaults to false, discarding the
+      #   last run's attributes. Set to true for nested spans where we want to
+      #   preserve outer attrs for when inner span closes.
+      def text_run_finalize
+        if '' != @rt_run_context.collected_text
+          # Add run only if we collected any text
+          @rt_current_block_node.text(
+            @rt_run_context.collected_text,
+            @rt_run_context.run_attributes_stack.last
+          )
+        end
+        # Reset run_context
+        @rt_run_context.collected_text = ''
+        @rt_run_context.inside_a_run = false
+        @rt_run_context.run_attributes_stack.pop
+
+        text_run_continue_existing
+        true
+      end
+
+      # Called whenever we start a new text_run. The source span may be nested
+      # inside another span.
+      def text_run_interrupt_existing
+        if @rt_run_context.inside_a_run
+          if '' != @rt_run_context.collected_text
+            # Add run only if we collected any text
+            @rt_current_block_node.text(
+              @rt_run_context.collected_text,
+              @rt_run_context.run_attributes_stack.last
+            )
+          end
+          # Reset run_context
+          @rt_run_context.collected_text = ''
+          @rt_run_context.inside_a_run = false
+        end
+        true
+      end
+
+      # Finalizes current text run if it exists and starts a new (nested one).
+      # @param run_attrs [Hash{Symbol => Object}]
+      def text_run_start(run_attrs)
+        # Finalize any currently active text run, preserve its run_attrs
+        text_run_interrupt_existing
+        # Prepare attrs for new run (will be added to docx in finalize method)
+        @rt_run_context.inside_a_run = true
+        @rt_run_context.run_attributes_stack.push(
+          (@rt_run_context.run_attributes_stack.last || {}).merge(run_attrs)
+        )
+        true
       end
 
     end

@@ -11,10 +11,11 @@ module Kramdown
       # @param el [Kramdown::Element]
       def convert_root(el)
         Caracal::Document.new(options[:output_file]) do |docx|
-          @current_document = docx
+          @rt_current_document = docx
           # All convert methods are based on side effects on docx, not return values
           inner(el)
-          @current_document = nil
+          check_that_no_text_run_is_active
+          @rt_current_document = nil
         end
       end
 
