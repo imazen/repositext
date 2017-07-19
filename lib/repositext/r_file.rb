@@ -130,7 +130,11 @@ class Repositext
 
     # Reloads contents from filename
     def reload_contents!
-      @contents = File.read(filename)
+      @contents = if is_binary
+        File.binread(filename)
+      else
+        File.read(filename)
+      end
     end
 
     # Returns relative path from repo root to self

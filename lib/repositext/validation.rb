@@ -101,14 +101,16 @@ class Repositext
               content_type
             ).as_of_git_commit(*options['as_of_git_commit_attrs'])
           else
-            Repositext::RFile.get_class_for_filename(
+            r = Repositext::RFile.get_class_for_filename(
               file_name
             ).new(
-              File.read(file_name),
+              '_',
               language,
               file_name,
               content_type
             )
+            r.reload_contents! # Let the class load contents to handle binary files
+            r
           end
           yield(r_file)
         end
@@ -143,14 +145,16 @@ class Repositext
               content_type
             ).as_of_git_commit(*options['as_of_git_commit_attrs'])
           else
-            Repositext::RFile.get_class_for_filename(
+            r = Repositext::RFile.get_class_for_filename(
               file_name
             ).new(
-              File.read(file_name),
+              '_',
               language,
               file_name,
               content_type
             )
+            r.reload_contents! # Let the class load contents to handle binary files
+            r
           end
           paired_r_file = if r_file
             paired_file_proc.call(r_file)
