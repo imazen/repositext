@@ -83,6 +83,7 @@ require 'patches/string'
 require 'recursive_data_hash'
 require 'repositext/constants'
 require 'repositext/services/check_that_code_repositories_are_up_to_date_with_origin'
+require 'repositext/services/extract_text_from_docx'
 require 'repositext/services/extract_text_from_pdf'
 
 # The requires are grouped by levels of dependencies, where lower groups depend on
