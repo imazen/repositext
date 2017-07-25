@@ -4,8 +4,8 @@ class Repositext
   class Utils
     describe ArrayDiffer do
 
-      let(:a1){ %w[a b c   e f] }
-      let(:a2){     %w[c d e f g h]}
+      let(:a1){ %w[a b c   e 1 f] }
+      let(:a2){     %w[c d e 2 f g h]}
 
       describe '#diff' do
         it "computes diff" do
@@ -16,9 +16,10 @@ class Repositext
              ["=", [2, "c"], [0, "c"]],
              ["+", [3, nil], [1, "d"]],
              ["=", [3, "e"], [2, "e"]],
-             ["=", [4, "f"], [3, "f"]],
-             ["+", [5, nil], [4, "g"]],
-             ["+", [5, nil], [5, "h"]]]
+             ["!", [4, "1"], [3, "2"]],
+             ["=", [5, "f"], [4, "f"]],
+             ["+", [6, nil], [5, "g"]],
+             ["+", [6, nil], [6, "h"]]]
           )
         end
       end
@@ -29,6 +30,7 @@ class Repositext
             [["-", "a"],
              ["-", "b"],
              ["+", "d"],
+             ["!", "1", "2"],
              ["+", "g"],
              ["+", "h"]]
           )
