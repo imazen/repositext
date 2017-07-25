@@ -33,6 +33,11 @@ class Repositext
                 .sub(/\.at\z/, '.docx') # update extension
       end
 
+      def corresponding_docx_import_filename
+        filename.sub(/\/content\//, '/docx_import/') # update path
+                .sub(/\.at\z/, '.docx') # update extension
+      end
+
       def corresponding_st_autosplit_filename
         filename.sub(/\/content\//, '/autosplit_subtitles/') # update path
                 .sub(/\.at\z/, '.txt') # update extension

@@ -83,6 +83,7 @@ class Repositext
           'kramdown_converter_method_name' => config.kramdown_converter_method(:to_at),
           'kramdown_parser_class' => config.kramdown_parser(:kramdown),
           'kramdown_validation_parser_class' => config.kramdown_parser(:kramdown_validation),
+          'use_new_r_file_api' => true
         }.merge(options)
 
         Repositext::Validation::DocxPostImport.new(file_specs, validation_options).run

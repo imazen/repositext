@@ -7,19 +7,26 @@ class Repositext
       def run_list
 
         # Single files
-        validate_files(:imported_repositext_files) do |path|
+        validate_files(:imported_repositext_files) do |repositext_file|
           Validator::Utf8Encoding.new(
-            File.open(path), @logger, @reporter, @options
+            File.open(repositext_file.filename), @logger, @reporter, @options
           ).run
         end
-        validate_files(:imported_at_files) do |path|
+        validate_files(:imported_at_files) do |content_at_file|
           @options['run_options'] << 'kramdown_syntax_at-no_underscore_or_caret'
           Validator::KramdownSyntaxAt.new(
-            File.open(path), @logger, @reporter, @options
+            File.open(content_at_file.filename), @logger, @reporter, @options
           ).run
-          Validator::ParagraphNumberSequencing.new(
-            File.open(path), @logger, @reporter, @options
-          ).run
+          if @options['content_type'].is_primary_repo
+            Validator::ParagraphNumberSequencing.new(
+              File.open(content_at_file.filename), @logger, @reporter, @options
+            ).run
+          else
+            # Check pn alignment with primary, which also implies correct sequencing.
+            Validator::DocxImportForeignConsistency.new(
+              content_at_file, @logger, @reporter, @options
+            ).run
+          end
         end
 
       end
