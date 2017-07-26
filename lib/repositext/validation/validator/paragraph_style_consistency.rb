@@ -8,28 +8,29 @@ class Repositext
 
         # Runs all validations for self
         def run
-          foreign_file, primary_file = @file_to_validate
-          outcome = paragraph_styles_consistent?(foreign_file.read, primary_file.read)
+          f_content_at_file, p_content_at_file = @file_to_validate
+          outcome = paragraph_styles_consistent?(f_content_at_file, p_content_at_file)
           log_and_report_validation_step(outcome.errors, outcome.warnings)
         end
 
-        # Checks if foreign_doc and primary_doc's paragraphs have identical styles applied.
-        # @param [String] foreign_doc
-        # @param [String] primary_doc
+        # Checks if f_content_at_file and p_content_at_file's paragraphs have
+        # identical styles applied.
+        # @param f_content_at_file [RFile::ContentAt]
+        # @param p_content_at_file [RFile::ContentAt]
         # @return [Outcome]
-        def paragraph_styles_consistent?(foreign_doc, primary_doc)
+        def paragraph_styles_consistent?(f_content_at_file, p_content_at_file)
           # If the foreign file has no paragraph numbers, then we make no distinction
           # between .normal and .normal_pn. This is true for some legacy files.
           # We detect the presence of paragraph numbers in the foreign file,
           # and if the foreign file appears to have paragraph numbers, then
           # we distinguish between .normal and .normal_pn.
-          @distinguish_between_normal_and_normal_pn = foreign_has_paragraph_numbers?(foreign_doc)
+          @distinguish_between_normal_and_normal_pn = foreign_has_paragraph_numbers?(f_content_at_file.contents)
 
-          foreign_doc_paragraph_styles = extract_paragraph_styles(foreign_doc)
-          primary_doc_paragraph_styles = extract_paragraph_styles(primary_doc)
+          f_paragraph_styles = extract_paragraph_styles(f_content_at_file.contents)
+          p_paragraph_styles = extract_paragraph_styles(p_content_at_file.contents)
           mismatching_paragraph_styles = compute_paragraph_style_diff(
-            foreign_doc_paragraph_styles,
-            primary_doc_paragraph_styles
+            f_paragraph_styles,
+            p_paragraph_styles
           )
 
           if mismatching_paragraph_styles.empty?
@@ -39,7 +40,7 @@ class Repositext
               false, nil, [],
               mismatching_paragraph_styles.map { |diff|
                 Reportable.error(
-                  [@file_to_validate.first.path],
+                  [@file_to_validate.first.filename],
                   ['Difference in paragraph style between foreign and its corresponding primary file', diff]
                 )
               }
@@ -56,7 +57,7 @@ class Repositext
         # @return [String] one line for each doc line. Lines with paragraph style
         # contain the style, all other lines are empty.
         def extract_paragraph_styles(doc)
-          doc.strip.split(/\n/).map { |line|
+          doc.strip.split(/\n+/).map { |line|
             line =~ PARAGRAPH_STYLE_REGEX ? line : ''
           }.inject([]) { |m,e|
             # Remove a number of classes that are different between primary and

@@ -262,6 +262,8 @@ class Repositext
           'is_primary_repo' => config.setting(:is_primary_repo),
           'kramdown_parser_class' => config.kramdown_parser(:kramdown),
           'primary_content_type_transform_params' => primary_content_type_transform_params,
+          'use_new_r_file_api' => true,
+          'content_type' => content_type,
         }.merge(options)
         Repositext::Validation::ParagraphStyleConsistency.new(file_specs, validation_options).run
       end

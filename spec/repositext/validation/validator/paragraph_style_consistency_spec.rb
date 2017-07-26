@@ -9,14 +9,17 @@ class Repositext
 
         include SharedSpecBehaviors
 
+        let(:language) { Language::English.new }
+        let(:filename) { '/content/16/eng16_0403-1234.at' }
+
         describe '#run' do
 
           it 'reports no errors for consistent paragraph styles' do
             validator, _logger, reporter = build_validator_logger_and_reporter(
               ParagraphStyleConsistency,
               [
-                FileLikeStringIO.new('_path_f', "foreign para\n{: .normal}"),
-                FileLikeStringIO.new('_path_p', "primary para\n{: .normal}"),
+                RFile::ContentAt.new("foreign para\n{: .normal}\n", language, filename),
+                RFile::ContentAt.new("primary para\n{: .normal}\n", language, filename),
               ]
             )
             validator.run
@@ -27,8 +30,8 @@ class Repositext
             validator, _logger, reporter = build_validator_logger_and_reporter(
               ParagraphStyleConsistency,
               [
-                FileLikeStringIO.new('_path_f', "foreign para\n{: .normal1}\n"),
-                FileLikeStringIO.new('_path_p', "primary para\n{: .normal2}\n"),
+                RFile::ContentAt.new("foreign para\n{: .normal1}\n", language, filename),
+                RFile::ContentAt.new("primary para\n{: .normal2}\n", language, filename),
               ]
             )
             validator.run
@@ -54,13 +57,13 @@ class Repositext
               validator, _logger, _reporter = build_validator_logger_and_reporter(
                 ParagraphStyleConsistency,
                 [
-                  FileLikeStringIO.new('_path', '_txt'),
-                  FileLikeStringIO.new('_path', '_txt'),
+                  RFile::ContentAt.new(test_string_f, language, filename),
+                  RFile::ContentAt.new(test_string_p, language, filename),
                 ]
               )
               validator.paragraph_styles_consistent?(
-                test_string_f,
-                test_string_p
+                RFile::ContentAt.new(test_string_f, language, filename),
+                RFile::ContentAt.new(test_string_p, language, filename)
               ).success.must_equal(xpect)
             end
           end
@@ -99,8 +102,8 @@ class Repositext
               validator, _logger, _reporter = build_validator_logger_and_reporter(
                 ParagraphStyleConsistency,
                 [
-                  FileLikeStringIO.new('_path', '_txt'),
-                  FileLikeStringIO.new('_path', '_txt'),
+                  RFile::ContentAt.new("_", language, filename),
+                  RFile::ContentAt.new("_", language, filename),
                 ]
               )
               validator.send(
@@ -123,8 +126,8 @@ class Repositext
               validator, _logger, _reporter = build_validator_logger_and_reporter(
                 ParagraphStyleConsistency,
                 [
-                  FileLikeStringIO.new('_path', '_txt'),
-                  FileLikeStringIO.new('_path', '_txt'),
+                  RFile::ContentAt.new("_", language, filename),
+                  RFile::ContentAt.new("_", language, filename),
                 ]
               )
               validator.distinguish_between_normal_and_normal_pn = distinguish_between_normal_and_normal_pn
@@ -147,8 +150,8 @@ class Repositext
               validator, _logger, _reporter = build_validator_logger_and_reporter(
                 ParagraphStyleConsistency,
                 [
-                  FileLikeStringIO.new('_path', '_txt'),
-                  FileLikeStringIO.new('_path', '_txt'),
+                  RFile::ContentAt.new("_", language, filename),
+                  RFile::ContentAt.new("_", language, filename),
                 ]
               )
               validator.send(

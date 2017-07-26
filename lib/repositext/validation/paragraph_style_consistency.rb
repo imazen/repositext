@@ -7,25 +7,13 @@ class Repositext
       # primary and foreign files.
       def run_list
 
-        # File pairs
-
-        # Validate that paragraph styles between foreign and corresponding
-        # primary file are consistent.
-        corresponding_primary_file_name_proc = lambda { |input_filename, file_specs|
-          Repositext::Utils::CorrespondingPrimaryFileFinder.find(
-            filename: input_filename,
-            language_code_3_chars: @options['primary_content_type_transform_params'][:language_code_3_chars],
-            content_type_dir: @options['primary_content_type_transform_params'][:content_type_dir],
-            relative_path_to_primary_content_type: @options['primary_content_type_transform_params'][:relative_path_to_primary_content_type],
-            primary_repo_lang_code: @options['primary_content_type_transform_params'][:primary_repo_lang_code]
-          )
-        }
-        # Run pairwise validation
-        validate_file_pairs(:content_at_files, corresponding_primary_file_name_proc) do |ca, cpf|
-          # skip if corresponding primary file doesn't exist
-          next  if !File.exist?(cpf)
+        # Single files
+        validate_files(:content_at_files) do |f_content_at_file|
           Validator::ParagraphStyleConsistency.new(
-            [File.open(ca), File.open(cpf)], @logger, @reporter, @options
+            [f_content_at_file, f_content_at_file.corresponding_primary_file],
+            @logger,
+            @reporter,
+            @options
           ).run
         end
       end
