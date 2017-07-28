@@ -12,19 +12,25 @@ class Repositext
             File.open(repositext_file.filename), @logger, @reporter, @options
           ).run
         end
-        validate_files(:imported_at_files) do |content_at_file|
+        validate_files(:imported_at_files) do |f_content_at_file|
           @options['run_options'] << 'kramdown_syntax_at-no_underscore_or_caret'
           Validator::KramdownSyntaxAt.new(
-            File.open(content_at_file.filename), @logger, @reporter, @options
+            File.open(f_content_at_file.filename), @logger, @reporter, @options
           ).run
           if @options['content_type'].is_primary_repo
             Validator::ParagraphNumberSequencing.new(
-              File.open(content_at_file.filename), @logger, @reporter, @options
+              File.open(f_content_at_file.filename), @logger, @reporter, @options
             ).run
           else
             # Check pn alignment with primary, which also implies correct sequencing.
             Validator::DocxImportForeignConsistency.new(
-              content_at_file, @logger, @reporter, @options
+              f_content_at_file, @logger, @reporter, @options
+            ).run
+            Validator::ParagraphStyleConsistency.new(
+              [f_content_at_file, f_content_at_file.corresponding_primary_file],
+              @logger,
+              @reporter,
+              @options
             ).run
           end
         end
