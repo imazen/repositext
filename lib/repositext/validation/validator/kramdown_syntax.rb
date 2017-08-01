@@ -130,6 +130,38 @@ class Repositext
               break
             end
           end
+          # Detect invalid elipses: '...' or '. . .'
+          str_sc.reset
+          while !str_sc.eos? do
+            if (match = str_sc.scan_until(/\.\.\.|\. \. \./))
+              errors << Reportable.error(
+                [
+                  @file_to_validate.path,
+                  sprintf("line %5s", str_sc.current_line_number)
+                ],
+                ['Invalid elipsis']
+              )
+            else
+              break
+            end
+          end
+          # Detect non-empty horizontal rule paras
+          str_sc.reset
+          while !str_sc.eos? do
+            if (match = str_sc.scan_until(/(?<!^)\* \* \*|\* \* \*(?!$)/))
+              errors << Reportable.error(
+                [
+                  @file_to_validate.path,
+                  sprintf("line %5s", str_sc.current_line_number)
+                ],
+                ['Invalid horizontal rule: #{ str_sc.matched }']
+              )
+            else
+              break
+            end
+          end
+          # Detect spaces in chinese titles
+          # TBD
           # # TODO: Detect adjacent periods (instead of elipses)
           # str_sc.reset
           # while !str_sc.eos? do

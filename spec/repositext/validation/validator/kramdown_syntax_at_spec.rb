@@ -100,6 +100,10 @@ class Repositext
             ["Paragraph not followed by exactly two newlines \n{: .normal}\n\n", 0],
             ["Paragraph not followed by exactly two newlines \n{: .normal}\n\n\n", 1],
             ["Multiple adjacent  spaces", 1],
+            ["Invalid elipsis 1 ...", 1],
+            ["Invalid elipsis 2 . . .", 1],
+            ["Invalid horizontal rule (prefix)\n\nx * * *\n", 1],
+            ["Invalid horizontal rule (suffix)\n\n* * *x\n", 1],
           ].each do |test_string, xpect|
             it "handles #{ test_string.inspect }" do
               validator, _logger, _reporter = build_validator_logger_and_reporter(
@@ -163,6 +167,32 @@ class Repositext
               kramdown_doc = Kramdown::Document.new(test_string, { :input => 'KramdownRepositext' })
               validator.send(
                 :validation_hook_on_element, kramdown_doc.root.children.first, errors, warnings
+              )
+              errors.size.must_equal(xpect)
+            end
+          end
+
+          # Span elements
+          scenarios = []
+          # ImplementationTag #punctuation_characters
+          %(!()+,-./:;?[]—‘’“”…).chars.each { |c|
+            scenarios << ["*#{ c }*", 1]
+            scenarios << ["**#{ c }**", 1]
+          }
+          scenarios.each do |test_string, xpect|
+            it "handles #{ test_string.inspect }" do
+              validator, _logger, _reporter = build_validator_logger_and_reporter(
+                KramdownSyntaxAt,
+                FileLikeStringIO.new('_path', '_txt')
+              )
+              errors = []
+              warnings = []
+              kramdown_doc = Kramdown::Document.new(test_string, { :input => 'KramdownRepositext' })
+              validator.send(
+                :validation_hook_on_element,
+                kramdown_doc.root.children.first.children.first,
+                errors,
+                warnings
               )
               errors.size.must_equal(xpect)
             end
