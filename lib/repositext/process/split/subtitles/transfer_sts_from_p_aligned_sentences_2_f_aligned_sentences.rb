@@ -148,6 +148,7 @@ class Repositext
           # @return [String]
           def regex_punctuation_chars
             # TODO: Replace some of these characters with language specific ones.
+            # ImplementationTag #punctuation_characters
             Regexp.escape(".,;:!?)]…”—")
           end
 

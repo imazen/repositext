@@ -108,6 +108,7 @@ class Repositext
               end
             end
 
+            # ImplementationTag #punctuation_characters
             punctuation_marks = ".,;:!?)]…”—".chars
 
             punctuation_marks.each do |p_punct|

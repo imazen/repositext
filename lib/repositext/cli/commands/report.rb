@@ -49,6 +49,7 @@ class Repositext
           # when /\A[#{ Regexp.escape("#%&*@^_=\"{}") }]\z/
           #   "Repositext markup"
           when /\A[#{ Regexp.escape("\n !()/,-+$.:;?[]–—‘’“”…") }0-9A-Za-z]\z/
+            # ImplementationTag #punctuation_characters
             "English chars and punctuation"
           else
             "Language specific characters"

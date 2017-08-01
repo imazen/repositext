@@ -55,6 +55,7 @@ class Repositext
 
       # Returns self's date_code
       def extract_date_code
+        # ImplementationTag #date_code_regex
         if(m = basename.match(/(?:[a-z]{3}?)(\d{2}-\d{4}[[:alpha:]]?|[a-z]{3}_\d{2}(?=_-_))/))
           m[1]
         else

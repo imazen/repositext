@@ -81,6 +81,7 @@ class Repositext
           close_ = '\)\]' # I leave out curly braces since we don't want to convert double quotes in IALs to typographic ones
           newline_ = '\n'
           open_ = '\(\[' # I leave out curly braces (see above)
+          # ImplementationTag #punctuation_characters
           punctuation_ = '\.\,\;\:\?\!'
           quote_right_ = "\"'#{ [language.chars[:d_quote_close], language.chars[:s_quote_close]].uniq }"
           separator_ = "\\*—\\-#{ language.chars[:elipsis] }"

@@ -235,13 +235,14 @@ class Repositext
         end
 
         # Validates the inner_texts we collected during validate_parse_tree
-        # to check if any unprocessed kramdown remains, indicating kramdown
-        # syntax errors. Currently we check for '*' and '_'.
+        # to check if any invalid characters are entered, or any unprocessed
+        # kramdown characters remain, indicating kramdown syntax errors.
         # @param [Array<Hash>] inner_texts where we check for kramdown leftovers
         # @param [Array] errors collector for errors
         # @param [Array] warnings collector for warnings
         def validate_inner_texts(inner_texts, errors, warnings)
           inner_texts.each do |it|
+            # Detect leftover '*' or '_' kramdown syntax characters
             match_data = it[:text].to_enum(
               :scan,
               /

@@ -162,6 +162,7 @@ class Repositext
         # @param txt [String]
         # @return [String]
         def remove_trailing_punctuation_from_content_at(txt)
+          # ImplementationTag #punctuation_characters
           txt.sub(/[;,…]+\z/, '')
         end
 

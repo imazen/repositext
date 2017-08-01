@@ -145,6 +145,7 @@ class Repositext
         end
 
         describe '#validation_hook_on_element' do
+          # Block level elements
           [
             ["^^^\n\nsong para right after record mark\n{: .song}", 1],
             ["*1*{: .pn} p.normal_pn with pn\n{: .normal_pn}", 0],

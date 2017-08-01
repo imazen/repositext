@@ -307,6 +307,7 @@ class Repositext
               # Ignore extra spaces inserted before punctuation.
               # We look at the 1st and 2nd char in trailing context, or the
               # entire context if it is too short
+              # ImplementationTag #punctuation_characters
               next  if(
                 ' ' == txt_diff &&
                 context_after =~ /\A[\!\?\’\”\.\,\:\;\…]/
