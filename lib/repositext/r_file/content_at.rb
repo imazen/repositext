@@ -215,6 +215,10 @@ class Repositext
         kramdown_doc(options).to_plain_text
       end
 
+      def plain_text_for_docx_import_validation_contents(options)
+        kramdown_doc(options).to_plain_text_for_docx_import_validation
+      end
+
       def plain_text_for_st_autosplit_contents(options)
         kramdown_doc(options).to_plain_text_for_st_autosplit
       end
