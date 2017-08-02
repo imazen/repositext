@@ -197,8 +197,6 @@ class Repositext
           f_paragraph_numbers = f_tree_structure[:paragraph_numbers].map{ |e| e[:paragraph_number] }.find_all { |e|
             e =~ /\A\d/
           }
-          # Skip foreign files that don't have any paragraph numbers
-          return []  if f_paragraph_numbers.empty?
 
           # Get primary paragraph numbers
           p_kramdown_doc = Kramdown::Document.new(
