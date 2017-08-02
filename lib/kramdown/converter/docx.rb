@@ -49,25 +49,34 @@ module Kramdown
       # Custom error for unhandled kramdown elements.
       class InvalidElementException < Exception; end
 
-      # Maps Kramdown block level elements to paragraph styles.
-      # @return [Hash{String => Hash}] Hash with block_level element descriptors as keys and
-      #   paragraph style attributes as values.
-      #   * id        'Heading1'  # sets the internal identifier for the style.
-      #   * name      'heading 1' # sets the friendly name of the style.
-      #   * font      'Palantino' # sets the font family.
-      #   * color     '333333'    # sets the text color. accepts hex RGB.
-      #   * size      28          # sets the font size. units in half points.
-      #   * bold      false       # sets the font weight.
-      #   * italic    false       # sets the font style.
-      #   * underline false       # sets whether or not to underline the text.
-      #   * caps      false       # sets whether or not text should be rendered in all capital letters.
-      #   * align     :left       # sets the alignment. accepts :left, :center, :right, and :both.
-      #   * line      360         # sets the line height. units in twips.
-      #   * top       100         # sets the spacing above the paragraph. units in twips.
-      #   * bottom    0           # sets the spacing below the paragraph. units in twips.
-      def self.paragraph_style_mappings
+      # Defines DOCX paragraph styles.
+      # * id           'Heading1'  # sets the internal identifier for the style.
+      # * name         'heading 1' # sets the friendly name of the style.
+      # * base         'Normal'    # Style to base this style on.
+      # * next         'Normal'    # Style to use for next paragraph.
+      #
+      # * bold         false       # sets the font weight.
+      # * caps         false       # sets whether or not text should be rendered in all capital letters.
+      # * color        '333333'    # sets the text color. accepts hex RGB.
+      # * font         'Palantino' # sets the font family.
+      # * italic       false       # sets the font style.
+      # * size         28          # sets the font size. units in half points.
+      # * smallCaps    false       # sets whether or not text should be rendered in small caps letters.
+      # * underline    false       # sets whether or not to underline the text.
+      #
+      # * align        :left       # sets the alignment. accepts :left, :center, :right, and :both.
+      # * bottom       0           # sets the spacing below the paragraph. units in twips.
+      # * indent_first 0           # sets the indentation of the first line in a paragraph in twips.
+      # * indent_left  0           # sets the left indentation of the entire paragraph in twips.
+      # * indent_right 0           # sets the right indentation of the entire paragraph in twips.
+      # * line         360         # sets the line height. units in twips.
+      # * top          100         # sets the spacing above the paragraph. units in twips.
+      #
+      # SIZES: Font size in half points, dimensions in twips (twentieth of a point)
+      # @return [Hash] Hash with style id as keys and style attributes as values.
+      def paragraph_style_definitions
         {
-          'header-1' => {
+          'header1' => {
             name: 'Header 1',
             id: 'header1',
             size: 28,
@@ -77,7 +86,7 @@ module Kramdown
             top: 100,
             bottom: 0,
           },
-          'header-2' => {
+          'header2' => {
             name: 'Header 2',
             id: 'header2',
             size: 24,
@@ -87,7 +96,7 @@ module Kramdown
             top: 80,
             bottom: 0,
           },
-          'header-3' => {
+          'header3' => {
             name: 'Header 3',
             id: 'header3',
             size: 20,
@@ -97,7 +106,7 @@ module Kramdown
             top: 60,
             bottom: 0,
           },
-          'hr' => {
+          'horizontalRule' => {
             name: 'Horizontal rule',
             id: 'horizontalRule',
             size: 12,
@@ -106,7 +115,7 @@ module Kramdown
             top: 12,
             bottom: 0,
           },
-          'p.normal' => {
+          'normal' => {
             name: 'Normal',
             id: 'normal',
             size: 12,
@@ -115,7 +124,7 @@ module Kramdown
             top: 12,
             bottom: 0,
           },
-          'p.test' => {
+          'paraTest' => {
             name: 'Paragraph Test',
             id: 'paraTest',
             size: 12,
@@ -124,6 +133,20 @@ module Kramdown
             top: 12,
             bottom: 0,
           },
+        }
+      end
+
+      # Maps Kramdown block level elements to paragraph styles.
+      # @return [Hash] Hash with block_level element descriptors as keys and
+      # paragraph style ids.
+      def paragraph_style_mappings
+        {
+          'header-1' => 'header1',
+          'header-2' => 'header2',
+          'header-3' => 'header3',
+          'hr' => 'horizontalRule',
+          'p.normal' => 'normal',
+          'p.test' => 'paraTest',
         }
       end
 
@@ -226,9 +249,9 @@ module Kramdown
       def convert_header(ke)
         check_that_no_text_run_is_active
         header_style_id = case ke.options[:level]
-        when 1 then paragraph_style_mappings['header-1'][:id]
-        when 2 then paragraph_style_mappings['header-2'][:id]
-        when 3 then paragraph_style_mappings['header-3'][:id]
+        when 1 then paragraph_style_mappings['header-1']
+        when 2 then paragraph_style_mappings['header-2']
+        when 3 then paragraph_style_mappings['header-3']
         else
           raise InvalidElementException, "DOCX converter can't output header with levels != 1 | 2 | 3"
         end
@@ -249,7 +272,7 @@ module Kramdown
         check_that_no_text_run_is_active
         @rt_current_document.p do |p|
           @rt_current_block_node = p
-          p.style(paragraph_style_mappings['hr'][:id])
+          p.style(paragraph_style_mappings['hr'])
           inner(ke)
           @rt_current_block_node = nil
         end
@@ -263,7 +286,7 @@ module Kramdown
           # para has class
           para_style_mapping_ids = el_classes.map { |e|
             paragraph_style_mappings["p.#{ e }"]
-          }.compact.map{ |e| e[:id] }
+          }.compact
           case para_style_mapping_ids.size
           when 0
             # No mappings found
@@ -328,7 +351,7 @@ module Kramdown
         Caracal::Document.save(rel_output_path) do |docx|
           @rt_current_document = docx
           # Add style definitions
-          paragraph_style_mappings.each do |_, style_attrs|
+          paragraph_style_definitions.each do |_, style_attrs|
             docx.style(style_attrs)
           end
           # All convert methods are based on side effects on docx, not return values
@@ -374,11 +397,6 @@ module Kramdown
         else
           super
         end
-      end
-
-      # Delegate to class method
-      def paragraph_style_mappings
-        self.class.paragraph_style_mappings
       end
 
       # Finalizes current text run if it exists and starts a new (nested one).

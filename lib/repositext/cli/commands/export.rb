@@ -28,7 +28,8 @@ class Repositext
             content_at_file,
             content_at_file.corresponding_docx_export_filename,
             config.kramdown_parser(:kramdown),
-            config.kramdown_converter_method(:to_docx)
+            config.kramdown_converter_method(:to_docx),
+            config.font_names
           ).export
         end
 
