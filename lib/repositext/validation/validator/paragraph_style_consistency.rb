@@ -23,7 +23,6 @@ class Repositext
             f_p_styles_and_spans,
             p_p_styles_and_spans
           )
-
           if p_style_and_span_mismatches.empty?
             Outcome.new(true, nil)
           else
@@ -45,7 +44,7 @@ class Repositext
         #     type: :p,
         #     paragraph_styles: ["normal", "first_par"],
         #     formatting_spans: [:italic, :smcaps],
-        #     index: 3,
+        #     line_number: 3,
         #     plain_text_contents: "asdf (40 chars max)"
         #   }
         def extract_paragraph_styles_and_formatting_spans(doc)
@@ -82,7 +81,7 @@ class Repositext
         # @param p_p_styles_and_spans [Array<Hash>] one entry per primary para.
         #   See #extract_paragraph_styles_and_formatting_spans for details
         # @return [Array<Array<String>>] one entry for each mismatch. Entry contains
-        #   generic error message and error details.
+        #   array with location and array with generic error message and error details.
         def compute_p_style_and_span_mismatches(f_p_styles_and_spans, p_p_styles_and_spans)
           mismatches = []
           # First we compute paragraph level diffs. With the diff info, we can then
@@ -121,8 +120,8 @@ class Repositext
                 [
                   "Foreign span formatting #{ f_attrs[:formatting_spans].inspect } is different from ",
                   "primary #{ p_attrs[:formatting_spans].inspect } ",
-                  "in foreign paragraph ##{ f_attrs[:index] } starting with #{ f_attrs[:plain_text_contents].inspect }",
-                ].join
+                  "on foreign line #{ f_attrs[:line_number] }",
+                ].join,
               ]
             end
           }
@@ -139,8 +138,8 @@ class Repositext
         def report_paragraph_style_differences(f_p_styles_and_spans, p_p_styles_and_spans, paragraph_style_diffs, mismatches)
           error_type = "Paragraph class mismatch"
           paragraph_style_diffs.each { |diff|
-            # Cast Diff::LCS::ContextChange to array
-            # diff = ["=", [25, ""], [27, ""]], ["+", [26, nil], [28, ""]]]
+            # diff = ["=", [1, ["first_par", "normal"]], [1, ["first_par", "normal_pn"]]]
+            # Cast Diff::LCS::ContextChange to array!
             type, p_attrs, f_attrs = diff.to_a
             # Get detailed paragraph attrs for reporting
             f_p_style_and_spans = f_p_styles_and_spans[f_attrs.first]
@@ -155,11 +154,10 @@ class Repositext
               mismatches << [
                 error_type,
                 [
-                  "Foreign paragraph class #{ f_attrs.last.inspect } is different from ",
-                  "primary #{ p_attrs.last.inspect } ",
-                  "in foreign paragraph ##{ f_attrs.first } starting with ",
-                  f_p_style_and_spans[:plain_text_contents].inspect,
-                ].join
+                  "Foreign paragraph class #{ f_attrs.last.inspect } ",
+                  "is different from primary #{ p_attrs.last.inspect } ",
+                  "on foreign line #{ f_p_style_and_spans[:line_number] }"
+                ].join,
               ]
             when '+'
               # insertion
@@ -167,9 +165,9 @@ class Repositext
                 error_type,
                 [
                   "Foreign has extra paragraph ##{ f_attrs.first } ",
-                  "with class #{ f_attrs.last.inspect } starting with ",
-                  f_p_style_and_spans[:plain_text_contents].inspect,
-                ].join
+                  "with class #{ f_attrs.last.inspect } ",
+                  "on foreign line #{ f_p_style_and_spans[:line_number] }"
+                ].join,
               ]
             when '-'
               # deletion
@@ -177,9 +175,9 @@ class Repositext
                 error_type,
                 [
                   "Foreign is missing primary paragraph ##{ p_attrs.first } ",
-                  "with class #{ p_attrs.last.inspect } starting with ",
-                  p_p_style_and_spans[:plain_text_contents].inspect,
-                ].join
+                  "with class #{ p_attrs.last.inspect } ",
+                  "from primary line #{ p_p_style_and_spans[:line_number] }"
+                ].join,
               ]
             when '='
               # Nothing to do
@@ -205,24 +203,30 @@ class Repositext
             p_pos < p_p_styles_and_spans.length ||
             f_pos < f_p_styles_and_spans.length
           ) do
-            # diff = ["=", [25, ""], [27, ""]], ["+", [26, nil], [28, ""]]]
-            diff_type, diff_f_attrs, diff_p_attrs = paragraph_style_diffs[diff_pos]
-            if('-' == diff_type && f_pos == diff_f_attrs.first)
+            # diff = ["=", [1, ["first_par", "normal"]], [1, ["first_par", "normal_pn"]]]
+            # Cast Diff::LCS::ContextChange to array!
+            diff_type, diff_f_attrs, diff_p_attrs = paragraph_style_diffs[diff_pos].to_a
+            case diff_type
+            when '-'
               # Missing foreign paragraph, use primary only
               aligned_pairs << [nil, p_p_styles_and_spans[p_pos]]
               p_pos += 1
               diff_pos += 1
-            elsif('+' == diff_type && p_pos == diff_p_attrs.first)
+            when '+'
               # Extra foreign paragraph, use foreign only
               aligned_pairs << [f_p_styles_and_spans[f_pos], nil]
               f_pos += 1
               diff_pos += 1
-            else
-              # No diff for current paragraph pair, use both
+            when '!', '='
+              # Paragraph pair, use both
               aligned_pairs << [f_p_styles_and_spans[f_pos], p_p_styles_and_spans[p_pos]]
               f_pos += 1
               p_pos += 1
+              diff_pos += 1
+            else
+              raise "Handle this: #{ diff_type.inspect }"
             end
+
             if (iteration_count += 1) > 10_000
               puts "p_pos: #{ p_pos.inspect }"
               puts "f_pos: #{ f_pos.inspect }"

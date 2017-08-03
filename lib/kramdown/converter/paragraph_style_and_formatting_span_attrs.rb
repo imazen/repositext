@@ -9,7 +9,7 @@ module Kramdown
     #     type: :p,
     #     paragraph_styles: ["normal", "first_par"],
     #     formatting_spans: [:italic, :smcaps],
-    #     index: 3,
+    #     line_number: 3,
     #     plain_text_contents: "first forty characters of paragraph"
     #   },
     #   ...
@@ -23,7 +23,6 @@ module Kramdown
         super
         @block_elements = [] # collector for block level objects
         @current_block = nil
-        @block_el_index = -1
       end
 
       # Override any element specific convert methods that require overrides:
@@ -65,7 +64,8 @@ module Kramdown
       def convert_header(el, opts)
         start_new_block_element(
           type: :header,
-          plain_text_contents: el.to_plain_text
+          plain_text_contents: el.to_plain_text,
+          line_number: el.options[:location]
         )
         inner(el, opts)
         ''
@@ -81,7 +81,8 @@ module Kramdown
         start_new_block_element(
           type: :p,
           paragraph_styles: el.get_classes,
-          plain_text_contents: el.to_plain_text.strip.truncate(40)
+          plain_text_contents: el.to_plain_text.strip.truncate(40),
+          line_number: el.options[:location]
         )
         inner(el, opts)
         @current_block[:formatting_spans].sort!
@@ -113,7 +114,6 @@ module Kramdown
       def start_new_block_element(attrs)
         @current_block = {
           formatting_spans: [],
-          index: @block_el_index += 1,
           paragraph_styles: [],
           plain_text_contents: '',
         }.merge(attrs)
