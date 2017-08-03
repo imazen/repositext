@@ -350,6 +350,18 @@ module Kramdown
         FileUtils.mkdir_p(File.dirname(output_filename))
         Caracal::Document.save(rel_output_path) do |docx|
           @rt_current_document = docx
+          # Specify page size and margins
+          docx.page_size do
+            width 12240 # 8.5" in twips
+            height 15840 # 11" in twips
+            orientation :portrait
+          end
+          docx.page_margins do
+            left 3096 # 2.15" in twips
+            right 3096 # 2.15" in twips
+            top 2736 # 1.9" in twips
+            bottom 2534 # 1.76" in twips
+          end
           # Add style definitions
           paragraph_style_definitions.each do |_, style_attrs|
             docx.style(style_attrs)

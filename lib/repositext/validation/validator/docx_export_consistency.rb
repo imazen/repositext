@@ -97,6 +97,9 @@ class Repositext
         def sanitize_docx_based_at_string(docx_based_at_string)
           # Remove id page
           r, _id_page = Repositext::Utils::IdPageRemover.remove(docx_based_at_string)
+          # Change tabs around eagles to spaces
+          r.gsub!(/\t/, " ")
+          r.gsub!(/\t/, " ")
           # Normalize trailing newlines
           r.sub!(/\n+\z/, "\n")
           # Remove certain IAL classes
