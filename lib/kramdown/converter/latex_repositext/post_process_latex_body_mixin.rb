@@ -121,6 +121,7 @@ module Kramdown
         # @param lb [String] latex body, will be modified in place.
         def format_leading_and_trailing_eagles!(lb)
           # Replace leading eagle with RtFirstEagle
+          # ImplementationTag #eagles_regex
           lb.gsub!(
             /
               ^ # beginning of line
@@ -138,6 +139,7 @@ module Kramdown
           # if at least one more eagle is present in lb.
           if lb.index('')
             # Replace trailing eagle with RtLastEagle
+          # ImplementationTag #eagles_regex
             lb.gsub!(
               /
                 (?!<^) # not preceded by line start
