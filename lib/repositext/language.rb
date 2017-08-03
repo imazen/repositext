@@ -97,6 +97,53 @@ class Repositext
       txt.split(/[— ]/)
     end
 
+    # Returns a set of rules to be used when running the paragraph_style_consistency
+    # validations on files in this language. It determines what kind of differences
+    # in formatting_spans are reported:
+    # First the :map_foreign_to_primary_formatting_spans lambda is applied with each
+    # paragraph's :formatting_spans attributes. The lambda returns the transformed
+    # :formatting_spans that will then be validated.
+    # Then the applicable validation rule is computed given the formatting_span_type
+    # (e.g., :italic) and the containing paragraph classes. The most specific
+    # rule will be returned, starting at language level, then formatting_span_types,
+    # then paragraph_classes.
+    # The rules are:
+    # * :strict - report any difference
+    # * :report_extra - report only formatting spans that are extra in foreign,
+    #     ignore any missing ones.
+    # * :report_missing - report only formatting spans that are missing in
+    #     foreign, ignore extra ones.
+    # * :none - don't report any differences.
+    def paragraph_style_consistency_validation_rules
+      {
+        map_foreign_to_primary_formatting_spans: ->(paragraph_attrs) {
+          # paragraph_attrs:
+          # {
+          #   :type=>:p,
+          #   :paragraph_classes=>['normal'],
+          #   :formatting_spans=>[:italic],
+          #   :line_number=>1
+          # }
+          paragraph_attrs[:formatting_spans]
+        },
+        language: :strict,
+        formatting_span_type: {
+          smcaps: :report_extra,
+        },
+        paragraph_class: {
+          p: {
+            id_paragraph: :none,
+            id_title1: :none,
+            id_title2: :none,
+            scr: { smcaps: :strict },
+          },
+          header: {
+            smcaps: :strict
+          }
+        }
+      }
+    end
+
   private
 
     # @param attr_name [Symbol] one of :code2, :code3, :name

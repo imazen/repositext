@@ -7,10 +7,9 @@ module Kramdown
     # [
     #   {
     #     type: :p,
-    #     paragraph_styles: ["normal", "first_par"],
+    #     paragraph_classes: ["normal", "first_par"],
     #     formatting_spans: [:italic, :smcaps],
     #     line_number: 3,
-    #     plain_text_contents: "first forty characters of paragraph"
     #   },
     #   ...
     # ]
@@ -64,7 +63,6 @@ module Kramdown
       def convert_header(el, opts)
         start_new_block_element(
           type: :header,
-          plain_text_contents: el.to_plain_text,
           line_number: el.options[:location]
         )
         inner(el, opts)
@@ -80,8 +78,7 @@ module Kramdown
       def convert_p(el, opts)
         start_new_block_element(
           type: :p,
-          paragraph_styles: el.get_classes,
-          plain_text_contents: el.to_plain_text.strip.truncate(40),
+          paragraph_classes: el.get_classes,
           line_number: el.options[:location]
         )
         inner(el, opts)
@@ -114,8 +111,7 @@ module Kramdown
       def start_new_block_element(attrs)
         @current_block = {
           formatting_spans: [],
-          paragraph_styles: [],
-          plain_text_contents: '',
+          paragraph_classes: [],
         }.merge(attrs)
         @block_elements << @current_block
       end
