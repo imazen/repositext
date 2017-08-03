@@ -232,6 +232,9 @@ class Repositext
           when :header
             # No classes to consider
             validation_rules.dig(:paragraph_class, :header, fspan)
+          when :hr
+            # Nothing to do
+            :none
           when :p
             # Look for paragraph classes, then fspan type
             para_level_rules = p_attrs[:paragraph_classes].map { |p_class|
