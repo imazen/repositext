@@ -591,8 +591,7 @@ class Repositext
                 if ([:bold, :underline] - formatting_spans).empty?
                   # formatting_spans contains both bold and underline
                   # change to :bold
-                  r = (formatting_spans - [:bold, :underline]).push(:bold).uniq
-                  r
+                  (formatting_spans - [:bold, :underline]).push(:bold).uniq
                 else
                   # No change
                   formatting_spans
