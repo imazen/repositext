@@ -19,14 +19,16 @@ class Repositext
         # @param p_content_at_file [RFile::ContentAt]
         # @return [Outcome]
         def foreign_content_at_consistent?(f_content_at_file, p_content_at_file)
-          errors = []
-          warnings = []
+          error_attrs = []
+          warning_attrs = []
           f_cat = f_content_at_file
           p_cat = p_content_at_file
-          find_inconsistent_eagles(f_cat, p_cat, errors, warnings)
-          find_inconsistent_id_titles(f_cat, p_cat, errors, warnings)
-          find_inconsistent_paragraph_numbers(f_cat, p_cat, errors, warnings)
-          find_inconsistent_plain_text(f_cat, p_cat, errors, warnings)
+          find_inconsistent_eagles(f_cat, p_cat, error_attrs, warning_attrs)
+          find_inconsistent_id_titles(f_cat, p_cat, error_attrs, warning_attrs)
+          find_inconsistent_paragraph_numbers(f_cat, p_cat, error_attrs, warning_attrs)
+          find_inconsistent_plain_text(f_cat, p_cat, error_attrs, warning_attrs)
+          errors = error_attrs.sort.map { |e| Reportable.error(*e) }
+          warnings = warning_attrs.sort.map { |e| Reportable.warning(*e) }
           Outcome.new(
             errors.empty?,
             nil,
@@ -83,15 +85,15 @@ class Repositext
             # ]
             error_detail = case e.first
             when '-'
-              "Foreign is missing eagle at primary #{ (e.last * p_pt_len * 100).round }% character position."
+              "Foreign is missing eagle at primary #{ (e.last * 100).round }% character position."
             when '+'
-              "Foreign has extra eagle at #{ (e.last * f_pt_len * 100).round }% character position."
+              "Foreign has extra eagle at #{ (e.last * 100).round }% character position."
             when '!'
               delta = (e[1] - e[2]).abs
               if delta >= (e[1] * tolerance_factor)
                 [
-                  "Foreign eagle character position at #{ (e[2] * f_pt_len * 100).round }% ",
-                  "is significantly different from primary position at #{ (e[1] * p_pt_len * 100).round }%."
+                  "Foreign eagle character position at #{ (e[2] * 100).round }% ",
+                  "is significantly different from primary position at #{ (e[1] * 100).round }%."
                 ].join
               else
                 nil
@@ -100,13 +102,13 @@ class Repositext
               raise "Handle this: #{ e.inspect }"
             end
             if error_detail
-              errors << Reportable.error(
+              errors << [
                 [f_content_at_file.filename],
                 [
                   "Foreign eagle is inconsistent with primary",
                   error_detail
                 ]
-              )
+              ]
             end
           }
         end
@@ -126,6 +128,29 @@ class Repositext
             p_content_at_file.contents
           ).result
 
+          # Verify that the id_title1 is identical to the first level 1 header
+          main_title = f_content_at_file.extract_title
+          id_title1 = f_id_parts['id_title1'].first
+          if main_title.nil?
+            errors << [
+              [f_content_at_file.filename],
+              ["Foreign main title is missing."]
+            ]
+          elsif id_title1.nil?
+            errors << [
+              [p_content_at_file.filename],
+              ["Foreign .id_title1 is missing."]
+            ]
+          elsif !id_title1.index("*#{ main_title }*")
+            errors << [
+              [f_content_at_file.filename],
+              [
+                "Main title is inconsistent with .id_title1.",
+                "Main title: #{ main_title.inspect }, id_title1: #{ id_title1.inspect }."
+              ]
+            ]
+          end
+
           # Verify that the English title in the id_title2 paragraph is the same
           # as the title in the corresponding English file.
           f_title = if (f_id_title2 = f_id_parts['id_title2'].first)
@@ -134,23 +159,23 @@ class Repositext
           p_title = p_id_parts['id_title1'].first
 
           if f_title.nil?
-            errors << Reportable.error(
+            errors << [
               [f_content_at_file.filename],
               ["Foreign .id_title2 is missing."]
-            )
+            ]
           elsif p_title.nil?
-            errors << Reportable.error(
+            errors << [
               [p_content_at_file.filename],
               ["Primary .id_title1 is missing."]
-            )
+            ]
           elsif !p_title.index("*#{ f_title }*")
-            errors << Reportable.error(
+            errors << [
               [f_content_at_file.filename],
               [
                 "Foreign .id_title2 is inconsistent with English .id_title1.",
                 "Foreign: #{ f_title.inspect }, English: #{ p_title.inspect }."
               ]
-            )
+            ]
           end
 
           # Verify that the date code and language abbreviation exist and are
@@ -163,13 +188,13 @@ class Repositext
               f_content_at_file.extract_date_code,
             ].join
           else
-            errors << Reportable.error(
+            errors << [
               [f_content_at_file.filename],
               [
-                "Foreign language and date code in .id_title1 is inconsistent with those from file name.",
+                "Foreign language and date code in .id_title1 is inconsistent with those from file name",
                 ".id_title1: #{ f_lang_and_date_code_from_id.inspect }, file name: #{ f_lang_and_date_code_from_file.inspect }."
               ]
-            )
+            ]
           end
 
           # Verify that the Title_of_Sermon and the id_title match.
@@ -228,13 +253,13 @@ class Repositext
             else
               raise "Handle this: #{ e.inspect }"
             end
-            errors << Reportable.error(
+            errors << [
               [f_content_at_file.filename],
               [
                 "Foreign paragraph number is inconsistent with primary",
                 error_detail
               ]
-            )
+            ]
           }
           true
         end
@@ -255,13 +280,13 @@ class Repositext
           diffs = Suspension::StringComparer.compare(docx_import_plain_text, content_at_plain_text)
 
           diffs.each { |diff|
-            errors << Reportable.error(
+            errors << [
               [f_content_at_file.filename],
               [
                 'Plain text difference between docx and content_at',
                 diff.inspect
               ]
-            )
+            ]
           }
         end
 
