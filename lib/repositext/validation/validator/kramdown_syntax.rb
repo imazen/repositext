@@ -186,7 +186,7 @@ class Repositext
         # @param [Array] warnings collector for warnings
         def validate_parse_tree(source, inner_texts, classes_histogram, errors, warnings)
           kd_root = @options['kramdown_validation_parser_class'].parse(source).first
-          validate_element(kd_root, inner_texts, classes_histogram, errors, warnings)
+          validate_element(kd_root, [], inner_texts, classes_histogram, errors, warnings)
           if 'debug' == @logger.level
             # capture classes histogram
             classes_histogram = classes_histogram.sort_by { |k,v|
@@ -200,13 +200,15 @@ class Repositext
           end
         end
 
-        # @param [Kramdown::Element] el
-        # @param [Array<Hash>] inner_texts collector for inner texts
-        # @param [Hash] classes_histogram collector for histogram of used classes
-        # @param [Array] errors collector for errors
-        # @param [Array] warnings collector for warnings
-        def validate_element(el, inner_texts, classes_histogram, errors, warnings)
-          validation_hook_on_element(el, errors, warnings)
+        # @param el [Kramdown::Element]
+        # @param el_stack [Array<Kramdown::Element] stack of ancestor elements,
+        #   immediate parent is last element in array.
+        # @param inner_texts [Array<Hash>] collector for inner texts
+        # @param classes_histogram [Hash] collector for histogram of used classes
+        # @param errors [Array] collector for errors
+        # @param warnings [Array] collector for warnings
+        def validate_element(el, el_stack, inner_texts, classes_histogram, errors, warnings)
+          validation_hook_on_element(el, el_stack, errors, warnings)
           # check if element's type is whitelisted
           if !whitelisted_kramdown_features.include?(el.type)
             errors << Reportable.error(
@@ -253,16 +255,25 @@ class Repositext
           end
           # then iterate over children
           el.children.each { |child|
-            validate_element(child, inner_texts, classes_histogram, errors, warnings)
+            # Append el to el_stack passsed to child elements
+            validate_element(
+              child,
+              el_stack << el,
+              inner_texts,
+              classes_histogram,
+              errors, warnings
+            )
           }
         end
 
         # Use this callback to implement custom validations for subclasses.
         # Called once for each element when walking the tree.
-        # @param [Kramdown::Element] el
-        # @param [Array] errors collector for errors
-        # @param [Array] warnings collector for warnings
-        def validation_hook_on_element(el, errors, warnings)
+        # @param el [Kramdown::Element]
+        # @param el_stack [Array<Kramdown::Element] stack of ancestor elements,
+        #   immediate parent is last element in array.
+        # @param errors [Array] collector for errors
+        # @param warnings [Array] collector for warnings
+        def validation_hook_on_element(el, el_stack, errors, warnings)
           # NOTE: Implement in sub-classes
         end
 

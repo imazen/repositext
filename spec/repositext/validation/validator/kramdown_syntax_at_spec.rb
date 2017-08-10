@@ -166,7 +166,11 @@ class Repositext
               warnings = []
               kramdown_doc = Kramdown::Document.new(test_string, { :input => 'KramdownRepositext' })
               validator.send(
-                :validation_hook_on_element, kramdown_doc.root.children.first, errors, warnings
+                :validation_hook_on_element,
+                kramdown_doc.root.children.first,
+                [],
+                errors,
+                warnings
               )
               errors.size.must_equal(xpect)
             end
@@ -175,11 +179,12 @@ class Repositext
           # Span elements
           scenarios = []
           # ImplementationTag #punctuation_characters
+          # NOTE: It seems like I can't test the single space. It won't parse '* *' as a span.
           %(!()+,-./:;?[]—‘’“”…).chars.each { |c|
-            scenarios << ["*#{ c }*", 1]
-            scenarios << ["**#{ c }**", 1]
+            scenarios << ["*#{ c }*", [], 1]
+            scenarios << ["**#{ c }**", [], 1]
           }
-          scenarios.each do |test_string, xpect|
+          scenarios.each do |test_string, el_stack, xpect|
             it "handles #{ test_string.inspect }" do
               validator, _logger, _reporter = build_validator_logger_and_reporter(
                 KramdownSyntaxAt,
@@ -191,6 +196,7 @@ class Repositext
               validator.send(
                 :validation_hook_on_element,
                 kramdown_doc.root.children.first.children.first,
+                el_stack,
                 errors,
                 warnings
               )

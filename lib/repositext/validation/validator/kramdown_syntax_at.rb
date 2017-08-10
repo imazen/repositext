@@ -53,23 +53,25 @@ class Repositext
         end
 
         # Implement AT specific validation callback when walking the tree.
-        # @param [Kramdown::Element] el
-        # @param [Array] errors collector for errors
-        # @param [Array] warnings collector for warnings
-        def validation_hook_on_element(el, errors, warnings)
+        # @param el [Kramdown::Element]
+        # @param el_stack [Array<Kramdown::Element] stack of ancestor elements,
+        #   immediate parent is last element in array.
+        # @param errors [Array] collector for errors
+        # @param warnings [Array] collector for warnings
+        def validation_hook_on_element(el, el_stack, errors, warnings)
           case el.type
           when :em
-            validate_no_single_punctuation_char_formatting(el, errors, warnings)
+            validate_no_single_punctuation_char_formatting(el, el_stack, errors, warnings)
           when :p
-            validate_element_p(el, errors, warnings)
+            validate_element_p(el, el_stack, errors, warnings)
           when :record_mark
-            validate_element_record_mark(el, errors, warnings)
+            validate_element_record_mark(el, el_stack, errors, warnings)
           when :root
-            validate_element_root(el, errors, warnings)
+            validate_element_root(el, el_stack, errors, warnings)
           when :strong
-            validate_no_single_punctuation_char_formatting(el, errors, warnings)
+            validate_no_single_punctuation_char_formatting(el, el_stack, errors, warnings)
           when :text
-            validate_element_text(el, errors, warnings)
+            validate_element_text(el, el_stack, errors, warnings)
           end
         end
 
@@ -154,7 +156,7 @@ class Repositext
           end
         end
 
-        def validate_element_p(el, errors, warnings)
+        def validate_element_p(el, el_stack, errors, warnings)
           el_descendants = el.descendants
           if(
             el.has_class?('normal') &&
@@ -204,7 +206,7 @@ class Repositext
           end
         end
 
-        def validate_element_record_mark(el, errors, warnings)
+        def validate_element_record_mark(el, el_stack, errors, warnings)
           # Validates that kpns are monotonically increasing and consecutive
           if el.attr['kpn']
             l_kpn = el.attr['kpn'].to_i
@@ -273,7 +275,7 @@ class Repositext
           }
         end
 
-        def validate_element_root(el, errors, warnings)
+        def validate_element_root(el, el_stack, errors, warnings)
           if @options['run_options'].include?('kramdown_syntax_at-all_elements_are_inside_record_mark')
             # Validates that every element is contained inside a record_mark.
             # In other words, the root element may only contain elements of type :record_mark
@@ -297,7 +299,7 @@ class Repositext
 
         # Call with em and strong els. Validates that no single punctuation or
         # whitespace characters are formatted.
-        def validate_no_single_punctuation_char_formatting(el, errors, warnings)
+        def validate_no_single_punctuation_char_formatting(el, el_stack, errors, warnings)
           # ImplementationTag #punctuation_characters
           punctuation_chars = %(!()+,-./:;?[]—‘’“”…)
           if(1 == (pt = el.to_plain_text).length) && pt =~ /\A[\s\n#{ Regexp.escape(punctuation_chars) }]\z/
@@ -315,7 +317,7 @@ class Repositext
           end
         end
 
-        def validate_element_text(el, errors, warnings)
+        def validate_element_text(el, el_stack, errors, warnings)
           if @options['run_options'].include?('kramdown_syntax_at-no_underscore_or_caret')
             # No underscores, carets or equal signs allowed in content AT (inner texts)
             # We have to check this here where we have access to the inner text,
