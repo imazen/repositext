@@ -304,16 +304,33 @@ class Repositext
           punctuation_chars = %(!()+,-./:;?[]—‘’“”…)
           if(1 == (pt = el.to_plain_text).length) && pt =~ /\A[\s\n#{ Regexp.escape(punctuation_chars) }]\z/
             # Single punctuation or whitespace character
-            errors << Reportable.error(
-              [
-                @file_to_validate.path,
-                (lo = el.options[:location]) && sprintf("line %5s", lo)
-              ].compact,
-              [
-                'Single formatted punctuation or whitespace character',
-                "Type: #{ el.type }, Inner text: #{ pt.inspect }"
-              ]
+            report_error = nil
+            # Handle exceptions:
+            if(
+              (parent_p_el = el_stack.reverse.detect { |a_el| :p == a_el.type }) &&
+              parent_p_el.has_class?('scr')
             )
+              # Exception: Inside .scr paragraph: Only check for space and elipsis
+              report_error = [' ', '…'].include?(pt)
+            elsif el.has_class?('line_break')
+              # *.*{: .line_break} is legitimate, don't report as error
+              report_error = false
+            else
+              report_error = true
+            end
+
+            if report_error
+              errors << Reportable.error(
+                [
+                  @file_to_validate.path,
+                  (lo = el.options[:location]) && sprintf("line %5s", lo)
+                ].compact,
+                [
+                  'Single formatted punctuation or whitespace character',
+                  "Type: #{ el.type }, Inner text: #{ pt.inspect }"
+                ]
+              )
+            end
           end
         end
 

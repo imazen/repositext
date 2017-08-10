@@ -184,6 +184,12 @@ class Repositext
             scenarios << ["*#{ c }*", [], 1]
             scenarios << ["**#{ c }**", [], 1]
           }
+          # .scr exception (only elipsis and space)
+          scenarios << ["*…*", [::Kramdown::Element.new(:p, nil, 'class' => 'scr')], 1]
+          scenarios << ["*.*", [::Kramdown::Element.new(:p, nil, 'class' => 'scr')], 0]
+          # .line_break exception
+          scenarios << ["*.*{: .line_break}", [], 0]
+
           scenarios.each do |test_string, el_stack, xpect|
             it "handles #{ test_string.inspect }" do
               validator, _logger, _reporter = build_validator_logger_and_reporter(
