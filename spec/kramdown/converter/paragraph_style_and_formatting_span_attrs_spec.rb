@@ -11,10 +11,9 @@ module Kramdown
           [
             {
               :formatting_spans=>[],
-              :index=>0,
               :type=>:p,
-              :paragraph_styles=>[],
-              :plain_text_contents=> "the body"
+              :paragraph_classes=>[],
+              :line_number=>1,
             }
           ]
         ],
@@ -24,10 +23,9 @@ module Kramdown
           [
             {
               :formatting_spans=>[:italic],
-              :index=>0,
               :type=>:p,
-              :paragraph_styles=>["normal"],
-              :plain_text_contents=>"first para word word2."
+              :paragraph_classes=>["normal"],
+              :line_number=>1,
             }
           ]
         ],
@@ -37,17 +35,15 @@ module Kramdown
           [
             {
               :formatting_spans=>[],
-              :index=>0,
               :type=>:p,
-              :paragraph_styles=>['normal'],
-              :plain_text_contents=>"para1"
+              :paragraph_classes=>['normal'],
+              :line_number=>1,
             },
             {
               :formatting_spans=>[],
-              :index=>1,
               :type=>:p,
-              :paragraph_styles=>['normal_pn'],
-              :plain_text_contents=>"2 para2"
+              :paragraph_classes=>['normal_pn'],
+              :line_number=>4,
             },
           ]
         ],
@@ -57,10 +53,9 @@ module Kramdown
           [
             {
               :formatting_spans=>[:italic, :smcaps],
-              :index=>0,
               :type=>:p,
-              :paragraph_styles=>[],
-              :plain_text_contents=>"word1 word2 word3"
+              :paragraph_classes=>[],
+              :line_number=>1,
             }
           ]
         ],

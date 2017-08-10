@@ -2,6 +2,7 @@ require_relative '../../helper'
 
 module Kramdown
   module Converter
+
     describe DocxObject do
 
       # NOTE: This spec tests behavior of Kramdown::Converter::Docx.
@@ -430,7 +431,7 @@ module Kramdown
                     children: [
                       {
                         name: 'pStyle',
-                        val: DocxObject.paragraph_style_mappings['header-1'][:id]
+                        val: DocxObject.send(:new, '_', {}).paragraph_style_mappings['header-1']
                       },
                     ]
                   },
@@ -455,7 +456,7 @@ module Kramdown
                     children: [
                       {
                         name: 'pStyle',
-                        val: DocxObject.paragraph_style_mappings['header-2'][:id]
+                        val: DocxObject.send(:new, '_', {}).paragraph_style_mappings['header-2']
                       },
                     ]
                   },
@@ -480,7 +481,7 @@ module Kramdown
                     children: [
                       {
                         name: 'pStyle',
-                        val: DocxObject.paragraph_style_mappings['header-3'][:id]
+                        val: DocxObject.send(:new, '_', {}).paragraph_style_mappings['header-3']
                       },
                     ]
                   },
@@ -528,7 +529,7 @@ module Kramdown
                     children: [
                       {
                         name: 'pStyle',
-                        val: DocxObject.paragraph_style_mappings['hr'][:id]
+                        val: DocxObject.send(:new, '_', {}).paragraph_style_mappings['hr']
                       },
                     ]
                   },
@@ -586,7 +587,7 @@ module Kramdown
                     children: [
                       {
                         name: 'pStyle',
-                        val: DocxObject.paragraph_style_mappings['p.test'][:id]
+                        val: DocxObject.send(:new, '_', {}).paragraph_style_mappings['p.test']
                       },
                     ]
                   },
