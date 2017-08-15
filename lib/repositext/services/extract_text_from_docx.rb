@@ -37,6 +37,8 @@ class Repositext
           # Replace other paragraph boundary markers (without paragraph numbers)
           # with double newlines.
           sanitized_plain_text.gsub!(/\s{0,3}===para_boundary===/, "\n\n")
+          # Squeeze any runs of multiple newlines to two max
+          sanitized_plain_text.gsub!(/\n{3,}/, "\n\n")
           # Squeeze runs of spaces to single space
           sanitized_plain_text.gsub!(/ +/, ' ')
           # Remove spaces at the beginning of a line
