@@ -124,6 +124,7 @@ class Repositext
               }
               # Print error to console
               puts "   - Error: #{ e.message }".color(:red)
+              puts e.backtrace
             end
 
           end
