@@ -14,11 +14,11 @@ class Repositext
             [
               [
                 'Simple case',
-                "# Header\n\n@1 word @word word.\n\n@2 word word word.",
+                "@# Header\n\n@1 word @word word.\n\n@2 word word word.",
                 [
                   %(^^^ {: .rid #rid-12345678}),
                   %(),
-                  %(# *Header*),
+                  %(# *Header*{: .smcaps.italic}),
                   %(),
                   %(*1*{: .pn} word word word.),
                   %({: .first_par .normal}),
@@ -26,12 +26,12 @@ class Repositext
                   %(*2*{: .pn} word word word.),
                   %({: .normal_pn}),
                 ].join("\n"),
-                [1,1,1],
+                [1,1,1,1],
                 [
                   [
                     %(^^^ {: .rid #rid-12345678}),
                     %(),
-                    %(# *Header*),
+                    %(# @*Header*{: .smcaps.italic}),
                     %(),
                     %(@*1*{: .pn} word @word word.),
                     %({: .first_par .normal}),
@@ -39,7 +39,7 @@ class Repositext
                     %(@*2*{: .pn} word word word.),
                     %({: .normal_pn}),
                   ].join("\n"),
-                  [1,1,1],
+                  [1,1,1,1],
                 ],
               ],
             ].each do |(desc, f_pt, f_cat, f_st_confs, xpect)|
