@@ -257,7 +257,7 @@ class Repositext
               # It's safe to ignore.
               next  if(
                 [' ', "\n"].include?(txt_diff) &&
-                context_before.truncate_from_beginning(excerpt_window, omission: '', separator: nil).index("\n")
+                context_before.truncate_from_beginning(excerpt_window, omission: '', separator: nil)[/^/]
               )
 
               # Titles with explicit linebreaks are missing a space, ignore.
