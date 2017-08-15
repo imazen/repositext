@@ -16,7 +16,7 @@ class Repositext
           ],
           [
             "@word1\n@word2\n@word3\n*em*{: ial='stripped'}\n^^^ {: .rid #rid-63120029}\n",
-            "@word1\n@word2\n@word3\nem\n"
+            "@word1\n@word2\n@word3\nem\n\n"
           ],
           [
             "# title\n@word1\n@word2\n\n### @subtitle\n@word3\n",
