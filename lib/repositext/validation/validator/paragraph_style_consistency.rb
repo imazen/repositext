@@ -54,7 +54,6 @@ class Repositext
             # Remove classes that are specific to primary
             p_attrs[:paragraph_classes] -= %w[
               decreased_word_space
-              id_title3
               increased_word_space
               indent_for_eagle
               omit
@@ -299,6 +298,8 @@ class Repositext
               ]
             when '+'
               # insertion
+              # Ignore extra id_title3 in foreign
+              next  if f_attrs.last.include?('id_title3')
               mismatches << [
                 error_type,
                 [

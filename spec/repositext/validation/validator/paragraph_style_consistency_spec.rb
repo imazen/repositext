@@ -139,17 +139,6 @@ class Repositext
               ]
             ],
             [
-              "removes .id_title3 class\n{: .id_title3}",
-              [
-                {
-                  :formatting_spans=>[],
-                  :paragraph_classes=>[],
-                  :type=>:p,
-                  :line_number=>1
-                }
-              ]
-            ],
-            [
               "removes .increased_word_space class\n{: .increased_word_space}",
               [
                 {
@@ -716,8 +705,55 @@ class Repositext
           end
         end
 
-        # describe '#report_paragraph_class_differences' do
-        # end
+        describe '#report_paragraph_class_differences' do
+          [
+            [
+              "Doesn't report extra foreign .id_title3 paragraph",
+              [
+                {
+                  :paragraph_classes=>['normal'],
+                  :type=>:p,
+                  :line_number=>1
+                },
+                {
+                  :paragraph_classes=>['id_title3'],
+                  :type=>:p,
+                  :line_number=>1
+                },
+              ],
+              [
+                {
+                  :paragraph_classes=>['normal'],
+                  :type=>:p,
+                  :line_number=>1
+                },
+              ],
+              [
+                ["+", [0, []], [1, ["id_title3"]]],
+              ],
+              0,
+            ],
+          ].each do |description, f_pc_and_fs, p_pc_and_fs, p_class_diffs, xpect|
+            it description do
+              validator, _logger, _reporter = build_validator_logger_and_reporter(
+                ParagraphStyleConsistency,
+                [
+                  RFile::ContentAt.new("_", language, filename),
+                  RFile::ContentAt.new("_", language, filename),
+                ]
+              )
+              mismatches = []
+              validator.send(
+                :report_paragraph_class_differences,
+                f_pc_and_fs,
+                p_pc_and_fs,
+                p_class_diffs,
+                mismatches
+              )
+              mismatches.count.must_equal(xpect)
+            end
+          end
+        end
 
         # describe '#align_foreign_and_primary_paragraphs' do
         # end
