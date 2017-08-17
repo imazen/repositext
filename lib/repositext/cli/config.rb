@@ -42,6 +42,14 @@ class Repositext
         File.join(val, '')
       end
 
+      def docx_font_names
+        {
+          default: @effective_settings['docx_export_font_name'],
+          id_title: @effective_settings['docx_export_id_title_font_name'],
+          title: @effective_settings['docx_export_title_font_name'],
+        }
+      end
+
       # Retrieve a file extension
       # @param name [String, Symbol]
       def file_extension(name)
@@ -60,14 +68,6 @@ class Repositext
           raise ArgumentError.new("A file pattern name must match this regex: #{ FILE_SELECTOR_NAME_REGEX.inspect }")
         end
         @effective_settings["file_selector_#{ name }"]
-      end
-
-      def font_names
-        {
-          default: @effective_settings['pdf_export_font_name'],
-          id_title: @effective_settings['pdf_export_id_title_font_name'],
-          title: @effective_settings['pdf_export_title_font_name'],
-        }
       end
 
       # Retrieve a kramdown converter method
