@@ -65,7 +65,7 @@ class Repositext
           foreign_eagle_char_positions = eagle_finder.call(f_pt, f_pt_len.to_f)
           primary_eagle_char_positions = eagle_finder.call(p_pt, p_pt_len.to_f)
 
-          tolerance_factor = 0.1
+          tolerance_factor = 0.2
           diffs = Repositext::Utils::ArrayDiffer.diff_simple(
             primary_eagle_char_positions,
             foreign_eagle_char_positions
@@ -93,7 +93,7 @@ class Repositext
               if delta >= (e[1] * tolerance_factor)
                 [
                   "Foreign eagle character position at #{ (e[2] * 100).round }% ",
-                  "is significantly different from primary position at #{ (e[1] * 100).round }%."
+                  "is significantly different from primary position at #{ (e[1] * 100).round }%. (#{ e.inspect })."
                 ].join
               else
                 nil
