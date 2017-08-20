@@ -45,6 +45,9 @@ class Repositext
           sanitized_plain_text.gsub!(/^ +/, '')
           # Normalize trailing newlines
           sanitized_plain_text.sub!(/\n*\z/, "\n")
+          # Insert spaces adjacent to eagles with spaces
+          sanitized_plain_text.sub!(/^([%@]{0,2})(?! )/, '\1 ')
+          sanitized_plain_text.sub!(/(?<! )$/, ' ')
 
           Outcome.new(true, sanitized_plain_text, [])
         else
