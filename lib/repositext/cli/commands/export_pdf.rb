@@ -214,17 +214,6 @@ class Repositext
         )
       end
 
-      # Export AT files in `/content` to PDF web variant.
-      def export_pdf_web(options)
-        export_pdf_base(
-          'pdf_web',
-          options.merge(
-            'include-version-control-info' => false,
-            'pdf_export_size' => 'book',
-          )
-        )
-      end
-
       # Shared code for all PDF variants.
       # @param [String] variant one of 'pdf_plain', 'pdf_recording', 'pdf_translator'
       def export_pdf_base(variant, options)
@@ -470,7 +459,6 @@ class Repositext
           pdf_recording
           pdf_recording_merged
           pdf_translator
-          pdf_web
         ]
       end
 
