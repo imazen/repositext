@@ -301,7 +301,7 @@ class Repositext
         # whitespace characters are formatted.
         def validate_no_single_punctuation_char_formatting(el, el_stack, errors, warnings)
           # ImplementationTag #punctuation_characters
-          punctuation_chars = %(!()+,-./:;?[]—‘’“”…)
+          punctuation_chars = %(!()+,-./:;?[]—‘’“”…\u2011\u00A0\u202F\uFEFF\u2028)
           if(1 == (pt = el.to_plain_text).length) && pt =~ /\A[\s\n#{ Regexp.escape(punctuation_chars) }]\z/
             # Single punctuation or whitespace character
             report_error = nil
