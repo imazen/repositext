@@ -282,7 +282,12 @@ class Repositext
 
               # Ignore custom formats for horizontal rules.
               # Asterisks are changed to stars
-              next  if('*' == del[1] && "✩" == ins[1])
+              # We get '*', ' *', '* *' and "\n✩", "✩", "✩\n"
+              # Note: There will also be Additions related to this.
+              next  if(
+                '*' == del[1].chars.to_a.uniq.join.strip &&
+                '✩' == ins[1].chars.to_a.uniq.join.strip
+              )
 
               # Prepare error reporting data
               description = "Changed "
@@ -319,6 +324,15 @@ class Repositext
                 ' ' == txt_diff &&
                 context_before =~ /A\z/ &&
                 context_after =~ /\AK/
+              )
+
+              # Ignore custom formats for horizontal rules.
+              # Asterisks are changed to stars
+              # We get '*', ' *', '* *' and "\n✩", "✩", "✩\n"
+              # Note: There will also be Changes related to this.
+              next  if(
+                "\n✩" == txt_diff && ' ' == context_after ||
+                "✩\n" == txt_diff && ' ' == context_before
               )
 
               # Prepare error reporting data

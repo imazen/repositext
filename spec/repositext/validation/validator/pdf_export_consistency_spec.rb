@@ -30,6 +30,10 @@ class Repositext
               %(Change of space to newline\nword1 word2\n),
             ],
             [
+              %(Change of horizontal rule chars\n* * * * * * *\nfrom asterisks to stars\n),
+              %(Change of horizontal rule chars\n✩ ✩ ✩ ✩ ✩ ✩ ✩\nfrom asterisks to stars\n),
+            ],
+            [
               %(Extra newline after elipsis…word1 word2\n),
               %(Extra newline after elipsis…\nword1 word2\n),
             ],
