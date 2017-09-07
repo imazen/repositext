@@ -65,8 +65,6 @@ class Repositext
           r.sub!(/\n+\z/, "\n")
           # Remove record_marks, subtitle_marks, and gap_marks
           r.gsub!(/^\^\^\^[^\n]+\n\n/, '')
-          r.gsub!('@', '')
-          r.gsub!('%', '')
           # Remove line_break periods and IALs in various combinations
           r.gsub!('*{: .italic .smcaps} *.*{: .line_break}*', ' ')
           r.gsub!('*{: .smcaps} *.*{: .line_break}*', ' ')
