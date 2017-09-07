@@ -414,7 +414,7 @@
 % command to render paragraph number. Pass the para number as argument.
 \newcommand{\RtParagraphNumber}[1]
 <% if @polyglossia_default_language %>
-  {\noindent\makebox[\parindent][<%= @text_left_to_right ? 'l' : 'r' %>]{\raisebox{0.5ex}{{\textscale{0.655}{#1}}}}}
+  {\noindent\makebox[\parindent][<%= @text_left_to_right ? 'l' : 'r' %>]{\raisebox{0.5ex}{{\textscale{0.80}{#1}}}}}
 <% else %>
   {\noindent\textparagraphnumberfont{\makebox[\parindent][l]{\raisebox{0.5ex}{{\textscale{0.655}{#1}}}}}}
 <% end %>
