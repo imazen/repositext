@@ -313,6 +313,8 @@ class Repositext
           options[:has_id_page] = config.setting(:pdf_export_has_id_page)
           options[:header_font_name] = config.setting(:pdf_export_header_font_name)
           options[:header_footer_rules_present] = config.setting(:pdf_export_header_footer_rules_present)
+          # Sets the letter space for the headers.
+          options[:header_letter_space] = config.setting(:pdf_export_header_letter_space)
           options[:header_superscript_raise] = config.setting(:pdf_export_header_superscript_raise)
           options[:header_superscript_scale] = config.setting(:pdf_export_header_superscript_scale)
           options[:header_text] = config.setting(:pdf_export_header_text)

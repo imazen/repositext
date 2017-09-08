@@ -142,6 +142,8 @@ module Kramdown
           )
           # Turns on hrules in title, header and footer.
           @header_footer_rules_present = @options[:header_footer_rules_present]
+          # Sets the letter space for the headers.
+          @header_letter_space = @options[:header_letter_space]
           @id_address_primary_latex_1 = @options[:id_address_primary_latex_1]
           @id_address_primary_latex_2 = @options[:id_address_primary_latex_2]
           @id_address_secondary_email = @options[:id_address_secondary_email]
