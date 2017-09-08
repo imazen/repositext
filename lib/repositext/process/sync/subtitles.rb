@@ -147,6 +147,7 @@ class Repositext
         # Returns primary subtitle data given a content_at_file, a git_commit,
         # and a relative_version.
         # Data is stored in a nested Hash in the @primary_subtitle_data_cache i_var:
+        #
         #     {
         #       'pid-12345' => {
         #         'gc-123456' => {
@@ -163,12 +164,15 @@ class Repositext
         #         }
         #       }
         #     }
+        #
+        # If no cached data exists, we compute the subtitle_data from the
+        # corresponding stm_csv_file at the given git_commit_sha1 and
+        # relative_version.
         # @param content_at_file [RFile::ContentAt] from any repo (primary or foreign)
         # @param git_commit_sha1 [String] complete or first six only
         # @param relative_version [Symbol] Note: for from_subtitles we want the
-        #        file contents at the commit (:at_ref_or_nil), however for to_subtitles
-        #        we want the file contents as of the next commit after
-        #        git_commit_sha1 (:at_child_or_current).
+        #        file contents :at_child_or_ref, and for to_subtitles we want
+        #        the file contents :at_child_or_current.
         # @return [Array]
         def cached_primary_subtitle_data(content_at_file, git_commit_sha1, relative_version)
           pii_cache_key = content_at_file.extract_product_identity_id

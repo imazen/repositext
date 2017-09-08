@@ -80,7 +80,7 @@ class Repositext
               from_subtitles = cached_primary_subtitle_data(
                 foreign_content_at_file,
                 from_gc,
-                :at_ref_or_raise
+                :at_child_or_ref
               )
               # Get to_subtitles as of the next git commit after to_gc. We have
               # to do this since STM CSV files are updated during st sync,

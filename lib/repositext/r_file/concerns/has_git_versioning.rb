@@ -15,7 +15,7 @@ class Repositext
       end
 
       # Returns copy of self with contents as of a ref_commit or one of its
-      # children.
+      # children (`as of` meaning after the commit).
       # relative_version can be one of:
       #   * :at_child_or_current
       #     Returns contents at a child commit if it affected self, otherwise
@@ -45,6 +45,10 @@ class Repositext
         end
 
         # Get any child commits of ref_commit that affected self.
+        # format `%H %P` prints the commit hash and the parent commit hashes.
+        # * git log lists all commits that affected self
+        # * grep finds any lines where ref_commit is in the parent position (preceded by space)
+        # * cut returns the first entry after spliting line on spaces (the child commit sha1)
         cmd = [
           "git",
           "--git-dir=#{ repository.repo_path }",
