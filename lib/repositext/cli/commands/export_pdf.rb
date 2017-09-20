@@ -270,11 +270,6 @@ class Repositext
           metadata_author: config.setting(:pdf_export_metadata_author,false),
           # NOTE: We grab pdf_export_font_name from the _PRIMARY_ repo's config
           primary_font_name: primary_config.setting(:pdf_export_font_name),
-          # Do not move the 'song_leftskip' and 'song_rightskip' settings to the file specific settings.
-          # We do not want to set these at a file level.
-          # This sets the right and left margin for 'RtSong', 'RtSongBreak' and 'RtStanza'.
-          song_leftskip: config.setting(:pdf_export_song_leftskip),
-          song_rightskip: config.setting(:pdf_export_song_rightskip),
           # Sets whether a languge is read left to right.
           text_left_to_right: config.setting(:pdf_export_text_left_to_right),
           # Sets the vbadness_penalty limit for veritcal justification. This is the maximum penalty allowed.
@@ -326,6 +321,7 @@ class Repositext
           options[:id_title_1_superscript_raise] = config.setting(:pdf_export_id_title_1_superscript_raise)
           options[:id_title_1_superscript_scale] = config.setting(:pdf_export_id_title_1_superscript_scale)
           options[:id_title_font_name] = config.setting(:pdf_export_id_title_font_name, false)
+          # NOTE: This setting is related to :pdf_export_song_rightskip
           options[:last_eagle_hspace] = config.setting(:pdf_export_last_eagle_hspace)
           options[:page_settings_key] = compute_pdf_export_page_settings_key(
             config.setting(:pdf_export_page_settings_key_override, false),
@@ -337,6 +333,15 @@ class Repositext
           options[:question1_indent] = config.setting(:pdf_export_question1_indent)
           options[:question2_indent] = config.setting(:pdf_export_question2_indent)
           options[:question3_indent] = config.setting(:pdf_export_question3_indent)
+          # The next two settings specify the right and left margin for 'RtSong',
+          # 'RtSongBreak' and 'RtStanza'.
+          options[:song_leftskip] = config.setting(:pdf_export_song_leftskip),
+          # NOTE: If you change :pdf_export_song_rightskip, you also have to
+          # adjust :pdf_export_last_eagle_hspace accordingly to avoid misalignment
+          # of trailing eagle with right margin. When changing :pdf_export_song_rightskip
+          # at the file level, then the :pdf_export_last_eagle_hspace adjustment
+          # is only required if that file has a song as the last paragraph.
+          options[:song_rightskip] = config.setting(:pdf_export_song_rightskip),
           options[:source_filename] = filename
           options[:title_font_name] = config.setting(:pdf_export_title_font_name)
           options[:title_font_size] = config.setting(:pdf_export_title_font_size)
