@@ -62,7 +62,7 @@ class Repositext
         def validation_hook_on_element(el, el_stack, errors, warnings)
           case el.type
           when :em
-            validate_no_single_punctuation_char_formatting(el, el_stack, errors, warnings)
+            validate_no_single_punctuation_or_whitespace_char_formatting(el, el_stack, errors, warnings)
           when :p
             validate_element_p(el, el_stack, errors, warnings)
           when :record_mark
@@ -70,7 +70,7 @@ class Repositext
           when :root
             validate_element_root(el, el_stack, errors, warnings)
           when :strong
-            validate_no_single_punctuation_char_formatting(el, el_stack, errors, warnings)
+            validate_no_single_punctuation_or_whitespace_char_formatting(el, el_stack, errors, warnings)
           when :text
             validate_element_text(el, el_stack, errors, warnings)
           end
@@ -338,7 +338,7 @@ class Repositext
 
         # Call with em and strong els. Validates that no single punctuation or
         # whitespace characters are formatted.
-        def validate_no_single_punctuation_char_formatting(el, el_stack, errors, warnings)
+        def validate_no_single_punctuation_or_whitespace_char_formatting(el, el_stack, errors, warnings)
           # ImplementationTag #punctuation_characters
           punctuation_chars = %(!()+,-./:;?[]—‘’“”…\u2011\u00A0\u202F\uFEFF\u2028)
           if(1 == (pt = el.to_plain_text).length) && pt =~ /\A[\s\n#{ Regexp.escape(punctuation_chars) }]\z/
