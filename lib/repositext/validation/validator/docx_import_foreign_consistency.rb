@@ -146,7 +146,7 @@ class Repositext
               [f_content_at_file.filename],
               [
                 "Main title is inconsistent with .id_title1.",
-                "Main title: #{ main_title.inspect }, id_title1: #{ id_title1.inspect }."
+                "Main title: #{ main_title.inspect }, .id_title1: #{ id_title1.inspect }."
               ]
             ]
           end
@@ -196,9 +196,6 @@ class Repositext
               ]
             ]
           end
-
-          # Verify that the Title_of_Sermon and the id_title match.
-          # TODO: What does this mean?
         end
 
         # Validates that foreign paragraph numbers are consistent with primary ones.

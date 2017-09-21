@@ -172,7 +172,7 @@ class Repositext
       # Returns the first level 1 header in the file. Does this by using the
       # first line in the plain_text_contents
       def extract_title
-        plain_text_contents({}).split("\n").first.strip
+        Repositext::Services::ExtractContentAtMainTitle.call(contents).result
       end
 
       def has_pending_subtitle_import?
