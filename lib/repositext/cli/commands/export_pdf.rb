@@ -335,13 +335,13 @@ class Repositext
           options[:question3_indent] = config.setting(:pdf_export_question3_indent)
           # The next two settings specify the right and left margin for 'RtSong',
           # 'RtSongBreak' and 'RtStanza'.
-          options[:song_leftskip] = config.setting(:pdf_export_song_leftskip),
+          options[:song_leftskip] = config.setting(:pdf_export_song_leftskip)
           # NOTE: If you change :pdf_export_song_rightskip, you also have to
           # adjust :pdf_export_last_eagle_hspace accordingly to avoid misalignment
           # of trailing eagle with right margin. When changing :pdf_export_song_rightskip
           # at the file level, then the :pdf_export_last_eagle_hspace adjustment
           # is only required if that file has a song as the last paragraph.
-          options[:song_rightskip] = config.setting(:pdf_export_song_rightskip),
+          options[:song_rightskip] = config.setting(:pdf_export_song_rightskip)
           options[:source_filename] = filename
           options[:title_font_name] = config.setting(:pdf_export_title_font_name)
           options[:title_font_size] = config.setting(:pdf_export_title_font_size)
