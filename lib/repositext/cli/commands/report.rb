@@ -288,7 +288,7 @@ class Repositext
         ) do |data_json_file|
           total_file_count += 1
           fd = data_json_file.read_data
-          rrfn = data_json_file.repo_relative_path(true)
+          filename = data_json_file.filename
           subtitles_have_been_exported = '' != fd['exported_subtitles_at_st_sync_commit'].to_s.strip
           st_tr = (fd['st_sync_subtitles_to_review'] || {})
           next  if st_tr.none?
@@ -298,7 +298,7 @@ class Repositext
           if subtitles_have_been_exported
             # No further distinction required
             files_found_count += 1
-            fwstrr[:subtitles_exported] << [rrfn, st_tr_cnt]
+            fwstrr[:subtitles_exported] << [filename, st_tr_cnt]
             desc = "   - subtitles have been exported, has #{ st_tr_cnt } subtitles to review".color(:blue)
           else
             # subtitles have not been exported, further distinguish kinds of changes
@@ -306,17 +306,17 @@ class Repositext
               # This file is autosplit
               files_found_count += 1
               st_tr_cnt = 'all'
-              fwstrr[:subtitles_not_exported][:autosplit] << [rrfn, st_tr_cnt]
+              fwstrr[:subtitles_not_exported][:autosplit] << [filename, st_tr_cnt]
               desc = "   - subtitles have not been exported, was autosplit".color(:blue)
             elsif st_tr.all? { |stid,ops| ops.all? { |op| 'content_change' == op } }
               # content_changes only
               files_found_count += 1
-              fwstrr[:subtitles_not_exported][:content_changes_only] << [rrfn, st_tr_cnt]
+              fwstrr[:subtitles_not_exported][:content_changes_only] << [filename, st_tr_cnt]
               desc = "   - subtitles have not been exported, #{ st_tr_cnt } content_changes to review".color(:blue)
             else
               # st ops and content_changes
               files_found_count += 1
-              fwstrr[:subtitles_not_exported][:st_ops_and_content_changes] << [rrfn, st_tr_cnt]
+              fwstrr[:subtitles_not_exported][:st_ops_and_content_changes] << [filename, st_tr_cnt]
               desc = "   - subtitles have not been exported, #{ st_tr_cnt } st_ops and content_changes to review".color(:blue)
             end
           end
