@@ -128,6 +128,25 @@ class Repositext
             p_content_at_file.contents
           ).result
 
+          found_missing_id = false
+          if !f_id_parts.any?
+            found_missing_id = true
+            errors << [
+              [f_content_at_file.filename],
+              ["Foreign ID is missing."]
+            ]
+          end
+          if !p_id_parts.any?
+            found_missing_id = true
+            warnings << [
+              [p_content_at_file.filename],
+              ["Primary ID is missing."]
+            ]
+          end
+          if found_missing_id
+            return true
+          end
+
           # Verify that the id_title1 is identical to the first level 1 header
           main_title = f_content_at_file.extract_title
           id_title1 = f_id_parts['id_title1'].first
