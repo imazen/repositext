@@ -59,7 +59,7 @@ class Repositext
           errors += outcome.errors
           warnings += outcome.warnings
 
-if errors.any? || warnings.any?
+if errors.any?
   ap val_attrs
 end
           log_and_report_validation_step(errors, warnings)
