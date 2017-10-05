@@ -397,14 +397,14 @@ end
           end
 
           # Compare ERP datecode with filename
+          dc_fn = val_attrs[:date_code_from_filename]
+          if '' == dc_fn
+            errors << Reportable.error(
+              [@file_to_validate.filename],
+              ["Date code from filename is missing"]
+            )
+          end
           if val_attrs[:has_erp_data]
-            dc_fn = val_attrs[:date_code_from_filename]
-            if '' == dc_fn
-              errors << Reportable.error(
-                [@file_to_validate.filename],
-                ["Date code from filename is missing"]
-              )
-            end
             dc_erp = val_attrs[:date_code_from_erp]
             if '' == dc_erp
               errors << Reportable.error(
