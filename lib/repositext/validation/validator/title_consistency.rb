@@ -13,16 +13,16 @@ class Repositext
         # * language and date code from id are consistent with file name.
         #
         # The following validator_exceptions are available (can be combined):
-        # * 'ignore_end_diff_starting_at_pound_sign': Endings of titles are
+        # * 'ignore_end_diff_starting_at_pound_sign_erp': Endings of titles are
         #       different.
         #       Remove everything starting with pound sign from erp. Resulting
         #       ERP title must be contained in main title.
-        # * 'ignore_pound_sign_and_number_diff': File is expected to have a
+        # * 'ignore_pound_sign_and_number_diff_erp': File is expected to have a
         #       pound sign and number in one title but not in other. Pass
         #       validation if diff =~ /#\d+/.
-        # * 'ignore_pound_sign_diff': File is expected to have a pound sign
+        # * 'ignore_pound_sign_diff_erp': File is expected to have a pound sign
         #       in one title but not in other. Pass validation if diff == '#'.
-        # * 'ignore_small_word_capitalization': File is expected to capitalize
+        # * 'ignore_short_word_capitalization_erp': File is expected to capitalize
         #       small words differently between ERP and content.
         # * 'multi_level_title': The file contains level 1 and level 2 headers
         #       that need to be combined to get the main title. The two titles
@@ -76,10 +76,10 @@ end
 
           # Validate validator_exceptions
           valid_exceptions = %w[
-            ignore_end_diff_starting_at_pound_sign
-            ignore_pound_sign_and_number_diff
-            ignore_pound_sign_diff
-            ignore_small_word_capitalization
+            ignore_end_diff_starting_at_pound_sign_erp
+            ignore_pound_sign_and_number_diff_erp
+            ignore_pound_sign_diff_erp
+            ignore_short_word_capitalization_erp
             multi_level_title
             skip
           ]
@@ -304,21 +304,21 @@ end
             ex_t_pt_c = t_pt_c
             ex_comparer = ->(t_from_erp, t_from_c) { t_from_erp == t_from_c }
             # Start with most specific exceptions
-            if val_attrs[:validator_exceptions].include?('ignore_end_diff_starting_at_pound_sign')
+            if val_attrs[:validator_exceptions].include?('ignore_end_diff_starting_at_pound_sign_erp')
               # Remove everything from pound sign to the end in erp, then
               # test if erp is contained in title from content
               ex_t_pt_erp.sub!(/\s#.*\z/, '')
               ex_comparer = ->(t_from_erp, t_from_c) { t_from_c[t_from_erp] }
             end
-            if val_attrs[:validator_exceptions].include?('ignore_pound_sign_and_number_diff')
+            if val_attrs[:validator_exceptions].include?('ignore_pound_sign_and_number_diff_erp')
               # Remove pound signs followed by digits (and preceded by space) from erp
               ex_t_pt_erp.gsub!(/\s?#\d+/, '')
             end
-            if val_attrs[:validator_exceptions].include?('ignore_pound_sign_diff')
+            if val_attrs[:validator_exceptions].include?('ignore_pound_sign_diff_erp')
               # Remove pound signs from erp
               ex_t_pt_erp.gsub!('#', '')
             end
-            if val_attrs[:validator_exceptions].include?('ignore_small_word_capitalization')
+            if val_attrs[:validator_exceptions].include?('ignore_short_word_capitalization_erp')
               # Capitalize all small words in both and compare again
               sw_lower_caser = ->(txt) {
                 %w[and in of on the].each { |sw|
@@ -460,21 +460,21 @@ end
               ex_pr_t_pt_id = pr_t_pt_id
               ex_comparer = ->(pr_t_from_erp, pr_t_from_id) { pr_t_from_erp == pr_t_from_id }
               # Start with most specific exceptions
-              if val_attrs[:validator_exceptions].include?('ignore_end_diff_starting_at_pound_sign')
+              if val_attrs[:validator_exceptions].include?('ignore_end_diff_starting_at_pound_sign_erp')
                 # Remove everything from pound sign to the end in erp, then
                 # test if erp is contained in title from content
                 ex_pr_t_pt_id.sub!(/\s#.*\z/, '')
                 ex_comparer = ->(pr_t_from_erp, pr_t_from_id) { pr_t_from_id[pr_t_from_erp] }
               end
-              if val_attrs[:validator_exceptions].include?('ignore_pound_sign_and_number_diff')
+              if val_attrs[:validator_exceptions].include?('ignore_pound_sign_and_number_diff_erp')
                 # Remove pound signs followed by digits (and preceded by space) from erp
                 ex_pr_t_pt_id.gsub!(/\s?#\d+/, '')
               end
-              if val_attrs[:validator_exceptions].include?('ignore_pound_sign_diff')
+              if val_attrs[:validator_exceptions].include?('ignore_pound_sign_diff_erp')
                 # Remove pound signs from erp
                 ex_pr_t_pt_id.gsub!('#', '')
               end
-              if val_attrs[:validator_exceptions].include?('ignore_small_word_capitalization')
+              if val_attrs[:validator_exceptions].include?('ignore_short_word_capitalization_erp')
                 # Capitalize all small words in both and compare again
                 sw_lower_caser = ->(txt) {
                   %w[and in of on the].each { |sw|
