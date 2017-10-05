@@ -47,7 +47,7 @@ class Repositext
 
       # @param [Object] loggable
       def warning(loggable)
-        @logging.warn(loggable)
+        @logging.warn(loggable.color(:yellow))
       end
 
       # @param [Object] loggable
