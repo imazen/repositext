@@ -26,6 +26,7 @@ Gem::Specification.new do |s|
   # there was no simple way to do line diffing in DMP, so I use this gem for now.
   s.add_dependency('diff-lcs', '~> 1.3')
   s.add_dependency('dotenv', '~> 2.2.1')
+  s.add_dependency('httparty', '~> 0.15')
   s.add_dependency('kramdown') # from local repo
   s.add_dependency('logging', '~> 2.2.2')
   s.add_dependency('micromachine', '~> 2.0.0')
