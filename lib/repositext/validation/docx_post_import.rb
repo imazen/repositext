@@ -12,22 +12,42 @@ class Repositext
             File.open(repositext_file.filename), @logger, @reporter, @options
           ).run
         end
-        validate_files(:imported_at_files) do |f_content_at_file|
+
+        config = @options['config']
+        erp_data = Services::ErpApi.call(
+          config.setting(:erp_api_protocol_and_host),
+          config.setting(:erp_api_appid),
+          config.setting(:erp_api_nameguid),
+          :get_titles,
+          { languageids: [@options['content_type'].language_code_3_chars] }
+        )
+
+        validate_files(:imported_at_files) do |content_at_file|
+          config.update_for_file(content_at_file.corresponding_data_json_filename)
           @options['run_options'] << 'kramdown_syntax_at-no_underscore_or_caret'
           Validator::KramdownSyntaxAt.new(
-            File.open(f_content_at_file.filename), @logger, @reporter, @options
+            File.open(content_at_file.filename), @logger, @reporter, @options
           ).run
-          if @options['content_type'].is_primary_repo
+          Validator::TitleConsistency.new(
+            content_at_file,
+            @logger,
+            @reporter,
+            @options.merge(
+              "erp_data" => erp_data,
+              "validator_exceptions" => config.setting(:validator_exceptions_title_consistency)
+            )
+          ).run
+          if content_at_file.is_primary?
             Validator::ParagraphNumberSequencing.new(
-              File.open(f_content_at_file.filename), @logger, @reporter, @options
+              File.open(content_at_file.filename), @logger, @reporter, @options
             ).run
           else
             # Check pn alignment with primary, which also implies correct sequencing.
             Validator::DocxImportForeignConsistency.new(
-              f_content_at_file, @logger, @reporter, @options
+              content_at_file, @logger, @reporter, @options
             ).run
             Validator::ParagraphStyleConsistency.new(
-              [f_content_at_file, f_content_at_file.corresponding_primary_file],
+              [content_at_file, content_at_file.corresponding_primary_file],
               @logger,
               @reporter,
               @options

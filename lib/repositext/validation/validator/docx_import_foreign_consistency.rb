@@ -24,7 +24,6 @@ class Repositext
           f_cat = f_content_at_file
           p_cat = p_content_at_file
           find_inconsistent_eagles(f_cat, p_cat, error_attrs, warning_attrs)
-          find_inconsistent_id_titles(f_cat, p_cat, error_attrs, warning_attrs)
           find_inconsistent_paragraph_numbers(f_cat, p_cat, error_attrs, warning_attrs)
           find_inconsistent_plain_text(f_cat, p_cat, error_attrs, warning_attrs)
           errors = error_attrs.sort.map { |e| Reportable.error(*e) }
@@ -111,110 +110,6 @@ class Repositext
               ]
             end
           }
-        end
-
-        # Validates that English titles in id page are consistent with original
-        # English file.
-        # @param f_content_at_file [RFile::ContentAt]
-        # @param p_content_at_file [RFile::ContentAt]
-        # @param errors [Array] collector for errors
-        # @param warnings [Array] collector for warnings
-        # Mutates errors and warnings in place
-        def find_inconsistent_id_titles(f_content_at_file, p_content_at_file, errors, warnings)
-          f_id_parts = Repositext::Services::ExtractContentAtIdParts.call(
-            f_content_at_file.contents
-          ).result
-          p_id_parts = Repositext::Services::ExtractContentAtIdParts.call(
-            p_content_at_file.contents
-          ).result
-
-          found_missing_id = false
-          if !f_id_parts.any?
-            found_missing_id = true
-            errors << [
-              [f_content_at_file.filename],
-              ["Foreign ID is missing."]
-            ]
-          end
-          if !p_id_parts.any?
-            found_missing_id = true
-            warnings << [
-              [p_content_at_file.filename],
-              ["Primary ID is missing."]
-            ]
-          end
-          if found_missing_id
-            return true
-          end
-
-          # Verify that the id_title1 is identical to the first level 1 header
-          main_title = f_content_at_file.extract_title
-          id_title1 = f_id_parts['id_title1'].first
-          if main_title.nil?
-            errors << [
-              [f_content_at_file.filename],
-              ["Foreign main title is missing."]
-            ]
-          elsif id_title1.nil?
-            errors << [
-              [p_content_at_file.filename],
-              ["Foreign .id_title1 is missing."]
-            ]
-          elsif !id_title1.index("*#{ main_title }*")
-            errors << [
-              [f_content_at_file.filename],
-              [
-                "Main title is inconsistent with .id_title1.",
-                "Main title: #{ main_title.inspect }, .id_title1: #{ id_title1.inspect }."
-              ]
-            ]
-          end
-
-          # Verify that the English title in the id_title2 paragraph is the same
-          # as the title in the corresponding English file.
-          f_title = if (f_id_title2 = f_id_parts['id_title2'].first)
-            f_id_title2.gsub(/[\(\)]/, '')
-          end
-          p_title = p_id_parts['id_title1'].first
-
-          if f_title.nil?
-            errors << [
-              [f_content_at_file.filename],
-              ["Foreign .id_title2 is missing."]
-            ]
-          elsif p_title.nil?
-            errors << [
-              [p_content_at_file.filename],
-              ["Primary .id_title1 is missing."]
-            ]
-          elsif !p_title.index("*#{ f_title }*")
-            errors << [
-              [f_content_at_file.filename],
-              [
-                "Foreign .id_title2 is inconsistent with English .id_title1.",
-                "Foreign: #{ f_title.inspect }, English: #{ p_title.inspect }."
-              ]
-            ]
-          end
-
-          # Verify that the date code and language abbreviation exist and are
-          # correct in the id_title1.
-          if(f_id_title1 = f_id_parts['id_title1'].first)
-            # ImplementationTag #date_code_regex
-            f_lang_and_date_code_from_id = f_id_title1[/[a-z]{3}\d{2}-\d{4}[a-z]?/i].downcase
-            f_lang_and_date_code_from_file = [
-              f_content_at_file.lang_code_3,
-              f_content_at_file.extract_date_code,
-            ].join
-          else
-            errors << [
-              [f_content_at_file.filename],
-              [
-                "Foreign language and date code in .id_title1 is inconsistent with those from file name",
-                ".id_title1: #{ f_lang_and_date_code_from_id.inspect }, file name: #{ f_lang_and_date_code_from_file.inspect }."
-              ]
-            ]
-          end
         end
 
         # Validates that foreign paragraph numbers are consistent with primary ones.

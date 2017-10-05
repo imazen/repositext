@@ -82,6 +82,7 @@ class Repositext
         )
 
         validation_options = {
+          'config' => config,
           'content_type' => content_type,
           'kramdown_converter_method_name' => config.kramdown_converter_method(:to_at),
           'kramdown_parser_class' => config.kramdown_parser(:kramdown),
