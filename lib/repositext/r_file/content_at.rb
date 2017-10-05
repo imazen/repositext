@@ -169,10 +169,10 @@ class Repositext
         filename.sub(/\.at\z/, '.subtitle_markers.csv')
       end
 
-      # Returns the first level 1 header in the file. Does this by using the
-      # first line in the plain_text_contents
-      def extract_title
-        Repositext::Services::ExtractContentAtMainTitle.call(contents).result
+      # Returns the first level 1 header in the file.
+      # @param format [Symbol] :content_at or :plain_text
+      def extract_title(format=:plain_text)
+        Repositext::Services::ExtractContentAtMainTitles.call(contents, format).result
       end
 
       def has_pending_subtitle_import?
