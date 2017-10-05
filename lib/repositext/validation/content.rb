@@ -8,13 +8,34 @@ class Repositext
       # Specifies validations to run for files in the /content directory
       def run_list
 
+        config = @options['config']
+        erp_data = Services::ErpApi.call(
+          config.setting(:erp_api_protocol_and_host),
+          config.setting(:erp_api_appid),
+          config.setting(:erp_api_nameguid),
+          :get_titles,
+          { languageids: [@options['content_type'].language_code_3_chars] }
+        )
+
         # Single files
 
-        validate_files(:content_at_files) do |path|
+        validate_files(:content_at_files) do |content_at_file|
+          path = content_at_file.filename # for legacy validators
+          config.update_for_file(path.gsub(/\.at\z/, '.data.json'))
           Validator::ContentAtFilesStartWithRecordMark.new(File.open(path), @logger, @reporter, @options).run
           Validator::CorrectLineEndings.new(File.open(path), @logger, @reporter, @options).run
           Validator::EaglesConnectedToParagraph.new(File.open(path), @logger, @reporter, @options).run
           Validator::KramdownSyntaxAt.new(File.open(path), @logger, @reporter, @options).run
+
+          Validator::TitleConsistency.new(
+            content_at_file,
+            @logger,
+            @reporter,
+            @options.merge(
+              "erp_data" => erp_data,
+              "validator_exceptions" => config.setting(:validator_exceptions_title_consistency)
+            )
+          ).run
           if @options['is_primary_repo']
             Validator::SubtitleMarkSpacing.new(
               File.open(path), @logger, @reporter, @options
@@ -24,7 +45,8 @@ class Repositext
             ).run
           end
         end
-        validate_files(:repositext_files) do |path|
+        validate_files(:repositext_files) do |repositext_file|
+          path = repositext_file.filename # for legacy validators
           Validator::Utf8Encoding.new(File.open(path), @logger, @reporter, @options).run
         end
 
@@ -33,28 +55,31 @@ class Repositext
         # Validate that there are no significant changes to subtitle_mark positions.
         # Define proc that computes subtitle_mark_csv filename from content_at filename
         # TODO: Should we rely on symlinks to STM CSV files instead?
-        stm_csv_file_name_proc = lambda { |input_filename, file_specs|
-          Repositext::Utils::CorrespondingPrimaryFileFinder.find(
-            filename: input_filename,
-            language_code_3_chars: @options['primary_content_type_transform_params'][:language_code_3_chars],
-            content_type_dir: @options['primary_content_type_transform_params'][:content_type_dir],
-            relative_path_to_primary_content_type: @options['primary_content_type_transform_params'][:relative_path_to_primary_content_type],
-            primary_repo_lang_code: @options['primary_content_type_transform_params'][:primary_repo_lang_code]
-          ).gsub( # update file extension
-            /\.at\z/,
-            '.subtitle_markers.csv'
-          )
+        stm_csv_file_proc = lambda { |content_at_file|
+          content_at_file.corresponding_primary_file
+                         .corresponding_subtitle_markers_csv_file
         }
         # Run pairwise validation
-        validate_file_pairs(:content_at_files, stm_csv_file_name_proc) do |ca, stm_csv|
-          # skip if subtitle_markers CSV file doesn't exist
-          next  if !File.exist?(stm_csv)
+        validate_file_pairs(:content_at_files, stm_csv_file_proc) do |content_at_file, stm_csv_file|
+          # TODO: Update these validators to new RFile based API
           Validator::SubtitleMarkCountsMatch.new(
-            [File.open(ca), File.open(stm_csv)], @logger, @reporter, @options
+            [
+              File.open(content_at_file.filename),
+              File.open(stm_csv_file.filename)
+            ],
+            @logger,
+            @reporter,
+            @options
           ).run
           if @options['is_primary_repo']
             Validator::SubtitleMarkNoSignificantChanges.new(
-              [File.open(ca), File.open(stm_csv)], @logger, @reporter, @options
+              [
+                File.open(content_at_file.filename),
+                File.open(stm_csv_file.filename)
+              ],
+              @logger,
+              @reporter,
+              @options
             ).run
           end
         end

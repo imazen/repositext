@@ -48,7 +48,6 @@ class Repositext
 
           validate_record_mark_syntax(source, errors, warnings)
           validate_escaped_character_syntax(source, errors, warnings)
-          validate_title(source, errors, warnings)
 
           Outcome.new(errors.empty?, nil, [], errors, warnings)
         end
@@ -154,44 +153,6 @@ class Repositext
             else
               break
             end
-          end
-        end
-
-        # Validates that the main title is identical to the title in the id page.
-        # @param [String] source the kramdown source string
-        # @param [Array] errors collector for errors
-        # @param [Array] warnings collector for warnings
-        # Mutates errors and warnings in place
-        def validate_title(source, errors, warnings)
-          id_parts = Repositext::Services::ExtractContentAtIdParts.call(
-            source
-          ).result
-          # Skip this validation if source has no id_parts
-          return true  if id_parts.empty?
-
-          id_title1 = id_parts['id_title1'].first
-          main_title = Repositext::Services::ExtractContentAtMainTitle.call(
-            source
-          ).result
-          # Verify that the id_title1 is identical to the first level 1 header
-          if '' == main_title.to_s.strip
-            errors << Reportable.error(
-              [@file_to_validate.path],
-              ["Main title is missing."]
-            )
-          elsif id_title1.nil?
-            errors << Reportable.error(
-              [@file_to_validate.path],
-              [".id_title1 is missing."]
-            )
-          elsif !id_title1.index("*#{ main_title }*")
-            errors << Reportable.error(
-              [@file_to_validate.path],
-              [
-                "Main title is inconsistent with .id_title1.",
-                "Main title: #{ main_title.inspect }, .id_title1: #{ id_title1.inspect }."
-              ]
-            )
           end
         end
 

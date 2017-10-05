@@ -62,7 +62,7 @@ class Repositext
     def self.new_from_config(config)
       ct = new('_')
       ct.config = config
-      ct.base_dir = config.base_dir(:content_type)
+      ct.base_dir = config.base_dir(:content_type_dir)
       ct
     end
 
