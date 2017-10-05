@@ -156,7 +156,9 @@ end
             t_pt_id_wldc = Kramdown::Document.new(raw_title).to_plain_text.strip
             # ImplementationTag #date_code_regex
             if(md = t_pt_id_wldc.match(/([a-z]{3})(\d{2}-\d{4}[a-z]?)/i))
-              val_attrs[:language_code_from_id] = md[1].to_s.downcase.strip
+              # NOTE: Don't touch capitalization of language code. We expect them
+              # to be upper case.
+              val_attrs[:language_code_from_id] = md[1].to_s.strip
               val_attrs[:date_code_from_id] = md[2].to_s.strip
               t_pt_id = t_pt_id_wldc.sub(md.to_s, '').strip
             end
@@ -243,7 +245,8 @@ end
 
         def compute_attrs_from_filename!(content_at_file, val_attrs)
           val_attrs[:date_code_from_filename] = content_at_file.extract_date_code.to_s.strip
-          val_attrs[:language_code_from_filename] = content_at_file.language_code_3_chars.to_s.downcase.strip
+          # NOTE: We upper case all language codes for comparison
+          val_attrs[:language_code_from_filename] = content_at_file.language_code_3_chars.to_s.upcase.strip
           true
         end
 
@@ -267,7 +270,8 @@ end
             file_erp_data['englishtitle']
           )
           val_attrs[:date_code_from_erp] = file_erp_data['productid'].to_s.strip.downcase
-          val_attrs[:language_code_from_erp] = file_erp_data['languageid'].to_s.downcase.strip
+          # NOTE: We leave language code from ERP with upper case
+          val_attrs[:language_code_from_erp] = file_erp_data['languageid'].to_s.strip
           true
         end
 
