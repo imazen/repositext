@@ -257,13 +257,8 @@ end
             return true
           end
           title_sanitizer = ->(raw_title) {
-            # ignore difference in capitalization for 'And' and 'Or'
             # Replace straight apostrophes with typographic ones
-            raw_title.to_s
-                     .strip
-                     .gsub("'", '’')
-                     # .gsub('Questions And Answers On', 'Questions and Answers on')
-                     # .gsub('Questions And Answers', 'Questions and Answers')
+            raw_title.to_s.strip.gsub("'", '’')
           }
           val_attrs[:title_plain_text_from_erp] = title_sanitizer.call(
             file_erp_data['foreigntitle']
@@ -464,52 +459,54 @@ end
                 ["Primary title from ID is missing"]
               )
             end
-            pr_t_pt_erp = val_attrs[:primary_title_plain_text_from_erp]
-            if '' == pr_t_pt_erp
-              errors << Reportable.error(
-                [@file_to_validate.filename],
-                ["Primary title from ERP is missing"]
-              )
-            elsif pr_t_pt_id != pr_t_pt_erp
-              record_error = true
-              ex_pr_t_pt_id = pr_t_pt_id
-              ex_pr_t_pt_id = pr_t_pt_id
-              ex_comparer = ->(pr_t_from_erp, pr_t_from_id) { pr_t_from_erp == pr_t_from_id }
-              # Start with most specific exceptions
-              if val_attrs[:validator_exceptions].include?('ignore_end_diff_starting_at_pound_sign_erp')
-                # Remove everything from pound sign to the end in erp, then
-                # test if erp is contained in title from content
-                ex_pr_t_pt_id.sub!(/\s#.*\z/, '')
-                ex_comparer = ->(pr_t_from_erp, pr_t_from_id) { pr_t_from_id[pr_t_from_erp] }
-              end
-              if val_attrs[:validator_exceptions].include?('ignore_pound_sign_and_number_diff_erp')
-                # Remove pound signs followed by digits (and preceded by space) from erp
-                ex_pr_t_pt_id.gsub!(/\s?#\d+/, '')
-              end
-              if val_attrs[:validator_exceptions].include?('ignore_pound_sign_diff_erp')
-                # Remove pound signs from erp
-                ex_pr_t_pt_id.gsub!('#', '')
-              end
-              if val_attrs[:validator_exceptions].include?('ignore_short_word_capitalization_erp')
-                # Capitalize all small words in both and compare again
-                sw_lower_caser = ->(txt) {
-                  %w[and in of on the].each { |sw|
-                    txt.gsub(/\b#{ sw.upcase }\b/, sw)
-                  }
-                }
-                ex_pr_t_pt_id = sw_lower_caser.call(pr_t_pt_id)
-                ex_pr_t_pt_id = sw_lower_caser.call(pr_t_pt_id)
-              end
-              record_error = false  if ex_comparer.call(ex_pr_t_pt_id, ex_pr_t_pt_id)
-
-              if record_error
+            if val_attrs[:has_erp_data]
+              pr_t_pt_erp = val_attrs[:primary_title_plain_text_from_erp]
+              if '' == pr_t_pt_erp
                 errors << Reportable.error(
                   [@file_to_validate.filename],
-                  [
-                    "ERP primary title is different from ID primary title",
-                    "ERP primary title: #{ pr_t_pt_erp.inspect }, ID primary title: #{ pr_t_pt_id.inspect }"
-                  ]
+                  ["Primary title from ERP is missing"]
                 )
+              elsif pr_t_pt_id != pr_t_pt_erp
+                record_error = true
+                ex_pr_t_pt_id = pr_t_pt_id
+                ex_pr_t_pt_id = pr_t_pt_id
+                ex_comparer = ->(pr_t_from_erp, pr_t_from_id) { pr_t_from_erp == pr_t_from_id }
+                # Start with most specific exceptions
+                if val_attrs[:validator_exceptions].include?('ignore_end_diff_starting_at_pound_sign_erp')
+                  # Remove everything from pound sign to the end in erp, then
+                  # test if erp is contained in title from content
+                  ex_pr_t_pt_id.sub!(/\s#.*\z/, '')
+                  ex_comparer = ->(pr_t_from_erp, pr_t_from_id) { pr_t_from_id[pr_t_from_erp] }
+                end
+                if val_attrs[:validator_exceptions].include?('ignore_pound_sign_and_number_diff_erp')
+                  # Remove pound signs followed by digits (and preceded by space) from erp
+                  ex_pr_t_pt_id.gsub!(/\s?#\d+/, '')
+                end
+                if val_attrs[:validator_exceptions].include?('ignore_pound_sign_diff_erp')
+                  # Remove pound signs from erp
+                  ex_pr_t_pt_id.gsub!('#', '')
+                end
+                if val_attrs[:validator_exceptions].include?('ignore_short_word_capitalization_erp')
+                  # Capitalize all small words in both and compare again
+                  sw_lower_caser = ->(txt) {
+                    %w[and in of on the].each { |sw|
+                      txt.gsub(/\b#{ sw.upcase }\b/, sw)
+                    }
+                  }
+                  ex_pr_t_pt_id = sw_lower_caser.call(pr_t_pt_id)
+                  ex_pr_t_pt_id = sw_lower_caser.call(pr_t_pt_id)
+                end
+                record_error = false  if ex_comparer.call(ex_pr_t_pt_id, ex_pr_t_pt_id)
+
+                if record_error
+                  errors << Reportable.error(
+                    [@file_to_validate.filename],
+                    [
+                      "ERP primary title is different from ID primary title",
+                      "ERP primary title: #{ pr_t_pt_erp.inspect }, ID primary title: #{ pr_t_pt_id.inspect }"
+                    ]
+                  )
+                end
               end
             end
           end
@@ -522,20 +519,22 @@ end
               ["Language code from filename is missing"]
             )
           end
-          lc_erp = val_attrs[:language_code_from_erp]
-          if '' == lc_erp
-            errors << Reportable.error(
-              [@file_to_validate.filename],
-              ["Language code from ERP is missing"]
-            )
-          elsif lc_erp != lc_fn
-            errors << Reportable.error(
-              [@file_to_validate.filename],
-              [
-                "ERP language code is different from filename language code",
-                "ERP language_code: #{ lc_erp.inspect }, filename language code: #{ lc_fn.inspect }"
-              ]
-            )
+          if val_attrs[:has_erp_data]
+            lc_erp = val_attrs[:language_code_from_erp]
+            if '' == lc_erp
+              errors << Reportable.error(
+                [@file_to_validate.filename],
+                ["Language code from ERP is missing"]
+              )
+            elsif lc_erp != lc_fn
+              errors << Reportable.error(
+                [@file_to_validate.filename],
+                [
+                  "ERP language code is different from filename language code",
+                  "ERP language_code: #{ lc_erp.inspect }, filename language code: #{ lc_fn.inspect }"
+                ]
+              )
+            end
           end
 
           # Compare ID language code with filename
