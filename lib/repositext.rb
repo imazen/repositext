@@ -6,7 +6,8 @@
 # repositext.env contains standard settings. Each setting can be overwritten
 # via repositext_local_overrides.env.
 require 'dotenv'
-env_files = %w[repositext.env repositext_local_overrides.env].map { |e|
+# First file that sets a value wins, so we list defaults at the end.
+env_files = %w[repositext_local_overrides.env repositext.env].map { |e|
   File.expand_path("../../data/#{ e }", __FILE__)
 }
 Dotenv.load(*env_files)

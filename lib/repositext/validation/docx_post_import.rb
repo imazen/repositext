@@ -16,8 +16,8 @@ class Repositext
         config = @options['config']
         erp_data = Services::ErpApi.call(
           config.setting(:erp_api_protocol_and_host),
-          config.setting(:erp_api_appid),
-          config.setting(:erp_api_nameguid),
+          ENV['ERP_API_APPID'],
+          ENV['ERP_API_NAMEGUID'],
           :get_titles,
           { languageids: [@options['content_type'].language_code_3_chars] }
         )
