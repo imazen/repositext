@@ -15,6 +15,7 @@ class Repositext
         if File.exist?(filename)
           raise "File `#{ filename }` already exists!"
         end
+        FileUtils.mkdir_p(File.dirname(filename))
         File.write(filename, default_file_contents)
       end
 
