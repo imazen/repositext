@@ -299,15 +299,18 @@ end
           end
           if val_attrs[:has_erp_data]
             t_pt_erp = val_attrs[:title_plain_text_from_erp]
+            # convert non-breaking hyphens to regular ones when comparing
+            # content to erp.
+            t_pt_c_for_erp_comparison = t_pt_c.gsub('&#x2011;', '-')
             if '' == t_pt_erp
               errors << Reportable.error(
                 [@file_to_validate.filename],
                 ["Title (plain text) from ERP is missing"]
               )
-            elsif t_pt_erp != t_pt_c
+            elsif t_pt_erp != t_pt_c_for_erp_comparison
               record_error = true
               ex_t_pt_erp = t_pt_erp
-              ex_t_pt_c = t_pt_c
+              ex_t_pt_c = t_pt_c_for_erp_comparison
               ex_comparer = ->(t_from_erp, t_from_c) { t_from_erp == t_from_c }
               # Start with most specific exceptions
               if val_attrs[:validator_exceptions].include?('ignore_end_diff_starting_at_pound_sign_erp')
@@ -341,7 +344,7 @@ end
                   [@file_to_validate.filename],
                   [
                     "ERP title is different from content title (plain text)",
-                    "ERP title: #{ t_pt_erp.inspect }, Content title: #{ t_pt_c.inspect }"
+                    "ERP title: #{ t_pt_erp.inspect }, Content title: #{ t_pt_c_for_erp_comparison.inspect }"
                   ]
                 )
               end
