@@ -300,8 +300,9 @@ end
           if val_attrs[:has_erp_data]
             t_pt_erp = val_attrs[:title_plain_text_from_erp]
             # convert non-breaking hyphens to regular ones when comparing
-            # content to erp.
+            # content to erp. (both encoded and decoded)
             t_pt_c_for_erp_comparison = t_pt_c.gsub('&#x2011;', '-')
+                                              .gsub('‑', '-')
             if '' == t_pt_erp
               errors << Reportable.error(
                 [@file_to_validate.filename],
