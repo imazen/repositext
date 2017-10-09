@@ -117,14 +117,14 @@ end
             return Outcome.new(false, nil, [], errors, warnings)
           end
 
-          # Early exit if we skip the validation
-          if val_attrs[:exceptions].include?('skip')
-            warnings << Reportable.warning(
-              [content_at_file.filename],
-              ['Skipped "TitleConsistency" validator']
-            )
-            return Outcome.new(true, nil, [], errors, warnings)
-          end
+          # # Early exit if we skip the validation
+          # if val_attrs[:exceptions].include?('skip')
+          #   warnings << Reportable.warning(
+          #     [content_at_file.filename],
+          #     ['Skipped "TitleConsistency" validator']
+          #   )
+          #   return Outcome.new(true, nil, [], errors, warnings)
+          # end
 
           extract_raw_attrs!(content_at_file, val_attrs, all_erp_data)
           prepare_validation_attrs!(content_at_file, val_attrs)
@@ -483,14 +483,14 @@ end
           pa_c = val_attrs[:prepared][:content]
           pa_erp = val_attrs[:prepared][:erp]
 
-          if '' == pa_c[:title_for_erp]
+          if '' == pa_c[:title_for_erp].to_s
             errors << Reportable.error(
               [@file_to_validate.filename],
               ["Title from content is missing"]
             )
           end
           if val_attrs[:has_erp_data]
-            if '' == pa_erp[:title]
+            if '' == pa_erp[:title].to_s
               errors << Reportable.error(
                 [@file_to_validate.filename],
                 ["Title from ERP is missing"]
@@ -526,14 +526,14 @@ end
           pa_erp = val_attrs[:prepared][:erp]
 
           # Compare ERP datecode with filename (primary and foreign)
-          if '' == pa_fn[:date_code]
+          if '' == pa_fn[:date_code].to_s
             errors << Reportable.error(
               [@file_to_validate.filename],
               ["Date code from filename is missing"]
             )
           end
           if val_attrs[:has_erp_data]
-            if '' == pa_erp[:date_code]
+            if '' == pa_erp[:date_code].to_s
               errors << Reportable.error(
                 [@file_to_validate.filename],
                 ["Date code from ERP is missing"]
@@ -551,14 +551,14 @@ end
 
           # Compare ERP language code with filename (foreign only)
           if !val_attrs[:is_primary]
-            if '' == pa_fn[:language_code]
+            if '' == pa_fn[:language_code].to_s
               errors << Reportable.error(
                 [@file_to_validate.filename],
                 ["Language code from filename is missing"]
               )
             end
             if val_attrs[:has_erp_data]
-              if '' == pa_erp[:language_code]
+              if '' == pa_erp[:language_code].to_s
                 errors << Reportable.error(
                   [@file_to_validate.filename],
                   ["Language code from ERP is missing"]
@@ -582,7 +582,7 @@ end
 
           # Compare ID title with content
           if val_attrs[:has_id_parts]
-            if '' == pa_id[:title]
+            if '' == pa_id[:title].to_s
               errors << Reportable.error(
                 [@file_to_validate.filename],
                 ["Title from id is missing"]
@@ -605,14 +605,14 @@ end
 
           # Compare primary ID title with ERP for foreign files only
           if !val_attrs[:is_primary] && val_attrs[:has_id_parts]
-            if '' == pa_id[:primary_title]
+            if '' == pa_id[:primary_title].to_s
               errors << Reportable.error(
                 [@file_to_validate.filename],
                 ["Primary title from ID is missing"]
               )
             end
             if val_attrs[:has_erp_data]
-              if '' == pa_erp[:primary_title]
+              if '' == pa_erp[:primary_title].to_s
                 errors << Reportable.error(
                   [@file_to_validate.filename],
                   ["Primary title from ERP is missing"]
@@ -637,7 +637,7 @@ end
 
           # Compare ID datecode with filename (primary and foreign)
           if val_attrs[:has_id_parts]
-            if '' == pa_id[:date_code]
+            if '' == pa_id[:date_code].to_s
               errors << Reportable.error(
                 [@file_to_validate.filename],
                 ["Date code from ID is missing"]
@@ -655,7 +655,7 @@ end
 
           # Compare ID language code with filename (foreign only)
           if !val_attrs[:is_primary] && val_attrs[:has_id_parts]
-            if '' == pa_id[:language_code]
+            if '' == pa_id[:language_code].to_s
               errors << Reportable.error(
                 [@file_to_validate.filename],
                 ["Language code from ID is missing"]
