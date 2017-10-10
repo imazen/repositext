@@ -84,6 +84,12 @@ class Repositext
       str.index('.') || str.index('!') || str.index('?')
     end
 
+     # Returns list of words that may be capitalized differently in titles.
+    def short_words_for_title_capitalization
+      # Override this method in subclasses
+      []
+    end
+
     def inspect
       %(#<#{ self.class.name }:#{ object_id } @name=#{ name.inspect } @code_2_chars=#{ code_2_chars.inspect } @code_3_chars=#{ code_3_chars.inspect }>)
     end

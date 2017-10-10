@@ -668,7 +668,12 @@ class Repositext
                 TitleConsistency,
                 primary_content_at_file
               )
-              validator.send(:apply_exceptions_content, attrs, exceptions).must_equal(xpect)
+              validator.send(
+                :apply_exceptions_content,
+                attrs,
+                exceptions,
+                primary_content_at_file.language
+              ).must_equal(xpect)
             end
           end
         end
@@ -736,7 +741,12 @@ class Repositext
                 TitleConsistency,
                 primary_content_at_file
               )
-              validator.send(:apply_exceptions_erp, attrs, exceptions).must_equal(xpect)
+              validator.send(
+                :apply_exceptions_erp,
+                attrs,
+                exceptions,
+                primary_content_at_file.language
+              ).must_equal(xpect)
             end
           end
         end
@@ -771,7 +781,12 @@ class Repositext
                 TitleConsistency,
                 primary_content_at_file
               )
-              validator.send(:apply_exceptions_erp, attrs, exceptions).must_equal(xpect)
+              validator.send(
+                :apply_exceptions_erp,
+                attrs,
+                exceptions,
+                primary_content_at_file.language
+              ).must_equal(xpect)
             end
           end
         end

@@ -248,7 +248,7 @@ end
               ),
             }
           end
-          r = apply_exceptions_content(r, val_attrs[:exceptions])
+          r = apply_exceptions_content(r, val_attrs[:exceptions], content_at_file.language)
           val_attrs[:prepared][:content] = r
           true
         end
@@ -266,7 +266,7 @@ end
             date_code: ra[:date_code].to_s.strip.downcase,
             language_code: ra[:language_code].to_s.strip,
           }
-          r = apply_exceptions_erp(r, val_attrs[:exceptions])
+          r = apply_exceptions_erp(r, val_attrs[:exceptions], content_at_file.language)
           val_attrs[:prepared][:erp] = r
         end
 
@@ -344,21 +344,23 @@ end
               ''
             end
           end
-          r = apply_exceptions_id(r, val_attrs[:exceptions])
+          r = apply_exceptions_id(r, val_attrs[:exceptions], content_at_file.language)
           val_attrs[:prepared][:id] = r
         end
 
-        def apply_exceptions_content(attrs, exceptions)
+        def apply_exceptions_content(attrs, exceptions, language)
           na = attrs.dup
           if exceptions.include?('ignore_end_diff_starting_at_pound_sign_erp')
             # N/A
           end
           if exceptions.include?('ignore_short_word_capitalization')
             na[:title_for_erp] = apply_exception_ignore_short_word_capitalization(
-              na[:title_for_erp]
+              na[:title_for_erp],
+              language
             )
             na[:title_for_id] = apply_exception_ignore_short_word_capitalization(
-              na[:title_for_id]
+              na[:title_for_id],
+              language
             )
           end
           if exceptions.include?('multi_level_title')
@@ -366,53 +368,63 @@ end
           end
           if exceptions.include?('remove_trailing_digits_content')
             na[:title_for_erp] = apply_exception_remove_trailing_digits(
-              na[:title_for_erp]
+              na[:title_for_erp],
+              language
             )
             na[:title_for_id] = apply_exception_remove_trailing_digits(
-              na[:title_for_id]
+              na[:title_for_id],
+              language
             )
           end
           na
         end
 
-        def apply_exceptions_erp(attrs, exceptions)
+        def apply_exceptions_erp(attrs, exceptions, language)
           na = attrs.dup
           if exceptions.include?('ignore_end_diff_starting_at_pound_sign_erp')
             na[:title] = apply_exception_ignore_end_diff_starting_at_pound_sign(
-              na[:title]
+              na[:title],
+              language
             )
             na[:primary_title] = apply_exception_ignore_end_diff_starting_at_pound_sign(
-              na[:primary_title]
+              na[:primary_title],
+              language
             )
           end
           if exceptions.include?('ignore_short_word_capitalization')
             na[:title] = apply_exception_ignore_short_word_capitalization(
-              na[:title]
+              na[:title],
+              language
             )
             na[:primary_title] = apply_exception_ignore_short_word_capitalization(
-              na[:primary_title]
+              na[:primary_title],
+              language
             )
           end
           if exceptions.include?('remove_pound_sign_and_digits_erp')
             na[:title] = apply_exception_remove_pound_sign_and_digits(
-              na[:title]
+              na[:title],
+              language
             )
             na[:primary_title] = apply_exception_remove_pound_sign_and_digits(
-              na[:primary_title]
+              na[:primary_title],
+              language
             )
           end
           if exceptions.include?('remove_pound_sign_erp')
             na[:title] = apply_exception_remove_pound_sign(
-              na[:title]
+              na[:title],
+              language
             )
             na[:primary_title] = apply_exception_remove_pound_sign(
-              na[:primary_title]
+              na[:primary_title],
+              language
             )
           end
           na
         end
 
-        def apply_exceptions_id(attrs, exceptions)
+        def apply_exceptions_id(attrs, exceptions, language)
           na = attrs.dup
           if exceptions.include?('ignore_short_word_capitalization')
             na[:title] = apply_exception_ignore_short_word_capitalization(
@@ -428,31 +440,31 @@ end
           na
         end
 
-        def apply_exception_ignore_end_diff_starting_at_pound_sign(title)
+        def apply_exception_ignore_end_diff_starting_at_pound_sign(title, language)
           # Remove everything from pound sign to the end
           # test if erp is contained in title from content
           title.sub(/\s#.*\z/, '')
         end
 
-        def apply_exception_ignore_short_word_capitalization(title)
+        def apply_exception_ignore_short_word_capitalization(title, language)
           nt = title.dup
-          %w[and in of on the].each { |sw|
+          language.short_words_for_title_capitalization.each { |sw|
             nt.gsub!(/\b#{ sw }\b/i, sw)
           }
           nt
         end
 
-        def apply_exception_remove_pound_sign_and_digits(title)
+        def apply_exception_remove_pound_sign_and_digits(title, language)
           # Remove pound signs followed by digits (and preceded by space)
           title.gsub(/\s?#\d+/, '')
         end
 
-        def apply_exception_remove_pound_sign(title)
+        def apply_exception_remove_pound_sign(title, language)
           # Remove pound signs
           title.gsub('#', '')
         end
 
-        def apply_exception_remove_trailing_digits(title)
+        def apply_exception_remove_trailing_digits(title, language)
           # Remove trailing digits and preceding whitespace both in plain text
           # and kramdown
           title.gsub(/\s?\*\d+\*\{\:[^\}]+\}\z/, '')
