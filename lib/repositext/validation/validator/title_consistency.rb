@@ -311,7 +311,9 @@ end
             # We remove language and date code from kramdown title and we extract
             # and remove them from the plain text title.
             # ImplementationTag #date_code_regex
-            t_kd = remove_linebreaks_kramdown(raw_title.sub(/[a-z]{3}\d{2}-\d{4}[a-z]?.*\z/i, '')).strip
+            t_kd = remove_linebreaks_kramdown(
+              raw_title.sub(/[a-z]{3}\d{2}-\d{4}[a-z]?.*\z/i, '')
+            ).strip
             t_pt_wldc = Kramdown::Document.new(raw_title).to_plain_text.strip
             t_pt = nil
             # ImplementationTag #date_code_regex
