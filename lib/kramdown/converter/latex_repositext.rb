@@ -138,7 +138,7 @@ module Kramdown
             # render in RtTitle2 environment
             l_title = inner(el, opts.merge(smallcaps_font_override: opts[:title_font_name]))
             # capture any level 2 header and append to document title
-            @document_title_plain_text << " #{ @options[:language].chars[:em_dash] } #{ el.to_plain_text }"
+            @document_title_plain_text << " #{ @options[:language].chars[:em_dash] } #{ el.to_plain_text.strip }"
             @document_title_latex << " #{ @options[:language].chars[:em_dash] } #{ l_title }"
             # NOTE: We insert a percent sign immediately after l_title to prevent trailing whitespace
             # which would break the centering of the text.
