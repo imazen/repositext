@@ -474,6 +474,7 @@ end
 
         def remove_linebreaks_kramdown(txt)
           txt.gsub("*{: .italic .smcaps} *.*{: .line_break}*", ' ')
+             .gsub(" *.*{: .line_break}", ' ')
         end
 
         def remove_linebreaks_plain_text(txt)
