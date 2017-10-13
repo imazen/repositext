@@ -186,7 +186,7 @@ module Kramdown
               # render in RtIdTitle1 environment
               before.prepend("\\begin{RtIdTitle1}\n")
               after << "\n\\end{RtIdTitle1}"
-              inner_text = inner(el, opts.merge(smallcaps_font_override: @options[:title_font_name]))
+              inner_text = inner(el, opts.merge(smallcaps_font_override: @options[:id_title_font_name]))
               # differentiate between primary and non-primary content_types
               if !@options[:is_primary_repo]
                 # add space between title and date code
@@ -198,12 +198,12 @@ module Kramdown
               # render in RtIdTitle2 environment
               before.prepend("\\begin{RtIdTitle2}\n")
               after << "\n\\end{RtIdTitle2}"
-              inner_text = inner(el, opts.merge(smallcaps_font_override: @options[:title_font_name]))
+              inner_text = inner(el, opts.merge(smallcaps_font_override: @options[:id_title_font_name]))
             elsif el.has_class?('id_title3')
               # render in RtIdTitle3 environment
               before.prepend("\\begin{RtIdTitle3}\n")
               after << "\n\\end{RtIdTitle3}"
-              inner_text = inner(el, opts.merge(smallcaps_font_override: @options[:title_font_name]))
+              inner_text = inner(el, opts.merge(smallcaps_font_override: @options[:id_title_font_name]))
             elsif el.has_class?('normal')
               # render in RtNormal environment
               before.prepend("\\begin{RtNormal}\n")
