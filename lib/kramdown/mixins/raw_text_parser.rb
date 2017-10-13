@@ -24,6 +24,7 @@ module Kramdown
         new_el_opts = (l = tree.options[:location]) ? { :location => l } : {}
         # Parse raw_text for multibyte characters
         # TODO: refactor this into a constant
+        # ImplementationTag #supported_multibyte_chars
         multibyte_char_re = /[\u00A0\u200B\u2011\u2028\u202F\uFEFF]/
         src = Kramdown::Utils::StringScanner.new(raw_text)
         while !src.eos?

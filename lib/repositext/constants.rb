@@ -28,6 +28,7 @@ class Repositext
   # We use this character to delimit sentences, e.g., in Lucene exported plain
   # text proximity
   # 0x256B - Box Drawings Vertical Double And Horizontal Single
+  # (utf8 representation: E2 95 AB)
   SENTENCE_DELIMITER = "╫"
   SENTENCE_TERMINATOR_CHARS = ['.', '!', '?']
 
