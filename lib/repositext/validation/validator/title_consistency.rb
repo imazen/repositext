@@ -428,10 +428,12 @@ end
           na = attrs.dup
           if exceptions.include?('ignore_short_word_capitalization')
             na[:title] = apply_exception_ignore_short_word_capitalization(
-              na[:title]
+              na[:title],
+              language
             )
             na[:primary_title] = apply_exception_ignore_short_word_capitalization(
-              na[:primary_title]
+              na[:primary_title],
+              language
             )
           end
           if exceptions.include?('multi_level_title')
