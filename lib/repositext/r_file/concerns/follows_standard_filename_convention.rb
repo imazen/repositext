@@ -17,7 +17,7 @@ class Repositext
           file_path = Dir.glob(
             File.join(
               content_type.base_dir,
-              "content/**/[a-z]{3}?#{ date_code }_*#{ extension }"
+              "content/**/[a-z][a-z][a-z]#{ date_code }_*#{ extension }"
             )
           ).first
           return nil  if file_path.nil?
