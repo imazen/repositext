@@ -57,6 +57,8 @@ class Repositext
             next  if st_changes.nil?
             sts_with_changes << st_changes
           }
+          # Skip this file if it doesn't have any sts_with_changes
+          return nil  if sts_with_changes.empty?
           {
             "file_path" => @content_at_file_shell.repo_relative_path,
             "product_identity_id" => @content_at_file_shell.extract_product_identity_id,
