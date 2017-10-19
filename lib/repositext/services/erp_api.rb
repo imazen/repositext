@@ -52,7 +52,7 @@ class Repositext
             nameguid: @nameguid,
           },
           timeout: 20,
-          debug_output: $stdout
+          # debug_output: $stdout
         )
         response.parsed_response['data']
       end
