@@ -30,6 +30,10 @@ class Repositext
         export_pdf_base(
           'pdf_book',
           options.merge(
+            :dist_add_primary_title => true,
+            :dist_add_suffix => true,
+            :dist_modify_date_code_and_product_identity_id => true,
+            :dist_remove_pdf_type => true,
             'include-version-control-info' => false,
             'pdf_export_size' => 'book',
           )
@@ -79,9 +83,11 @@ class Repositext
         export_pdf_base(
           'pdf_recording',
           options.merge(
-            add_title_to_filename: true,
+            :dist_add_primary_title => true,
+            :dist_add_suffix => false,
+            :dist_modify_date_code_and_product_identity_id => true,
+            :dist_remove_pdf_type => false,
             include_id_recording: true,
-            rename_file_extension_filter: '.recording-{stitched,bound}.pdf',
             skip_file_proc: skip_file_proc,
             'pdf_export_size' => 'enlarged',
           )
@@ -116,9 +122,11 @@ class Repositext
         export_pdf_base(
           'pdf_recording_merged',
           options.merge(
-            add_title_to_filename: true,
+            :dist_add_primary_title => true,
+            :dist_add_suffix => false,
+            :dist_modify_date_code_and_product_identity_id => true,
+            :dist_remove_pdf_type => false,
             include_id_recording: true,
-            rename_file_extension_filter: '.recording_merged-{stitched,bound}.pdf',
             skip_file_proc: skip_file_proc,
             pre_process_content_proc: pre_process_content_proc,
             post_process_latex_proc: post_process_latex_proc,
@@ -227,6 +235,22 @@ class Repositext
           delete_pdf_exports({ 'file-selector' => "**/*"}.merge(options))
         end
 
+        erp_data = Services::ErpApi.call(
+          config.setting(:erp_api_protocol_and_host),
+          ENV['ERP_API_APPID'],
+          ENV['ERP_API_NAMEGUID'],
+          :get_pdf_public_versions,
+          { languageids: [content_type.language_code_3_chars] }
+        )
+        primary_titles_and_public_version_ids = options[:primary_titles_override] || erp_data.inject({}) { |m,e|
+          pi_id = e['productidentityid'].to_s.rjust(4, '0')
+          m[pi_id] = {
+            primary_title: e['englishtitle'],
+            public_version_id: e['publicversionid']
+          }
+          m
+        }
+
         input_base_dir = config.compute_base_dir(options['base-dir'] || :content_dir)
         input_file_selector = config.compute_file_selector(options['file-selector'] || :all_files)
         input_file_extension = config.compute_file_extension(options['file-extension'] || :at_extension)
@@ -276,7 +300,6 @@ class Repositext
           vbadness_penalty: config.setting(:pdf_export_vbadness_penalty),
           version_control_page: options['include-version-control-info'],
         })
-        primary_titles = options[:primary_titles_override] || compute_primary_titles # hash with product indentity ids as keys and primary titles as values
         Repositext::Cli::Utils.export_files(
           input_base_dir,
           input_file_selector,
@@ -291,6 +314,9 @@ class Repositext
         ) do |content_at_file|
           contents = content_at_file.contents
           filename = content_at_file.filename
+          product_identity_id = content_at_file.extract_product_identity_id
+          primary_title = primary_titles_and_public_version_ids[product_identity_id][:primary_title]
+          public_version_id = primary_titles_and_public_version_ids[product_identity_id][:public_version_id]
           config.update_for_file(filename.gsub(/\.at\z/, '.data.json'))
           pdf_export_binding = config.setting(:pdf_export_binding)
           # Options in this section get updated on a per-file basis.
@@ -304,7 +330,7 @@ class Repositext
           options[:font_leading] = config.setting(:pdf_export_font_leading)
           options[:font_name] = config.setting(:pdf_export_font_name)
           options[:font_size] = config.setting(:pdf_export_font_size)
-          options[:footer_title_english] = primary_titles[content_at_file.extract_product_identity_id(false)]
+          options[:footer_title_english] = primary_title
           options[:has_id_page] = config.setting(:pdf_export_has_id_page)
           options[:header_font_name] = config.setting(:pdf_export_header_font_name)
           options[:header_footer_rules_present] = config.setting(:pdf_export_header_footer_rules_present)
@@ -330,6 +356,7 @@ class Repositext
             options['pdf_export_size']
           )
           options[:paragraph_number_font_name] = config.setting(:pdf_export_paragraph_number_font_name)
+          options[:pv_id] = public_version_id
           options[:question1_indent] = config.setting(:pdf_export_question1_indent)
           options[:question2_indent] = config.setting(:pdf_export_question2_indent)
           options[:question3_indent] = config.setting(:pdf_export_question3_indent)
@@ -391,41 +418,9 @@ class Repositext
           validate_pdf_export(options)
         end
 
-        # Add title to filename after validations have run (validations require
-        # conventional filenames)
-        if options[:add_title_to_filename]
-          sanitized_primary_titles = primary_titles.inject({}) { |m, (pid, title)|
-            # sanitize titles: remove anything other than letters or numbers,
-            # collapse whitespace and replace with underscore.
-            # We also zero pad product_identity_ids to 4 digits.
-            m[pid.rjust(4, '0')] = title.downcase
-                          .strip
-                          .gsub(/[^a-z\d\s]/, '')
-                          .gsub(/\s+/, '_')
-            m
-          }
-          file_rename_proc = Proc.new { |input_filename|
-            r_file_stub = RFile::Content.new('_', Language.new, input_filename)
-            product_identity_id = r_file_stub.extract_product_identity_id
-            title = sanitized_primary_titles[product_identity_id]
-            # insert title into filename
-            # Regex contains negative lookahead to make sure product identity id
-            # is not followed by title already to avoid duplicate insertion of titles
-            input_filename.sub(
-              /_#{ product_identity_id }\.(?!\-\-)/,
-              "_#{ product_identity_id }.--#{ title }--.",
-            )
-          }
-          distribute_add_title_to_filename(
-            {
-              :input_base_dir => config.compute_base_dir(:pdf_export_dir),
-              :input_file_selector => config.compute_file_selector(options['file-selector'] || :all_files),
-              :input_file_extension => options[:rename_file_extension_filter],
-              :file_rename_proc => file_rename_proc,
-              'file_filter' => options['file_filter'] || /\A((?!.--).)*\z/, # doesn't contain title already
-            }
-          )
-        end
+        handle_distribution(options, primary_titles_and_public_version_ids)
+
+        true
       end
 
     private
@@ -469,9 +464,52 @@ class Repositext
         ]
       end
 
-      # Returns a hash with English titles as values and date code as keys
-      def compute_primary_titles
-        raise "Implement me in sub-class"
+      # @param options [Hash]
+      # @param primary_titles_and_public_version_ids [Hash] with product_identity_ids
+      #   as keys and a hash with :primary_title and :public_version_id as value.
+      def handle_distribution(options, primary_titles_and_public_version_ids)
+        dist_option_keys = [
+          :dist_add_primary_title,
+          :dist_add_suffix,
+          :dist_modify_date_code_and_product_identity_id,
+          :dist_remove_pdf_type,
+        ]
+        # Early exit if no distribution required
+        return true  if dist_option_keys.none? { |e| options[e] }
+
+        # Copy files
+        puts " * copying files to distribution"
+        copy_pdf_export_to_distribution(options)
+        # Rename files
+        puts " * renaming files in distribution"
+        # NOTE: This has to be done before dist_modify_date_code_and_product_identity_id!
+        if options[:dist_add_primary_title]
+          # Add title, and optionally suffix
+          distribute_pdf_export_add_primary_title(
+            options.merge(
+              primary_titles: primary_titles_and_public_version_ids.inject({}) { |m,(pi_id, attrs)|
+                m[pi_id] = attrs[:primary_title]
+                m
+              },
+              pdf_export_filename_title_suffix: pdf_export_filename_title_suffix
+            )
+          )
+        end
+        if options[:dist_remove_pdf_type]
+          distribute_pdf_export_remove_pdf_type(options)
+        end
+
+        # Dependency boundary
+
+        if options[:dist_modify_date_code_and_product_identity_id]
+          distribute_pdf_export_modify_date_code_and_product_identity_id(options)
+        end
+      end
+
+      # Returns the suffix to be added to titles in pdf filenames if the option
+      # :dist_add_suffix is given.
+      def pdf_export_filename_title_suffix
+        ' filename title suffix'
       end
 
       def pdf_test_contents

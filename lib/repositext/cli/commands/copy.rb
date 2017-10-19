@@ -55,6 +55,42 @@ class Repositext
         )
       end
 
+      # Copy PDF export files to distribution dir.
+      # Creates distribution dir if it doesn't exist already and deletes any
+      # files currently in distribution dir.
+      # @param options [Hash]
+      def copy_pdf_export_to_distribution(options)
+        # Create distribution dir if it doesn't exist yet
+        output_base_dir = options['output'] || config.compute_base_dir(:pdf_export_distribution_dir)
+        FileUtils.mkdir_p(output_base_dir)
+
+        # Delete all files in distribution dir
+        delete_files(
+          'base-dir' => output_base_dir,
+          'file-selector' => "*",
+          'file-extension' => config.compute_file_extension(:pdf_extension),
+        )
+
+        # Copy exported files into distribution dir
+        input_base_dir = config.compute_base_dir(options['base-dir'] || :pdf_export_dir)
+        input_file_selector = config.compute_file_selector(options['file-selector'] || :all_files)
+        input_file_extension = config.compute_file_extension(options['file-extension'] || :pdf_extension)
+
+        Repositext::Cli::Utils.copy_files(
+          input_base_dir,
+          input_file_selector,
+          input_file_extension,
+          output_base_dir,
+          options['file_filter'],
+          "Copying exported PDF files to distribution directory",
+          options.merge(
+            :output_path_lambda => lambda { |input_filename|
+              File.join(output_base_dir, File.basename(input_filename))
+            }
+          )
+        )
+      end
+
       # Copy subtitle_marker csv files to content for subtitle import. Also renames files like so:
       # `59-0125_0547.markers.txt` => `eng59-0125_0547.subtitle_markers.csv`.
       # @param options [Hash]

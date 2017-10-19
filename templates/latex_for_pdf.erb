@@ -27,8 +27,8 @@
   pdftitle={<%= [@date_code.upcase, @document_title_plain_text, @company_short_name].compact.join(' ') %>},
   pdfsubject={<%= [@date_code.upcase, @document_title_plain_text].compact.join(' ') %>},
   pdfkeywords={<%= [@metadata_additional_keywords, @date_code.upcase, @document_title_plain_text, @company_short_name].compact.join(', ') %>},
-  pdfproducer={<%= [@company_long_name, @pdf_pv_id].compact.join(' - ') %>},
-  pdfcreator={<%= [@company_long_name, @pdf_pv_id].compact.join(' - ') %>}]{hyperref}
+  pdfproducer={<%= [@company_long_name, @pv_id].compact.join(' - ') %>},
+  pdfcreator={<%= [@company_long_name, @pv_id].compact.join(' - ') %>}]{hyperref}
 
 % fontspec to use custom fonts, silence doesn't add any font warnings to the log file to reduce noise.
 \usepackage[silent]{fontspec}
