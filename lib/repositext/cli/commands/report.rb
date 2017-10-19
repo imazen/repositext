@@ -479,6 +479,70 @@ class Repositext
         }
       end
 
+      # Prints a list of public version ids (or their absence) for all files
+      # matching (the mandatory) file-selector argument.
+      # Raises an error if no file-selector is given.
+      # File selector has to be provided either via
+      # * --dc option OR
+      # * --file-selector option in the form "**/*{<date code>,<date code>}*"
+      # Key is that we need a specific list of files and not a pattern that matches
+      # a group of files (e.g., just the year)
+      def report_pdf_public_version_ids(options)
+        # Validate that file-selector is given
+        if options['file-selector'].blank? || !options['file-selector'][/\{[^\}]+\}/]
+          raise ArgumentError.new(
+            "\n\nYou must provide a list of files for this command via --dc or --file-selector (using \"**/*{<date code>,<date code>}*\").\n".color(:red)
+          )
+        end
+        # Compute list of all files matching file-selector
+        file_list_pattern = config.compute_glob_pattern(
+          options['base-dir'] || :content_dir,
+          options['file-selector'],
+          options['file-extension'] || :at_extension
+        )
+        file_list = Dir.glob(file_list_pattern)
+        language = content_type.language
+        file_pi_ids_and_datecodes = file_list.map { |filename|
+          rf = RFile::Content.new(
+            '_',
+            language,
+            filename
+          )
+          [rf.extract_product_identity_id, rf.extract_date_code]
+        }
+        erp_data = Services::ErpApi.call(
+          config.setting(:erp_api_protocol_and_host),
+          ENV['ERP_API_APPID'],
+          ENV['ERP_API_NAMEGUID'],
+          :get_pdf_public_versions,
+          {
+            languageids: [content_type.language_code_3_chars],
+            ids: file_pi_ids_and_datecodes.map(&:first)
+          }
+        )
+        pdf_export_validate_erp_data(erp_data)
+        primary_titles_and_public_version_ids = erp_data.inject({}) { |m,e|
+          pi_id = e['productidentityid'].to_s.rjust(4, '0')
+          m[pi_id] = {
+            primary_title: e['englishtitle'],
+            public_version_id: e['publicversionid']
+          }
+          m
+        }
+        puts
+        puts("Public version IDs from ERP:".color(:blue))
+        puts("----------------------------".color(:blue))
+        file_pi_ids_and_datecodes.each { |(file_pi_id, date_code)|
+          combined_marker = [date_code, file_pi_id].join('_')
+          if(attrs = primary_titles_and_public_version_ids[file_pi_id])
+            puts " * #{ combined_marker } - #{ attrs[:public_version_id] }"
+          else
+            puts(" * No data given for #{ combined_marker }".color(:yellow))
+          end
+        }
+        puts
+      end
+
       def report_subtitle_mark_count(options)
         file_count = 0
         files_with_subtitle_marks = []
