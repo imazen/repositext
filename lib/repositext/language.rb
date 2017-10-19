@@ -45,7 +45,7 @@ class Repositext
       self.class.chars
     end
 
-    # @param lang_code [Symbol, String] 2 or 3 character language code
+    # @param lang_code [Symbol, String] 2 or 3 character language code (lower case)
     def self.find_by_code(lang_code)
       symbolized_lang_code = lang_code.to_sym
       lang_attrs = case symbolized_lang_code.length
@@ -97,6 +97,28 @@ class Repositext
     # @return [String]
     def name
       self.class.name.split('::').last
+    end
+
+    # Returns self's repo base directory name (last segment).
+    # Example: Language::HawaiianCreole => "hawaiian-creole"
+    # @return [String]
+    def repo_base_dir_name
+      name.underscore.dasherize
+    end
+
+    # Returns absolute path to repo_base_dir.
+    # Expects pwd to be in one of the language dirs.
+    # @return [String]
+    def repo_base_dir
+      File.expand_path("../#{ repo_base_dir_name }", Dir.pwd)
+    end
+
+    # @param repo_dir_name [String] e.g., "english" or "haitian-creole"
+    # @return [Language]
+    def self.find_by_repo_dir_name(repo_dir_name)
+      # Convert 'haitian-creole' => 'HaitianCreole'
+      lang_class_name = repo_dir_name.split('-').map { |e| e.capitalize }.join
+      Object.const_get("Repositext::Language::#{ lang_class_name }").new
     end
 
     def split_into_words(txt)

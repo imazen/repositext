@@ -24,6 +24,7 @@ require 'active_support/core_ext/module/delegation'
 require 'active_support/core_ext/object/blank'
 require 'active_support/core_ext/string/access'
 require 'active_support/core_ext/string/filters'
+require 'active_support/core_ext/string/inflections'
 require 'active_support/concern'
 
 # Dependency boundary
