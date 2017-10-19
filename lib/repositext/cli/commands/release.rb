@@ -30,18 +30,18 @@ class Repositext
             '_',
             language,
             filename
-          ).extract_product_identity_id(false)
+          ).extract_product_identity_id(false).to_i
         }
         # Request new public version ids for list of files
-        erp_data = Services::ErpApi.call(
+        erp_response = Services::ErpApi.call(
           config.setting(:erp_api_protocol_and_host),
           ENV['ERP_API_APPID'],
           ENV['ERP_API_NAMEGUID'],
           :increment_pdf_public_version_id,
           {
-            languageids: [language.code_3_chars],
-            ids: file_pi_ids,
-            isnew: true,
+            languageids: [language.code_3_chars].join(','),
+            ids: file_pi_ids.join(','),
+            isnew: 1,
           }
         )
       end
