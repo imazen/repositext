@@ -521,23 +521,36 @@ class Repositext
           }
         )
         pdf_export_validate_erp_data(erp_data)
-        primary_titles_and_public_version_ids = erp_data.inject({}) { |m,e|
+        public_version_ids_and_versions = erp_data.inject({}) { |m,e|
           pi_id = e['productidentityid'].to_s.rjust(4, '0')
           m[pi_id] = {
-            primary_title: e['englishtitle'],
-            public_version_id: e['publicversionid']
+            public_version_id: e['publicversionid'].to_s,
+            version: e['version'].to_s,
           }
           m
         }
         puts
-        puts("Public version IDs from ERP:".color(:blue))
-        puts("----------------------------".color(:blue))
+        puts("Public version IDs and Versions from ERP:".color(:blue))
+        puts("-----------------------------------------".color(:blue))
+        puts "   [Date code]     [PV id]  [Version]"
         file_pi_ids_and_datecodes.each { |(file_pi_id, date_code)|
           combined_marker = [date_code, file_pi_id].join('_')
-          if(attrs = primary_titles_and_public_version_ids[file_pi_id])
-            puts " * #{ combined_marker } - #{ attrs[:public_version_id] }"
+          if(attrs = public_version_ids_and_versions[file_pi_id])
+            puts [
+              ' * ',
+              combined_marker.ljust(13, ' '),
+              attrs[:public_version_id].rjust(10, ' '),
+              attrs[:version].rjust(11, ' '),
+            ].join
           else
-            puts(" * No data given for #{ combined_marker }".color(:yellow))
+            puts(
+              [
+                ' * ',
+                combined_marker.ljust(13, ' '),
+                '-'.rjust(10, ' '),
+                '-'.rjust(11, ' '),
+              ].join.color(:yellow)
+            )
           end
         }
         puts
