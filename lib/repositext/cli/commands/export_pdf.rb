@@ -235,12 +235,31 @@ class Repositext
           delete_pdf_exports({ 'file-selector' => "**/*"}.merge(options))
         end
 
+        # Compute list of all files matching file-selector
+        file_list_pattern = config.compute_glob_pattern(
+          options['base-dir'] || :content_dir,
+          options['file-selector'] || :all_files,
+          options['file-extension'] || :at_extension
+        )
+        file_list = Dir.glob(file_list_pattern)
+        language = content_type.language
+        file_pi_ids = file_list.map { |filename|
+          rf = RFile::Content.new(
+            '_',
+            language,
+            filename
+          )
+          rf.extract_product_identity_id
+        }
         erp_data = Services::ErpApi.call(
           config.setting(:erp_api_protocol_and_host),
           ENV['ERP_API_APPID'],
           ENV['ERP_API_NAMEGUID'],
           :get_pdf_public_versions,
-          { languageids: [content_type.language_code_3_chars] }
+          {
+            languageids: [content_type.language_code_3_chars],
+            ids: file_pi_ids.join(',')
+          }
         )
         pdf_export_validate_erp_data(erp_data)
         primary_titles_and_public_version_ids = options[:primary_titles_override] || erp_data.inject({}) { |m,e|
