@@ -517,7 +517,7 @@ class Repositext
           :get_pdf_public_versions,
           {
             languageids: [content_type.language_code_3_chars],
-            ids: file_pi_ids_and_datecodes.map(&:first)
+            ids: file_pi_ids_and_datecodes.map(&:first).join(',')
           }
         )
         pdf_export_validate_erp_data(erp_data)
