@@ -537,7 +537,7 @@ class Repositext
           combined_marker = [date_code, file_pi_id].join('_')
           if(
             (attrs = public_version_ids_and_versions[file_pi_id]) &&
-            '0' != attrs['version']
+            '0' != attrs[:version]
           )
             puts [
               ' * ',
