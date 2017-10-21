@@ -535,7 +535,10 @@ class Repositext
         puts "   [Date code]     [PV id]  [Version]"
         file_pi_ids_and_datecodes.each { |(file_pi_id, date_code)|
           combined_marker = [date_code, file_pi_id].join('_')
-          if(attrs = public_version_ids_and_versions[file_pi_id])
+          if(
+            (attrs = public_version_ids_and_versions[file_pi_id]) &&
+            '0' != attrs['version']
+          )
             puts [
               ' * ',
               combined_marker.ljust(13, ' '),
