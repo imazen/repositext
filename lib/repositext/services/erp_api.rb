@@ -7,6 +7,8 @@ class Repositext
     #    Repositext::Services::ErpApi.call(:get_titles, { languageids: %w[eng] })
     class ErpApi
 
+      class ErpRequestError < StandardError; end;
+
       def self.call(protocol_and_host, appid, nameguid, api_method_key, params)
         new(protocol_and_host, appid, nameguid, api_method_key, params).call
       end
@@ -31,7 +33,7 @@ class Repositext
       # Returns ERP API response as Hash with symbolized keys.
       def call
         http_method, api_path = api_methods[@api_method_key]
-        case http_method
+        raw_response = case http_method
         when :get
           perform_get(api_path, @params)
         when :post
@@ -39,12 +41,17 @@ class Repositext
         else
           raise "Handle this: #{ http_method.inspect }"
         end
+        parsed_response = raw_response.parsed_response
+        handle_erp_errors(raw_response, parsed_response)
+        parsed_response['data']
       end
+
+    private
 
       # @param api_path [String]
       # @param params [Hash]
       def perform_get(api_path, params)
-        response = HTTParty.get(
+        HTTParty.get(
           [@protocol_and_host, api_path].join,
           query: URI.encode_www_form(params),
           headers: {
@@ -54,13 +61,12 @@ class Repositext
           timeout: 20,
           # debug_output: $stdout
         )
-        response.parsed_response['data']
       end
 
       # @param api_path [String]
       # @param params [Hash]
       def perform_post(api_path, params)
-        response = HTTParty.post(
+        HTTParty.post(
           [@protocol_and_host, api_path].join,
           body: params.to_json,
           headers: {
@@ -72,7 +78,41 @@ class Repositext
           timeout: 20,
           debug_output: $stdout
         )
-        response.parsed_response['data']
+      end
+
+      # @param raw_response [HTTParty::Response]
+      # @param parsed_response [Hash {String => Object}]
+      def handle_erp_errors(raw_response, parsed_response)
+        if 200 != raw_response.code
+          raise ErpRequestError.new([
+            "\n\n",
+            "Status ",
+            raw_response.code,
+            "\n",
+            parsed_response['Message'],
+            "\n",
+            parsed_response['MessageDetail'],
+            "\n",
+          ].join.color(:red))
+        end
+
+        if(
+          parsed_response.is_a?(Hash) &&
+          (status = parsed_response['status']) &&
+          200 != status
+        )
+          raise ErpRequestError.new([
+            "\n\n",
+            "Status ",
+            status,
+            ' ',
+            parsed_response['status_text'],
+            ":\n",
+            parsed_response['data'],
+            "\n",
+          ].join.color(:red))
+        end
+        true
       end
 
     end
