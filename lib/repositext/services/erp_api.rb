@@ -123,7 +123,7 @@ class Repositext
             'Accept' => 'application/json',
           },
           timeout: 20,
-          debug_output: $stdout
+          # debug_output: $stdout
         )
       end
 
