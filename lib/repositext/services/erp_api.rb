@@ -78,6 +78,7 @@ class Repositext
       # Returns ERP API response as Hash with symbolized keys.
       def call
         http_method, api_path = api_methods[@api_method_key]
+        puts "Requesting ERP data from #{ api_path }"
         raw_response = case http_method
         when :get
           perform_get(api_path, @params)
@@ -88,6 +89,7 @@ class Repositext
         end
         parsed_response = raw_response.parsed_response
         handle_erp_errors(raw_response, parsed_response)
+        puts " * Response code: #{ raw_response.code }"
         parsed_response['data']
       end
 
