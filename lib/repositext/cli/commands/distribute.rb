@@ -11,10 +11,10 @@ class Repositext
       # (We use the product_identity_id as anchor in the regex!)
       def distribute_pdf_export_add_primary_title(options)
         sanitized_primary_titles = options[:primary_titles].inject({}) { |m, (pid, title)|
-          # sanitize titles: remove anything other than letters, digits, or spaces,
+          # sanitize titles: remove anything other than letters, digits, hyphens, or spaces,
           # and collapse whitespace.
           m[pid] = title.strip
-                        .gsub(/[^a-z\d\s]/i, '')
+                        .gsub(/[^a-z\d\s\-]/i, '')
                         .gsub(/\s+/, ' ')
           m
         }
