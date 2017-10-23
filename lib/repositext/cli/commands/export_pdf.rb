@@ -249,7 +249,7 @@ class Repositext
             language,
             filename
           )
-          rf.extract_product_identity_id
+          rf.extract_product_identity_id.to_i
         }
         erp_data = Services::ErpApi.call(
           config.setting(:erp_api_protocol_and_host),
@@ -261,7 +261,7 @@ class Repositext
             ids: file_pi_ids.join(',')
           }
         )
-        pdf_export_validate_erp_data(erp_data)
+        Services::ErpApi.validate_product_identity_ids(erp_data, file_pi_ids)
         primary_titles_and_public_version_ids = options[:primary_titles_override] || erp_data.inject({}) { |m,e|
           pi_id = e['productidentityid'].to_s.rjust(4, '0')
           m[pi_id] = {
@@ -530,28 +530,6 @@ class Repositext
       # :dist_add_suffix is given.
       def pdf_export_filename_title_suffix
         ' filename title suffix'
-      end
-
-      # Validates that there are no duplicate entries for a given
-      # product_identity_id in the erp data.
-      # @param erp_data [Hash] with key ''
-      def pdf_export_validate_erp_data(erp_data)
-        lc_dc_counts = Hash.new(0)
-        erp_data.each { |e|
-          key = [e['languageid'], e['productid']].join
-          lc_dc_counts[key] += 1
-        }
-        duplicate_lc_dcs = lc_dc_counts.find_all { |k,v| v > 1 }
-        if duplicate_lc_dcs.any?
-          s = [
-            "\n\n",
-            "ERP Data contained duplicate entries for the following date codes: ",
-            duplicate_lc_dcs.map(&:first).sort.join(', '),
-            "\n",
-          ].join.color(:red)
-          raise s
-        end
-        true
       end
 
       def pdf_test_contents

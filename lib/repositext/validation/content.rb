@@ -9,16 +9,23 @@ class Repositext
       def run_list
 
         config = @options['config']
+        pi_ids_to_validate = []
+        validate_files(:content_at_files) { |content_at_file|
+          pi_ids_to_validate << content_at_file.extract_product_identity_id.to_i
+        }
         erp_data = Services::ErpApi.call(
           config.setting(:erp_api_protocol_and_host),
           ENV['ERP_API_APPID'],
           ENV['ERP_API_NAMEGUID'],
           :get_titles,
-          { languageids: [@options['content_type'].language_code_3_chars] }
+          {
+            languageids: [@options['content_type'].language_code_3_chars],
+            ids: pi_ids_to_validate.join(',')
+          }
         )
+        Services::ErpApi.validate_product_identity_ids(erp_data, pi_ids_to_validate)
 
         # Single files
-
         validate_files(:content_at_files) do |content_at_file|
           path = content_at_file.filename # for legacy validators
           config.update_for_file(path.gsub(/\.at\z/, '.data.json'))

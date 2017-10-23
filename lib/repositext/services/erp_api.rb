@@ -13,6 +13,51 @@ class Repositext
         new(protocol_and_host, appid, nameguid, api_method_key, params).call
       end
 
+      # Validates ERP data:
+      # * An entry exists for every product_identity_id requested.
+      # * No duplicate entries exist for any product_identity_id.
+      # @param erp_data [Hash]
+      # @param requested_pi_ids [Array<Integer>]
+      def self.validate_product_identity_ids(erp_data, requested_pi_ids)
+        lc_dc_counts = Hash.new(0)
+        erp_pi_ids = []
+        erp_data.each { |e|
+          key = [e['languageid'], e['productid']].join
+          lc_dc_counts[key] += 1
+          erp_pi_ids << e['productidentityid']
+        }
+        # Collect validation errors
+        errors = []
+        duplicate_lc_dcs = lc_dc_counts.find_all { |k,v| v > 1 }
+        if duplicate_lc_dcs.any?
+          errors << [
+            "ERP Data contained duplicate entries for the following date codes: ",
+            duplicate_lc_dcs.map(&:first).sort.join(', '),
+          ].join
+        end
+        missing_pi_ids = requested_pi_ids - erp_pi_ids
+        if missing_pi_ids.any?
+          errors << [
+            "ERP Data is missing data for the following product_identity_ids: ",
+            missing_pi_ids.sort.join(', '),
+          ].join
+        end
+
+        extra_pi_ids = erp_pi_ids - requested_pi_ids
+        if extra_pi_ids.any?
+          errors << [
+            "ERP Data has extra data for the following product_identity_ids: ",
+            extra_pi_ids.sort.join(', '),
+          ].join
+        end
+
+        # Raise exception with all errors
+        if errors.any?
+          raise(["\n\n", errors.join("\n"), "\n"].join.color(:red))
+        end
+        true
+      end
+
       # @param protocol_and_host [String]
       # @param api_method_key [Symbol] the API method to call
       # @param params [Hash]

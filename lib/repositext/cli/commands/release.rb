@@ -44,6 +44,7 @@ class Repositext
             isnew: 1,
           }
         )
+        Services::ErpApi.validate_product_identity_ids(erp_response, file_pi_ids)
       end
 
     end

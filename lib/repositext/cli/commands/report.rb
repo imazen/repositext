@@ -510,6 +510,7 @@ class Repositext
           )
           [rf.extract_product_identity_id, rf.extract_date_code]
         }
+        file_pi_ids = file_pi_ids_and_datecodes.map { |e| e.first.to_i }
         erp_data = Services::ErpApi.call(
           config.setting(:erp_api_protocol_and_host),
           ENV['ERP_API_APPID'],
@@ -517,10 +518,10 @@ class Repositext
           :get_pdf_public_versions,
           {
             languageids: [content_type.language_code_3_chars],
-            ids: file_pi_ids_and_datecodes.map(&:first).join(',')
+            ids: file_pi_ids.join(',')
           }
         )
-        pdf_export_validate_erp_data(erp_data)
+        Services::ErpApi.validate_product_identity_ids(erp_data, file_pi_ids)
         public_version_ids_and_versions = erp_data.inject({}) { |m,e|
           pi_id = e['productidentityid'].to_s.rjust(4, '0')
           m[pi_id] = {
