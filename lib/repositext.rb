@@ -197,6 +197,7 @@ require 'repositext/validation/utils/logger'
 require 'repositext/validation/utils/logger_test'
 require 'repositext/validation/utils/reportable'
 require 'repositext/validation/utils/reporter'
+require 'repositext/validation/utils/reporter_json'
 require 'repositext/validation/utils/reporter_test'
 require 'repositext/validation/validator'
 

@@ -1,7 +1,7 @@
 class Repositext
   class Validation
 
-    # A Reporter collects data during logger and once the logger is
+    # A Reporter collects data during validation and once the validation is
     # complete, it generates a report from that data. I can then group and
     # summarize the data.
     #
