@@ -34,6 +34,7 @@ class Repositext
     #     * 'log_level' => :debug, :info (default), :warn, :error
     #     * 'logger' => 'Logger' (default) or 'LoggerTest'
     #     * 'report_file' => If given will write report to file at this location
+    #     * 'reporter' => 'Reporter' (default) or 'ReporterTest'
     #     * 'run_options' => Array of custom run options for validations (e.g., 'pre_import', 'post_import')
     #     * 'strictness' => :strict, :loose/liberal/lax,
     #     * 'use_new_r_file_api' => If true, uses new API based on Repositext::RFile instead of just paths.
@@ -45,7 +46,7 @@ class Repositext
       @options = options
       @options['log_level'] ||= 'info'
       @logger = initialize_logger(@options['logger'])
-      @reporter = initialize_reporter
+      @reporter = initialize_reporter(@options['reporter'])
       @options['run_options'] ||= [] # make sure this is always an array since validators may add to it
     end
 
@@ -68,9 +69,13 @@ class Repositext
       )
     end
 
+    # @param reporter_name [String, optional] Example: 'Reporter' (default) or 'ReporterTest'
     # @return [Repositext::Validation::Reporter]
-    def initialize_reporter
-      Reporter.new(*primary_file_spec, @logger, @options)
+    def initialize_reporter(reporter_name = nil)
+      reporter_name ||= 'Reporter'
+      self.class.const_get(reporter_name).new(
+        *primary_file_spec, @logger, @options
+      )
     end
 
     # Returns the primary file spec for self. This is used for reporting where
