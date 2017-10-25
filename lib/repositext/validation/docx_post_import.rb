@@ -25,10 +25,10 @@ class Repositext
           :get_titles,
           {
             languageids: [@options['content_type'].language_code_3_chars],
-            ids: pi_ids_to_validate.join(', ')
+            ids: pi_ids_to_validate.join(',')
           }
         )
-        Services::ErpApi.validate_product_identity_ids(erp_response, pi_ids_to_validate)
+        Services::ErpApi.validate_product_identity_ids(erp_data, pi_ids_to_validate)
 
         validate_files(:imported_at_files) do |content_at_file|
           config.update_for_file(content_at_file.corresponding_data_json_filename)
