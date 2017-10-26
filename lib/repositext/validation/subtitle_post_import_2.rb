@@ -1,6 +1,7 @@
 class Repositext
   class Validation
     # Validation to run after a subtitle import 2/2.
+    # This runs _after_ subtitle operations have been transferred to foreign files.
     class SubtitlePostImport2 < Validation
 
       # Specifies validations to run after subtitle/subtitle_tagging import.

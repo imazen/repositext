@@ -143,21 +143,30 @@ class Repositext
         end
 
         options['append_to_validation_report'] = true
+        # NOTE: We have to run the subtitle import consistency validation before we
+        # transfer subtitle operations to foreign files. Otherwise the validation
+        # would fail because of st ops changes.
         validate_subtitle_import(options.merge('run_options' => %w[post_import_1]))
 
         if !config.setting(:is_primary_repo)
           # We're in a foreign repo, we transfer any subtitle operations that
           # have accumulated since the subtitle export.
-          # NOTE: This step has to occur after the post_import validation.
-          # Otherwise the validation would fail.
-          # NOTE: When calling this after a subtitle import, we have to re-apply
+          # NOTE 2: When calling this after a subtitle import, we have to re-apply
           # all st_ops that occurred since the subtitle export.
           sync_subtitles_for_foreign_files(
             options.merge('re-apply-st-ops-since-st-export' => true)
           )
         end
 
+        # NOTE: We run the content validation (including SubtitleMarkCountsMatch)
+        # after subtitle operations have been transferred to foreign files.
+        # Otherwise subtitle counts would not match with foreign files.
         validate_subtitle_import(options.merge('run_options' => %w[post_import_2]))
+        # At last we run a full content validation to make sure that no content
+        # got lost and everything else is ok. NOTE: We're running some validations
+        # multiple times post subtitle import. We're ok with this, want to err
+        # on the side of caution.
+        validate_content(options.merge('run_options' => []))
       end
 
       def import_subtitle_tagging(options)
