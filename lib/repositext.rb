@@ -341,6 +341,7 @@ require 'repositext/validation/validator/subtitle_mark_sequence_syntax'
 require 'repositext/validation/validator/subtitle_mark_spacing'
 require 'repositext/validation/validator/title_consistency'
 require 'repositext/validation/validator/utf8_encoding'
+require 'repositext/validation/validator/valid_typographic_quotes'
 # NOTE: Don't require the custom validator examples as they interfere with specs
 # require 'repositext/validation/a_custom_example'
 # require 'repositext/validation/validator/a_custom_example'

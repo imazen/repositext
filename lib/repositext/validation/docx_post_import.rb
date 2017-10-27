@@ -36,6 +36,9 @@ class Repositext
           Validator::KramdownSyntaxAt.new(
             File.open(content_at_file.filename), @logger, @reporter, @options
           ).run
+          Validator::ValidTypographicQuotes.new(
+            content_at_file, @logger, @reporter, @options
+          ).run
           Validator::TitleConsistency.new(
             content_at_file,
             @logger,
