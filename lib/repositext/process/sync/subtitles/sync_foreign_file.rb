@@ -78,6 +78,9 @@ class Repositext
             else
               @successful_files_without_st_ops << f_content_at_file.repo_relative_path(true)
             end
+
+            validate_f_subtitle_mark_counts(f_content_at_file)
+
             puts # terminate log line
             true
           end
@@ -142,6 +145,33 @@ class Repositext
             puts error_message.color(:red)
             false
           end
+
+          # Raises an exception if the subtitle_mark count in f_content_at_file
+          # is different from the number of subtitles in the stm csv file.
+          # @param [RFile::ContentAt]
+          def validate_f_subtitle_mark_counts(f_content_at_file)
+            p_content_at_file = f_content_at_file.corresponding_primary_file
+            p_stm_csv_file = p_content_at_file.corresponding_subtitle_markers_csv_file
+
+            content_at_count = Services::ExtractSubtitleMarkCountContentAt.call(
+              f_content_at_file.contents
+            )
+            stm_csv_count = Services::ExtractSubtitleMarkCountStmCsv.call(
+              p_stm_csv_file.contents
+            )
+
+            # compare the two counts
+            if content_at_count != stm_csv_count
+              raise([
+                'Subtitle_mark count mismatch',
+                "content_at contains #{ content_at_count }, ",
+                "however subtitle_marker_csv contains #{ stm_csv_count } ",
+                "subtitle_marks.",
+              ].join.color(:red))
+            end
+            true
+          end
+
         end
       end
     end
