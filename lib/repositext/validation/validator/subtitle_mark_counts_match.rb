@@ -23,8 +23,8 @@ class Repositext
         # @param [CSV] subtitle_marker_csv
         # @return [Outcome]
         def subtitle_mark_counts_match?(content_at, subtitle_marker_csv)
-          content_at_count = content_at.count('@')
-          subtitle_marker_csv_count = subtitle_marker_csv.strip.count("\n")
+          content_at_count = Services::ExtractSubtitleMarkCountContentAt(content_at).call
+          stm_csv_count = Services::ExtractSubtitleMarkCountStmCsv(subtitle_marker_csv).call
 
           # compare the two counts
           if 0 == content_at_count || content_at_count == subtitle_marker_csv_count

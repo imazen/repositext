@@ -91,6 +91,8 @@ require 'repositext/services/check_that_code_repositories_are_up_to_date_with_or
 require 'repositext/services/erp_api'
 require 'repositext/services/extract_content_at_id_parts'
 require 'repositext/services/extract_content_at_main_titles'
+require 'repositext/services/extract_subtitle_mark_count_content_at.rb'
+require 'repositext/services/extract_subtitle_mark_count_stm_csv.rb'
 require 'repositext/services/extract_text_from_docx'
 require 'repositext/services/extract_text_from_pdf'
 
