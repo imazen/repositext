@@ -23,11 +23,11 @@ class Repositext
         # @param [CSV] subtitle_marker_csv
         # @return [Outcome]
         def subtitle_mark_counts_match?(content_at, subtitle_marker_csv)
-          content_at_count = Services::ExtractSubtitleMarkCountContentAt(content_at).call
-          stm_csv_count = Services::ExtractSubtitleMarkCountStmCsv(subtitle_marker_csv).call
+          content_at_count = Services::ExtractSubtitleMarkCountContentAt.call(content_at)
+          stm_csv_count = Services::ExtractSubtitleMarkCountStmCsv.call(subtitle_marker_csv)
 
           # compare the two counts
-          if 0 == content_at_count || content_at_count == subtitle_marker_csv_count
+          if 0 == content_at_count || content_at_count == stm_csv_count
             Outcome.new(true, nil)
           else
             Outcome.new(
@@ -37,7 +37,7 @@ class Repositext
                   [@file_to_validate.last.path],
                   [
                     'Subtitle_mark count mismatch',
-                    "content_at contains #{ content_at_count }, but subtitle_marker_csv contains #{ subtitle_marker_csv_count } subtitle_marks."
+                    "content_at contains #{ content_at_count }, but subtitle_marker_csv contains #{ stm_csv_count } subtitle_marks."
                   ]
                 )
               ]
