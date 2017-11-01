@@ -34,20 +34,25 @@ class Repositext
           # in the corresponding content AT file.
           discrepancies = []
           @qotd_records.each { |qotd_record|
-            puts " - processing #{ qotd_record[:title] }"
+            date_code = qotd_record[:title].downcase
+            puts " - processing #{ date_code }"
             sanitized_qotd_content = sanitize_qotd_content(qotd_record[:contents])
             corresponding_content_at_file = RFile::ContentAt.find_by_date_code(
-              qotd_record[:title],
+              date_code,
               "at",
               @content_type
             )
+
+            if corresponding_content_at_file.nil?
+              raise ArgumentError.new("Could not find content AT file for #{ date_code }")
+            end
 
             sanitized_content_at_plain_text = sanitize_content_at_plain_text(
               corresponding_content_at_file.plain_text_with_subtitles_contents({})
             )
 
             find_diffs_between_qotd_and_content_at(
-              qotd_record[:title],
+              date_code,
               qotd_record[:publishdate],
               sanitized_qotd_content,
               sanitized_content_at_plain_text,
