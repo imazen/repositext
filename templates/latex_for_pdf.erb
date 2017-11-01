@@ -144,8 +144,8 @@
     % no line in footer (default)
   <% end %>
   \fancyhead[<%= @text_left_to_right ? 'EL,OR' : 'ER,OL' %>]{<%= "\\hrule height 0.19\pt \\kern 0.33\pt"  if @header_footer_rules_present %><%= @page_number_command %>} % outside
-  \fancyhead[<%= @text_left_to_right ? 'ER' : 'EL' %>]{\headerfont\addfontfeature{LetterSpace=<%= @header_letter_space %>}<%= @header_text %>} % inside even
-  \fancyhead[<%= @text_left_to_right ? 'OL' : 'OR' %>]{\headerfont\addfontfeature{LetterSpace=<%= @header_letter_space %>}<%= @header_title %>} % inside odd
+  \fancyhead[<%= @text_left_to_right ? 'ER' : 'EL' %>]{<%= @polyglossia_default_language ? '' : '\headerfont' %>\addfontfeature{LetterSpace=<%= @header_letter_space %>}<%= @header_text %>} % inside even
+  \fancyhead[<%= @text_left_to_right ? 'OL' : 'OR' %>]{<%= @polyglossia_default_language ? '' : '\headerfont' %>\addfontfeature{LetterSpace=<%= @header_letter_space %>}<%= @header_title %>} % inside odd
   \RtFooterContent
 }
 \pagestyle{RtPageStyle} % apply custom pagestyle
@@ -352,7 +352,7 @@
       \vspace*{4.6pt}%
       \setlength{\parskip}{0pt}
       \setlength{\parindent}{0pt}
-      \titlefont%
+      <%= @polyglossia_default_language ? '' : '\titlefont' %>%
       \fontsize{8pt}{10.5pt}\selectfont
       <%= @id_write_to_primary %>
       \raggedright
@@ -368,7 +368,7 @@
       \vspace*{8.5pt}%
       \setlength{\parskip}{0pt}
       \setlength{\parindent}{0pt}
-      \titlefont%
+      <%= @polyglossia_default_language ? '' : '\titlefont' %>%
       \fontsize{8pt}{10.5pt}\selectfont
       <%= @id_write_to_secondary %>
       \raggedright
@@ -582,7 +582,7 @@
     \setlength{\parskip}{0pt}
     \setlength{\parindent}{0pt}
     \centering
-    \idtitlefont%
+    <%= @polyglossia_default_language ? '' : '\idtitlefont' %>%
     \fontsize{<%= @id_title_1_font_size %>pt}{12pt}\selectfont
   }
   {%
@@ -596,7 +596,7 @@
     \setlength{\parskip}{8pt}
     \setlength{\parindent}{0pt}
     \centering
-    \idtitlefont%
+    <%= @polyglossia_default_language ? '' : '\idtitlefont' %>%
     \fontsize{<%= @id_title_1_font_size %>pt}{10.5pt}\selectfont
   }
   {%
@@ -615,7 +615,7 @@
     \setlength{\parindent}{0pt}
     \setLR
     \centering
-    \idtitlefont%
+    <%= @polyglossia_default_language ? '' : '\idtitlefont' %>%
     \fontsize{8pt}{10.5pt}\selectfont
   }
   {%
@@ -632,9 +632,8 @@
     <% end %>
     \setlength{\lineskiplimit}{-100pt} % This setting keeps latex from automatically stretching linespacing when characters may overlap.
     \setlength{\parindent}{0pt}
-    \setLR
     \centering
-    \idtitlefont%
+    <%= @polyglossia_default_language ? '' : '\idtitlefont' %>%
     \fontsize{8pt}{10.5pt}\selectfont
   }
   {%
@@ -878,7 +877,7 @@
 \newenvironment{RtSubTitle}
   {%
     \begin{center}
-      \titlefont%
+      <%= @polyglossia_default_language ? '' : '\titlefont' %>%
       \fontsize{10pt}{10.5pt}\selectfont
   }
   {%
@@ -902,7 +901,7 @@
         \vspace*{-2.975pt}% sets the spacing between the title and the top hrule.
         \begin{center}
           \begin{spacing}{1.2311}
-            \titlefont%
+            <%= @polyglossia_default_language ? '' : '\titlefont' %>%
             \fontsize{<%= @title_font_size %>pt}{26.4pt}\selectfont
             \rule[-.3\baselineskip]{0pt}{\baselineskip}% Insert strut to avoid inconsistent vertical spacing caused by different height characters.
   }
@@ -912,7 +911,7 @@
             \vspace*{-2.73pt}% sets the spacing between the title and the bottom hrule.
             {%
               \color{<%= @header_footer_rules_present ? 'black' : 'white' %>}
-              \hrule width \hsize height 0.201pt
+              \hrule width \hsize height <%= @polyglossia_default_language ? '0pt' : '0.201pt' %>
             }
             \setstretch{0}
           \end{spacing}
@@ -929,7 +928,7 @@
   {%
     \begin{center}
       \begin{spacing}{1.2311}
-        \titlefont%
+        <%= @polyglossia_default_language ? '' : '\titlefont' %>%
         \fontsize{16pt}{19.2pt}\selectfont
   }
   {%
