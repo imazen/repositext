@@ -49,6 +49,11 @@ class Repositext
               " word word ",
               "word word",
             ],
+            [
+              "squeezes multiple newlines to single",
+              "word\n\nword",
+              "word\nword",
+            ],
           ].each do |desc, test_string, xpect|
             it desc do
               report.send(
@@ -80,6 +85,11 @@ class Repositext
               "strips surrounding whitespace",
               " word word ",
               "word word",
+            ],
+            [
+              "squeezes multiple newlines to single",
+              "word\n\nword",
+              "word\nword",
             ],
           ].each do |desc, test_string, xpect|
             it desc do

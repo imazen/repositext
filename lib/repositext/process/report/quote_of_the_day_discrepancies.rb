@@ -67,13 +67,14 @@ class Repositext
 
         # @param qotd_content [String]
         def sanitize_qotd_content(qotd_content)
-          # remove surrounding <p> tags
-          # replace html entities with chars
-          # replace &nbsp; with space
-          # remove <em> tags
-          # replace br tags with newline.
-          # remove leading or trailing elipses
-          # strip surrounding whitespace
+          # * remove surrounding <p> tags
+          # * replace html entities with chars
+          # * replace &nbsp; with space
+          # * remove <em> tags
+          # * replace br tags with newline.
+          # * remove leading or trailing elipses
+          # * strip surrounding whitespace
+          # * squeeze multiple newlines to single
           # NOTE: We temporarily ignore quotemark, elipsis and emdash differences
           qotd_content.sub(/\A<p>/, '')
                       .sub(/<\/p>\z/, '')
@@ -87,6 +88,7 @@ class Repositext
                       .gsub(/<\/?em>/, '')
                       .gsub(/\s*<br \/>\s*/, "\n")
                       .strip
+                      .gsub(/\n{2,}/, "\n")
                       .gsub(/[#{ @double_opening_quote }#{ @double_closing_quote }]+/, '"')
                       .gsub(/[#{ @single_opening_quote }#{ @single_closing_quote }]+/, "'")
                       .gsub('...', '…')
@@ -97,12 +99,14 @@ class Repositext
 
         # @param content_at_plain_text [String]
         def sanitize_content_at_plain_text(content_at_plain_text)
-          # remove paragraph numbers
-          # strip surrounding whitespace
+          # * remove paragraph numbers
+          # * strip surrounding whitespace
+          # * squeeze multiple newlines to single
           # NOTE: We temporarily ignore quotemark differences
           # ImplementationTag #paragraph_numbers_regex
           content_at_plain_text.gsub(/(@?)\d+ /, '\1')
                                .strip
+                               .gsub(/\n{2,}/, "\n")
                                .gsub(/[#{ @double_opening_quote }#{ @double_closing_quote }]+/, '"')
                                .gsub(/[#{ @single_opening_quote }#{ @single_closing_quote }]+/, "'")
         end
