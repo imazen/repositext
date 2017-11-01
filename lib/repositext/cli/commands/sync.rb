@@ -161,6 +161,71 @@ class Repositext
         ).sync
       end
 
+      # Adds/updates the `erp_id_copyright_year` field for all matching files.
+      # Pulls data from ERP, creates data.json file if it doesn't exist and
+      # adds/updates the setting.
+      def sync_copyright_year_from_erp(options)
+        # Compute list of all files matching file-selector
+        file_list_pattern = config.compute_glob_pattern(
+          options['base-dir'] || :content_dir,
+          options['file-selector'] || :all_files,
+          options['file-extension'] || :at_extension
+        )
+        language = content_type.language
+        file_list = Dir.glob(file_list_pattern).map { |filename|
+          # Create stub content AT files (we don't need the contents)
+          RFile::ContentAt.new(
+            '_',
+            language,
+            filename
+          )
+        }
+        file_pi_ids = file_list.map { |content_at_file|
+          content_at_file.extract_product_identity_id.to_i
+        }
+        # Get ERP data for matching files
+        erp_data = Services::ErpApi.call(
+          config.setting(:erp_api_protocol_and_host),
+          ENV['ERP_API_APPID'],
+          ENV['ERP_API_NAMEGUID'],
+          :get_pdf_public_versions,
+          {
+            languageids: [content_type.language_code_3_chars],
+            ids: file_pi_ids.join(',')
+          }
+        )
+        Services::ErpApi.validate_product_identity_ids(erp_data, file_pi_ids)
+        # Update data.json setting
+        already_had_the_setting = []
+        puts "Synchronizing copyright year in data.json from ERP"
+        file_list.each do |content_at_file|
+          djf = content_at_file.corresponding_data_json_file(true)
+          pi_id = content_at_file.extract_product_identity_id.to_i
+          settings = djf.read_settings
+          copyright_from_erp = (
+            (record = erp_data.detect { |e| e['productidentityid'] == pi_id }) &&
+            record['copyright']
+          )
+          puts " * #{ djf.basename } -> #{ copyright_from_erp.inspect }"
+          if(existing_copyright = settings['erp_id_copyright_year'])
+            already_had_the_setting << [
+              content_at_file.basename,
+              existing_copyright,
+              copyright_from_erp
+            ]
+          end
+          djf.update_settings!(
+            'erp_id_copyright_year' => copyright_from_erp
+          )
+        end
+        puts "Done"
+        puts
+        puts "The following files already had the setting:"
+        already_had_the_setting.each { |fn, ex, erp|
+          puts " * #{ fn }, existing: #{ ex.inspect }, erp: #{ erp.inspect }"
+        }
+      end
+
       # Synchronizes subtitles in foreign files that match options['file-selector'].
       # This is called from `import_subtitle` when run on foreign repos.
       # It transfers any subtitle operations that have accumulated since the
