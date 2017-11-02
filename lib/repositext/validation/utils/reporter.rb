@@ -202,6 +202,33 @@ class Repositext
         )
       end
 
+      # Returns an array with all reportables, sorted by class
+      def sort_reportables_by_class
+        r = { errors: [], warnings: [], stats: [] }
+        @errors.each do |error|
+          r[:errors] << {
+            :details => error.details,
+            :location => error.location.compact.map { |e| e.gsub(@input_base_dir, '') },
+          }
+        end
+        @warnings.each do |warning|
+          r[:warnings] << {
+            :details => warning.details,
+            :location => warning.location.map { |e| e.gsub(@input_base_dir, '') },
+          }
+        end
+        @stats.each do |stat|
+          r[:stats] << {
+            :details => stat.details,
+            :location => stat.location.map { |e| e.gsub(@input_base_dir, '') },
+          }
+        end
+        [:errors, :warnings, :stats].each { |kind|
+          r[kind].sort! { |a,b| a[:details] <=> b[:details] }
+        }
+        r
+      end
+
       def summarize_reportables_by_location
         @summarize_reportables_by_location ||= (
           group_reportables_by_location.summarize
