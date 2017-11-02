@@ -22,7 +22,7 @@ include FakeFS
 # @param [String] test_data_sub_path
 # @return [String] absolute path based on test_data_sub_path.
 def get_test_data_path_for(test_data_sub_path)
-  File.expand_path(File.dirname(__FILE__) + "/../test_data/#{ test_data_sub_path }")
+  File.expand_path("../test_data/#{ test_data_sub_path }", __dir__)
 end
 
 # Initializes a validation for test purposes with some common options set.

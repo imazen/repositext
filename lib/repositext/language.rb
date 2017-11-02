@@ -110,7 +110,7 @@ class Repositext
     # Expects pwd to be in one of the language dirs.
     # @return [String]
     def repo_base_dir
-      File.expand_path("../#{ repo_base_dir_name }", Dir.pwd)
+      File.join(Repositext::PARENT_DIR, repo_base_dir_name)
     end
 
     # @param repo_dir_name [String] e.g., "english" or "haitian-creole"
