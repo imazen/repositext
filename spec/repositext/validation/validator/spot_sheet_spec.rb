@@ -17,7 +17,7 @@ class Repositext
           let(:path_to_repo) { Repository::Test.create!('rt-english').first }
           let(:content_type) { ContentType.new(File.join(path_to_repo, 'ct-general')) }
           let(:content_at_file) {
-            RFile::ContentAt.new('The title', language, filename, content_type)
+            RFile::ContentAt.new('# The title', language, filename, content_type)
           }
           let(:corrections_file_preamble){
             [
