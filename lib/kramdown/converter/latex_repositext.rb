@@ -20,9 +20,10 @@ module Kramdown
       # @param options [Hash{Symbol => Object}]
       def initialize(root, options = {})
         super
-        @previous_question_number_of_digits = 1
-        @element_ancestors_stack = ElementStack.new
+        @document_title_latex = nil
         @document_title_plain_text = nil
+        @element_ancestors_stack = ElementStack.new
+        @previous_question_number_of_digits = 1
       end
 
       # Patch this method to handle ems that came via imports:

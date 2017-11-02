@@ -76,7 +76,7 @@ module Kramdown
     describe '#detach_from_parent' do
       it "returns nil if ke has no parent" do
         r = ElementRt.new(:root)
-        r.detach_from_parent.must_equal nil
+        r.detach_from_parent.must_be(:nil?)
       end
       it "sets parent to nil" do
         r = ElementRt.new(:root)
@@ -84,7 +84,7 @@ module Kramdown
         r.add_child(t1)
         t1.parent.must_equal r
         t1.detach_from_parent
-        t1.parent.must_equal nil
+        t1.parent.must_be(:nil?)
       end
       it "removes ke from parent's children collection" do
         r = ElementRt.new(:root)
@@ -115,20 +115,20 @@ module Kramdown
       end
       it "returns nil if ke has no parent" do
         r = ElementRt.new(:root)
-        r.following_sibling.must_equal nil
+        r.following_sibling.must_be(:nil?)
       end
       it "returns nil if ke is only child" do
         r = ElementRt.new(:root)
         t1 = ElementRt.new(:text, 'text1')
         r.add_child(t1)
-        t1.following_sibling.must_equal nil
+        t1.following_sibling.must_be(:nil?)
       end
       it "returns nil if ke is the last child" do
         r = ElementRt.new(:root)
         t1 = ElementRt.new(:text, 'text1')
         t2 = ElementRt.new(:text, 'text2')
         r.add_child([t1, t2])
-        t2.following_sibling.must_equal nil
+        t2.following_sibling.must_be(:nil?)
       end
     end
 
@@ -144,7 +144,7 @@ module Kramdown
       it "doesn't insert a sibling if ke has no parent" do
         r = ElementRt.new(:root)
         t1 = ElementRt.new(:text, 'text1')
-        r.insert_sibling_after(t1).must_equal nil
+        r.insert_sibling_after(t1).must_be(:nil?)
       end
       it "raises if you try to insert self as sibling after" do
         t1 = ElementRt.new(:text, 'text1')
@@ -164,7 +164,7 @@ module Kramdown
       it "doesn't insert a sibling if ke has no parent" do
         r = ElementRt.new(:root)
         t1 = ElementRt.new(:text, 'text1')
-        r.insert_sibling_before(t1).must_equal nil
+        r.insert_sibling_before(t1).must_be(:nil?)
       end
       it "raises if you try to insert self as sibling after" do
         t1 = ElementRt.new(:text, 'text1')
@@ -215,20 +215,20 @@ module Kramdown
       end
       it "returns nil if ke has no parent" do
         r = ElementRt.new(:root)
-        r.previous_sibling.must_equal nil
+        r.previous_sibling.must_be(:nil?)
       end
       it "returns nil if ke is only child" do
         r = ElementRt.new(:root)
         t1 = ElementRt.new(:text, 'text1')
         r.add_child(t1)
-        t1.previous_sibling.must_equal nil
+        t1.previous_sibling.must_be(:nil?)
       end
       it "returns nil if ke is the first child" do
         r = ElementRt.new(:root)
         t1 = ElementRt.new(:text, 'text1')
         t2 = ElementRt.new(:text, 'text2')
         r.add_child([t1, t2])
-        t1.previous_sibling.must_equal nil
+        t1.previous_sibling.must_be(:nil?)
       end
     end
 
@@ -240,7 +240,7 @@ module Kramdown
         r.add_child(t1)
         t1.replace_with(t2)
         r.children.first.must_equal t2
-        t1.parent.must_equal nil
+        t1.parent.must_be(:nil?)
       end
       it "raises if you try to replace self with self" do
         r = ElementRt.new(:root)

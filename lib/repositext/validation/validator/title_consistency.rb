@@ -82,10 +82,6 @@ class Repositext
           outcome = titles_consistent?(content_at_file, val_attrs, @options['erp_data'])
           errors += outcome.errors
           warnings += outcome.warnings
-
-if errors.any?
-  ap val_attrs
-end
           log_and_report_validation_step(errors, warnings)
         end
 

@@ -28,7 +28,7 @@ module Kramdown
 
       it "detects negative" do
         element_stack.push(normal_paragraph)
-        element_stack.inside_id_title1?.must_equal(nil)
+        element_stack.inside_id_title1?.must_be(:nil?)
       end
     end
 
@@ -40,7 +40,7 @@ module Kramdown
 
       it "detects negative" do
         element_stack.push(normal_paragraph)
-        element_stack.inside_id_title2?.must_equal(nil)
+        element_stack.inside_id_title2?.must_be(:nil?)
       end
     end
 
@@ -52,7 +52,7 @@ module Kramdown
 
       it "detects negative" do
         element_stack.push(normal_paragraph)
-        element_stack.inside_id_title3?.must_equal(nil)
+        element_stack.inside_id_title3?.must_be(:nil?)
       end
     end
 
@@ -64,7 +64,7 @@ module Kramdown
 
       it "detects negative" do
         element_stack.push(normal_paragraph)
-        element_stack.inside_title?.must_equal(nil)
+        element_stack.inside_title?.must_be(:nil?)
       end
     end
 

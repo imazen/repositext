@@ -138,7 +138,12 @@ class Repositext
             [[nil,      nil,      'word-1', nil,       nil,      nil],      nil],
           ].each do |tst, xpect|
             it "handles #{ tst.inspect }" do
-              fixer.send(:compute_index_of_closest_sentence_boundary, tst).must_equal(xpect)
+              r = fixer.send(:compute_index_of_closest_sentence_boundary, tst)
+              if xpect.nil?
+                r.must_be(:nil?)
+              else
+                r.must_equal(xpect)
+              end
             end
           end
 
