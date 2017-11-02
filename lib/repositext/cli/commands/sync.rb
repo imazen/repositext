@@ -220,7 +220,7 @@ class Repositext
         end
         puts "Done"
         puts
-        puts "The following files already had the setting:"
+        puts "The following #{ already_had_the_setting.count } files already had the setting:"
         already_had_the_setting.each { |fn, ex, erp|
           puts " * #{ fn }, existing: #{ ex.inspect }, erp: #{ erp.inspect }"
         }
