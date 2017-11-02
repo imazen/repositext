@@ -113,6 +113,9 @@ class Repositext
     class_option :'to-commit',
                  :type => :string,
                  :desc => "For commands that require from and to commit information (e.g., subtitle operations)"
+    class_option :'validation-reporter',
+                 :type => :string,
+                 :desc => "Specifies which reporter to use for validation. Possible values: %w[Reporter ReporterJson]. Defaults to 'Reporter'"
     class_option :'verbose',
                  :aliases => "-v",
                  :type => :boolean,
