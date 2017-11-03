@@ -24,6 +24,11 @@ class Repositext
     raise "Invalid value for NUMBER_OF_CORES_FOR_PARALLEL_PROCESSING: #{ ENV['NUMBER_OF_CORES_FOR_PARALLEL_PROCESSING'].inspect }"
   end
 
+  # Returns absolute path to repositext_parent directory.
+  # NOTE: This implementation only works as long as we're using
+  # local/path gems. Once we install them from somewhere else,
+  # we'll have to update this implementation.
+  PARENT_DIR = File.expand_path('../../../../', __FILE__)
 
   # We use this character to delimit sentences, e.g., in Lucene exported plain
   # text proximity

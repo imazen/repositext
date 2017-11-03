@@ -20,9 +20,8 @@ class Repositext
 
           # Finds any git repos that are not ready and raises an exception.
           def find_invalid_repos
-            repos_parent_path = File.expand_path('..', @primary_repository.base_dir)
             repos_with_issues = RepositorySet.new(
-              repos_parent_path
+              Repositext::PARENT_DIR
             ).git_ensure_repos_are_ready(
               :all_content_repos
             ) { |repo_path| puts "   - #{ repo_path.split('/').last }" }

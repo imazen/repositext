@@ -124,6 +124,8 @@ class Repositext
             if (expected_style_attrs = expected_styles[style_id])
               # We check attrs for this style_id
 
+              error_type = 'Unexpected modification of document styles'
+
               # Check basedOn
               exp_bo = expected_style_attrs[:basedOn]
               if(
@@ -140,11 +142,9 @@ class Repositext
                 (act_bo = act_bo_xn['w:val'].to_s) != ''
               )
                 errors << Reportable.error(
+                  [@file_to_validate],
                   [
-                    @file_to_validate,
-                  ],
-                  [
-                    'Unexpected modification of document styles',
+                    error_type,
                     "Style: #{ style_id }, expected basedOn to be #{ exp_bo.inspect }, got #{ act_bo.inspect }"
                   ]
                 )
@@ -156,11 +156,9 @@ class Repositext
               act_ppr = act_ppr_xn ? act_ppr_xn.children.map { |e| e.name }.sort : []
               if act_ppr != exp_ppr
                 errors << Reportable.error(
+                  [@file_to_validate],
                   [
-                    @file_to_validate,
-                  ],
-                  [
-                    'Unexpected modification of document styles',
+                    error_type,
                     "Style: #{ style_id }, expected pPr to contain the following attrs: #{ exp_ppr.inspect }, got #{ act_ppr.inspect }"
                   ]
                 )
@@ -172,11 +170,9 @@ class Repositext
               act_rpr = act_rpr_xn ? act_rpr_xn.children.map { |e| e.name }.sort : []
               if act_rpr != exp_rpr
                 errors << Reportable.error(
+                  [@file_to_validate],
                   [
-                    @file_to_validate,
-                  ],
-                  [
-                    'Unexpected modification of document styles',
+                    error_type,
                     "Style: #{ style_id }, expected rPr to contain the following attrs: #{ exp_rpr.inspect }, got #{ act_rpr.inspect }"
                   ]
                 )

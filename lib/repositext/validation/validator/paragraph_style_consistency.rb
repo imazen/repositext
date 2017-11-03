@@ -29,8 +29,11 @@ class Repositext
           else
             Outcome.new(
               false, nil, [],
-              pclass_and_fspan_mismatches.map { |mismatch|
-                Reportable.error([@file_to_validate.first.filename], mismatch)
+              pclass_and_fspan_mismatches.map { |(line_number, error_attrs)|
+                Reportable.error(
+                  [@file_to_validate.first.filename, line_number].compact,
+                  error_attrs
+                )
               }
             )
           end
@@ -176,11 +179,13 @@ class Repositext
               if [:strict, :report_missing].include?(validation_rule)
                 # Report error
                 mismatches << [
-                  "Span formatting mismatch",
+                  "line #{ f_attrs[:line_number] }",
                   [
-                    "Foreign is missing formatting span #{ formatting_span.inspect } ",
-                    "on line #{ f_attrs[:line_number] }",
-                  ].join,
+                    "Span formatting mismatch",
+                    [
+                      "Foreign is missing formatting span #{ formatting_span.inspect }",
+                    ].join,
+                  ],
                 ]
               else
                 # Ignore
@@ -196,11 +201,13 @@ class Repositext
               if [:strict, :report_extra].include?(validation_rule)
                 # Report error
                 mismatches << [
-                  "Span formatting mismatch",
+                  "line #{ f_attrs[:line_number] }",
                   [
-                    "Foreign has extra formatting span #{ formatting_span.inspect } ",
-                    "on line #{ f_attrs[:line_number] }",
-                  ].join,
+                    "Span formatting mismatch",
+                    [
+                      "Foreign has extra formatting span #{ formatting_span.inspect }",
+                    ].join,
+                  ],
                 ]
               else
                 # Ignore
@@ -289,34 +296,40 @@ class Repositext
             when '!'
               # change
               mismatches << [
-                error_type,
+                "foreign line #{ f_p_style_and_spans[:line_number] }",
                 [
-                  "Foreign paragraph class #{ f_attrs.last.inspect } ",
-                  "is different from primary #{ p_attrs.last.inspect } ",
-                  "on foreign line #{ f_p_style_and_spans[:line_number] }"
-                ].join,
+                  error_type,
+                  [
+                    "Foreign paragraph class #{ f_attrs.last.inspect } ",
+                    "is different from primary #{ p_attrs.last.inspect }",
+                  ].join,
+                ],
               ]
             when '+'
               # insertion
               # Ignore extra id_title3 in foreign
               next  if f_attrs.last.include?('id_title3')
               mismatches << [
-                error_type,
+                "on foreign line #{ f_p_style_and_spans[:line_number] }",
                 [
-                  "Foreign has extra paragraph ##{ f_attrs.first } ",
-                  "with class #{ f_attrs.last.inspect } ",
-                  "on foreign line #{ f_p_style_and_spans[:line_number] }"
-                ].join,
+                  error_type,
+                  [
+                    "Foreign has extra paragraph ##{ f_attrs.first } ",
+                    "with class #{ f_attrs.last.inspect }",
+                  ].join,
+                ],
               ]
             when '-'
               # deletion
               mismatches << [
-                error_type,
+                "primary line #{ p_p_style_and_spans[:line_number] }",
                 [
-                  "Foreign is missing primary paragraph ##{ p_attrs.first } ",
-                  "with class #{ p_attrs.last.inspect } ",
-                  "from primary line #{ p_p_style_and_spans[:line_number] }"
-                ].join,
+                  error_type,
+                  [
+                    "Foreign is missing primary paragraph ##{ p_attrs.first } ",
+                    "with class #{ p_attrs.last.inspect }",
+                  ].join,
+                ],
               ]
             when '='
               # Nothing to do
@@ -344,7 +357,7 @@ class Repositext
           ) do
             # diff = ["=", [1, ["first_par", "normal"]], [1, ["first_par", "normal_pn"]]]
             # Cast Diff::LCS::ContextChange to array!
-            diff_type, diff_f_attrs, diff_p_attrs = paragraph_class_diffs[diff_pos].to_a
+            diff_type, _diff_f_attrs, _diff_p_attrs = paragraph_class_diffs[diff_pos].to_a
             case diff_type
             when '-'
               # Missing foreign paragraph, use primary only

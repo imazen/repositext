@@ -102,7 +102,7 @@ class Repositext
             end
             if error_detail
               errors << [
-                [f_content_at_file.filename],
+                [f_content_at_file.repo_relative_path(true)],
                 [
                   "Foreign eagle is inconsistent with primary",
                   error_detail
@@ -165,7 +165,7 @@ class Repositext
               raise "Handle this: #{ e.inspect }"
             end
             errors << [
-              [f_content_at_file.filename],
+              [f_content_at_file.repo_relative_path(true)],
               [
                 "Foreign paragraph number is inconsistent with primary",
                 error_detail
@@ -192,7 +192,7 @@ class Repositext
 
           diffs.each { |diff|
             errors << [
-              [f_content_at_file.filename],
+              [f_content_at_file.repo_relative_path(true)],
               [
                 'Plain text difference between docx and content_at',
                 diff.inspect

@@ -487,7 +487,7 @@ class Repositext
               )
               validator.send(
                 :compute_pclass_and_fspan_mismatches, f_classes_and_fspans, p_classes_and_fspans
-              ).map { |e| e.first }.must_equal(xpect)
+              ).map { |(_location, details)| details.first }.must_equal(xpect)
             end
           end
         end
@@ -525,8 +525,8 @@ class Repositext
                 :line_number=>1
               },
               [
-                "Foreign is missing formatting span :bold on line 1",
-                "Foreign has extra formatting span :italic on line 1",
+                "Foreign is missing formatting span :bold",
+                "Foreign has extra formatting span :italic",
               ]
             ],
           ].each do |description, f_classes_and_fspans, p_classes_and_fspans, xpect|
@@ -547,7 +547,7 @@ class Repositext
                 validation_rules,
                 mismatches
               )
-              mismatches.map { |e| e.last }.must_equal(xpect)
+              mismatches.map { |(_location, details)| details.last }.must_equal(xpect)
             end
           end
         end

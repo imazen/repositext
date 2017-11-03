@@ -343,7 +343,7 @@ class Repositext
 
         describe '#extract_raw_attrs!' do
           it 'extracts raw attrs from primary content' do
-            validator, _logger, reporter = build_validator_logger_and_reporter(
+            validator, _logger, _reporter = build_validator_logger_and_reporter(
               TitleConsistency,
               primary_content_at_file
             )
@@ -357,7 +357,7 @@ class Repositext
           end
 
           it 'extracts raw attrs from primary erp' do
-            validator, _logger, reporter = build_validator_logger_and_reporter(
+            validator, _logger, _reporter = build_validator_logger_and_reporter(
               TitleConsistency,
               primary_content_at_file
             )
@@ -372,7 +372,7 @@ class Repositext
           end
 
           it 'extracts raw attrs from primary filename' do
-            validator, _logger, reporter = build_validator_logger_and_reporter(
+            validator, _logger, _reporter = build_validator_logger_and_reporter(
               TitleConsistency,
               primary_content_at_file
             )
@@ -386,7 +386,7 @@ class Repositext
           end
 
           it 'extracts raw attrs from primary id' do
-            validator, _logger, reporter = build_validator_logger_and_reporter(
+            validator, _logger, _reporter = build_validator_logger_and_reporter(
               TitleConsistency,
               primary_content_at_file
             )
@@ -400,7 +400,7 @@ class Repositext
           end
 
           it 'extracts raw attrs from foreign content' do
-            validator, _logger, reporter = build_validator_logger_and_reporter(
+            validator, _logger, _reporter = build_validator_logger_and_reporter(
               TitleConsistency,
               foreign_content_at_file
             )
@@ -414,7 +414,7 @@ class Repositext
           end
 
           it 'extracts raw attrs from foreign erp' do
-            validator, _logger, reporter = build_validator_logger_and_reporter(
+            validator, _logger, _reporter = build_validator_logger_and_reporter(
               TitleConsistency,
               foreign_content_at_file
             )
@@ -429,7 +429,7 @@ class Repositext
           end
 
           it 'extracts raw attrs from foreign filename' do
-            validator, _logger, reporter = build_validator_logger_and_reporter(
+            validator, _logger, _reporter = build_validator_logger_and_reporter(
               TitleConsistency,
               foreign_content_at_file
             )
@@ -443,7 +443,7 @@ class Repositext
           end
 
           it 'extracts raw attrs from foreign id' do
-            validator, _logger, reporter = build_validator_logger_and_reporter(
+            validator, _logger, _reporter = build_validator_logger_and_reporter(
               TitleConsistency,
               foreign_content_at_file
             )
@@ -459,7 +459,7 @@ class Repositext
 
         describe '#prepare_validation_attrs!' do
           it 'prepares validation attrs from primary content' do
-            validator, _logger, reporter = build_validator_logger_and_reporter(
+            validator, _logger, _reporter = build_validator_logger_and_reporter(
               TitleConsistency,
               primary_content_at_file
             )
@@ -480,7 +480,7 @@ class Repositext
           end
 
           it 'prepares validation attrs from primary erp' do
-            validator, _logger, reporter = build_validator_logger_and_reporter(
+            validator, _logger, _reporter = build_validator_logger_and_reporter(
               TitleConsistency,
               primary_content_at_file
             )
@@ -501,7 +501,7 @@ class Repositext
           end
 
           it 'prepares validation attrs from primary filename' do
-            validator, _logger, reporter = build_validator_logger_and_reporter(
+            validator, _logger, _reporter = build_validator_logger_and_reporter(
               TitleConsistency,
               primary_content_at_file
             )
@@ -522,7 +522,7 @@ class Repositext
           end
 
           it 'prepares validation attrs from primary id' do
-            validator, _logger, reporter = build_validator_logger_and_reporter(
+            validator, _logger, _reporter = build_validator_logger_and_reporter(
               TitleConsistency,
               primary_content_at_file
             )
@@ -543,7 +543,7 @@ class Repositext
           end
 
           it 'prepares validation attrs from foreign content' do
-            validator, _logger, reporter = build_validator_logger_and_reporter(
+            validator, _logger, _reporter = build_validator_logger_and_reporter(
               TitleConsistency,
               foreign_content_at_file
             )
@@ -564,7 +564,7 @@ class Repositext
           end
 
           it 'prepares validation attrs from foreign erp' do
-            validator, _logger, reporter = build_validator_logger_and_reporter(
+            validator, _logger, _reporter = build_validator_logger_and_reporter(
               TitleConsistency,
               foreign_content_at_file
             )
@@ -585,7 +585,7 @@ class Repositext
           end
 
           it 'prepares validation attrs from foreign filename' do
-            validator, _logger, reporter = build_validator_logger_and_reporter(
+            validator, _logger, _reporter = build_validator_logger_and_reporter(
               TitleConsistency,
               foreign_content_at_file
             )
@@ -606,7 +606,7 @@ class Repositext
           end
 
           it 'prepares validation attrs from foreign id' do
-            validator, _logger, reporter = build_validator_logger_and_reporter(
+            validator, _logger, _reporter = build_validator_logger_and_reporter(
               TitleConsistency,
               foreign_content_at_file
             )
@@ -664,7 +664,7 @@ class Repositext
             ],
           ].each do |exceptions, attrs, xpect|
             it "applies #{ exceptions.inspect } to #{ attrs.inspect } (primary)" do
-              validator, _logger, reporter = build_validator_logger_and_reporter(
+              validator, _logger, _reporter = build_validator_logger_and_reporter(
                 TitleConsistency,
                 primary_content_at_file
               )
@@ -737,7 +737,7 @@ class Repositext
             ],
           ].each do |exceptions, attrs, xpect|
             it "applies #{ exceptions.inspect } to #{ attrs.inspect } (primary)" do
-              validator, _logger, reporter = build_validator_logger_and_reporter(
+              validator, _logger, _reporter = build_validator_logger_and_reporter(
                 TitleConsistency,
                 primary_content_at_file
               )
@@ -777,7 +777,7 @@ class Repositext
             ],
           ].each do |exceptions, attrs, xpect|
             it "applies #{ exceptions.inspect } to #{ attrs.inspect } (primary)" do
-              validator, _logger, reporter = build_validator_logger_and_reporter(
+              validator, _logger, _reporter = build_validator_logger_and_reporter(
                 TitleConsistency,
                 primary_content_at_file
               )
@@ -877,7 +877,7 @@ class Repositext
             ],
           ].each do |description, val_attrs, xpect|
             it description do
-              validator, _logger, reporter = build_validator_logger_and_reporter(
+              validator, _logger, _reporter = build_validator_logger_and_reporter(
                 TitleConsistency,
                 primary_content_at_file
               )
@@ -1040,7 +1040,7 @@ class Repositext
             ],
           ].each do |description, val_attrs, xpect|
             it description do
-              validator, _logger, reporter = build_validator_logger_and_reporter(
+              validator, _logger, _reporter = build_validator_logger_and_reporter(
                 TitleConsistency,
                 primary_content_at_file
               )
@@ -1097,7 +1097,7 @@ class Repositext
             ],
           ].each do |description, val_attrs, xpect|
             it description do
-              validator, _logger, reporter = build_validator_logger_and_reporter(
+              validator, _logger, _reporter = build_validator_logger_and_reporter(
                 TitleConsistency,
                 primary_content_at_file
               )
@@ -1159,7 +1159,7 @@ class Repositext
             ],
           ].each do |description, val_attrs, xpect|
             it description do
-              validator, _logger, reporter = build_validator_logger_and_reporter(
+              validator, _logger, _reporter = build_validator_logger_and_reporter(
                 TitleConsistency,
                 primary_content_at_file
               )
@@ -1278,7 +1278,7 @@ class Repositext
             ],
           ].each do |description, val_attrs, xpect|
             it description do
-              validator, _logger, reporter = build_validator_logger_and_reporter(
+              validator, _logger, _reporter = build_validator_logger_and_reporter(
                 TitleConsistency,
                 primary_content_at_file
               )

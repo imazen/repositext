@@ -110,15 +110,7 @@ class Repositext
     # Expects pwd to be in one of the language dirs.
     # @return [String]
     def repo_base_dir
-      File.expand_path("../#{ repo_base_dir_name }", Dir.pwd)
-    end
-
-    # @param repo_dir_name [String] e.g., "english" or "haitian-creole"
-    # @return [Language]
-    def self.find_by_repo_dir_name(repo_dir_name)
-      # Convert 'haitian-creole' => 'HaitianCreole'
-      lang_class_name = repo_dir_name.split('-').map { |e| e.capitalize }.join
-      Object.const_get("Repositext::Language::#{ lang_class_name }").new
+      File.join(Repositext::PARENT_DIR, repo_base_dir_name)
     end
 
     def split_into_words(txt)

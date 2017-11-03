@@ -60,10 +60,15 @@ class Repositext
           ].each do |old_len, new_len, xpect|
             it "handles #{ [old_len, new_len] }" do
               v = SubtitleMarkNoSignificantChanges.new('_', '_', '_', {})
-              v.send(
+              r = v.send(
                 :compute_subtitle_mark_change,
                 old_len, new_len
-              ).must_equal(xpect)
+              )
+              if xpect.nil?
+                r.must_be(:nil?)
+              else
+                r.must_equal(xpect)
+              end
             end
           end
         end
