@@ -162,6 +162,59 @@ class Repositext
       end
 
       # Adds/updates the `erp_id_copyright_year` field for all matching files.
+      # Pulls data from a CSV file in each language repo under data/erp_id_copyright_years.csv
+      # Creates data.json file if it doesn't exist and adds/updates the setting.
+      def sync_copyright_year_from_csv(options)
+        # Compute list of all files matching file-selector
+        file_list_pattern = config.compute_glob_pattern(
+          options['base-dir'] || :content_dir,
+          options['file-selector'] || :all_files,
+          options['file-extension'] || :at_extension
+        )
+        language = content_type.language
+        file_list = Dir.glob(file_list_pattern).map { |filename|
+          # Create stub content AT files (we don't need the contents)
+          RFile::ContentAt.new(
+            '_',
+            language,
+            filename
+          )
+        }
+        # Get CSV data
+        csv_filename = File.join(config.base_dir(:data_dir), 'erp_id_copyright_years.csv')
+        csv_file = RFile::Csv.new(File.read(csv_filename), language, csv_filename)
+        csv_data = {}
+        csv_file.each_row { |row| csv_data[row['ProductID'].downcase] = row['Copyright'] }
+        # Update data.json setting
+        already_had_the_setting = []
+        puts "Synchronizing copyright year in data.json from ERP"
+        file_list.each do |content_at_file|
+          djf = content_at_file.corresponding_data_json_file(true)
+          settings = djf.read_settings
+          date_code = content_at_file.extract_date_code
+          copyright_from_csv = csv_data[date_code]
+          puts " * #{ djf.basename } -> #{ copyright_from_csv.inspect }"
+          if(existing_copyright = settings['erp_id_copyright_year'])
+            already_had_the_setting << [
+              content_at_file.basename,
+              existing_copyright,
+              copyright_from_csv
+            ]
+          end
+          djf.update_settings!(
+            'erp_id_copyright_year' => copyright_from_csv
+          )
+        end
+        puts "Done"
+        puts
+        puts "The following #{ already_had_the_setting.count } files already had the setting:"
+        already_had_the_setting.each { |fn, ex, erp|
+          puts " * #{ fn }, existing: #{ ex.inspect }, erp: #{ erp.inspect }"
+        }
+      end
+
+
+      # Adds/updates the `erp_id_copyright_year` field for all matching files.
       # Pulls data from ERP, creates data.json file if it doesn't exist and
       # adds/updates the setting.
       def sync_copyright_year_from_erp(options)
