@@ -100,10 +100,10 @@ class Repositext
     end
 
     # Returns self's repo base directory name (last segment).
-    # Example: Language::HawaiianCreole => "hawaiian-creole"
+    # Example: Hawaiian Creole => "hawaiian-creole"
     # @return [String]
     def repo_base_dir_name
-      name.underscore.dasherize
+      name.gsub(/\s+/, '-').underscore.dasherize
     end
 
     # Returns absolute path to repo_base_dir.
