@@ -472,6 +472,7 @@ class Repositext
 
         def remove_linebreaks_kramdown(txt)
           txt.gsub("*{: .italic .smcaps} *.*{: .line_break}*", ' ')
+             .gsub("*{: .bold .italic} *.*{: .line_break}*", ' ')
              .gsub(" *.*{: .line_break}", ' ')
         end
 
