@@ -344,7 +344,7 @@ class Repositext
 
             description << %(#{ text_difference } in #{ context_before.inspect }<diff>#{ context_after.inspect })
             errors << Reportable.error(
-              [@file_to_validate],
+              { filename: @file_to_validate.filename },
               [
                 'Difference between content_at and pdf_export',
                 description,
