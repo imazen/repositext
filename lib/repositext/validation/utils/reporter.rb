@@ -180,7 +180,12 @@ class Repositext
           # iterate over all errors to build intermediate structure
           @errors.each do |error|
             sub = r
-            error.details.first(2).each{ |el| sub = sub[el] }
+            level_1_and_2_strings = error.details.first(2)
+            if level_1_and_2_strings.length < 2
+              # Only one description string given, add a second, empty one
+              level_1_and_2_strings << ''
+            end
+            level_1_and_2_strings.each{ |el| sub = sub[el] }
             sub[:errors] << {
               :location => error.location,
               :details => error.details,
@@ -189,7 +194,12 @@ class Repositext
           end
           @warnings.each do |warning|
             sub = r
-            warning.details.first(2).each{ |el| sub = sub[el] }
+            level_1_and_2_strings = warning.details.first(2)
+            if level_1_and_2_strings.length < 2
+              # Only one description string given, add a second, empty one
+              level_1_and_2_strings << ''
+            end
+            level_1_and_2_strings.each{ |el| sub = sub[el] }
             sub[:warnings] << {
               :location => warning.location,
               :details => warning.details,
