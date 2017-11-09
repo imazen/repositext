@@ -85,7 +85,7 @@ class Repositext
             primary_title = corr_prim_content_at_file.extract_title
           end
           if !spot_title || (spot_title != primary_title)
-            loc = [@file_to_validate]
+            loc = { filename: @file_to_validate }
             desc = ["Unexpected title", "Found #{ spot_title.inspect }, expected #{ primary_title.inspect }"]
             errors << Reportable.error(loc, desc)
           end
@@ -97,7 +97,7 @@ class Repositext
             file_datecode = corrections_file.extract_date_code
           end
           if !spot_datecode || (spot_datecode != file_datecode)
-            loc = [@file_to_validate]
+            loc = { filename: @file_to_validate }
             desc = ["Unexpected date", "Found #{ spot_datecode.inspect }, expected #{ file_datecode.inspect }"]
             errors << Reportable.error(loc, desc)
           end
@@ -130,7 +130,7 @@ class Repositext
             end
           end
           if invalid_chars.any?
-            loc = [@file_to_validate]
+            loc = { filename: @file_to_validate }
             desc = ['Contains invalid characters:'] + invalid_chars
             case @options['validate_or_merge']
             when 'merge'
@@ -169,7 +169,10 @@ class Repositext
               # Are there any groups that have none of their attrs present in correction?
               attrs_group.none? { |attr| corr[attr] }
             })
-              loc = [@file_to_validate, "Correction ##{ corr[:correction_number] }"]
+              loc = {
+                filename: @file_to_validate,
+                context: "Correction ##{ corr[:correction_number] }"
+              }
               desc = ['Missing attributes', "One of `#{ mag.to_s }` is missing:", corr.inspect]
               case @options['validate_or_merge']
               when 'merge'
@@ -186,7 +189,10 @@ class Repositext
           # Validate that before and after are not identical
           corrections.each { |corr|
             if !corr[:no_change] && corr[:reads] == (corr[:becomes] || corr[:submitted])
-              loc = [@file_to_validate, "Correction ##{ corr[:correction_number] }"]
+              loc = {
+                filename: @file_to_validate,
+                context: "Correction ##{ corr[:correction_number] }"
+              }
               desc = [
                 'Identical `Reads` and (`Becomes` or `Submitted`):',
                 "`Reads`: `#{ corr[:reads].to_s }`, (`Becomes` or `Submitted`): `#{ (corr[:becomes] || corr[:submitted]).to_s }`",
@@ -226,7 +232,10 @@ class Repositext
               raise "Handle this: #{ [x,y].inspect }"
             end
             if !valid
-              loc = [@file_to_validate, "Correction ##{ y }"]
+              loc = {
+                filename: @file_to_validate,
+                context: "Correction ##{ y }"
+              }
               desc = [
                 'Non consecutive correction numbers:',
                 "#{ x } was followed by #{ y }",
@@ -271,7 +280,10 @@ class Repositext
               # content at.
             when 0
               # Found none, report error
-              loc = [@file_to_validate, "Correction ##{ corr[:correction_number] }"]
+              loc = {
+                filename: @file_to_validate,
+                context: "Correction ##{ corr[:correction_number] }"
+              }
               desc = [
                 'Corresponding content AT not found:',
                 "`Reads`: #{ corr_reads_txt }",
@@ -279,7 +291,10 @@ class Repositext
               errors << Reportable.error(loc, desc)
             else
               # Found more than one, report error
-              loc = [@file_to_validate, "Correction ##{ corr[:correction_number] }"]
+              loc = {
+                filename: @file_to_validate,
+                context: "Correction ##{ corr[:correction_number] }"
+              }
               desc = [
                 'Multiple instances of `Reads` found:',
                 "Found #{ num_reads_occurrences } instances of `#{ corr_reads_txt }`",
