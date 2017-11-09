@@ -19,6 +19,10 @@ class Repositext
       # * no corresponding content AT file exists OR
       # * If it exists, it doesn't contain any subtitles.
       #
+      # TODO: When importing malayalam DOCX and we encounter an invalid br character
+      # the entire import should be cancelled. However it does the copy step
+      # from import_docx -> content
+      # TODO: cancel the copy step and any other subsequent actions
       def import_docx(options)
         options['report_file'] ||= config.compute_glob_pattern(
           :docx_import_dir, :validation_report_file, ''

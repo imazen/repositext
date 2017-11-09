@@ -392,11 +392,17 @@ class Repositext
           # The next two settings specify the right and left margin for 'RtSong',
           # 'RtSongBreak' and 'RtStanza'.
           options[:song_leftskip] = config.setting(:pdf_export_song_leftskip)
+          # TODO: Update the issue that deals with this
           # NOTE: If you change :pdf_export_song_rightskip, you also have to
           # adjust :pdf_export_last_eagle_hspace accordingly to avoid misalignment
           # of trailing eagle with right margin. When changing :pdf_export_song_rightskip
           # at the file level, then the :pdf_export_last_eagle_hspace adjustment
           # is only required if that file has a song as the last paragraph.
+          # TODO: Add a validation that makes sure that both settings are both
+          # set at any level (repositext, repository, file).
+          # TODO: Add a validation that if pdf_export_font_name at language level
+          # is given (which means it's different from "Excelsior Lite Standard"),
+          # then :pdf_export_last_eagle_hspace has to exist.
           options[:song_rightskip] = config.setting(:pdf_export_song_rightskip)
           options[:source_filename] = filename
           options[:title_font_name] = config.setting(:pdf_export_title_font_name)

@@ -135,6 +135,7 @@ class Repositext
                 new_flagged_sts[stid].uniq!
                 new_flagged_sts[stid].sort!
               }
+              # TODO: Check if this clashes with #update_file_level_data! in merge
               foreign_content_at_file.update_file_level_data!(
                 existing_data.merge({
                   'st_sync_commit' => sync_commit,

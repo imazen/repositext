@@ -106,6 +106,9 @@ class Repositext
                 # Update foreign content AT file with new subtitles
                 f_content_at_file.update_contents!(new_content_at)
 
+                # TODO: Do we also need to symlink STM CSV file to primary?
+                # Should this be a validation to make sure that all foreign files
+                # with synced subtitles have symlink to primary STM CSV file?
 
                 # Update foreign st_sync related data
                 f_content_at_file.update_file_level_data!(
