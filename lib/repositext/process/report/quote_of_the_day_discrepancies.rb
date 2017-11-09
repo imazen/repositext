@@ -88,7 +88,10 @@ class Repositext
                       .gsub(/<\/?em>/, '')
                       .gsub(/\s*<br \/>\s*/, "\n")
                       .strip
+                      .gsub(/\[[^\]]+\]/, "")
+                      .gsub(/  /, " ")
                       .gsub(/\n{2,}/, "\n")
+                      .gsub(/ \n/, "\n")
                       .gsub(/[#{ @double_opening_quote }#{ @double_closing_quote }]+/, '"')
                       .gsub(/[#{ @single_opening_quote }#{ @single_closing_quote }]+/, "'")
                       .gsub('...', '…')
@@ -104,9 +107,12 @@ class Repositext
           # * squeeze multiple newlines to single
           # NOTE: We temporarily ignore quotemark differences
           # ImplementationTag #paragraph_numbers_regex
-          content_at_plain_text.gsub(/(@?)\d+ /, '\1')
+          content_at_plain_text.gsub(/^(@?)\d+ /, '\1')
                                .strip
+                               .gsub(/\[[^\]]+\]/, "")
+                               .gsub(/  /, " ")
                                .gsub(/\n{2,}/, "\n")
+                               .gsub(/ \n/, "\n")
                                .gsub(/[#{ @double_opening_quote }#{ @double_closing_quote }]+/, '"')
                                .gsub(/[#{ @single_opening_quote }#{ @single_closing_quote }]+/, "'")
         end
