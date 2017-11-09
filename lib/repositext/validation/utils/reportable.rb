@@ -64,12 +64,18 @@ class Repositext
 
       # Returns self as string suitable as part of console logging
       def log_to_console
-        location = @location[1..-1] # remove file_descriptor
-        details = @details.first(3) # remove additional details
+        details_attrs = details.first(3) # remove additional details
+        location_attrs = []
+        if location[:line]
+          location_attrs << "line #{ location[:line] }"
+        end
+        if location[:context]
+          location_attrs << location[:context].inspect
+        end
         [
           '    ',
-          location.join(', ').ljust(33),
-          details.join(': ')
+          location_attrs.join(': ').ljust(50),
+          details_attrs.join(': ')
         ].join
       end
 

@@ -30,7 +30,10 @@ class Repositext
               false, nil, [],
               paragraph_numbers_out_of_sequence.map { |(line, issue_desc)|
                 Reportable.error(
-                  [@file_to_validate.path, "line: #{ line }"], # content_at file
+                  {
+                    filename: content_at_file.filename,
+                    line: line,
+                  },
                   [
                     "Paragraph number is out of sequence",
                     issue_desc.inspect

@@ -48,7 +48,10 @@ class Repositext
               false, nil, [],
               diffs.map { |diff|
                 Reportable.error(
-                  [@file_to_validate.first.path],
+                  {
+                    filename: content_at_file.filename,
+                    corr_filename: idml_import_at_file.filename,
+                  },
                   ['Plain text diference between idml_import_at and content_at', diff]
                 )
               }

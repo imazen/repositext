@@ -25,11 +25,12 @@ class Repositext
 
       # Use this method to add an array of errors to self.
       # @param [Array<Reportable>] _errors
-      def add_errors(_errors, _sort_by = :location)
-        if _sort_by
-          _errors = _errors.sort { |a,b| a.send(_sort_by) <=> b.send(_sort_by) }
-        end
-        _errors.each do |e|
+      def add_errors(_errors)
+        _errors.sort { |a,b|
+          a_attrs = [a.location[:filename], a.location[:line]].compact
+          b_attrs = [b.location[:filename], b.location[:line]].compact
+          a_attrs <=> b_attrs
+        }.each do |e|
           self.add_error(e)
         end
       end
@@ -56,11 +57,12 @@ class Repositext
 
       # Use this method to add an array of warnings to self.
       # @param [Array<Reportable>] _warnings
-      def add_warnings(_warnings, _sort_by = :location)
-        if _sort_by
-          _warnings = _warnings.sort { |a,b| a.send(_sort_by) <=> b.send(_sort_by) }
-        end
-        _warnings.each do |e|
+      def add_warnings(_warnings)
+        _warnings.sort { |a,b|
+          a_attrs = [a.location[:filename], a.location[:line]].compact
+          b_attrs = [b.location[:filename], b.location[:line]].compact
+          a_attrs <=> b_attrs
+        }.each do |e|
           self.add_warning(e)
         end
       end

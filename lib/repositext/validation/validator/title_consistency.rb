@@ -104,7 +104,7 @@ class Repositext
           ]
           if(iv_ex = val_attrs[:exceptions] - valid_exceptions).any?
             errors << Reportable.error(
-              [@file_to_validate.repo_relative_path(true)],
+              { filename: @file_to_validate.filename },
               [
                 "Invalid validator_exceptions",
                 "#{ iv_ex.inspect } is not one of #{ valid_exceptions.inspect }"
@@ -498,14 +498,17 @@ class Repositext
 
           if '' == pa_c[:title_for_erp].to_s
             errors << Reportable.error(
-              [@file_to_validate.repo_relative_path(true)],
-              ["Title from content is missing"]
+              { filename: @file_to_validate.filename },
+              [
+                "Title from content is missing",
+                "Expected #{ pa_erp[:title].inspect }",
+              ]
             )
           end
           if val_attrs[:has_erp_data]
             if '' == pa_erp[:title].to_s
               errors << Reportable.error(
-                [@file_to_validate.repo_relative_path(true)],
+                { filename: @file_to_validate.filename },
                 ["Title from ERP is missing"]
               )
             elsif pa_erp[:title] != pa_c[:title_for_erp]
@@ -518,7 +521,7 @@ class Repositext
 
               if record_error
                 errors << Reportable.error(
-                  [@file_to_validate.repo_relative_path(true)],
+                  { filename: @file_to_validate.filename },
                   [
                     "ERP title is different from content title",
                     "ERP title: #{ pa_erp[:title].inspect }, Content title: #{ pa_c[:title_for_erp].inspect }"
@@ -528,7 +531,7 @@ class Repositext
             end
           else
             warnings << Reportable.warning(
-              [@file_to_validate.repo_relative_path(true)],
+              { filename: @file_to_validate.filename },
               ["No ERP data present"]
             )
           end
@@ -541,19 +544,19 @@ class Repositext
           # Compare ERP datecode with filename (primary and foreign)
           if '' == pa_fn[:date_code].to_s
             errors << Reportable.error(
-              [@file_to_validate.repo_relative_path(true)],
+              { filename: @file_to_validate.filename },
               ["Date code from filename is missing"]
             )
           end
           if val_attrs[:has_erp_data]
             if '' == pa_erp[:date_code].to_s
               errors << Reportable.error(
-                [@file_to_validate.repo_relative_path(true)],
+                { filename: @file_to_validate.filename },
                 ["Date code from ERP is missing"]
               )
             elsif pa_fn[:date_code] != pa_erp[:date_code]
               errors << Reportable.error(
-                [@file_to_validate.repo_relative_path(true)],
+                { filename: @file_to_validate.filename },
                 [
                   "ERP datecode is different from filename datecode",
                   "ERP datecode: #{ pa_erp[:date_code].inspect }, Filename datecode: #{ pa_fn[:date_code].inspect }"
@@ -566,19 +569,19 @@ class Repositext
           if !val_attrs[:is_primary]
             if '' == pa_fn[:language_code].to_s
               errors << Reportable.error(
-                [@file_to_validate.repo_relative_path(true)],
+                { filename: @file_to_validate.filename },
                 ["Language code from filename is missing"]
               )
             end
             if val_attrs[:has_erp_data]
               if '' == pa_erp[:language_code].to_s
                 errors << Reportable.error(
-                  [@file_to_validate.repo_relative_path(true)],
+                  { filename: @file_to_validate.filename },
                   ["Language code from ERP is missing"]
                 )
               elsif pa_erp[:language_code] != pa_fn[:language_code]
                 errors << Reportable.error(
-                  [@file_to_validate.repo_relative_path(true)],
+                  { filename: @file_to_validate.filename },
                   [
                     "ERP language code is different from filename language code",
                     "ERP language_code: #{ pa_erp[:language_code].inspect }, filename language code: #{ pa_fn[:language_code].inspect }"
@@ -597,12 +600,12 @@ class Repositext
           if val_attrs[:has_id_parts]
             if '' == pa_id[:title].to_s
               errors << Reportable.error(
-                [@file_to_validate.repo_relative_path(true)],
+                { filename: @file_to_validate.filename },
                 ["Title from id is missing"]
               )
             elsif pa_id[:title] != pa_c[:title_for_id]
               errors << Reportable.error(
-                [@file_to_validate.repo_relative_path(true)],
+                { filename: @file_to_validate.filename },
                 [
                   "ID title is different from content title",
                   "ID title: #{ pa_id[:title].inspect }, Content title: #{ pa_c[:title_for_id].inspect }"
@@ -620,19 +623,19 @@ class Repositext
           if !val_attrs[:is_primary] && val_attrs[:has_id_parts]
             if '' == pa_id[:primary_title].to_s
               errors << Reportable.error(
-                [@file_to_validate.repo_relative_path(true)],
+                { filename: @file_to_validate.filename },
                 ["Primary title from ID is missing"]
               )
             end
             if val_attrs[:has_erp_data]
               if '' == pa_erp[:primary_title].to_s
                 errors << Reportable.error(
-                  [@file_to_validate.repo_relative_path(true)],
+                  { filename: @file_to_validate.filename },
                   ["Primary title from ERP is missing"]
                 )
               elsif pa_id[:primary_title] != pa_erp[:primary_title]
                 errors << Reportable.error(
-                  [@file_to_validate.repo_relative_path(true)],
+                  { filename: @file_to_validate.filename },
                   [
                     "ERP primary title is different from ID primary title",
                     "ERP primary title: #{ pa_erp[:primary_title].inspect }, ID primary title: #{ pa_id[:primary_title].inspect }"
@@ -652,12 +655,12 @@ class Repositext
           if val_attrs[:has_id_parts]
             if '' == pa_id[:date_code].to_s
               errors << Reportable.error(
-                [@file_to_validate.repo_relative_path(true)],
+                { filename: @file_to_validate.filename },
                 ["Date code from ID is missing"]
               )
             elsif pa_id[:date_code] != pa_fn[:date_code]
               errors << Reportable.error(
-                [@file_to_validate.repo_relative_path(true)],
+                { filename: @file_to_validate.filename },
                 [
                   "ID datecode is different from filename datecode",
                   "ID datecode: #{ pa_id[:date_code].inspect }, Filename datecode: #{ pa_fn[:date_code].inspect }"
@@ -670,12 +673,12 @@ class Repositext
           if !val_attrs[:is_primary] && val_attrs[:has_id_parts]
             if '' == pa_id[:language_code].to_s
               errors << Reportable.error(
-                [@file_to_validate.repo_relative_path(true)],
+                { filename: @file_to_validate.filename },
                 ["Language code from ID is missing"]
               )
             elsif pa_id[:language_code] != pa_fn[:language_code]
               errors << Reportable.error(
-                [@file_to_validate.repo_relative_path(true)],
+                { filename: @file_to_validate.filename },
                 [
                   "ID language code is different from filename language code",
                   "ID language_code: #{ pa_id[:language_code].inspect }, filename language code: #{ pa_fn[:language_code].inspect }"

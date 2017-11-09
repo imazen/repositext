@@ -31,8 +31,12 @@ class Repositext
               false, nil, [],
               invalid_subtitle_mark_sequences.map { |(error, line, excerpt)|
                 Reportable.error(
-                  [@file_to_validate.path, "line #{ line }"], # content_at file
-                  [error, excerpt]
+                  {
+                    filename: content_at_file.filename,
+                    line: line,
+                    context: excerpt,
+                  },
+                  [error]
                 )
               }
             )

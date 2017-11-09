@@ -60,11 +60,12 @@ class Repositext
                 false, nil, [],
                 paragraphs_without_subtitle_mark.map { |(line, para)|
                   Reportable.error(
-                    [@file_to_validate.path, line], # content_at file
-                    [
-                      "Paragraph doesn't start with a subtitle_mark:",
-                      para.inspect
-                    ]
+                    {
+                      filename: content_at_file.filename,
+                      line: line,
+                      context: para.inspect,
+                    },
+                    ["Paragraph doesn't start with a subtitle_mark"]
                   )
                 }
               )

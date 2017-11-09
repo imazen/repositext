@@ -39,11 +39,12 @@ class Repositext
           while !str_sc.eos? do
             if (match = str_sc.scan_until(/\n\s*?\n(\{:[^\}]+\})\s*?\n\s*?\n/))
               errors << Reportable.error(
-                [
-                  @file_to_validate.path,
-                  sprintf("line %5s", str_sc.current_line_number)
-                ],
-                ['Disconnected IAL', match[-40..-1].inspect]
+                {
+                  filename: content_at_file.filename,
+                  line: str_sc.current_line_number,
+                  context: match[-40..-1].inspect,
+                },
+                ['Disconnected IAL']
               )
             else
               break
@@ -67,11 +68,12 @@ class Repositext
                 raise "Unhandled match: #{ match.inspect }"
               end
               errors << Reportable.error(
-                [
-                  @file_to_validate.path,
-                  sprintf("line %5s", str_sc.current_line_number)
-                ],
-                [msg, match[-40..-1].inspect]
+                {
+                  filename: content_at_file.filename,
+                  line: str_sc.current_line_number,
+                  context: match[-40..-1].inspect,
+                },
+                [msg]
               )
             else
               break
@@ -93,10 +95,11 @@ class Repositext
               )
             )
               errors << Reportable.error(
-                [
-                  @file_to_validate.path,
-                  sprintf("line %5s", str_sc.current_line_number)
-                ],
+                {
+                  filename: content_at_file.filename,
+                  line: str_sc.current_line_number,
+                  context: match[-40..-1].inspect,
+                },
                 ['Paragraph not followed by exactly 2 newlines']
               )
             else
@@ -108,10 +111,11 @@ class Repositext
           while !str_sc.eos? do
             if (match = str_sc.scan_until(/[^\n]\n(?!(\n|\{:|\z))/))
               errors << Reportable.error(
-                [
-                  @file_to_validate.path,
-                  sprintf("line %5s", str_sc.current_line_number)
-                ],
+                {
+                  filename: content_at_file.filename,
+                  line: str_sc.current_line_number,
+                  context: match[-40..-1].inspect,
+                },
                 ['Unexpected line break']
               )
             else
@@ -123,10 +127,11 @@ class Repositext
           while !str_sc.eos? do
             if (match = str_sc.scan_until(/ {2,}/))
               errors << Reportable.error(
-                [
-                  @file_to_validate.path,
-                  sprintf("line %5s", str_sc.current_line_number)
-                ],
+                {
+                  filename: content_at_file.filename,
+                  line: str_sc.current_line_number,
+                  context: match[-40..-1].inspect,
+                },
                 ['More than one adjacent space character']
               )
             else
@@ -138,10 +143,11 @@ class Repositext
           while !str_sc.eos? do
             if (match = str_sc.scan_until(/\.\.\.|\. \. \./))
               errors << Reportable.error(
-                [
-                  @file_to_validate.path,
-                  sprintf("line %5s", str_sc.current_line_number)
-                ],
+                {
+                  filename: content_at_file.filename,
+                  line: str_sc.current_line_number,
+                  context: match[-40..-1].inspect,
+                },
                 ['Invalid elipsis']
               )
             else
@@ -153,11 +159,12 @@ class Repositext
           while !str_sc.eos? do
             if (match = str_sc.scan_until(/(?<!^)\* \* \*|\* \* \*(?!$)/))
               errors << Reportable.error(
-                [
-                  @file_to_validate.path,
-                  sprintf("line %5s", str_sc.current_line_number)
-                ],
-                ['Invalid horizontal rule: #{ str_sc.matched }']
+                {
+                  filename: content_at_file.filename,
+                  line: str_sc.current_line_number,
+                  context: match[-40..-1].inspect,
+                },
+                ['Invalid horizontal rule']
               )
             else
               break
@@ -208,7 +215,10 @@ class Repositext
               sprintf("%-15s %5d", classes.join(', '), count)
             }
             reporter.add_stat(
-              Reportable.stat([@file_to_validate.path], ['Classes Histogram', classes_histogram])
+              Reportable.stat(
+                { filename: content_at_file.filename },
+                ['Classes Histogram', classes_histogram]
+              )
             )
           end
         end
@@ -227,10 +237,11 @@ class Repositext
           # check if element's type is whitelisted
           if !whitelisted_kramdown_features.include?(el.type)
             errors << Reportable.error(
-              [
-                @file_to_validate.path,
-                (lo = el.options[:location]) && sprintf("line %5s", lo)
-              ].compact,
+              {
+                filename: content_at_file.filename,
+                line: el.options[:location],
+                context: el.element_summary,
+              },
               [
                 'Invalid kramdown feature',
                 ":#{ el.type }"
@@ -248,14 +259,14 @@ class Repositext
               !whitelisted_class_names.map{ |e| e[:name] }.include?(k)
             }
               errors << Reportable.error(
-                [
-                  @file_to_validate.path,
-                  (lo = el.options[:location]) && sprintf("line %5s", lo)
-                ].compact,
+                {
+                  filename: content_at_file.filename,
+                  line: el.options[:location],
+                  context: el.element_summary,
+                },
                 [
                   'Invalid class name',
                   "'#{ klasses }'",
-                  "on element #{ el.type}"
                 ]
               )
             end
@@ -314,10 +325,11 @@ class Repositext
             ).map { Regexp.last_match }
             match_data.each do |e|
               errors << Reportable.error(
-                [
-                  @file_to_validate.path,
-                  (lo = it[:location]) && sprintf("line %5s", lo)
-                ].compact,
+                {
+                  filename: content_at_file.filename,
+                  line: it[:location],
+                  context: e.to_s,
+                },
                 ['Leftover kramdown character', e[0]]
               )
             end
@@ -342,10 +354,11 @@ class Repositext
                 ''
               end
               errors << Reportable.error(
-                [
-                  @file_to_validate.path,
-                  sprintf("line %5s", str_sc.current_line_number)
-                ],
+                {
+                  filename: content_at_file.filename,
+                  line: str_sc.current_line_number,
+                  context: match[-40..-1].inspect,
+                },
                 ['Invalid character', sprintf('U+%04X', match[-1].codepoints.first) + context]
               )
             else
@@ -365,7 +378,10 @@ class Repositext
               sprintf("U+%04x  #{ code.chr('UTF-8') }  %5d", code, count)
             }
             reporter.add_stat(
-              Reportable.stat([@file_to_validate.path], ['Character Histogram', chars])
+              Reportable.stat(
+                { filename: content_at_file.filename },
+                ['Character Histogram', chars]
+              )
             )
           end
         end
@@ -391,11 +407,12 @@ class Repositext
           while !str_sc.eos? do
             if (match = str_sc.scan_until(/\\[\:\[\]\`]/))
               errors << Reportable.error(
-                [
-                  @file_to_validate.path,
-                  sprintf("line %5s", str_sc.current_line_number)
-                ],
-                ['Character that should not be escaped is escaped:', match[-10..-1].inspect]
+                {
+                  filename: content_at_file.filename,
+                  line: str_sc.current_line_number,
+                  context: match[-40..-1].inspect,
+                },
+                ['Character that should not be escaped is escaped:', match[-2..-1].inspect]
               )
             else
               break

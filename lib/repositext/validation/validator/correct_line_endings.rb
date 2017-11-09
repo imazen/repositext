@@ -18,8 +18,11 @@ class Repositext
               false, nil, [],
               [
                 Reportable.error(
-                  [@file_to_validate.path],
-                  ['Invalid line endings', "Repositext requires \\n (line feed) only, no \\r (carriage return)."]
+                  { filename: content_at_file.filename },
+                  [
+                    'Invalid line endings',
+                    "Repositext requires \\n (line feed) only, no \\r (carriage return)."
+                  ]
                 )
               ]
             )

@@ -59,7 +59,7 @@ class Repositext
             stats_count: @stats.count,
             warnings_count: @warnings.count,
           },
-          details: sort_reportables_by_class,
+          details: group_reportables_by_class,
         }
         r = JSON.generate(r, JSON_FORMATTING_OPTIONS)
         $stderr.puts(VALIDATION_JSON_OUTPUT_START_MARKER)

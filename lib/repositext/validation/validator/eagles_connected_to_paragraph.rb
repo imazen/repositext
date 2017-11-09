@@ -26,11 +26,12 @@ class Repositext
               false, nil, [],
               disconnected_eagles.map { |(line, para)|
                 Reportable.error(
-                  [@file_to_validate.path, line], # content_at file
-                  [
-                    "Eagle that is not connected to a paragraph:",
-                    para.inspect
-                  ]
+                  {
+                    filename: content_at_file.filename,
+                    line: line,
+                    context: para.inspect
+                  },
+                  ["Eagle is not connected to a paragraph"]
                 )
               }
             )

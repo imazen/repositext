@@ -101,11 +101,12 @@ class Repositext
           while !str_sc.eos? do
             if (match = str_sc.scan_until(/(?<!\n\n)\^\^\^/))
               errors << Reportable.error(
-                [
-                  @file_to_validate.path,
-                  sprintf("line %5s", str_sc.current_line_number)
-                ],
-                [':record_mark not preceded by blank line', match[-40..-1].inspect]
+                {
+                  filename: content_at_file.filename,
+                  line: str_sc.current_line_number,
+                  context: match[-40..-1].inspect,
+                },
+                [':record_mark not preceded by blank line']
               )
             else
               break
@@ -129,11 +130,12 @@ class Repositext
               relevant_match_fragment.gsub!(/^\"/, '') # Remove leading double quotes (from inspect)
               relevant_match_fragment.gsub!(/\"$/, '') # Remove trailing double quotes (from inspect)
               errors << Reportable.error(
-                [
-                  @file_to_validate.path,
-                  sprintf("line %5s", str_sc.current_line_number)
-                ],
-                ['Consecutive :record_marks with no text inbetween', relevant_match_fragment]
+                {
+                  filename: content_at_file.filename,
+                  line: str_sc.current_line_number,
+                  context: relevant_match_fragment,
+                },
+                ['Consecutive :record_marks with no text inbetween']
               )
             else
               break
@@ -154,14 +156,12 @@ class Repositext
             if match
               context_len = [match.size, 40].min
               errors << Reportable.error(
-                [
-                  @file_to_validate.path,
-                  sprintf("line %5s", str_sc.current_line_number)
-                ],
-                [
-                  ':record_mark not followed by two newlines',
-                  match[-context_len..-1],
-                ]
+                {
+                  filename: content_at_file.filename,
+                  line: str_sc.current_line_number,
+                  context: match[-context_len..-1],
+                },
+                [':record_mark not followed by two newlines']
               )
             else
               break
@@ -177,14 +177,12 @@ class Repositext
           )
             # p.normal contains a paragraph number
             errors << Reportable.error(
-              [
-                @file_to_validate.path,
-                (lo = el.options[:location]) && sprintf("line %5s", lo)
-              ].compact,
-              [
-                'p.normal contains a paragraph number',
-                "In text: #{ el.value.inspect }"
-              ]
+              {
+                filename: content_at_file.filename,
+                line: el.options[:location],
+                context: el.element_summary(0, max_value_length: 0),
+              },
+              ['p.normal contains a paragraph number']
             )
           elsif(
             el.has_class?('normal_pn') &&
@@ -192,14 +190,12 @@ class Repositext
           )
             # p.normal_pn does not contain a paragraph number
             errors << Reportable.error(
-              [
-                @file_to_validate.path,
-                (lo = el.options[:location]) && sprintf("line %5s", lo)
-              ].compact,
-              [
-                'p.normal_pn does not contain a paragraph number',
-                "In text: #{ el.value.inspect }"
-              ]
+              {
+                filename: content_at_file.filename,
+                line: el.options[:location],
+                context: el.element_summary(0, max_value_length: 0),
+              },
+              ['p.normal_pn does not contain a paragraph number']
             )
           elsif(
             !el.has_class?('normal_pn') &&
@@ -207,14 +203,12 @@ class Repositext
           )
             # para with class other than .normal_pn contains a paragraph number
             errors << Reportable.error(
-              [
-                @file_to_validate.path,
-                (lo = el.options[:location]) && sprintf("line %5s", lo)
-              ].compact,
-              [
-                'para with class other than .normal_pn contains a paragraph number',
-                "In text: #{ el.value.inspect }"
-              ]
+              {
+                filename: content_at_file.filename,
+                line: el.options[:location],
+                context: el.element_summary(0, max_value_length: 0),
+              },
+              ['para with class other than .normal_pn contains a paragraph number']
             )
           end
         end
@@ -236,14 +230,14 @@ class Repositext
                 )
               )
                 warnings << Reportable.error(
-                  [
-                    @file_to_validate.path,
-                    (lo = el.options[:location]) && sprintf("line %5s", lo)
-                  ].compact,
+                  {
+                    filename: content_at_file.filename,
+                    line: el.options[:location],
+                    context: "Previous KPN: #{ @kpn_tracker.inspect }, Current KPN: #{ l_kpn.inspect }",
+                  },
                   [
                     'Invalid KPN',
                     "KPN has unexpected value: #{ l_kpn.inspect }",
-                    "Previous KPN: #{ @kpn_tracker.inspect }, Current KPN: #{ l_kpn.inspect }"
                   ]
                 )
               end
@@ -258,13 +252,14 @@ class Repositext
           if(first_child && :p == first_child.type && first_child.has_class?('song song_break'))
             # First :p in :record_mark is p.song or p.song_break
             errors << Reportable.error(
-              [
-                @file_to_validate.path,
-                (lo = first_child.options[:location]) && sprintf("line %5s", lo)
-              ].compact,
+              {
+                filename: content_at_file.filename,
+                line: first_child.options[:location],
+                context: first_child.element_summary(0, max_value_length: 0),
+              },
               [
                 'p.song not preceded by p.stanza or p.song',
-                "Preceded by #{ el.element_summary }",
+                "Preceded by #{ el.element_summary(0, max_value_length: 0) }",
               ]
             )
           end
@@ -275,13 +270,14 @@ class Repositext
             )
               # subsequent p.song preceded by something other than p.stanza or p.song
               errors << Reportable.error(
-                [
-                  @file_to_validate.path,
-                  (lo = second_el.options[:location]) && sprintf("line %5s", lo)
-                ].compact,
+                {
+                  filename: content_at_file.filename,
+                  line: second_el.options[:location],
+                  context: second_el.element_summary(0, max_value_length: 0),
+                },
                 [
                   'p.song not preceded by p.stanza or p.song',
-                  "Preceded by #{ first_el.element_summary }",
+                  "Preceded by #{ first_el.element_summary(0, max_value_length: 0) }",
                 ]
               )
             end
@@ -295,14 +291,14 @@ class Repositext
             el.children.each do |child|
               if(:record_mark != child.type)
                 warnings << Reportable.error(
-                  [
-                    @file_to_validate.path,
-                    (lo = el.options[:location]) && sprintf("line %5s", lo)
-                  ].compact,
+                  {
+                    filename: content_at_file.filename,
+                    line: el.options[:location],
+                    context: el.element_summary(0, max_value_length: 0),
+                  },
                   [
                     'Element outside of :record_mark',
                     "Element is not contained in a :record_mark",
-                    "Type: #{ el.type }, Value: #{ el.value }"
                   ]
                 )
               end
@@ -334,10 +330,11 @@ class Repositext
 
             if report_error
               errors << Reportable.error(
-                [
-                  @file_to_validate.path,
-                  (lo = el.options[:location]) && sprintf("line %5s", lo)
-                ].compact,
+                {
+                  filename: content_at_file.filename,
+                  line: el.options[:location],
+                  context: el.element_summary(0, max_value_length: 0),
+                },
                 [
                   'Single formatted punctuation or whitespace character',
                   "Type: #{ el.type }, Inner text: #{ pt.inspect }"
@@ -355,10 +352,11 @@ class Repositext
             # class attrs may contain legitimate underscores.
             if(el.value =~ /[\_\^\=]/)
               warnings << Reportable.error(
-                [
-                  @file_to_validate.path,
-                  (lo = el.options[:location]) && sprintf("line %5s", lo)
-                ].compact,
+                {
+                  filename: content_at_file.filename,
+                  line: el.options[:location],
+                  context: el.element_summary(0, max_value_length: 0),
+                },
                 [
                   'Invalid underscore, caret, or equal sign in text element.',
                   "Text contents: #{ el.value.inspect }"

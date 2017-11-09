@@ -29,14 +29,12 @@ class Repositext
           report.results.each { |(filename, instances)|
             instances.each { |instance|
               errors << Reportable.error(
-                [
-                  filename,
-                  sprintf("line %5s", instance[:line])
-                ],
-                [
-                  'Invalid typographic quote',
-                  instance[:excerpt]
-                ]
+                {
+                  filename: filename,
+                  line: instance[:line],
+                  context: instance[:excerpt],
+                },
+                ['Invalid typographic quote']
               )
             }
           }

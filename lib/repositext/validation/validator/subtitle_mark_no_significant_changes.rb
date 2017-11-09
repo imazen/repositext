@@ -72,19 +72,25 @@ class Repositext
                 case e[:severity]
                 when :insignificant
                   Reportable.warning(
-                    [@file_to_validate.first.path], # content_at file
-                    [
-                      'Subtitle caption length has changed insignificantly',
-                      "Subtitle ##{ e[:subtitle_index] } on line #{ e[:line_num] }: #{ e[:excerpt] }"
-                    ]
+                    {
+                      filename: content_at_file.filename,
+                      line: e[:line_num],
+                      context: "Subtitle ##{ e[:subtitle_index] }: #{ e[:excerpt] }",
+                      corr_filename: subtitle_marker_csv_file.filename,
+                    },
+                    ['Subtitle caption length has changed insignificantly']
                   )
                 when :significant
                   Reportable.error(
-                    [@file_to_validate.first.path], # content_at file
+                    {
+                      filename: content_at_file.filename,
+                      line: e[:line_num],
+                      context: "Subtitle ##{ e[:subtitle_index] }: #{ e[:excerpt] }",
+                      corr_filename: subtitle_marker_csv_file.filename,
+                    },
                     [
                       'Subtitle caption length has changed significantly',
                       'Review changes and update subtitle_markers_file with `repositext sync subtitle_mark_character_positions`',
-                      "Subtitle ##{ e[:subtitle_index] } on line #{ e[:line_num] }: #{ e[:excerpt] }"
                     ]
                   )
                 else

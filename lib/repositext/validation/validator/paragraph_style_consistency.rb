@@ -31,7 +31,10 @@ class Repositext
               false, nil, [],
               pclass_and_fspan_mismatches.map { |(mismatch_location_attrs, error_attrs)|
                 Reportable.error(
-                  [@file_to_validate.first.filename, line_number].compact,
+                  {
+                    filename: f_content_at_file.filename,
+                    corr_filename: p_content_at_file.filename,
+                  }.merge(mismatch_location_attrs),
                   error_attrs
                 )
               }
@@ -179,7 +182,10 @@ class Repositext
               if [:strict, :report_missing].include?(validation_rule)
                 # Report error
                 mismatches << [
-                  "line #{ f_attrs[:line_number] }",
+                  {
+                    line: f_attrs[:line_number],
+                    corr_line: p_attrs[:line_number],
+                  },
                   [
                     "Span formatting mismatch",
                     [
@@ -201,7 +207,10 @@ class Repositext
               if [:strict, :report_extra].include?(validation_rule)
                 # Report error
                 mismatches << [
-                  "line #{ f_attrs[:line_number] }",
+                  {
+                    line: f_attrs[:line_number],
+                    corr_line: p_attrs[:line_number],
+                  },
                   [
                     "Span formatting mismatch",
                     [
@@ -296,7 +305,10 @@ class Repositext
             when '!'
               # change
               mismatches << [
-                "foreign line #{ f_p_style_and_spans[:line_number] }",
+                {
+                  line: f_p_style_and_spans[:line_number],
+                  corr_line: p_p_style_and_spans[:line_number],
+                },
                 [
                   error_type,
                   [
@@ -310,7 +322,10 @@ class Repositext
               # Ignore extra id_title3 in foreign
               next  if f_attrs.last.include?('id_title3')
               mismatches << [
-                "on foreign line #{ f_p_style_and_spans[:line_number] }",
+                {
+                  line: f_p_style_and_spans[:line_number],
+                  corr_line: p_p_style_and_spans[:line_number],
+                },
                 [
                   error_type,
                   [
@@ -322,7 +337,10 @@ class Repositext
             when '-'
               # deletion
               mismatches << [
-                "primary line #{ p_p_style_and_spans[:line_number] }",
+                {
+                  line: f_p_style_and_spans[:line_number],
+                  corr_line: p_p_style_and_spans[:line_number],
+                },
                 [
                   error_type,
                   [

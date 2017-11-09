@@ -68,11 +68,11 @@ class Repositext
               Regexp.union(Repositext::Validation::Config::INVALID_CHARACTER_REGEXES)
             ))
               errors << Reportable.error(
-                [
-                  @file_to_validate.path,
-                  sprintf("story %5s", idml_story_name),
-                  sprintf("line %5s", str_sc.current_line_number)
-                ],
+                {
+                  filename: @file_to_validate.filename,
+                  line: str_sc.current_line_number,
+                  context: sprintf("story %5s", idml_story_name),
+                },
                 ['Invalid character', sprintf('U+%04X', match[-1].codepoints.first)]
               )
             else
@@ -92,7 +92,10 @@ class Repositext
               sprintf("U+%04x  #{ code.chr('UTF-8') }  %5d", code, count)
             }
             @reporter.add_stat(
-              Reportable.stat([@file_to_validate.path], ['Character Histogram', chars])
+              Reportable.stat(
+                { filename: @file_to_validate.filename },
+                ['Character Histogram', chars]
+              )
             )
           end
         end

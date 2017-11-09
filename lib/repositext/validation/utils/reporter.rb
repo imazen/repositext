@@ -41,11 +41,13 @@ class Repositext
 
       # Use this method to add an array of errors to self.
       # @param [Array<Reportable>] _errors
-      def add_errors(_errors, _sort_by = :location)
-        if _sort_by
-          _errors = _errors.sort { |a,b| a.send(_sort_by) <=> b.send(_sort_by) }
-        end
-        _errors.each do |e|
+      def add_errors(_errors)
+        # Sort errors by location
+        _errors.sort { |a,b|
+          a_attrs = [a.location[:filename], a.location[:line]].compact
+          b_attrs = [b.location[:filename], b.location[:line]].compact
+          a_attrs <=> b_attrs
+        }.each do |e|
           self.add_error(e)
         end
       end
@@ -75,11 +77,12 @@ class Repositext
 
       # Use this method to add an array of warnings to self.
       # @param [Array<Reportable>] _warnings
-      def add_warnings(_warnings, _sort_by = :location)
-        if _sort_by
-          _warnings = _warnings.sort { |a,b| a.send(_sort_by) <=> b.send(_sort_by) }
-        end
-        _warnings.each do |e|
+      def add_warnings(_warnings)
+        _warnings.sort { |a,b|
+          a_attrs = [a.location[:filename], a.location[:line]].compact
+          b_attrs = [b.location[:filename], b.location[:line]].compact
+          a_attrs <=> b_attrs
+        }.each do |e|
           self.add_warning(e)
         end
       end
@@ -105,12 +108,16 @@ class Repositext
       # Groups data by location
       # 'AFR65-0102.idml' => {
       #   :errors => [],
-      #   'story u1998' => {
-      #     'line 1776' => {
+      #   '/path/to-file' => {
+      #     'line 42' => {
       #       :errors => [
       #         {
-      #           :location => ['AFR65-0102.idml', 'story u1998', 'line 1776'],
-      #           :details => ['InvalidUnicodeCharacter', 'U+2029', 'optional'],
+      #           :location => {
+      #             filename: '/path/to-file',
+      #             line: 42,
+      #             context: '...some context...,
+      #           },
+      #           :details => ['InvalidUnicodeCharacter', 'U+2029', '<further optional details>'],
       #           :level => :error
       #         },
       #       ],
@@ -122,28 +129,27 @@ class Repositext
         @group_reportables_by_location ||= (
           r = RecursiveDataHash.new
           @errors.each do |error|
-            sub = r
-            error.location.each{ |el| sub = sub[el.gsub(@input_base_dir, '')] }
-            sub[:errors] << {
-              :location => error.location.map { |e| e.gsub(@input_base_dir, '') },
+            filename_hash = r[error.location[:filename]]
+            line_hash = filename_hash["line #{ error.location[:line] || 'N/A' }"]
+            line_hash[:errors] << {
+              :location => error.location,
               :details => error.details,
               :level => error.level
             }
           end
           @warnings.each do |warning|
-            sub = r
-            warning.location.each{ |el| sub = sub[el.gsub(@input_base_dir, '')] }
-            sub[:warnings] << {
-              :location => warning.location.map { |e| e.gsub(@input_base_dir, '') },
+            filename_hash = r[warning.location[:filename]]
+            line_hash = filename_hash["line #{ warning.location[:line] || 'N/A' }"]
+            line_hash[:warnings] << {
+              :location => warning.location,
               :details => warning.details,
               :level => warning.level
             }
           end
           @stats.each do |stat|
-            sub = r
-            stat.location.each{ |el| sub = sub[el.gsub(@input_base_dir, '')] }
-            sub[:stats] << {
-              :location => stat.location.map { |e| e.gsub(@input_base_dir, '') },
+            filename_hash = r[stat.location[:filename]]
+            filename_hash[:stats] << {
+              :location => stat.location,
               :details => stat.details,
               :level => stat.level
             }
@@ -176,7 +182,7 @@ class Repositext
             sub = r
             error.details.first(2).each{ |el| sub = sub[el] }
             sub[:errors] << {
-              :location => error.location.compact.map { |e| e.gsub(@input_base_dir, '') },
+              :location => error.location,
               :details => error.details,
               :level => error.level
             }
@@ -185,7 +191,7 @@ class Repositext
             sub = r
             warning.details.first(2).each{ |el| sub = sub[el] }
             sub[:warnings] << {
-              :location => warning.location.map { |e| e.gsub(@input_base_dir, '') },
+              :location => warning.location,
               :details => warning.details,
               :level => warning.level
             }
@@ -193,7 +199,7 @@ class Repositext
           @stats.each do |stat|
             sub = r[stat.details.first]
             sub[:stats] << {
-              :location => stat.location.map { |e| e.gsub(@input_base_dir, '') },
+              :location => stat.location,
               :details => stat.details,
               :level => stat.level
             }

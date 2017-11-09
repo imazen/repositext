@@ -16,8 +16,15 @@ class Repositext
               false, nil, [],
               [
                 Reportable.error(
-                  [@file_to_validate.path],
-                  ["Content AT file doesn't start with record_mark", "Starts with #{ a_string.codepoints.first.inspect } instead."]
+                  {
+                    filename: content_at_file.filename,
+                    line: 1,
+                    context: content_at_file.contents[0,20].inspect
+                  },
+                  [
+                    "Content AT file doesn't start with record_mark",
+                    "Starts with #{ content_at_file.contents.codepoints.first.inspect } instead."
+                  ]
                 )
               ]
             )

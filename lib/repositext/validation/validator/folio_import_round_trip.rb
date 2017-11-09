@@ -40,7 +40,9 @@ class Repositext
             false, nil, [],
             diffs.map { |diff|
               Reportable.error(
-                [@file_to_validate.path],
+                {
+                  filename: xml_file.filename
+                },
                 ['Roundtrip comparison results in different elements', diff]
               )
             }

@@ -34,7 +34,10 @@ class Repositext
               false, nil, [],
               [
                 Reportable.error(
-                  [@file_to_validate.last.path],
+                  {
+                    filename: content_at_file.filename,
+                    corr_filename: stm_csv_file.filename,
+                  },
                   [
                     'Subtitle_mark count mismatch',
                     "content_at contains #{ content_at_count }, but subtitle_marker_csv contains #{ stm_csv_count } subtitle_marks."

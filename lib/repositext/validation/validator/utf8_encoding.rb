@@ -34,8 +34,11 @@ class Repositext
               false, nil, [],
               [
                 Reportable.error(
-                  [@file_to_validate.path],
-                  ['Invalid encoding', "Document is not UTF8 encoded: #{ e.class.to_s } - #{ e.message }"]
+                  { filename: @file_to_validate.filename },
+                  [
+                    'Invalid encoding',
+                    "Document is not UTF8 encoded: #{ e.class.to_s } - #{ e.message }"
+                  ]
                 )
               ]
             )
@@ -49,8 +52,11 @@ class Repositext
                 false, nil, [],
                 [
                   Reportable.error(
-                    [@file_to_validate.path],
-                    ['Unexpected BOM', "Document is UTF8 encoded, however it contains a UTF8 BOM. Repositext expects NO BOM."]
+                    { filename: @file_to_validate.filename },
+                    [
+                      'Unexpected BOM',
+                      "Document is UTF8 encoded, however it contains a UTF8 BOM. Repositext expects NO BOM."
+                    ]
                   )
                 ]
               )

@@ -30,10 +30,14 @@ class Repositext
               false, nil, [],
               too_long_captions.map { |(line, length, idx, excerpt)|
                 Reportable.error(
-                  [@file_to_validate.path, "line #{ line }"], # content_at file
+                  {
+                    filename: content_at_file.filename,
+                    line: line,
+                    context: excerpt,
+                  },
                   [
-                    'Subtitle caption is too long:',
-                    %(#{ length } characters in caption ##{ idx } "#{ excerpt }"),
+                    'Subtitle caption is too long',
+                    %(#{ length } characters in caption ##{ idx }),
                   ]
                 )
               }
