@@ -8,10 +8,10 @@ class Repositext
       extend Forwardable
 
       # Instantiates a new Validator.
-      # @param [IO, Array<IO>] file_to_validate
-      # @param [Logger] logger
-      # @param [Reporter] reporter
-      # @param [Hash] options
+      # @param file_to_validate [RFile, Array<RFile>]
+      # @param logger [Logger]
+      # @param reporter [Reporter]
+      # @param options [Hash]
       def initialize(file_to_validate, logger, reporter, options)
         @file_to_validate = file_to_validate
         @logger = logger
@@ -20,8 +20,8 @@ class Repositext
       end
 
       # Call this method at the end of each run method in Validator subclasses
-      # @param [Array] errors from the validation step
-      # @param [Array] warnings from the validation step
+      # @param errors [Array] from the validation step
+      # @param warnings [Array] from the validation step
       def log_and_report_validation_step(errors, warnings)
         @logger.log_validation_step(self, @file_to_validate, errors.none?)
         @reporter.add_errors(errors)

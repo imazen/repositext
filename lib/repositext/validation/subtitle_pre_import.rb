@@ -9,20 +9,20 @@ class Repositext
         # Single files
 
         # Validate that every paragraph in the import file begins with a subtitle_mark
-        validate_files(:subtitle_import_files) do |path|
-          Validator::Utf8Encoding.new(File.open(path), @logger, @reporter, @options).run
-          if path.index('markers.')
+        validate_files(:subtitle_import_files) do |content_at_file|
+          Validator::Utf8Encoding.new(content_at_file, @logger, @reporter, @options).run
+          if content_at_file.filename.index('markers.')
             # validate all markers files
             Validator::SubtitleImportMarkersSyntax.new(
-              File.open(path), @logger, @reporter, @options
+              content_at_file, @logger, @reporter, @options
             ).run
           elsif @options['is_primary_repo']
             # validate primary content AT files
             Validator::SubtitleMarkAtBeginningOfEveryParagraph.new(
-              File.open(path), @logger, @reporter, @options.merge(:content_type => :import)
+              content_at_file, @logger, @reporter, @options.merge(:content_type => :import)
             ).run
             Validator::SubtitleMarkNotFollowedBySpace.new(
-              File.open(path), @logger, @reporter, @options
+              content_at_file, @logger, @reporter, @options
             )
           end
         end
@@ -37,18 +37,14 @@ class Repositext
         # import files and find the corresponding content_at file.
 
         # Validate that the subtitle/subtitle_tagging import still matches content_at
-        # Define proc that computes subtitle/subtitle_tagging import filename from content_at filename
-        si_file_name_proc = lambda { |input_filename, file_specs|
-          ca_base_dir = file_specs[:content_at_files].first
-          si_base_dir = file_specs[:subtitle_import_files].first
-          Repositext::Utils::SubtitleFilenameConverter.convert_from_repositext_to_subtitle_import(
-            input_filename.gsub(ca_base_dir, si_base_dir)
-          )
+        # Define proc that computes subtitle/subtitle_tagging import file from content_at file
+        si_file_proc = lambda { |content_at_file|
+          content_at_file.corresponding_subtitle_import_txt_file
         }
         # Run pairwise validation
-        validate_file_pairs(:content_at_files, si_file_name_proc) do |ca, sti|
+        validate_file_pairs(:content_at_files, si_file_proc) do |ca, sti|
           Validator::SubtitleImportConsistency.new(
-            [File.open(ca), File.open(sti)],
+            [ca, sti],
             @logger,
             @reporter,
             @options.merge(:subtitle_import_consistency_compare_mode => 'pre_import')

@@ -8,12 +8,16 @@ class Repositext
 
       describe 'File operation helper methods' do
 
+        let(:path_to_content_type) { '/path/to/repo/ct-general' }
+        # We need a separate directory for content so that Rtfile does not confuse things
+        let(:path_to_content_files) { File.join(path_to_content_type, 'content') }
         let(:in_cont) { 'Input file content' }
         let(:out_cont) { 'Output file content'}
-        let(:in_file_pattern) { '/directory_1/*.in' }
-        let(:in_file_filter) { /\.in\z/ }
+        let(:in_file_pattern) { "#{ path_to_content_files }/*.test_in" }
+        let(:in_file_filter) { /\.test_in\z/ }
         let(:in_file_names) { Dir.glob(in_file_pattern).dup }
         let(:desc) { '[description of operation, e.g., export_files]' }
+        let(:content_type){ Repositext::ContentType.new(path_to_content_type) }
 
         before do
           # Activate FakeFS
@@ -25,9 +29,18 @@ class Repositext
           @stdout = $stdout = StringIO.new
 
           # Create test input files
-          FileUtils.mkdir('/directory_1')
+          FileUtils.mkdir_p(path_to_content_files)
           %w[test1 test2].each { |e|
-            File.open("/directory_1/#{ e }.in", 'w') { |f| f.write(in_cont) }
+            File.open("#{ path_to_content_files }/#{ e }.test_in", 'w') { |f|
+              f.write(in_cont)
+            }
+          }
+          File.open(File.join(path_to_content_type, 'Rtfile'), 'w') { |f|
+            f.write(
+              [
+                %(setting :language_code_3_chars, 'eng')
+              ].join("\n")
+            )
           }
         end
 
@@ -40,7 +53,12 @@ class Repositext
 
           before do
             # Execute method under test
-            mod.change_files_in_place(in_file_pattern, in_file_filter, desc, {}) do |contents, filename|
+            mod.change_files_in_place(
+              in_file_pattern,
+              in_file_filter,
+              desc,
+              { content_type: content_type }
+            ) do |r_file|
               [Outcome.new(true, { :contents => out_cont, :extension => '_ignored' }, ['msg'])]
             end
           end
@@ -54,18 +72,23 @@ class Repositext
           end
 
           it 'does not create any new files' do
-            Dir.glob('/directory_1/*').must_equal in_file_names
+            Dir.glob(File.join(path_to_content_files, '*')).must_equal in_file_names
           end
         end
 
         describe '.convert_files' do
 
-          let(:out_file_pattern) { '/directory_1/*.out' }
+          let(:out_file_pattern) { File.join(path_to_content_files, '*.test_out') }
 
           before do
             # Execute method under test
-            mod.convert_files(in_file_pattern, in_file_filter, desc, {}) do |contents, filename|
-              [Outcome.new(true, { :contents => out_cont, :extension => 'out' }, ['msg'])]
+            mod.convert_files(
+              in_file_pattern,
+              in_file_filter,
+              desc,
+              { content_type: content_type }
+            ) do |r_file|
+              [Outcome.new(true, { :contents => out_cont, :extension => 'test_out' }, ['msg'])]
             end
           end
 
@@ -85,17 +108,25 @@ class Repositext
         describe '.export_files' do
 
           let(:out_dir) { '/directory_2/' }
-          let(:out_file_pattern) { "#{ out_dir }*.out" }
-          let(:input_base_dir) { '/directory_1/' }
+          let(:out_file_pattern) { File.join(out_dir, "*.test_out") }
+          let(:input_base_dir) { path_to_content_files }
           let(:input_file_selector) { '**/*' }
-          let(:input_file_extension) { '*.in' } # This contains only the portion after base_dir
+          let(:input_file_extension) { '*.test_in' } # This contains only the portion after base_dir
 
           before do
             # Prepare output dir
             FileUtils.mkdir('/directory_2')
             # Execute method under test
-            mod.export_files(input_base_dir, input_file_selector, input_file_extension, out_dir, in_file_filter, desc, {}) do |contents, filename|
-              [Outcome.new(true, { :contents => out_cont, :extension => 'out' }, ['msg'])]
+            mod.export_files(
+              input_base_dir,
+              input_file_selector,
+              input_file_extension,
+              out_dir,
+              in_file_filter,
+              desc,
+              { content_type: content_type }
+            ) do |r_file|
+              [Outcome.new(true, { :contents => out_cont, :extension => 'test_out' }, ['msg'])]
             end
           end
 
@@ -116,10 +147,10 @@ class Repositext
         describe '.move_files' do
 
           let(:out_dir) { '/directory_2/' }
-          let(:out_file_pattern) { "#{ out_dir }*.in" } # extension is .in since we're just moving
-          let(:input_base_dir) { '/directory_1/' }
+          let(:out_file_pattern) { "#{ out_dir }*.test_in" } # extension is .test_in since we're just moving
+          let(:input_base_dir) { path_to_content_files }
           let(:input_file_selector) { '**/*' }
-          let(:input_file_extension) { '*.in' } # This contains only the portion after base_dir
+          let(:input_file_extension) { '*.test_in' } # This contains only the portion after base_dir
 
           before do
             # Count number of input files before we delete them
@@ -127,7 +158,15 @@ class Repositext
             # Prepare output dir
             FileUtils.mkdir('/directory_2')
             # Execute method under test
-            mod.move_files(input_base_dir, input_file_selector, input_file_extension, out_dir, in_file_filter, desc, {})
+            mod.move_files(
+              input_base_dir,
+              input_file_selector,
+              input_file_extension,
+              out_dir,
+              in_file_filter,
+              desc,
+              { content_type: content_type }
+            )
           end
 
           it 'removes existing files' do
@@ -149,8 +188,14 @@ class Repositext
           let(:out_dir) { '/directory_2/' }
 
           it 'does not write any new files' do
-            mod.dry_run_process(in_file_pattern, in_file_filter, out_dir, desc, {}) do |contents, filename|
-              [Outcome.new(true, { :contents => out_cont, :extension => 'out' }, ['msg'])]
+            mod.dry_run_process(
+              in_file_pattern,
+              in_file_filter,
+              out_dir,
+              desc,
+              { content_type: content_type }
+            ) do |r_file|
+              [Outcome.new(true, { :contents => out_cont, :extension => 'test_out' }, ['msg'])]
             end
             File.directory?(out_dir).must_equal false
             Dir.glob(in_file_pattern).must_equal in_file_names
@@ -158,8 +203,14 @@ class Repositext
 
           it 'prints console output' do
             _out, err = capture_io {
-              mod.dry_run_process(in_file_pattern, out_dir, in_file_filter, desc, {}) do |contents, filename|
-                [Outcome.new(true, { :contents => out_cont, :extension => 'out' }, ['msg'])]
+              mod.dry_run_process(
+                in_file_pattern,
+                out_dir,
+                in_file_filter,
+                desc,
+                { content_type: content_type }
+              ) do |contents, filename|
+                [Outcome.new(true, { :contents => out_cont, :extension => 'test_out' }, ['msg'])]
               end
             }
             err.must_match(/\n - Skipping/)
@@ -169,7 +220,7 @@ class Repositext
         describe '.process_files_helper' do
 
           let(:out_dir) { '/directory_2' }
-          let(:out_file_pattern) { "#{ out_dir }/*.out" }
+          let(:out_file_pattern) { "#{ out_dir }/*.test_out" }
           let(:output_path_lambda) {
             lambda do |input_filename, output_file_attrs|
               File.join(
@@ -181,7 +232,13 @@ class Repositext
 
           it 'Processes empty file set' do
             _out, err = capture_io {
-              mod.process_files_helper('', '', output_path_lambda, '', {}) { '' }
+              mod.process_files_helper(
+                '',
+                '',
+                output_path_lambda,
+                '',
+                { content_type: content_type }
+              ) { '' }
             }
             err.must_match(/Finished processing 0 of 0 files/)
           end
@@ -189,54 +246,96 @@ class Repositext
           it "skips input files that don't match the file_filter" do
             in_file_filter = /test2/
             _out, err = capture_io {
-              mod.process_files_helper(in_file_pattern, in_file_filter, output_path_lambda, desc, {}) do |contents, filename|
-                [Outcome.new(true, { :contents => out_cont, :extension => 'out' }, ['msg'])]
+              mod.process_files_helper(
+                in_file_pattern,
+                in_file_filter,
+                output_path_lambda,
+                desc,
+                { content_type: content_type }
+              ) do |contents, filename|
+                [Outcome.new(true, { :contents => out_cont, :extension => 'test_out' }, ['msg'])]
               end
             }
-            err.must_match(/\n - Skipping .*test1\.in/)
+            err.must_match(/\n - Skipping .*test1\.test_in/)
           end
 
           it "creates new output files if they don't exist yet" do
             _out, err = capture_io {
-              mod.process_files_helper(in_file_pattern, in_file_filter, output_path_lambda, desc, {}) do |contents, filename|
-                [Outcome.new(true, { :contents => out_cont, :extension => 'out' }, ['msg'])]
+              mod.process_files_helper(
+                in_file_pattern,
+                in_file_filter,
+                output_path_lambda,
+                desc,
+                { content_type: content_type }
+              ) do |contents, filename|
+                [Outcome.new(true, { :contents => out_cont, :extension => 'test_out' }, ['msg'])]
               end
             }
-            err.must_match(/\n  \* Create: .*test1\.out/)
+            err.must_match(/\n  \* Create: .*test1\.test_out/)
           end
 
           it "updates output files that exist if new content is different" do
             # First create existing output files with old content
             old_content = 'Old content'
             new_content = 'New content'
-            mod.process_files_helper(in_file_pattern, in_file_filter, output_path_lambda, desc, {}) do |contents, filename|
-              [Outcome.new(true, { :contents => old_content, :extension => 'out' }, ['msg'])]
+            mod.process_files_helper(
+              in_file_pattern,
+              in_file_filter,
+              output_path_lambda,
+              desc,
+              { content_type: content_type }
+            ) do |contents, filename|
+              [Outcome.new(true, { :contents => old_content, :extension => 'test_out' }, ['msg'])]
             end
             _out, err = capture_io {
-              mod.process_files_helper(in_file_pattern, in_file_filter, output_path_lambda, desc, {}) do |contents, filename|
-                [Outcome.new(true, { :contents => new_content, :extension => 'out' }, ['msg'])]
+              mod.process_files_helper(
+                in_file_pattern,
+                in_file_filter,
+                output_path_lambda,
+                desc,
+                { content_type: content_type }
+              ) do |contents, filename|
+                [Outcome.new(true, { :contents => new_content, :extension => 'test_out' }, ['msg'])]
               end
             }
-            err.must_match(/\n  \* Update: .*test1\.out/)
+            err.must_match(/\n  \* Update: .*test1\.test_out/)
           end
 
           it "leaves as is output files that exist if new content is same as existing" do
             # First create existing output files with old content
             old_content = 'Old content'
-            mod.process_files_helper(in_file_pattern, in_file_filter, output_path_lambda, desc, {}) do |contents, filename|
-              [Outcome.new(true, { :contents => old_content, :extension => 'out' }, ['msg'])]
+            mod.process_files_helper(
+              in_file_pattern,
+              in_file_filter,
+              output_path_lambda,
+              desc,
+              { content_type: content_type }
+            ) do |contents, filename|
+              [Outcome.new(true, { :contents => old_content, :extension => 'test_out' }, ['msg'])]
             end
             _out, err = capture_io {
-              mod.process_files_helper(in_file_pattern, in_file_filter, output_path_lambda, desc, {}) do |contents, filename|
-                [Outcome.new(true, { :contents => old_content, :extension => 'out' }, ['msg'])]
+              mod.process_files_helper(
+                in_file_pattern,
+                in_file_filter,
+                output_path_lambda,
+                desc,
+                { content_type: content_type }
+              ) do |contents, filename|
+                [Outcome.new(true, { :contents => old_content, :extension => 'test_out' }, ['msg'])]
               end
             }
-            err.must_match(/\n    Leave as is: .*test1\.out/)
+            err.must_match(/\n    Leave as is: .*test1\.test_out/)
           end
 
           it "prints an error message if processing is not successful" do
             __out, err = capture_io {
-              mod.process_files_helper(in_file_pattern, in_file_filter, output_path_lambda, desc, {}) do |contents, filename|
+              mod.process_files_helper(
+                in_file_pattern,
+                in_file_filter,
+                output_path_lambda,
+                desc,
+                { content_type: content_type }
+              ) do |contents, filename|
                 [Outcome.new(false, {}, ['msg'])]
               end
             }
@@ -301,7 +400,7 @@ class Repositext
         end
 
         it 'returns nil if given false' do
-          mod.compute_list_of_changed_files(false).must_equal nil
+          mod.compute_list_of_changed_files(false).must_be(:nil?)
         end
 
         describe 'if given true' do

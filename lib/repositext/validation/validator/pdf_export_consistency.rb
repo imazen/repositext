@@ -7,27 +7,19 @@ class Repositext
 
         # Runs all validations for self
         def run
-          outcome = pdf_export_consistent?(@file_to_validate)
+          pdf_file = @file_to_validate
+          outcome = pdf_export_consistent?(pdf_file)
           log_and_report_validation_step(outcome.errors, outcome.warnings)
         end
 
       protected
 
-        # @param pdf_file_name [String] absolute path to the PDF file
-        # @return [Outcome]
-        def pdf_export_consistent?(pdf_file_name)
-          content_type = @options['content_type']
-          config = content_type.config
-          language = content_type.language
-
-          pdf_file_stub = Repositext::RFile::Pdf.new(
-            '_', language, pdf_file_name, content_type
-          )
-          corresponding_content_at_file = pdf_file_stub.corresponding_content_at_file
+        def pdf_export_consistent?(pdf_file)
+          corresponding_content_at_file = pdf_file.corresponding_content_at_file
 
           if(
             @options[:skip_file_proc] &&
-            ccafn = pdf_file_stub.corresponding_content_at_filename &&
+            ccafn = pdf_file.corresponding_content_at_filename &&
             @options[:skip_file_proc].call(
               corresponding_content_at_file.contents,
               ccafn
@@ -35,12 +27,12 @@ class Repositext
           )
             # When exporting PDF recording, we only export files that contain
             # gap_marks. So we need to check in the validation as well...
-            $stderr.puts " - Skipping #{ filename } - matches options[:skip_file_proc]"
+            $stderr.puts " - Skipping #{ pdf_file.filename } - matches options[:skip_file_proc]"
             return [Outcome.new(true, nil, [])]
           end
 
           pdf_raw_text = extract_pdf_raw_text(
-            pdf_file_name,
+            pdf_file.filename,
             @options['extract_text_from_pdf_service'],
             @options['pdfbox_text_extraction_options']
           )
@@ -51,6 +43,7 @@ class Repositext
           # settings.
           # NOTE: Can't use @options['...'] since that is not updated per file
           # for validations, just for the export in Repositext::Cli::Export#export_pdf_base
+          config = pdf_file.content_type_config
           config.update_for_file(corresponding_content_at_file.corresponding_data_json_filename)
 
           adjusted_content_at_plain_text = adjust_plain_text(

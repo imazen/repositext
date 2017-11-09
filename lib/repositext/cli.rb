@@ -356,6 +356,9 @@ class Repositext
         # Rewrite dc option to file-selector
         options['file-selector'] = "**/*{#{ dc }}_*"
       end
+      # Add content_type to options so that it is available for instantiating
+      # RFiles for validations
+      options[:content_type] = content_type
 
       if respond_to?(method_name, true)
         with_timer do

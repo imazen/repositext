@@ -9,7 +9,7 @@ class Repositext
         # Single files
         validate_files(:imported_repositext_files) do |repositext_file|
           Validator::Utf8Encoding.new(
-            File.open(repositext_file.filename), @logger, @reporter, @options
+            repositext_file, @logger, @reporter, @options
           ).run
         end
 
@@ -34,7 +34,7 @@ class Repositext
           config.update_for_file(content_at_file.corresponding_data_json_filename)
           @options['run_options'] << 'kramdown_syntax_at-no_underscore_or_caret'
           Validator::KramdownSyntaxAt.new(
-            File.open(content_at_file.filename), @logger, @reporter, @options
+            content_at_file, @logger, @reporter, @options
           ).run
           Validator::ValidTypographicQuotes.new(
             content_at_file, @logger, @reporter, @options
@@ -50,7 +50,7 @@ class Repositext
           ).run
           if content_at_file.is_primary?
             Validator::ParagraphNumberSequencing.new(
-              File.open(content_at_file.filename), @logger, @reporter, @options
+              content_at_file, @logger, @reporter, @options
             ).run
           else
             # Check pn alignment with primary, which also implies correct sequencing.

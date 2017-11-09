@@ -19,10 +19,7 @@ class Repositext
           options['file_filter'],
           nil,
           "Exporting AT files to DOCX",
-          options.merge(
-            content_type: content_type,
-            use_new_r_file_api: true,
-          )
+          options
         ) do |content_at_file|
           Process::Export::Docx.new(
             content_at_file,
@@ -55,8 +52,8 @@ class Repositext
                             .gsub(/\.at\z/, '.gap_mark_tagging.txt')
             }
           )
-        ) do |contents, filename|
-          outcome = Repositext::Process::Export::GapMarkTagging.new(contents).export
+        ) do |content_at_file|
+          outcome = Repositext::Process::Export::GapMarkTagging.new(content_at_file.contents).export
           if outcome.success?
             [Outcome.new(true, { contents: outcome.result, extension: 'gap_mark_tagging.txt' })]
           else
@@ -79,10 +76,10 @@ class Repositext
           options['file_filter'],
           "Exporting AT files to ICML",
           options
-        ) do |contents, filename|
+        ) do |content_at_file|
           # We first convert AT to plain markdown to remove record_marks,
           # subtitle_marks, and gap_marks which aren't supported by ICML.
-          md = convert_at_string_to_plain_markdown(contents)
+          md = convert_at_string_to_plain_markdown(content_at_file.contents)
           # Since the kramdown parser is specified as module in Rtfile,
           # I can't use the standard kramdown API:
           # `doc = Kramdown::Document.new(contents, :input => 'kramdown_repositext')`
@@ -111,8 +108,8 @@ class Repositext
           options['file_filter'],
           "Exporting AT files to plain kramdown",
           options
-        ) do |contents, filename|
-          md = convert_at_string_to_plain_markdown(contents)
+        ) do |content_at_file|
+          md = convert_at_string_to_plain_markdown(content_at_file.contents)
           [Outcome.new(true, { contents: md, extension: '.md' })]
         end
       end
@@ -132,13 +129,13 @@ class Repositext
           options['file_filter'],
           "Exporting AT files to plain text",
           options
-        ) do |contents, filename|
+        ) do |content_at_file|
           # Since the kramdown parser is specified as module in Rtfile,
           # I can't use the standard kramdown API:
           # `doc = Kramdown::Document.new(contents, :input => 'kramdown_repositext')`
           # We have to patch a base Kramdown::Document with the root to be able
           # to convert it.
-          root, _warnings = config.kramdown_parser(:kramdown).parse(contents)
+          root, _warnings = config.kramdown_parser(:kramdown).parse(content_at_file.contents)
           doc = Kramdown::Document.new('')
           doc.root = root
           txt = doc.send(config.kramdown_converter_method(:to_plain_text))
@@ -159,10 +156,7 @@ class Repositext
           output_base_dir,
           options['file_filter'],
           "Exporting AT files to plain text for subtitle autosplit",
-          options.merge(
-            use_new_r_file_api: true,
-            content_type: content_type,
-          )
+          options
         ) do |content_at_file|
           st_as_ctxt = content_at_file.is_primary? ? :for_lf_aligner_primary : :for_lf_aligner_foreign
           txt = content_at_file.plain_text_for_st_autosplit_contents(
@@ -208,9 +202,7 @@ class Repositext
                 input_filename.gsub(input_base_dir, output_base_dir),
                 output_file_attrs
               )
-            },
-            use_new_r_file_api: true,
-            content_type: content_type,
+            }
           )
         ) do |content_at_file|
           config.update_for_file(content_at_file.corresponding_data_json_filename)
@@ -317,13 +309,13 @@ class Repositext
               )
             }
           )
-        ) do |contents, filename|
+        ) do |content_at_file|
           # Since the kramdown parser is specified as module in Rtfile,
           # I can't use the standard kramdown API:
           # `doc = Kramdown::Document.new(contents, :input => 'kramdown_repositext')`
           # We have to patch a base Kramdown::Document with the root to be able
           # to convert it.
-          root, _warnings = config.kramdown_parser(:kramdown).parse(contents)
+          root, _warnings = config.kramdown_parser(:kramdown).parse(content_at_file.contents)
           doc = Kramdown::Document.new('')
           doc.root = root
           subtitle_tagging = doc.send(config.kramdown_converter_method(:to_subtitle_tagging))

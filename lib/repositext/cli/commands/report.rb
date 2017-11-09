@@ -27,10 +27,7 @@ class Repositext
           options['file_filter'],
           nil,
           "Reading content AT files",
-          options.merge(
-            use_new_r_file_api: true,
-            content_type: content_type,
-          )
+          options
         ) do |content_at_file|
           total_file_count += 1
 
@@ -101,9 +98,8 @@ class Repositext
           nil,
           "Reading AT files",
           options
-        ) do |contents, filename|
-          date_codes_from_repo << Repositext::Utils::FilenamePartExtractor.extract_date_code(filename)
-                                                                          .downcase
+        ) do |content_at_file|
+          date_codes_from_repo << content_at_file.extract_date_code.downcase
         end
         # compute differences
         common_date_codes = date_codes_from_erp & date_codes_from_repo
@@ -162,10 +158,10 @@ class Repositext
           nil,
           "Reading AT files",
           options
-        ) do |contents, filename|
+        ) do |content_at_file|
           total_count += 1
-          with_gap_marks += 1  if contents.index('%')
-          with_subtitle_marks += 1  if contents.index('@')
+          with_gap_marks += 1  if content_at_file.contents.index('%')
+          with_subtitle_marks += 1  if content_at_file.contents.index('@')
           # Uncomment next line to print line 7 of each file
           # puts contents.split("\n")[6][0,80] + '       ' + filename.split('/').last
         end
@@ -202,8 +198,8 @@ class Repositext
           nil,
           "Reading AT files",
           options
-        ) do |contents, filename|
-          subtitle_marks_count += contents.count('@')
+        ) do |content_at_file|
+          subtitle_marks_count += content_at_file.contents.count('@')
           file_count += 1
         end
         $stderr.puts "Found #{ subtitle_marks_count } subtitle_marks in #{ file_count } files at #{ Time.now.to_s }."
@@ -223,10 +219,7 @@ class Repositext
           /\.data\.json\z/,
           nil,
           "Reading data.json files",
-          options.merge(
-            use_new_r_file_api: true,
-            content_type: content_type,
-          )
+          options
         ) do |data_json_file|
           total_file_count += 1
           rrfn = data_json_file.repo_relative_path(true)
@@ -281,10 +274,7 @@ class Repositext
           /\.data\.json\z/,
           nil,
           "Reading data.json files",
-          options.merge(
-            use_new_r_file_api: true,
-            content_type: content_type,
-          )
+          options
         ) do |data_json_file|
           total_file_count += 1
           fd = data_json_file.read_data
@@ -362,10 +352,7 @@ class Repositext
           /\.data\.json\z/,
           nil,
           "Reading data.json files",
-          options.merge(
-            use_new_r_file_api: true,
-            content_type: content_type,
-          )
+          options
         ) do |data_json_file|
           total_file_count += 1
           rrfn = data_json_file.repo_relative_path(true)
@@ -401,12 +388,12 @@ class Repositext
           nil,
           "Reading subtitle marker CSV files",
           options
-        ) do |contents, filename|
+        ) do |csv_file|
           total_csv_file_count += 1
-          uniq_first_col_vals = contents.scan(/^\d+/).uniq
+          uniq_first_col_vals = csv_file.contents.scan(/^\d+/).uniq
           if ['0'] != uniq_first_col_vals
             # File has non-zero timestamps
-            file_base_name = filename.split('/').last
+            file_base_name = csv_file.basename
             files_with_subtitles << file_base_name.gsub(/\.subtitle_markers\.csv\z/, '.at')
             $stderr.puts " - #{ file_base_name }"
           end
@@ -444,13 +431,13 @@ class Repositext
           nil,
           "Reading AT files",
           options
-        ) do |contents, filename|
-          gap_mark_count = contents.scan(/(?<!\\)%/).size
-          date_code = Repositext::Utils::FilenamePartExtractor.extract_date_code(filename)
+        ) do |content_at_file|
+          gap_mark_count = content_at_file.contents.scan(/(?<!\\)%/).size
+          date_code = content_at_file.extract_date_code
           if gap_mark_count > 0
             files_with_gap_marks << {
               gap_mark_count: gap_mark_count + 2, # add two for correct count in final document
-              filename: filename,
+              filename: content_at_file.filename,
               date_code: date_code,
             }
           end
@@ -573,13 +560,13 @@ class Repositext
           nil,
           "Reading AT files",
           options
-        ) do |contents, filename|
-          subtitle_mark_count = contents.scan(/(?<!\\)@/).size
-          date_code = Repositext::Utils::FilenamePartExtractor.extract_date_code(filename)
+        ) do |content_at_file|
+          subtitle_mark_count = content_at_file.contents.scan(/(?<!\\)@/).size
+          date_code = content_at_file.extract_date_code
           if subtitle_mark_count > 0
             files_with_subtitle_marks << {
               subtitle_mark_count: subtitle_mark_count,
-              filename: filename,
+              filename: content_at_file.filename,
               date_code: date_code,
             }
           end
@@ -642,9 +629,9 @@ class Repositext
           nil,
           "Reading HTML files",
           options
-        ) do |contents, filename|
+        ) do |content_at_file|
           file_count += 1
-          html_doc = Nokogiri::HTML(contents)
+          html_doc = Nokogiri::HTML(content_at_file.contents)
           # Compute tag/classes inventory
           parent_stack = ['body']
           html_doc.at_css('body').children.each do |cxn|
@@ -681,20 +668,20 @@ class Repositext
           nil,
           "Reading content AT files",
           options
-        ) do |contents, filename|
+        ) do |content_at_file|
           # parse AT, use converter to generate warnings
           # Since the kramdown parser is specified as module in Rtfile,
           # I can't use the standard kramdown API:
           # `doc = Kramdown::Document.new(contents, :input => 'kramdown_repositext')`
           # We have to patch a base Kramdown::Document with the root to be able
           # to convert it.
-          contents_without_id_page, _ = Repositext::Utils::IdPageRemover.remove(contents)
+          contents_without_id_page, _ = Repositext::Utils::IdPageRemover.remove(content_at_file.contents)
           root, _warnings = config.kramdown_parser(:kramdown).parse(contents_without_id_page)
           doc = Kramdown::Document.new('')
           doc.root = root
           file_issues = doc.to_report_invalid_eagles
           if file_issues.any?
-            issues[filename] = file_issues
+            issues[content_at_file.filename] = file_issues
             file_issues.each { |issue|
               $stderr.puts "   - #{ issue.inspect }"
             }
@@ -745,8 +732,8 @@ class Repositext
           nil,
           "Reading folio at files",
           options
-        ) do |contents, filename|
-          report.process(contents, filename)
+        ) do |content_at_file|
+          report.process(content_at_file.contents, content_at_file.filename)
         end
         output_lines = []
         output_lines << "Detecting invalid typographic quotes"
@@ -790,13 +777,13 @@ class Repositext
           nil,
           "Reading AT files",
           options
-        ) do |contents, filename|
+        ) do |content_at_file|
           # Since the kramdown parser is specified as module in Rtfile,
           # I can't use the standard kramdown API:
           # `doc = Kramdown::Document.new(contents, :input => 'kramdown_repositext')`
           # We have to patch a base Kramdown::Document with the root to be able
           # to convert it.
-          root, _warnings = config.kramdown_parser(:kramdown).parse(contents)
+          root, _warnings = config.kramdown_parser(:kramdown).parse(content_at_file.contents)
           doc = Kramdown::Document.new('')
           doc.root = root
           doc_class_combinations = doc.to_report_kramdown_element_classes_inventory
@@ -849,9 +836,9 @@ class Repositext
           nil,
           "Reading AT files",
           options
-        ) do |contents, filename|
+        ) do |content_at_file|
           total_file_count += 1
-          str_sc = Kramdown::Utils::StringScanner.new(contents)
+          str_sc = Kramdown::Utils::StringScanner.new(content_at_file.contents)
           while !str_sc.eos? do
             if(str_sc.skip_until(/(?=\[)/))
               start_line = str_sc.current_line_number
@@ -861,7 +848,7 @@ class Repositext
                 next  if num_chars < char_cutoff
                 long_editor_notes_count += 1
                 long_editor_notes << {
-                  :filename => filename,
+                  :filename => content_at_file.filename,
                   :line => start_line,
                   :editor_note => editor_note.truncate_in_the_middle(120),
                   :num_chars => num_chars,
@@ -1073,24 +1060,21 @@ class Repositext
           options['file_filter'],
           nil,
           "Reading content AT files",
-          options.merge(
-            use_new_r_file_api: true,
-            content_type: content_type,
-          )
-        ) do |repositext_file|
+          options
+        ) do |content_at_file|
           outcome = Repositext::Process::Report::RecordBoundaryLocations.new(
-            repositext_file,
+            content_at_file,
             config.kramdown_parser(:kramdown)
           ).report
           if outcome.success?
-            $stderr.puts "   - analyzed #{ repositext_file.basename }"
+            $stderr.puts "   - analyzed #{ content_at_file.basename }"
             srbls = outcome.result
             record_boundary_locations.keys.each { |key|
               record_boundary_locations[key] += srbls[key]
             }
-            comments += outcome.messages.map { |e| [repositext_file.basename, e].join(': ') }
+            comments += outcome.messages.map { |e| [content_at_file.basename, e].join(': ') }
           else
-            $stderr.puts "   - skipped #{ repositext_file.basename }"
+            $stderr.puts "   - skipped #{ content_at_file.basename }"
           end
           file_count += 1
         end
@@ -1200,13 +1184,10 @@ class Repositext
           options['file_filter'],
           nil,
           "Reading content AT files",
-          options.merge(
-            use_new_r_file_api: true,
-            content_type: content_type,
-          )
-        ) do |repositext_file|
+          options
+        ) do |content_at_file|
           outcome = Repositext::Process::Report::StanzaWithoutSongParagraphs.new(
-            repositext_file,
+            content_at_file,
             config.kramdown_parser(:kramdown)
           ).report
           stanza_without_song_paragraph_files << outcome.result
@@ -1278,10 +1259,7 @@ class Repositext
           options['file_filter'],
           nil,
           "Reading content AT files",
-          options.merge(
-            use_new_r_file_api: true,
-            content_type: content_type,
-          )
+          options
         ) do |content_at_file|
           total_file_count += 1
 
@@ -1343,9 +1321,9 @@ class Repositext
           nil,
           "Reading folio at files",
           options
-        ) do |contents, filename|
+        ) do |content_at_file|
           # iterate over all single quotes followed by a character
-          contents.scan(/(.{0,20})('(?=\w))(\w{0,20})/m) { |(pre, s_quote, post)|
+          content_at_file.contents.scan(/(.{0,20})('(?=\w))(\w{0,20})/m) { |(pre, s_quote, post)|
             bin = nil
             # process key
             if pre.length > 0 && pre[-1] =~ /[^\w]/

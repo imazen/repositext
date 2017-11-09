@@ -7,10 +7,10 @@ class Repositext
 
         # Runs all validations for self
         def run
-          content_at_filename, subtitle_marker_csv_filename = @file_to_validate
+          content_at_file, subtitle_marker_csv_file = @file_to_validate
           outcome = significant_changes?(
-            content_at_filename.read,
-            subtitle_marker_csv_filename.read
+            content_at_file,
+            subtitle_marker_csv_file
           )
           log_and_report_validation_step(outcome.errors, outcome.warnings)
         end
@@ -20,22 +20,26 @@ class Repositext
         # Checks if any subtitle_marks have been changed significantly compared
         # to their lengths saved in subtitle_markers.csv
         # Only applied if content_at contains subtitle_marks.
-        # @param [String] content_at
-        # @param [CSV String] subtitle_marker_csv
+        # @param content_at_file [RFile::ContentAt]
+        # @param subtitle_marker_csv_file [RFile::SubtitleMarkerCsv
         # @return [Outcome]
-        def significant_changes?(content_at, subtitle_marker_csv)
-          raise(ArgumentError.new("content_at is empty."))  if content_at.to_s.strip.empty?
-          raise(ArgumentError.new("subtitle_marker_csv is empty."))  if subtitle_marker_csv.to_s.strip.empty?
-          if !content_at.index('@')
+        def significant_changes?(content_at_file, subtitle_marker_csv_file)
+          if content_at_file.contents.to_s.strip.empty?
+            raise(ArgumentError.new("content_at is empty."))
+          end
+          if subtitle_marker_csv_file.contents.to_s.strip.empty?
+            raise(ArgumentError.new("subtitle_marker_csv is empty."))
+          end
+          if !content_at_file.contents.index('@')
             # Document doesn't contain subtitle marks, skip it
             return Outcome.new(true, nil)
           end
-          csv = CSV.new(subtitle_marker_csv, col_sep: "\t", headers: :first_row)
+          csv = subtitle_marker_csv_file.csv
           previous_stm_lengths = csv.to_a.map { |row|
             r = row.to_hash
             { char_length: r['charLength'].to_i }
           }
-          new_captions = Repositext::Utils::SubtitleMarkTools.extract_captions(content_at)
+          new_captions = Repositext::Utils::SubtitleMarkTools.extract_captions(content_at_file.contents)
           # make sure that both counts are identical
           if new_captions.length != previous_stm_lengths.length
             # There is a mismatch in subtitle_mark counts between CSV file and

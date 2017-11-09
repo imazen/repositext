@@ -5,11 +5,11 @@ class Repositext
 
       # Specifies validations to run related to PDF export.
       def run_list
-        validate_files(:exported_pdfs) do |path|
-          next  if path.index('.--') # skip files that have title added to filename. Those are from a previous export.
+        validate_files(:exported_pdfs) do |pdf_file|
+          next  if pdf_file.filename.index('.--') # skip files that have title added to filename. Those are from a previous export.
 
           Validator::PdfExportConsistency.new(
-            path, @logger, @reporter, @options
+            pdf_file, @logger, @reporter, @options
           ).run
         end
       end

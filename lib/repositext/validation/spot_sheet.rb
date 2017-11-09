@@ -5,9 +5,9 @@ class Repositext
 
       # Specifies validations to run
       def run_list
-        validate_files(:accepted_corrections_files) do |path|
+        validate_files(:accepted_corrections_files) do |text_file|
           Validator::SpotSheet.new(
-            path, @logger, @reporter, @options
+            text_file, @logger, @reporter, @options
           ).run
         end
       end

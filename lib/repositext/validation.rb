@@ -37,10 +37,8 @@ class Repositext
     #     * 'validation-reporter' => 'Reporter' (default) or 'ReporterTest', 'ReporterJson'
     #     * 'run_options' => Array of custom run options for validations (e.g., 'pre_import', 'post_import')
     #     * 'strictness' => :strict, :loose/liberal/lax,
-    #     * 'use_new_r_file_api' => If true, uses new API based on Repositext::RFile instead of just paths.
-    #       When using new r_file api, then these to options apply:
-    #         * 'as_of_git_commit_attrs' => optional, see RFile#as_of_git_commit for details.
-    #         * 'content_type' => required, ContentType that applies to all validated files.
+    #     * 'as_of_git_commit_attrs' => optional, see RFile#as_of_git_commit for details.
+    #     * 'content_type' => required, ContentType that applies to all validated files.
     def initialize(file_specs, options)
       @file_specs = file_specs
       @options = options
@@ -91,90 +89,71 @@ class Repositext
     def validate_files(file_spec_name, option_overrides={}, &block)
       options = @options.merge(option_overrides)
       base_dir, file_selector, file_extension = @file_specs[file_spec_name]
-      if options['use_new_r_file_api']
-        # Use RFile based API
-        content_type = options['content_type']
-        language = content_type.language
-        Dir.glob([base_dir, file_selector, file_extension].join).each do |file_name|
-          r_file = if options['as_of_git_commit_attrs']
-            Repositext::RFile.get_class_for_filename(
-              file_name
-            ).new(
-              '_',
-              language,
-              file_name,
-              content_type
-            ).as_of_git_commit(*options['as_of_git_commit_attrs'])
-          else
-            r = Repositext::RFile.get_class_for_filename(
-              file_name
-            ).new(
-              '_',
-              language,
-              file_name,
-              content_type
-            )
-            r.reload_contents! # Let the class load contents to handle binary files
-            r
-          end
-          yield(r_file)
+      content_type = options['content_type']
+      language = content_type.language
+      Dir.glob([base_dir, file_selector, file_extension].join).each do |file_name|
+        r_file = if options['as_of_git_commit_attrs']
+          Repositext::RFile.get_class_for_filename(
+            file_name
+          ).new(
+            '_',
+            language,
+            file_name,
+            content_type
+          ).as_of_git_commit(*options['as_of_git_commit_attrs'])
+        else
+          r = Repositext::RFile.get_class_for_filename(
+            file_name
+          ).new(
+            '_',
+            language,
+            file_name,
+            content_type
+          )
+          r.reload_contents! # Let the class load contents to handle binary files
+          r
         end
-      else
-        # Use legacy file path based approach
-        Dir.glob([base_dir, file_selector, file_extension].join).each do |file_name|
-          yield(file_name)
-        end
+        yield(r_file)
       end
     end
 
     # @param [Symbol] file_spec_name
-    # @param paired_file_proc_or_method_name [Proc] Depending on whether
-    #   the legacy or new_r_file_based_api is used, provide one of the following:
-    #   legacy: A proc that given the primary file path returns the path to the paired file.
-    #   new_r_file: A proc that given the r_file returns the paired RFile.
+    # @param paired_file_proc_or_method_name [Proc] A proc that given the r_file
+    #   returns the paired RFile.
     def validate_file_pairs(file_spec_name, paired_file_proc, option_overrides={}, &block)
       options = @options.merge(option_overrides)
       base_dir, file_selector, file_extension = @file_specs[file_spec_name]
-      if options['use_new_r_file_api']
-        # Use RFile based API
-        content_type = options['content_type']
-        language = content_type.language
-        Dir.glob([base_dir, file_selector, file_extension].join).each do |file_name|
-          r_file = if options['as_of_git_commit_attrs']
-            Repositext::RFile.get_class_for_filename(
-              file_name
-            ).new(
-              '_',
-              language,
-              file_name,
-              content_type
-            ).as_of_git_commit(*options['as_of_git_commit_attrs'])
-          else
-            r = Repositext::RFile.get_class_for_filename(
-              file_name
-            ).new(
-              '_',
-              language,
-              file_name,
-              content_type
-            )
-            r.reload_contents! # Let the class load contents to handle binary files
-            r
-          end
-          paired_r_file = if r_file
-            paired_file_proc.call(r_file)
-          else
-            # r_file may be nil. In that case there can't be a paired_r_file
-            nil
-          end
-          yield(r_file, paired_r_file)
+      content_type = options['content_type']
+      language = content_type.language
+      Dir.glob([base_dir, file_selector, file_extension].join).each do |file_name|
+        r_file = if options['as_of_git_commit_attrs']
+          Repositext::RFile.get_class_for_filename(
+            file_name
+          ).new(
+            '_',
+            language,
+            file_name,
+            content_type
+          ).as_of_git_commit(*options['as_of_git_commit_attrs'])
+        else
+          r = Repositext::RFile.get_class_for_filename(
+            file_name
+          ).new(
+            '_',
+            language,
+            file_name,
+            content_type
+          )
+          r.reload_contents! # Let the class load contents to handle binary files
+          r
         end
-      else
-        # Use legacy file path based approach
-        Dir.glob([base_dir, file_selector, file_extension].join).each do |file_name_one|
-          file_name_two = paired_file_proc.call(file_name_one, @file_specs)
-          yield(file_name_one, file_name_two)
+        paired_r_file = if r_file
+          paired_file_proc.call(r_file)
+        else
+          # r_file may be nil. In that case there can't be a paired_r_file
+          nil
         end
+        yield(r_file, paired_r_file)
       end
 
     end

@@ -18,8 +18,8 @@ class Repositext
             validator, _logger, reporter = build_validator_logger_and_reporter(
               ParagraphStyleConsistency,
               [
-                RFile::ContentAt.new("foreign para\n{: .normal}\n", language, filename),
-                RFile::ContentAt.new("primary para\n{: .normal}\n", language, filename),
+                get_r_file(contents: "foreign para\n{: .normal}\n"),
+                get_r_file(contents: "primary para\n{: .normal}\n"),
               ]
             )
             validator.run
@@ -30,8 +30,8 @@ class Repositext
             validator, _logger, reporter = build_validator_logger_and_reporter(
               ParagraphStyleConsistency,
               [
-                RFile::ContentAt.new("foreign para\n{: .normal1}\n", language, filename),
-                RFile::ContentAt.new("primary para\n{: .normal2}\n", language, filename),
+                get_r_file(contents: "foreign para\n{: .normal1}\n"),
+                get_r_file(contents: "primary para\n{: .normal2}\n"),
               ]
             )
             validator.run
@@ -57,13 +57,13 @@ class Repositext
               validator, _logger, _reporter = build_validator_logger_and_reporter(
                 ParagraphStyleConsistency,
                 [
-                  RFile::ContentAt.new(test_string_f, language, filename),
-                  RFile::ContentAt.new(test_string_p, language, filename),
+                  get_r_file(contents: test_string_f),
+                  get_r_file(contents: test_string_p),
                 ]
               )
               validator.pclasses_and_fspans_consistent?(
-                RFile::ContentAt.new(test_string_f, language, filename),
-                RFile::ContentAt.new(test_string_p, language, filename)
+                get_r_file(contents: test_string_f),
+                get_r_file(contents: test_string_p),
               ).success.must_equal(xpect)
             end
           end
@@ -420,8 +420,8 @@ class Repositext
               validator, _logger, _reporter = build_validator_logger_and_reporter(
                 ParagraphStyleConsistency,
                 [
-                  RFile::ContentAt.new("_", language, filename),
-                  RFile::ContentAt.new("_", language, filename),
+                  get_r_file(contents: "_"),
+                  get_r_file(contents: "_"),
                 ]
               )
               validator.send(
@@ -481,8 +481,8 @@ class Repositext
               validator, _logger, _reporter = build_validator_logger_and_reporter(
                 ParagraphStyleConsistency,
                 [
-                  RFile::ContentAt.new("_", language, filename),
-                  RFile::ContentAt.new("_", language, filename),
+                  get_r_file(contents: "_"),
+                  get_r_file(contents: "_"),
                 ]
               )
               validator.send(
@@ -534,8 +534,8 @@ class Repositext
               validator, _logger, _reporter = build_validator_logger_and_reporter(
                 ParagraphStyleConsistency,
                 [
-                  RFile::ContentAt.new("_", language, filename),
-                  RFile::ContentAt.new("_", language, filename),
+                  get_r_file(contents: "_"),
+                  get_r_file(contents: "_"),
                 ]
               )
               validation_rules = language.paragraph_style_consistency_validation_rules
@@ -593,8 +593,8 @@ class Repositext
               validator, _logger, _reporter = build_validator_logger_and_reporter(
                 ParagraphStyleConsistency,
                 [
-                  RFile::ContentAt.new("_", language, filename),
-                  RFile::ContentAt.new("_", language, filename),
+                  get_r_file(contents: "_"),
+                  get_r_file(contents: "_"),
                 ]
               )
               validator.send(
@@ -690,8 +690,8 @@ class Repositext
               validator, _logger, _reporter = build_validator_logger_and_reporter(
                 ParagraphStyleConsistency,
                 [
-                  RFile::ContentAt.new("_", language, filename),
-                  RFile::ContentAt.new("_", language, filename),
+                  get_r_file(contents: "_"),
+                  get_r_file(contents: "_"),
                 ]
               )
               validation_rules = language.paragraph_style_consistency_validation_rules
@@ -738,8 +738,8 @@ class Repositext
               validator, _logger, _reporter = build_validator_logger_and_reporter(
                 ParagraphStyleConsistency,
                 [
-                  RFile::ContentAt.new("_", language, filename),
-                  RFile::ContentAt.new("_", language, filename),
+                  get_r_file(contents: "_"),
+                  get_r_file(contents: "_"),
                 ]
               )
               mismatches = []

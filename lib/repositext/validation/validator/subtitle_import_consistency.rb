@@ -19,20 +19,17 @@ class Repositext
           # @file_to_validate is an array with the content_at and
           # subtitle/subtitle_tagging_import files
           content_at_file, subtitle_import_file = @file_to_validate
-          outcome = contents_match?(
-            content_at_file.read,
-            subtitle_import_file.read
-          )
+          outcome = contents_match?(content_at_file, subtitle_import_file)
           log_and_report_validation_step(outcome.errors, outcome.warnings)
         end
 
       private
 
         # Checks if contents match (depending on @options[:subtitle_import_consistency_compare_mode])
-        # @param [String] content_at
-        # @param [String] subtitle_import
+        # @param content_at_file [RFile::ContentAt]
+        # @param subtitle_import_file [RFile::Text]
         # @return [Outcome]
-        def contents_match?(content_at, subtitle_import)
+        def contents_match?(content_at_file, subtitle_import_file)
           # We have to export content_at in both cases to a temporary subtitle_export
           # so that we can compare it with the subtitle_import
 
@@ -41,7 +38,7 @@ class Repositext
           # `doc = Kramdown::Document.new(contents, :input => 'kramdown_repositext')`
           # We have to patch a base Kramdown::Document with the root to be able
           # to convert it.
-          root, _warnings = @options['kramdown_parser_class'].parse(content_at)
+          root, _warnings = @options['kramdown_parser_class'].parse(content_at_file.contents)
           doc = Kramdown::Document.new('')
           doc.root = root
 
@@ -51,8 +48,9 @@ class Repositext
             # and compare the result with subtitle_import after removing
             # subtitle_marks and gap_marks in both since we expect them to change.
             tmp_subtitle_export = doc.send(@options['subtitle_converter_method_name'])
-            string_1, string_2 = tmp_subtitle_export.gsub(/[%@]/, ''), subtitle_import.gsub(/[%@]/, '')
-            error_message = "\n\nText mismatch between subtitle/subtitle_tagging_import and content_at in #{ @file_to_validate.last.path }."
+            string_1 = tmp_subtitle_export.gsub(/[%@]/, '')
+            string_2 = subtitle_import_file.contents.gsub(/[%@]/, '')
+            error_message = "\n\nText mismatch between subtitle/subtitle_tagging_import and content_at in #{ subtitle_import_file.filename }."
           when 'post_import'
             # We re-export the new content_at to subtitle and compare the result
             # with subtitle_import. We leave all subtitle_marks and gap_marks
@@ -61,9 +59,9 @@ class Repositext
             # Important: We need to always compare with subtitle_export, never
             # subtitle_tagging_export since we strip subtitle marks in the latter.
             tmp_subtitle_export = doc.send(@options['subtitle_export_converter_method_name'])
-            string_1 = subtitle_import.gsub(/(?<! )(@+)\n\z/, ' \1' + "\n") # insert space before subtitle marks at the end of the file
+            string_1 = subtitle_import_file.contents.gsub(/(?<! )(@+)\n\z/, ' \1' + "\n") # insert space before subtitle marks at the end of the file
             string_2 = tmp_subtitle_export
-            error_message = "\n\nText mismatch between subtitle/subtitle_tagging_import and subtitle_export from content_at in #{ @file_to_validate.last.path }."
+            error_message = "\n\nText mismatch between subtitle/subtitle_tagging_import and subtitle_export from content_at in #{ subtitle_import_file.filename }."
           else
             raise "Invalid compare mode: #{ @options[:subtitle_import_consistency_compare_mode].inspect }"
           end
@@ -80,7 +78,7 @@ class Repositext
             #   false, nil, [],
             #   [
             #     Reportable.error(
-            #       [@file_to_validate.last.path], # subtitle/subtitle_tagging_import file
+            #       [@file_to_validate.last.filename], # subtitle/subtitle_tagging_import file
             #       [
             #         'Text mismatch between subtitle/subtitle_tagging_import and content_at:',
             #         diffs.inspect

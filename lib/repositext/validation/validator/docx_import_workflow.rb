@@ -23,22 +23,16 @@ class Repositext
 
         # Runs all validations for self
         def run
-          outcome = valid_docx_workflow?(@file_to_validate)
+          docx_file = @file_to_validate
+          outcome = valid_docx_workflow?(docx_file)
           log_and_report_validation_step(outcome.errors, outcome.warnings)
         end
 
       protected
 
-        # @param docx_file_name [String] absolute path to the docx file
+        # @param docx_file [RFile::Docx] the DOCX file to be imported
         # @return [Outcome]
-        def valid_docx_workflow?(docx_file_name)
-          content_type = @options['content_type']
-          language = content_type.language
-          contents = File.binread(docx_file_name).freeze
-          docx_file = Repositext::RFile::Docx.new(
-            contents, language, docx_file_name, content_type
-          )
-
+        def valid_docx_workflow?(docx_file)
           errors = []
           warnings = []
 

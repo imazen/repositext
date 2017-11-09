@@ -5,15 +5,15 @@ class Repositext
 
       # Specifies validations to run related to HTML import.
       def run_list
-        validate_files(:input_html_files) do |path|
+        validate_files(:input_html_files) do |html_file|
           Validator::Utf8Encoding.new(
-            File.open(path), @logger, @reporter, @options
+            html_file, @logger, @reporter, @options
           ).run
         end
-        validate_files(:imported_at_files) do |path|
+        validate_files(:imported_at_files) do |content_at_file|
           @options['run_options'] << 'kramdown_syntax_at-no_underscore_or_caret'
           Validator::KramdownSyntaxAt.new(
-            File.open(path), @logger, @reporter, @options
+            content_at_file, @logger, @reporter, @options
           ).run
         end
 
@@ -22,13 +22,20 @@ class Repositext
         # Validate that plain text in HTML files is consistent with plain text
         # in imported AT files.
         # Define proc that computes html_imported_at filename from html filename
-        hiat_filename_proc = lambda { |input_filename, file_specs|
-          input_filename.gsub(/\.html\z/, '.html.at')
+        hiat_file_proc = lambda { |html_file|
+          r = RFile::ContentAt.new(
+            '_',
+            html_file.filename.sub(/\.html\z/, '.html.at'),
+            html_file.language,
+            html_file.content_at_file
+          )
+          r.reload_contents!
+          r
         }
         # Run pairwise validation
-        validate_file_pairs(:input_html_files, hiat_filename_proc) do |ih, hiat|
+        validate_file_pairs(:input_html_files, hiat_file_proc) do |ih, hi_at|
           Validator::HtmlImportConsistency.new(
-            [File.open(ih), File.open(hiat)],
+            [ih, hi_at],
             @logger,
             @reporter,
             @options

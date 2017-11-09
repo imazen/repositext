@@ -5,13 +5,13 @@ class Repositext
       class ContentAtFilesStartWithRecordMark < Validator
 
         def run
-          document_to_validate = @file_to_validate.read
-          outcome = correct_line_endings?(document_to_validate)
+          content_at_file = @file_to_validate
+          outcome = starts_with_record_mark?(content_at_file)
           log_and_report_validation_step(outcome.errors, outcome.warnings)
         end
 
-        def correct_line_endings?(a_string)
-          if a_string !~ /\A\^/
+        def starts_with_record_mark?(content_at_file)
+          if content_at_file.contents !~ /\A\^/
             Outcome.new(
               false, nil, [],
               [

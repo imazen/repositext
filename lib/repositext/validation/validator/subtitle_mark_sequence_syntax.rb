@@ -9,23 +9,21 @@ class Repositext
 
         # Runs all validations for self
         def run
-          document_to_validate = @file_to_validate.read
-          outcome = subtitle_mark_sequences_valid?(
-            document_to_validate
-          )
+          content_at_file = @file_to_validate
+          outcome = subtitle_mark_sequences_valid?(content_at_file)
           log_and_report_validation_step(outcome.errors, outcome.warnings)
         end
 
       private
 
         # Checks that all subtitle mark sequences are valid
-        # @param content [String]
-        # @return [Outcome]
-        def subtitle_mark_sequences_valid?(content)
+        def subtitle_mark_sequences_valid?(content_at_file)
           # Early return if content doesn't contain any subtitle_marks
-          return Outcome.new(true, nil)  if !content.index('@')
+          return Outcome.new(true, nil)  if !content_at_file.contents.index('@')
 
-          invalid_subtitle_mark_sequences = find_invalid_subtitle_mark_sequences(content)
+          invalid_subtitle_mark_sequences = find_invalid_subtitle_mark_sequences(
+            content_at_file.contents
+          )
           if invalid_subtitle_mark_sequences.empty?
             Outcome.new(true, nil)
           else
@@ -47,10 +45,10 @@ class Repositext
           content.split(/\n/).each_with_index { |para, line_idx|
             if para =~ /@\s+@/
               # Space inside subtitle mark sequence.
-              r << ["Space inside subtitle mark sequence:", "line #{ line_idx + 1 }", para]
+              r << ["Space inside subtitle mark sequence:", line_idx + 1, para]
             elsif para =~ /@\s+$/
               # Space between subtitle mark and trailing eagle.
-              r << ["Space between subtitle mark and trailing eagle:", "line #{ line_idx + 1 }", para]
+              r << ["Space between subtitle mark and trailing eagle:", line_idx + 1, para]
             end
           }
           r

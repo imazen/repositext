@@ -8,22 +8,21 @@ class Repositext
         # Single files
 
         # Validate that every paragraph in the import file begins with a subtitle_mark
-        validate_files(:gap_mark_tagging_import_files) do |path|
-          Validator::Utf8Encoding.new(File.open(path), @logger, @reporter, @options).run
+        validate_files(:gap_mark_tagging_import_files) do |gap_mark_tagging_import_file|
+          Validator::Utf8Encoding.new(
+            gap_mark_tagging_import_file, @logger, @reporter, @options
+          ).run
         end
 
         # Validate that the gap_mark_tagging import still matches content_at
         # Define proc that computes gap_mark_tagging import filename from content_at filename
-        gi_file_name_proc = lambda { |input_filename, file_specs|
-          ca_base_dir = file_specs[:content_at_files].first
-          gi_base_dir = file_specs[:gap_mark_tagging_import_files].first
-          input_filename.gsub(ca_base_dir, gi_base_dir)
-                        .gsub(/\.at\z/, '.gap_mark_tagging.txt')
+        gi_file_proc = lambda { |content_at_file|
+          content_at_file.corresponding_gap_mark_tagging_import_file
         }
         # Run pairwise validation
-        validate_file_pairs(:content_at_files, gi_file_name_proc) do |ca, gi|
+        validate_file_pairs(:content_at_files, gi_file_proc) do |content_at_file, gap_mark_tagging_import_file|
           Validator::GapMarkTaggingImportConsistency.new(
-            [File.open(ca), File.open(gi)],
+            [content_at_file, gap_mark_tagging_import_file],
             @logger,
             @reporter,
             @options.merge(:gap_mark_tagging_import_consistency_compare_mode => 'pre_import')

@@ -6,8 +6,7 @@ class Repositext
       class SubtitleOperationsForFile
         describe ComputeSubtitleAttrs do
 
-          let(:language) { Language::English.new }
-          let(:content_at_file) { RFile::ContentAt.new('_', language, 'filename') }
+          let(:content_at_file) { get_r_file }
           let(:default_computer){
             SubtitleOperationsForFile.new(
               content_at_file,

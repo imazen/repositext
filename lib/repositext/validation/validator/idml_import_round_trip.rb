@@ -7,18 +7,18 @@ class Repositext
 
         # Runs all validations for self
         def run
-          document_to_validate = ::File.binread(@file_to_validate.path)
-          outcome = valid_idml_round_trip?(document_to_validate)
+          idml_file = @file_to_validate
+          outcome = valid_idml_round_trip?(idml_file)
           log_and_report_validation_step(outcome.errors, outcome.warnings)
         end
 
       private
 
-        # @param [String] idml_file_contents
-        def valid_idml_round_trip?(idml_file_contents)
+        # @param idml_file [RFile::Idml]
+        def valid_idml_round_trip?(idml_file)
           # parse Idml
           idml_based_kramdown_doc = @options['idml_parser_class'].new(
-            idml_file_contents
+            idml_file.contents
           ).parse
           idml_based_kramdown_root = idml_based_kramdown_doc.root
           # Serialize kramdown doc to kramdown string

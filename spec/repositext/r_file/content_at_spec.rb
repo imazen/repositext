@@ -3,14 +3,7 @@ require_relative '../../helper'
 class Repositext
   class RFile
     describe ContentAt do
-      let(:contents) { "# title\n\nparagraph 1" }
-      let(:language) { Language::English.new }
-      let(:filename) { '/path-to/rt-english/ct-general/content/57/eng57-0103_1234.at' }
-      let(:path_to_repo) { Repository::Test.create!('rt-english').first }
-      let(:content_type) { ContentType.new(File.join(path_to_repo, 'ct-general')) }
-      let(:default_rfile) {
-        RFile::ContentAt.new(contents, language, filename, content_type)
-      }
+      let(:default_rfile) { get_r_file(content_type: true) }
 
       describe '#compute_similarity_with_corresponding_primary_file' do
         # TODO
@@ -36,13 +29,13 @@ class Repositext
 
       describe '#kramdown_doc' do
         it 'handles the default case' do
-          default_rfile.kramdown_doc.to_html.must_equal("<h1 id=\"title\">title</h1>\n\n<p>paragraph 1</p>\n")
+          default_rfile.kramdown_doc.to_html.must_equal("<h1 id=\"title\">Title</h1>\n\n<p>Paragraph 1</p>\n")
         end
       end
 
       describe '#plain_text_contents' do
         it 'handles the default case' do
-          default_rfile.plain_text_contents({}).must_equal("title\n\nparagraph 1\n")
+          default_rfile.plain_text_contents({}).must_equal("Title\n\nParagraph 1\n")
         end
       end
 

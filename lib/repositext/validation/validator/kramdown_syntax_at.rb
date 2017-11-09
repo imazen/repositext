@@ -25,14 +25,14 @@ class Repositext
         end
 
         def run
-          document_to_validate = @file_to_validate.read
+          content_at_file = @file_to_validate
           errors, warnings = [], []
 
-          outcome = valid_kramdown_syntax?(document_to_validate)
+          outcome = valid_kramdown_syntax?(content_at_file)
           errors += outcome.errors
           warnings += outcome.warnings
 
-          outcome = valid_syntax_at?(document_to_validate)
+          outcome = valid_syntax_at?(content_at_file)
           errors += outcome.errors
           warnings += outcome.warnings
 
@@ -40,50 +40,63 @@ class Repositext
         end
 
         # AT specific syntax validation
-        # @param [String] source the at document to validate
+        # @param content_at_file [RFile::ContentAt]
         # @return [Outcome]
-        def valid_syntax_at?(source)
+        def valid_syntax_at?(content_at_file)
           errors = []
           warnings = []
 
-          validate_record_mark_syntax(source, errors, warnings)
-          validate_escaped_character_syntax(source, errors, warnings)
+          validate_record_mark_syntax(content_at_file, errors, warnings)
+          validate_escaped_character_syntax(content_at_file, errors, warnings)
 
           Outcome.new(errors.empty?, nil, [], errors, warnings)
         end
 
         # Implement AT specific validation callback when walking the tree.
+        # @param content_at_file [RFile::ContentAt] the file to validate
         # @param el [Kramdown::Element]
         # @param el_stack [Array<Kramdown::Element] stack of ancestor elements,
         #   immediate parent is last element in array.
         # @param errors [Array] collector for errors
         # @param warnings [Array] collector for warnings
-        def validation_hook_on_element(el, el_stack, errors, warnings)
+        def validation_hook_on_element(content_at_file, el, el_stack, errors, warnings)
           case el.type
           when :em
-            validate_no_single_punctuation_or_whitespace_char_formatting(el, el_stack, errors, warnings)
+            validate_no_single_punctuation_or_whitespace_char_formatting(
+              content_at_file, el, el_stack, errors, warnings
+            )
           when :p
-            validate_element_p(el, el_stack, errors, warnings)
+            validate_element_p(
+              content_at_file, el, el_stack, errors, warnings
+            )
           when :record_mark
-            validate_element_record_mark(el, el_stack, errors, warnings)
+            validate_element_record_mark(
+              content_at_file, el, el_stack, errors, warnings
+            )
           when :root
-            validate_element_root(el, el_stack, errors, warnings)
+            validate_element_root(
+              content_at_file, el, el_stack, errors, warnings
+            )
           when :strong
-            validate_no_single_punctuation_or_whitespace_char_formatting(el, el_stack, errors, warnings)
+            validate_no_single_punctuation_or_whitespace_char_formatting(
+              content_at_file, el, el_stack, errors, warnings
+            )
           when :text
-            validate_element_text(el, el_stack, errors, warnings)
+            validate_element_text(
+              content_at_file, el, el_stack, errors, warnings
+            )
           end
         end
 
       protected
 
-        # @param [String] source the kramdown source string
-        # @param [Array] errors collector for errors
-        # @param [Array] warnings collector for warnings
-        def validate_record_mark_syntax(source, errors, warnings)
+        # @param content_at_file [RFile::ContentAt]
+        # @param errors [Array] collector for errors
+        # @param warnings [Array] collector for warnings
+        def validate_record_mark_syntax(content_at_file, errors, warnings)
           # Record_marks_have to be preceded by a blank line.
           # The only exception is the first record_mark in each file.
-          str_sc = Kramdown::Utils::StringScanner.new(source)
+          str_sc = Kramdown::Utils::StringScanner.new(content_at_file.contents)
           str_sc.skip_until(/\A\^\^\^/) # skip the first record_mark at beginning of source if it exists
           while !str_sc.eos? do
             if (match = str_sc.scan_until(/(?<!\n\n)\^\^\^/))
@@ -156,7 +169,7 @@ class Repositext
           end
         end
 
-        def validate_element_p(el, el_stack, errors, warnings)
+        def validate_element_p(content_at_file, el, el_stack, errors, warnings)
           el_descendants = el.descendants
           if(
             el.has_class?('normal') &&
@@ -206,7 +219,7 @@ class Repositext
           end
         end
 
-        def validate_element_record_mark(el, el_stack, errors, warnings)
+        def validate_element_record_mark(content_at_file, el, el_stack, errors, warnings)
           # Validates that kpns are monotonically increasing and consecutive
           if el.attr['kpn']
             l_kpn = el.attr['kpn'].to_i
@@ -218,8 +231,8 @@ class Repositext
               if(
                 (l_kpn != @kpn_tracker + 1) && \
                 !(
-                  (@file_to_validate.path.index('eng60-0515m_0663') && l_kpn == 9) || # exception 1
-                  (@file_to_validate.path.index('eng63-0318_0943') && l_kpn == 181) # exception 2
+                  (@file_to_validate.filename.index('eng60-0515m_0663') && l_kpn == 9) || # exception 1
+                  (@file_to_validate.filename.index('eng63-0318_0943') && l_kpn == 181) # exception 2
                 )
               )
                 warnings << Reportable.error(
@@ -275,7 +288,7 @@ class Repositext
           }
         end
 
-        def validate_element_root(el, el_stack, errors, warnings)
+        def validate_element_root(content_at_file, el, el_stack, errors, warnings)
           if @options['run_options'].include?('kramdown_syntax_at-all_elements_are_inside_record_mark')
             # Validates that every element is contained inside a record_mark.
             # In other words, the root element may only contain elements of type :record_mark
@@ -299,7 +312,7 @@ class Repositext
 
         # Call with em and strong els. Validates that no single punctuation or
         # whitespace characters are formatted.
-        def validate_no_single_punctuation_or_whitespace_char_formatting(el, el_stack, errors, warnings)
+        def validate_no_single_punctuation_or_whitespace_char_formatting(content_at_file, el, el_stack, errors, warnings)
           # ImplementationTag #punctuation_characters
           punctuation_chars = %(!()+,-./:;?[]—‘’“”…\u2011\u00A0\u202F\uFEFF\u2028)
           if(1 == (pt = el.to_plain_text).length) && pt =~ /\A[\s\n#{ Regexp.escape(punctuation_chars) }]\z/
@@ -334,7 +347,7 @@ class Repositext
           end
         end
 
-        def validate_element_text(el, el_stack, errors, warnings)
+        def validate_element_text(content_at_file, el, el_stack, errors, warnings)
           if @options['run_options'].include?('kramdown_syntax_at-no_underscore_or_caret')
             # No underscores, carets or equal signs allowed in content AT (inner texts)
             # We have to check this here where we have access to the inner text,
@@ -354,7 +367,6 @@ class Repositext
             end
           end
         end
-
 
       end
     end

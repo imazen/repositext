@@ -40,7 +40,7 @@ class Repositext
       ].each do |command|
         it "responds to '#{ command }'" do
           out = capture_io {
-            Cli.start([command, 'test', '--rtfile', nil, '--content-type-name', nil])
+            Cli.start([command, 'test', '--rtfile', '/path/to/Rtfile', '--content-type-name', nil])
           }.join.strip
           out.must_include "#{ command }_test"
         end
@@ -54,7 +54,7 @@ class Repositext
       ].each do |command|
         it "responds to '#{ command }'" do
           out = capture_io {
-            Cli.start([command, 'test', '--rtfile', nil, '--content-type-name', nil, '--skip-git-up-to-date-check'])
+            Cli.start([command, 'test', '--rtfile', '/path/to/Rtfile', '--content-type-name', nil, '--skip-git-up-to-date-check'])
           }.join.strip
           out.must_include "#{ command }_test"
         end

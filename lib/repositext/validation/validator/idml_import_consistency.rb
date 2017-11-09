@@ -8,17 +8,23 @@ class Repositext
         # Runs all validations for self
         def run
           idml_import_at_file, content_at_file = @file_to_validate
-          outcome = idml_import_consistent?(idml_import_at_file.read, content_at_file.read)
+          outcome = idml_import_consistent?(idml_import_at_file, content_at_file)
           log_and_report_validation_step(outcome.errors, outcome.warnings)
         end
 
         # Checks if all text from IDML import is consistent with text in content.
-        # @param idml_import_at [String]
-        # @param content_at [String]
+        # @param idml_import_at_file [RFile::ContentAt]
+        # @param content_at [RFile::ContentAt]
         # @return [Outcome]
-        def idml_import_consistent?(idml_import_at, content_at)
-          idml_import_at_doc = Kramdown::Document.new(idml_import_at, :input => 'KramdownRepositext')
-          content_at_doc = Kramdown::Document.new(content_at, :input => 'KramdownRepositext')
+        def idml_import_consistent?(idml_import_at_file, content_at_file)
+          idml_import_at_doc = Kramdown::Document.new(
+            idml_import_at_file.contents,
+            :input => 'KramdownRepositext'
+          )
+          content_at_doc = Kramdown::Document.new(
+            content_at_file.contents,
+            :input => 'KramdownRepositext'
+          )
 
           idml_import_at_plain_text = idml_import_at_doc.to_plain_text
           content_at_plain_text = content_at_doc.to_plain_text

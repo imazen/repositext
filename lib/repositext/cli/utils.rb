@@ -180,11 +180,9 @@ class Repositext
       #     If output_path_lambda returns '' (empty string), no files will be written.
       # @param description [String] A description of the operation, used for logging.
       # @param options [Hash]
-      #     :input_is_binary to force File.binread where required
       #     :output_is_binary
       #     :'changed-only'
       #     :repository
-      #     :use_new_r_file_api
       # @param block [Proc] A Proc that performs the desired operation on each file.
       #     Arguments to the proc are each file's name and contents.
       #     Calling block is expected to return an Array of Outcome objects, one
@@ -196,6 +194,8 @@ class Repositext
       def self.process_files_helper(file_pattern, file_filter, output_path_lambda, description, options, &block)
         with_console_output(description, file_pattern) do |counts|
           changed_files = compute_list_of_changed_files(options[:'changed-only'])
+          content_type = options[:content_type]
+          language = content_type.language
           Parallel.each(
             Dir.glob(file_pattern),
             { in_processes: options[:parallel] ? Repositext::PARALLEL_CORES : 0 }
@@ -215,27 +215,11 @@ class Repositext
 
             begin
               $stderr.puts " - Processing #{ filename }"
-              contents = if options[:input_is_binary]
-                File.binread(filename).freeze
-              else
-                File.read(filename).freeze
-              end
-              outcomes = if options[:use_new_r_file_api]
-                # use new api
-                # TODO: once all calls use new API, move assignment of repo and language out of loop
-                content_type = options[:content_type]
-                language = content_type.language
-                block.call(
-                  Repositext::RFile.get_class_for_filename(
-                    filename
-                  ).new(
-                    contents, language, filename, content_type
-                  )
-                )
-              else
-                # use old api
-                block.call(contents, filename)
-              end
+              r_file = Repositext::RFile.get_class_for_filename(
+                  filename
+              ).new('_', language, filename, content_type)
+              r_file.reload_contents!
+              outcomes = block.call(r_file)
 
               outcomes.each do |outcome|
                 if outcome.success
@@ -298,7 +282,6 @@ class Repositext
       #     path as string. It is given the input file path and output file attrs.
       #     If output_path_lambda returns '' (empty string), no files will be written.
       # @param [Hash] options
-      #     :input_is_binary to force File.binread where required
       #     :output_is_binary
       #     :move_or_copy whether to move or copy the files, defaults to :move
       def self.move_files_helper(file_pattern, file_filter, output_path_lambda, description, options)
@@ -376,15 +359,15 @@ class Repositext
       #     argument and is expected to return the full path to the second file.
       # @param [String] description A description of the operation, used for logging.
       # @param [Hash] options
-      #     :input_is_binary to force File.binread where required
       #     :output_is_binary
       #     :'changed-only'
       #     :ignore_missing_file2 set to true if you quietly want to ignore missing file2, defaults to false
       #     :repository
-      #     :use_new_r_file_api
       # @param [Proc] block A Proc that performs the desired operation on each file.
       #     Arguments to the proc are each file's name and contents.
       def self.read_files_helper(file_pattern, file_filter, file_name_2_proc, description, options, &block)
+        content_type = options[:content_type]
+        language = content_type.language
 
         with_console_output(description, file_pattern) do |counts|
           changed_files = compute_list_of_changed_files(options[:'changed-only'])
@@ -405,62 +388,25 @@ class Repositext
 
             begin
               $stderr.puts " - Reading #{ filename_1 }"
-              contents_1 = if options[:input_is_binary]
-                File.binread(filename_1).freeze
-              else
-                File.read(filename_1).freeze
-              end
               counts[:success] += 1
+              r_file_1 = Repositext::RFile.get_class_for_filename(
+                filename_1
+              ).new('_', language, filename_1, content_type)
+              r_file_1.reload_contents!
               if file_name_2_proc
                 filename_2 = file_name_2_proc.call(filename_1)
                 begin
-                  contents_2 = if options[:input_is_binary]
-                    File.binread(filename_2).freeze
-                  else
-                    File.read(filename_2).freeze
-                  end
-                  if options[:use_new_r_file_api]
-                    # use new api
-                    # TODO: once all calls use new API, move assignment of repo and language out of loop
-                    repository = options[:repository]
-                    language = content_type.language
-                    block.call(
-                      Repositext::RFile.get_class_for_filename(
-                        filename_1
-                      ).new(
-                        contents_1, language, filename_1, repository
-                      ),
-                      Repositext::RFile.get_class_for_filename(
-                        filename_2
-                      ).new(
-                        contents_2, language, filename_2, repository
-                      ),
-                    )
-                  else
-                    # use old api
-                    block.call(contents_1, filename_1, contents_2, filename_2)
-                  end
+                  r_file_2 = Repositext::RFile.get_class_for_filename(
+                    filename_2
+                  ).new('_', language, filename_1, content_type)
+                  r_file_2.reload_contents!
+                  block.call(r_file_1, r_file_2)
                 rescue SystemCallError => e
                   # Error: Errno::ENOENT - No such file or directory
                   raise  unless ignore_missing_file2
                 end
               else
-                if options[:use_new_r_file_api]
-                  # use new api
-                  # TODO: once all calls use new API, move assignment of repo and language out of loop
-                  content_type = options[:content_type]
-                  language = content_type.language
-                  block.call(
-                    Repositext::RFile.get_class_for_filename(
-                      filename_1
-                    ).new(
-                      contents_1, language, filename_1, content_type
-                    )
-                  )
-                else
-                  # use old api
-                  block.call(contents_1, filename_1)
-                end
+                block.call(r_file_1)
               end
             rescue StandardError => e
               counts[:errors] += 1

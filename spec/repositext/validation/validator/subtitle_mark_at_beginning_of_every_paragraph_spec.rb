@@ -9,39 +9,41 @@ class Repositext
         describe 'subtitle_mark_at_beginning_of_every_paragraph?' do
 
           it 'exits early on files that contain no subtitle_marks' do
+            r_file = get_r_file(contents: 'text without subtitle_mark')
             v = SubtitleMarkAtBeginningOfEveryParagraph.new('_', '_', '_', { :content_type => :import })
             v.send(
               :subtitle_mark_at_beginning_of_every_paragraph?,
-              'text without subtitle_mark'
+              r_file
             ).success.must_equal(true)
           end
 
           it "doesn't raise an exception when given :import as :content_type option" do
-            v = SubtitleMarkAtBeginningOfEveryParagraph.new('_', '_', '_', { :content_type => :import })
-            v.send(:subtitle_mark_at_beginning_of_every_paragraph?, ' ')
+            r_file = get_r_file(contents: ' ')
+            v = SubtitleMarkAtBeginningOfEveryParagraph.new(r_file, '_', '_', { :content_type => :import })
+            v.send(:subtitle_mark_at_beginning_of_every_paragraph?, r_file)
             1.must_equal(1)
           end
 
           it "doesn't raise an exception when given :content as :content_type option" do
-            v = SubtitleMarkAtBeginningOfEveryParagraph.new('_', '_', '_', { :content_type => :import })
-            v.send(:subtitle_mark_at_beginning_of_every_paragraph?, ' ')
+            r_file = get_r_file(contents: ' ')
+            v = SubtitleMarkAtBeginningOfEveryParagraph.new(r_file, '_', '_', { :content_type => :import })
+            v.send(:subtitle_mark_at_beginning_of_every_paragraph?, r_file)
             1.must_equal(1)
           end
 
           it "raises an exception when given no :content_type option" do
-            v = SubtitleMarkAtBeginningOfEveryParagraph.new('_', '_', '_', {})
+            r_file = get_r_file(contents: '@test')
+            v = SubtitleMarkAtBeginningOfEveryParagraph.new(r_file, '_', '_', {})
             lambda {
-              v.send(:subtitle_mark_at_beginning_of_every_paragraph?, '@test')
+              v.send(:subtitle_mark_at_beginning_of_every_paragraph?, r_file)
             }.must_raise ArgumentError
           end
 
           it "raises an exception when given :content_type :import and invalid data" do
-            v = SubtitleMarkAtBeginningOfEveryParagraph.new('_', '_', '_', { :content_type => :import })
+            r_file = get_r_file(contents: "# header\n\n@para1\n\npara2 without subtitle-mark\n\n")
+            v = SubtitleMarkAtBeginningOfEveryParagraph.new(r_file, '_', '_', { :content_type => :import })
             lambda {
-              v.send(
-                :subtitle_mark_at_beginning_of_every_paragraph?,
-                "# header\n\n@para1\n\npara2 without subtitle-mark\n\n"
-              )
+              v.send(:subtitle_mark_at_beginning_of_every_paragraph?, r_file)
             }.must_raise SubtitleMarkAtBeginningOfEveryParagraph::NoSubtitleMarkAtBeginningOfParagraphError
           end
 

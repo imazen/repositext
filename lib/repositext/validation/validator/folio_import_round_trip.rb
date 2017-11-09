@@ -7,8 +7,8 @@ class Repositext
 
         # Runs all validations for self
         def run
-          document_to_validate = @file_to_validate.read
-          outcome = valid_folio_round_trip?(document_to_validate)
+          xml_file = @file_to_validate
+          outcome = valid_folio_round_trip?(xml_file)
           log_and_report_validation_step(outcome.errors, outcome.warnings)
         end
 
@@ -16,11 +16,11 @@ class Repositext
 
     private
 
-      # @param [String] folio_xml_document
-      def valid_folio_round_trip?(folio_xml_document)
+      # @param xml_file [RFile::Xml]
+      def valid_folio_round_trip?(xml_file)
         # parse Folio XML
         folio_based_kramdown_doc = @options['folio_xml_parser_class'].new(
-          folio_xml_document
+          xml_file.contents
         ).parse_to_kramdown_document
         folio_based_kramdown_root = folio_based_kramdown_doc.root
         # Serialize kramdown doc to kramdown string

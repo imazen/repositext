@@ -43,7 +43,7 @@ class Repositext
             # subtitle_marks and gap_marks in both since we expect them to change.
             string_1 = Repositext::Process::Merge::GapMarkTaggingImportIntoContentAt.remove_gap_marks_and_omit_classes(tmp_gap_mark_tagging_export)
             string_2 = Repositext::Process::Merge::GapMarkTaggingImportIntoContentAt.remove_gap_marks_and_omit_classes(gap_mark_tagging_import)
-            error_message = "\n\nText mismatch between gap_mark_tagging_import and content_at in #{ @file_to_validate.last.path }."
+            error_message = "\n\nText mismatch between gap_mark_tagging_import and content_at in #{ @file_to_validate.last.filename }."
           when 'post_import'
             # We re-export the new content_at to gap_mark_tagging and compare the result
             # with gap_mark_tagging_import. We remove subtitle_marks since they
@@ -51,7 +51,7 @@ class Repositext
             # place since they should be identical if everything works correctly.
             string_1 = gap_mark_tagging_import.gsub(/[@]/, '')
             string_2 = tmp_gap_mark_tagging_export.gsub(/[@]/, '')
-            error_message = "\n\nText mismatch between gap_mark_tagging_import and gap_mark_tagging_export from content_at in #{ @file_to_validate.last.path }."
+            error_message = "\n\nText mismatch between gap_mark_tagging_import and gap_mark_tagging_export from content_at in #{ @file_to_validate.last.filename }."
           else
             raise "Invalid compare mode: #{ @options[:gap_mark_tagging_import_consistency_compare_mode].inspect }"
           end

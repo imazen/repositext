@@ -21,10 +21,7 @@ class Repositext
           ),
           /\.data\.json\z/,
           "Setting `st_sync_active` to false",
-          options.merge(
-            use_new_r_file_api: true,
-            content_type: content_type,
-          )
+          options
         ) do |data_json_file|
           new_contents = data_json_file.update_settings('st_sync_active' => false)
           [Outcome.new(true, { contents: new_contents })]

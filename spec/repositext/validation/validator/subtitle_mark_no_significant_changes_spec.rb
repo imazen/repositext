@@ -9,25 +9,32 @@ class Repositext
         describe 'significant_changes?' do
 
           it 'expects a non-empty content_at' do
-            v = SubtitleMarkNoSignificantChanges.new('_', '_', '_', {})
+            content_at_file = get_r_file(contents: ' ')
+            stm_csv_file = get_r_file(contents: 'subtitle_marker_csv', sub_class: 'SubtitleMarkersCsv')
+            v = SubtitleMarkNoSignificantChanges.new(
+              [content_at_file, stm_csv_file], '_', '_', {})
             lambda {
-              v.send(:significant_changes?, ' ', 'subtitle_marker_csv')
+              v.send(:significant_changes?, content_at_file, stm_csv_file)
             }.must_raise ArgumentError
           end
 
           it 'expects a non-empty subtitle_marker_csv' do
-            v = SubtitleMarkNoSignificantChanges.new('_', '_', '_', {})
+            content_at_file = get_r_file
+            stm_csv_file = get_r_file(contents: ' ', sub_class: 'SubtitleMarkersCsv')
+            v = SubtitleMarkNoSignificantChanges.new([content_at_file, stm_csv_file], '_', '_', {})
             lambda {
-              v.send(:significant_changes?, 'content_at', ' ')
+              v.send(:significant_changes?, content_at_file, stm_csv_file)
             }.must_raise ArgumentError
           end
 
           it "skips content_at files that don't contain subtitle_marks" do
-            v = SubtitleMarkNoSignificantChanges.new('_', '_', '_', {})
+            content_at_file = get_r_file(contents: 'content_at without any subtitle_marks')
+            stm_csv_file = get_r_file(contents: "col1\tcol2\col3\tcol4\n", sub_class: 'SubtitleMarkersCsv')
+            v = SubtitleMarkNoSignificantChanges.new([content_at_file, stm_csv_file], '_', '_', {})
             v.send(
               :significant_changes?,
-              'content_at without any subtitle_marks',
-              "col1\tcol2\col3\tcol4\n"
+              content_at_file,
+              stm_csv_file,
             ).success.must_equal(true)
           end
 

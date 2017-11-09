@@ -22,11 +22,9 @@ class Repositext
         )
         validation_options = {
           'config' => config,
-          'content_type' => content_type,
           'is_primary_repo' => config.setting(:is_primary_repo),
           'kramdown_validation_parser_class' => config.kramdown_parser(:kramdown_validation),
           'primary_content_type_transform_params' => primary_content_type_transform_params,
-          'use_new_r_file_api' => true
         }.merge(options)
         Repositext::Validation::Content.new(file_specs, validation_options).run
       end
@@ -48,14 +46,12 @@ class Repositext
 
         validation_options = {
           'append_to_validation_report' => false,
-          'content_type' => content_type,
           'docx_parser_class' => config.kramdown_parser(:docx),
           'kramdown_converter_method_name' => config.kramdown_converter_method(:to_at),
           'kramdown_parser_class' => config.kramdown_parser(:kramdown),
           'report_file' => config.compute_glob_pattern(
             :docx_export_dir, :validation_report_file, ''
           ),
-          'use_new_r_file_api' => true
         }.merge(options)
 
         Repositext::Validation::DocxPostExport.new(file_specs, validation_options).run
@@ -83,11 +79,9 @@ class Repositext
 
         validation_options = {
           'config' => config,
-          'content_type' => content_type,
           'kramdown_converter_method_name' => config.kramdown_converter_method(:to_at),
           'kramdown_parser_class' => config.kramdown_parser(:kramdown),
           'kramdown_validation_parser_class' => config.kramdown_parser(:kramdown_validation),
-          'use_new_r_file_api' => true
         }.merge(options)
 
         Repositext::Validation::DocxPostImport.new(file_specs, validation_options).run
@@ -110,7 +104,6 @@ class Repositext
         )
 
         validation_options = {
-          'content_type' => content_type,
           'docx_parser_class' => config.kramdown_parser(:docx),
           'docx_validation_parser_class' => config.kramdown_parser(:docx_validation),
           'kramdown_converter_method_name' => config.kramdown_converter_method(:to_at),
@@ -266,8 +259,6 @@ class Repositext
           'is_primary_repo' => config.setting(:is_primary_repo),
           'kramdown_parser_class' => config.kramdown_parser(:kramdown),
           'primary_content_type_transform_params' => primary_content_type_transform_params,
-          'use_new_r_file_api' => true,
-          'content_type' => content_type,
         }.merge(options)
         Repositext::Validation::ParagraphStyleConsistency.new(file_specs, validation_options).run
       end
@@ -289,7 +280,6 @@ class Repositext
           extract_text_from_pdf_service = Repositext::Services::ExtractTextFromPdf.new
           extract_text_from_pdf_service.start
           validation_options = {
-            'content_type' => content_type,
             'extract_text_from_pdf_service' => extract_text_from_pdf_service,
             'pdfbox_text_extraction_options' => config.setting(:pdfbox_text_extraction_options),
           }.merge(options)

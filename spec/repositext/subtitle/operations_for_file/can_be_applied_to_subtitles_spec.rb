@@ -4,12 +4,8 @@ class Repositext
   class Subtitle
     class OperationsForFile
       describe CanBeAppliedToSubtitles do
-        let(:contents) { "_" }
-        let(:language) { Language::English.new }
-        let(:filename) { '/content/57/eng57-0103_1234.at' }
-
         let(:default_content_at_file) {
-          f = RFile::ContentAt.new(contents, language, filename)
+          f = get_r_file
           f.do_not_load_contents_from_disk_for_testing = true
           f
         }

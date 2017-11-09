@@ -6,8 +6,8 @@ class Repositext
       class KramdownSyntaxPt < KramdownSyntax
 
         def run
-          document_to_validate = @file_to_validate.read
-          outcome = valid_kramdown_syntax?(document_to_validate)
+          content_pt_file = @file_to_validate
+          outcome = valid_kramdown_syntax?(content_pt_file)
           log_and_report_validation_step(outcome.errors, outcome.warnings)
         end
 

@@ -31,10 +31,7 @@ class Repositext
           ),
           options['file_filter'],
           "Splitting subtitles",
-          options.merge(
-            use_new_r_file_api: true,
-            content_type: content_type,
-          )
+          options
         ) do |f_content_at_file|
           # Skip this foreign file if primary file requires st_sync
           p_content_at_file = f_content_at_file.corresponding_primary_file

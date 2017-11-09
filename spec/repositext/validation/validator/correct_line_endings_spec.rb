@@ -18,31 +18,36 @@ class Repositext
 
         [
           'valid-line-endings.txt'
-        ].each do |file_name|
-          it "passes a valid file: #{ file_name }" do
-            CorrectLineEndings.new(
-              File.open(get_test_data_path_for("/repositext/validation/validator/correct_line_endings/valid/" + file_name)),
-              logger,
-              reporter,
-              {}
-            ).run
+        ].each do |filename|
+          it "passes a valid file: #{ filename }" do
+            r_file = get_r_file(
+              contents: File.read(
+                get_test_data_path_for(
+                  "/repositext/validation/validator/correct_line_endings/valid/" + filename
+                )
+              )
+            )
+            CorrectLineEndings.new(r_file, logger, reporter, {}).run
             reporter.errors.must_equal []
           end
         end
 
         [
           'cr-lf-line-endings.txt',
-        ].each do |file_name|
-          it "flags invalid file #{ file_name }" do
-            CorrectLineEndings.new(
-              File.open(get_test_data_path_for("/repositext/validation/validator/correct_line_endings/invalid/" + file_name)),
-              logger,
-              reporter,
-              {}
-            ).run
+        ].each do |filename|
+          it "flags invalid file #{ filename }" do
+            r_file = get_r_file(
+              contents: File.read(
+                get_test_data_path_for(
+                  "/repositext/validation/validator/correct_line_endings/invalid/" + filename
+                )
+              ),
+              filename: filename
+            )
+            CorrectLineEndings.new(r_file, logger, reporter, {}).run
             reporter.errors.size.must_equal 1
             reporter.errors.all? { |e|
-              e.location.first.index(file_name) && 'Invalid line endings' == e.details.first
+              e.location[:filename].index(filename) && 'Invalid line endings' == e.details.first
             }.must_equal true
           end
         end

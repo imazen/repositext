@@ -5,12 +5,12 @@ class Repositext
 
       # Specifies validations to run related to Idml import.
       def run_list
-        validate_files(:idml_sources) do |path|
+        validate_files(:idml_sources) do |idml_file|
           Validator::IdmlImportSyntax.new(
-            File.open(path), @logger, @reporter, @options
+            idml_file, @logger, @reporter, @options
           ).run
           Validator::IdmlImportRoundTrip.new(
-            File.open(path), @logger, @reporter, @options
+            idml_file, @logger, @reporter, @options
           ).run
         end
       end

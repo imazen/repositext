@@ -8,9 +8,9 @@ class Repositext
 
         # Runs all validations for self
         def run
-          document_to_validate = @file_to_validate.read
+          content_at_file = @file_to_validate
           # @file_to_validate is an array with the paths to the content_at and subtitle_tagging_export files
-          outcome = subtitle_marks_spaced_correctly?(document_to_validate)
+          outcome = subtitle_marks_spaced_correctly?(content_at_file)
           log_and_report_validation_step(outcome.errors, outcome.warnings)
         end
 
@@ -18,13 +18,11 @@ class Repositext
 
         # Checks that subtitle marks in content_at are spaced correctly.
         # Only applied if content_at contains subtitle_marks.
-        # @param [String] content_at
-        # @return [Outcome]
-        def subtitle_marks_spaced_correctly?(content_at)
+        def subtitle_marks_spaced_correctly?(content_at_file)
           # Early return if content doesn't contain any subtitle_marks
-          return Outcome.new(true, nil)  if !content_at.index('@')
+          return Outcome.new(true, nil)  if !content_at_file.contents.index('@')
 
-          too_long_captions = find_too_long_captions(content_at)
+          too_long_captions = find_too_long_captions(content_at_file.contents)
           if too_long_captions.empty?
             Outcome.new(true, nil)
           else

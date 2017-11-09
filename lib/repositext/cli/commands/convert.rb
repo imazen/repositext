@@ -15,11 +15,7 @@ class Repositext
           ),
           options['file_filter'],
           "Converting DOCX files to AT kramdown",
-          options.merge(
-            input_is_binary: true,
-            content_type: content_type,
-            use_new_r_file_api: true,
-          )
+          options
         ) do |zip_binary_r_file|
           document_xml_contents = zip_binary_r_file.extract_docx_document_xml
           outcome = Repositext::Process::Convert::DocxToAt.new(
@@ -43,11 +39,11 @@ class Repositext
           options['file_filter'],
           "Converting folio xml files to AT kramdown and json",
           options
-        ) do |contents, filename|
+        ) do |xml_file|
           # The Kramdown::Folio parser is an exception in that it returns a set
           # of multiple files from the parse method. On other parsers we have
           # to call `to_...` to get the output.
-          docs = config.kramdown_parser(:folio_xml).new(contents).parse
+          docs = config.kramdown_parser(:folio_xml).new(xml_file.contents).parse
           docs.keys.map do |extension|
             Outcome.new(
               true,
@@ -67,9 +63,9 @@ class Repositext
           ),
           options['file_filter'],
           "Converting IDML files to AT kramdown",
-          options.merge(input_is_binary: true)
-        ) do |contents, filename|
-          doc = config.kramdown_parser(:idml).new(contents).parse
+          options
+        ) do |idml_file|
+          doc = config.kramdown_parser(:idml).new(idml_file.contents).parse
           at = doc.send(config.kramdown_converter_method(:to_at))
           [Outcome.new(true, { contents: at, extension: 'idml.at' })]
         end

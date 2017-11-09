@@ -38,6 +38,22 @@ class Repositext
                 .sub(/\.at\z/, '.docx') # update extension
       end
 
+      # Returns the corresponding file while considering #as_of_git_commit_attrs.
+      def corresponding_gap_mark_tagging_import_file
+        return nil  if !File.exist?(corresponding_gap_mark_tagging_import_filename)
+        RFile::Text.new(
+          File.read(corresponding_gap_mark_tagging_import_filename),
+          language,
+          corresponding_gap_mark_tagging_import_filename,
+          content_type
+        )
+      end
+
+      def corresponding_gap_mark_tagging_import_filename
+        filename.sub(/\/content\//, '/gap_mark_tagging/') # update path
+                .sub(/\.at\z/, '.gap_mark_tagging.txt') # update extension
+      end
+
       def corresponding_st_autosplit_filename
         filename.sub(/\/content\//, '/autosplit_subtitles/') # update path
                 .sub(/\.at\z/, '.txt') # update extension

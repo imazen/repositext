@@ -240,19 +240,6 @@ class Repositext
           options.merge({
             'base-dir' => :idml_import_dir,
             'file-extension' => :at_extension,
-            'filename_proc' => lambda { |filename|
-              Repositext::Utils::CorrespondingPrimaryFileFinder.find(
-                filename: filename,
-                language_code_3_chars: config.setting(:language_code_3_chars),
-                content_type_dir: config.base_dir(:content_type_dir),
-                relative_path_to_primary_content_type: config.setting(:relative_path_to_primary_content_type),
-                primary_repo_lang_code: config.setting(:primary_repo_lang_code)
-              ).gsub(
-                '/idml_import/', '/content/'
-              ).gsub(
-                /\.idml\.at\z/, '.at'
-              )
-            }
           })
         )
         options['append_to_validation_report'] = true

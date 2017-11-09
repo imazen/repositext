@@ -36,6 +36,35 @@ def initialize_test_validation(validation_class_name, file_specs, options)
   Object.const_get("Repositext::Validation::#{ validation_class_name }").new(file_specs, options)
 end
 
+# Returns an Instance of RFile::ContentAt
+# @param attr_overrides [Hash]
+#   :contents
+#   :filename
+#   :language
+#   :content_type provide a ContentType, or set to `true` to have default ct assigned
+#   :sub_class Provide RFile subclass name as string. Defaults to `ContentAt`
+def get_r_file(attr_overrides={})
+  content_type = case attr_overrides[:content_type]
+  when true
+    # Create test content_type
+    path_to_repo = Repositext::Repository::Test.create!('rt-english').first
+    Repositext::ContentType.new(File.join(path_to_repo, 'ct-general'))
+  when Repositext::ContentType
+    # Use as is
+    attr_overrides[:content_type]
+  else
+    # No content_type given
+    nil
+  end
+  r_file_class_name = "Repositext::RFile::#{ attr_overrides[:sub_class] || 'ContentAt' }"
+  attrs = [
+    attr_overrides[:contents] || "# Title\n\nParagraph 1",
+    attr_overrides[:language] || Repositext::Language::English.new,
+    attr_overrides[:filename] || '/path-to/rt-english/ct-general/content/57/eng57-0103_1234.at',
+    content_type,
+  ].compact
+  Object.const_get(r_file_class_name).new(*attrs)
+end
 
 # *********************************************
 #

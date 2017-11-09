@@ -53,6 +53,9 @@ class Repositext
         RFile::Content
       when /\.txt\z/
         RFile::Text
+      when /\.test_(in|out)\z/
+        # This is used for testing purposes
+        RFile::Text
       else
         raise "Handle this: #{ filename.inspect }"
       end
@@ -131,9 +134,9 @@ class Repositext
     # Reloads contents from filename
     def reload_contents!
       @contents = if is_binary
-        File.binread(filename)
+        File.binread(filename).freeze
       else
-        File.read(filename)
+        File.read(filename).freeze
       end
     end
 

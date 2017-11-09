@@ -5,19 +5,17 @@ class Repositext
       class IdmlImportSyntax < Validator
 
         def run
-          document_to_validate = ::File.binread(@file_to_validate.path)
-          outcome = valid_idml_syntax?(document_to_validate)
+          idml_file = @file_to_validate
+          outcome = valid_idml_syntax?(idml_file)
           log_and_report_validation_step(outcome.errors, outcome.warnings)
         end
 
       protected
 
-        # @param [String] idml_file_contents the contents of the IDML file as binary string
-        # @return [Outcome]
-        def valid_idml_syntax?(idml_file_contents)
+        def valid_idml_syntax?(idml_file)
           errors = []
           warnings = []
-          idml_parser = @options['idml_validation_parser_class'].new(idml_file_contents)
+          idml_parser = @options['idml_validation_parser_class'].new(idml_file.contents)
 
           validate_character_inventory(idml_parser, errors, warnings)
           validate_idml_story_source(idml_parser, errors, warnings)
@@ -50,7 +48,7 @@ class Repositext
             {
               'validation_errors' => errors,
               'validation_warnings' => warnings,
-              'validation_file_descriptor' => @file_to_validate.path,
+              'validation_file_descriptor' => @file_to_validate.filename,
               'validation_logger' => @logger,
             }
           )

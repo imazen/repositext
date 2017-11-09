@@ -9,10 +9,11 @@ class Repositext
         describe '#subtitle_marks_spaced_correctly?' do
 
           it 'exits early on files that contain no subtitle_marks' do
-            v = SubtitleMarkSpacing.new('_', '_', '_', {})
+            r_file = get_r_file(contents: 'text without subtitle_mark')
+            v = SubtitleMarkSpacing.new(r_file, '_', '_', {})
             v.send(
               :subtitle_marks_spaced_correctly?,
-              'text without subtitle_mark'
+              r_file
             ).success.must_equal(true)
           end
 
@@ -25,7 +26,8 @@ class Repositext
             ['@' + ('word ' * 100), 1],
           ].each do |test_string, xpect|
             it "handles #{ test_string.inspect }" do
-              v = SubtitleMarkSpacing.new('_', '_', '_', {})
+              r_file = get_r_file(contents: test_string)
+              v = SubtitleMarkSpacing.new(r_file, '_', '_', {})
               v.send(
                 :find_too_long_captions,
                 test_string

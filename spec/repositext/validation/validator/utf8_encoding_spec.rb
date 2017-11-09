@@ -18,14 +18,14 @@ class Repositext
 
         [
           'utf8-valid.txt'
-        ].each do |file_name|
-          it "passes a valid file: #{ file_name }" do
-            Utf8Encoding.new(
-              File.open(get_test_data_path_for("/repositext/validation/validator/utf8_encoding/valid/" + file_name)),
-              logger,
-              reporter,
-              {}
-            ).run
+        ].each do |filename|
+          it "passes a valid file: #{ filename }" do
+            r_file = get_r_file(
+              contents: File.read(
+                get_test_data_path_for("/repositext/validation/validator/utf8_encoding/valid/" + filename)
+              )
+            )
+            Utf8Encoding.new(r_file, logger, reporter, {}).run
             reporter.errors.must_equal []
           end
         end
@@ -43,34 +43,36 @@ class Repositext
           'utf8_invalid_byte_sequence-utf_16_surrogates_2.txt',
           'windows-1255-hebrew.txt',
           'windows-1256-arabic.txt'
-        ].each do |file_name|
-          it "flags file with invalid encoding #{ file_name }" do
-            Utf8Encoding.new(
-              File.open(get_test_data_path_for("/repositext/validation/validator/utf8_encoding/invalid/" + file_name)),
-              logger,
-              reporter,
-              {}
-            ).run
+        ].each do |filename|
+          it "flags file with invalid encoding #{ filename }" do
+            r_file = get_r_file(
+              contents: File.read(
+                get_test_data_path_for("/repositext/validation/validator/utf8_encoding/invalid/" + filename)
+              ),
+              filename: filename
+            )
+            Utf8Encoding.new(r_file, logger, reporter, {}).run
             reporter.errors.size.must_equal 1
             reporter.errors.all? { |e|
-              e.location.first.index(file_name) && 'Invalid encoding' == e.details.first
+              e.location[:filename].index(filename) && 'Invalid encoding' == e.details.first
             }.must_equal true
           end
         end
 
         [
           'utf8_with_bom.txt',
-        ].each do |file_name|
-          it "flags file with bom #{ file_name }" do
-            Utf8Encoding.new(
-              File.open(get_test_data_path_for("/repositext/validation/validator/utf8_encoding/invalid/" + file_name)),
-              logger,
-              reporter,
-              {}
-            ).run
+        ].each do |filename|
+          it "flags file with bom #{ filename }" do
+            r_file = get_r_file(
+              contents: File.read(
+                get_test_data_path_for("/repositext/validation/validator/utf8_encoding/invalid/" + filename)
+              ),
+              filename: filename
+            )
+            Utf8Encoding.new(r_file, logger, reporter, {}).run
             reporter.errors.size.must_equal 1
             reporter.errors.all? { |e|
-              e.location.first.index(file_name) && 'Unexpected BOM' == e.details.first
+              e.location[:filename].index(filename) && 'Unexpected BOM' == e.details.first
             }.must_equal true
           end
         end

@@ -7,10 +7,10 @@ class Repositext
 
         # Runs all validations for self
         def run
-          content_at_filename, subtitle_marker_csv_filename = @file_to_validate
+          content_at_file, subtitle_marker_csv_file = @file_to_validate
           outcome = subtitle_mark_counts_match?(
-            content_at_filename.read,
-            subtitle_marker_csv_filename.read
+            content_at_file,
+            subtitle_marker_csv_file
           )
           log_and_report_validation_step(outcome.errors, outcome.warnings)
         end
@@ -19,12 +19,12 @@ class Repositext
 
         # Checks if content_at and subtitle_marker_csv contain the same number of
         # subtitle_marks.
-        # @param [String] content_at
-        # @param [CSV] subtitle_marker_csv
+        # @param content_at_file [RFile::ContentAt]
+        # @param stm_csv_file [RFile::SubtitleMarkerCsv]
         # @return [Outcome]
-        def subtitle_mark_counts_match?(content_at, subtitle_marker_csv)
-          content_at_count = Services::ExtractSubtitleMarkCountContentAt.call(content_at)
-          stm_csv_count = Services::ExtractSubtitleMarkCountStmCsv.call(subtitle_marker_csv)
+        def subtitle_mark_counts_match?(content_at_file, stm_csv_file)
+          content_at_count = Services::ExtractSubtitleMarkCountContentAt.call(content_at_file.contents)
+          stm_csv_count = Services::ExtractSubtitleMarkCountStmCsv.call(stm_csv_file.contents)
 
           # compare the two counts
           if 0 == content_at_count || content_at_count == stm_csv_count

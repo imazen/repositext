@@ -24,10 +24,10 @@ class Repositext
           options['file_filter'],
           "Adjusting :gap_mark positions",
           options
-        ) do |contents, filename|
+        ) do |content_at_file|
           outcome = Repositext::Process::Fix::AdjustGapMarkPositions.fix(
-            contents,
-            filename,
+            content_at_file.contents,
+            content_at_file.filename,
             content_type.language
           )
           [outcome]
@@ -51,8 +51,10 @@ class Repositext
           options['file_filter'],
           "Adjusting merged :record_mark positions",
           options
-        ) do |contents, filename|
-          outcome = Repositext::Process::Fix::AdjustMergedRecordMarkPositions.fix(contents, filename)
+        ) do |content_at_file|
+          outcome = Repositext::Process::Fix::AdjustMergedRecordMarkPositions.fix(
+            content_at_file.contents, content_at_file.filename
+          )
           [outcome]
         end
       end
@@ -68,8 +70,10 @@ class Repositext
           options['file_filter'],
           "Converting abbreviations to lower case",
           options
-        ) do |contents, filename|
-          outcome = Repositext::Process::Fix::ConvertAbbreviationsToLowerCase.fix(contents, filename)
+        ) do |content_at_file|
+          outcome = Repositext::Process::Fix::ConvertAbbreviationsToLowerCase.fix(
+            content_at_file.contents, content_at_file.filename
+          )
           [outcome]
         end
       end
@@ -85,11 +89,11 @@ class Repositext
           options['file_filter'],
           "Changing typographical characters in files",
           options
-        ) do |contents, filename|
+        ) do |content_at_file|
           outcome = Repositext::Process::Fix::ConvertFolioTypographicalChars.fix(
-            contents,
-            filename,
-            content_type.language
+            content_at_file.contents,
+            content_at_file.filename,
+            content_at_file.language
           )
           [outcome]
         end
@@ -146,8 +150,11 @@ class Repositext
           options['file_filter'],
           "Normalizing editors notes",
           options
-        ) do |contents, filename|
-          outcome = Repositext::Process::Fix::NormalizeEditorsNotes.fix(contents, filename)
+        ) do |content_at_file|
+          outcome = Repositext::Process::Fix::NormalizeEditorsNotes.fix(
+            content_at_file.contents,
+            content_at_file.filename
+          )
           [outcome]
         end
       end
@@ -164,8 +171,11 @@ class Repositext
           options['file_filter'],
           "Normalizing subtitle_mark before gap_mark positions.",
           options
-        ) do |contents, filename|
-          outcome = Repositext::Process::Fix::NormalizeSubtitleMarkBeforeGapMarkPositions.fix(contents, filename)
+        ) do |content_at_file|
+          outcome = Repositext::Process::Fix::NormalizeSubtitleMarkBeforeGapMarkPositions.fix(
+            content_at_file.contents,
+            content_at_file.filename
+          )
           [outcome]
         end
       end
@@ -224,8 +234,8 @@ class Repositext
             options['file_filter'],
             "Normalizing trailing newlines",
             options
-          ) do |contents, filename|
-            [Outcome.new(true, { contents: contents.gsub(/(?<!\n)\n*\z/, "\n") }, [])]
+          ) do |r_file|
+            [Outcome.new(true, { contents: r_file.contents.gsub(/(?<!\n)\n*\z/, "\n") }, [])]
           end
         end
       end
@@ -240,8 +250,11 @@ class Repositext
           options['file_filter'],
           "Removing underscores inside folio paragraph numbers",
           options
-        ) do |contents, filename|
-          outcome = Repositext::Process::Fix::RemoveUnderscoresInsideFolioParagraphNumbers.fix(contents, filename)
+        ) do |content_at_file|
+          outcome = Repositext::Process::Fix::RemoveUnderscoresInsideFolioParagraphNumbers.fix(
+            content_at_file.contents,
+            content_at_file.filename
+          )
           [outcome]
         end
       end
@@ -256,10 +269,7 @@ class Repositext
           ),
           options['file_filter'],
           "Renumbering paragraphs",
-          options.merge(
-            use_new_r_file_api: true,
-            content_type: content_type,
-          )
+          options
         ) do |content_at_file|
           outcome = Repositext::Process::Fix::RenumberParagraphs.fix(
             content_at_file.contents
@@ -278,10 +288,7 @@ class Repositext
           ),
           options['file_filter'],
           "Replacing invalid unicode locations",
-          options.merge(
-            use_new_r_file_api: true,
-            content_type: content_type,
-          )
+          options
         ) do |content_at_file|
           outcome = Repositext::Process::Fix::ReplaceInvalidUnicodeLocations.fix(
             content_at_file.contents
@@ -302,10 +309,7 @@ class Repositext
           ),
           options['file_filter'],
           "Replacing latin with cyrillic characters",
-          options.merge(
-            use_new_r_file_api: true,
-            content_type: content_type,
-          )
+          options
         ) do |content_at_file|
           outcome = Repositext::Process::Fix::ReplaceLatinWithCyrillicCharacters.fix(
             content_at_file.contents,

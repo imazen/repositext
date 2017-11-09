@@ -10,22 +10,18 @@ class Repositext
 
         # Runs all validations for self
         def run
-          document_to_validate = @file_to_validate.read
-          outcome = paragraph_numbers_in_sequence?(
-            document_to_validate,
-            @file_to_validate.path.split('/').last
-          )
+          content_at_file = @file_to_validate
+          outcome = paragraph_numbers_in_sequence?(content_at_file)
           log_and_report_validation_step(outcome.errors, outcome.warnings)
         end
 
       private
 
-        # @param contents [String]
+        # @param content_at_file [RFile::ContentAt]
         # @return [Outcome]
-        def paragraph_numbers_in_sequence?(contents, filename)
+        def paragraph_numbers_in_sequence?(content_at_file)
           paragraph_numbers_out_of_sequence = find_paragraph_numbers_out_of_sequence(
-            contents,
-            filename
+            content_at_file
           )
           if paragraph_numbers_out_of_sequence.empty?
             Outcome.new(true, nil)
@@ -45,10 +41,11 @@ class Repositext
           end
         end
 
+        # @param content_at_file [RFile::ContentAt]
         # @return [Array<Array<String>>] an array of arrays with line numbers and paras
-        def find_paragraph_numbers_out_of_sequence(contents, filename)
+        def find_paragraph_numbers_out_of_sequence(content_at_file)
           kramdown_doc = Kramdown::Document.new(
-            contents,
+            content_at_file.contents,
             input: 'KramdownRepositext'
           )
           tree_structure = Kramdown::TreeStructureExtractor.new(kramdown_doc).extract
@@ -63,11 +60,11 @@ class Repositext
             cur_line = cur_attrs[:line]
             if prev_num.nil?
               # check first para num
-              next  if allow_unexpected_start_number?(filename)
+              next  if allow_unexpected_start_number?(content_at_file.filename)
               pns_oos << [cur_line, "Invalid start number: #{ cur_num }"]  if cur_num !~ /\A(1|2)(?!\d)/
             elsif !(vsn = valid_subsequent_numbers(prev_num)).include?(cur_num)
               # find invalid subsequent numbers
-              if filename.index('62-0318') && '2' == cur_num
+              if content_at_file.filename.index('62-0318') && '2' == cur_num
                 # this is an expected exception. Paragraph numbering in this
                 # file is reset to '2' half way down the file.
                 # Nothing to do

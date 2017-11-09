@@ -14,7 +14,7 @@ class Repositext
           it 'reports no errors for valid kramdown AT' do
             validator, _logger, reporter = build_validator_logger_and_reporter(
               KramdownSyntaxAt,
-              FileLikeStringIO.new('_path', 'valid kramdown AT')
+              get_r_file
             )
             validator.run
             reporter.errors.must_be(:empty?)
@@ -23,7 +23,7 @@ class Repositext
           it 'reports errors for invalid kramdown AT' do
             validator, _logger, reporter = build_validator_logger_and_reporter(
               KramdownSyntaxAt,
-              FileLikeStringIO.new('_path', 'invalid kramdown AT with gap_mark in%side a word')
+              get_r_file(contents: 'invalid kramdown AT with gap_mark in%side a word')
             )
             validator.run
             reporter.errors.wont_be(:empty?)
@@ -41,11 +41,12 @@ class Repositext
             ["line break at end of file }\n", true],
           ].each do |test_string, xpect|
             it "handles #{ test_string.inspect }" do
+              r_file = get_r_file(contents: test_string)
               validator, _logger, _reporter = build_validator_logger_and_reporter(
                 KramdownSyntaxAt,
-                FileLikeStringIO.new('_path', '_txt')
+                r_file
               )
-              validator.valid_kramdown_syntax?(test_string).success.must_equal(xpect)
+              validator.valid_kramdown_syntax?(r_file).success.must_equal(xpect)
             end
           end
         end
@@ -57,11 +58,12 @@ class Repositext
             ["escaped bracket \\[", false],
           ].each do |test_string, xpect|
             it "handles #{ test_string.inspect }" do
+              r_file = get_r_file(contents: test_string)
               validator, _logger, _reporter = build_validator_logger_and_reporter(
                 KramdownSyntaxAt,
-                FileLikeStringIO.new('_path', '_txt')
+                r_file
               )
-              validator.valid_syntax_at?(test_string).success.must_equal(xpect)
+              validator.valid_syntax_at?(r_file).success.must_equal(xpect)
             end
           end
         end
@@ -106,14 +108,15 @@ class Repositext
             ["Invalid horizontal rule (suffix)\n\n* * *x\n", 1],
           ].each do |test_string, xpect|
             it "handles #{ test_string.inspect }" do
+              r_file = get_r_file(contents: test_string)
               validator, _logger, _reporter = build_validator_logger_and_reporter(
                 KramdownSyntaxAt,
-                FileLikeStringIO.new('_path', '_txt')
+                r_file
               )
               errors = []
               warnings = []
               validator.send(
-                :validate_source, test_string, errors, warnings
+                :validate_source, r_file, errors, warnings
               )
               errors.size.must_equal(xpect)
             end
@@ -134,14 +137,15 @@ class Repositext
             ["record_mark followed by three newlines\n\n^^^\n\n\nnext line", 1],
           ].each do |test_string, xpect|
             it "handles #{ test_string.inspect }" do
+              r_file = get_r_file(contents: test_string)
               validator, _logger, _reporter = build_validator_logger_and_reporter(
                 KramdownSyntaxAt,
-                FileLikeStringIO.new('_path', '_txt')
+                r_file
               )
               errors = []
               warnings = []
               validator.send(
-                :validate_record_mark_syntax, test_string, errors, warnings
+                :validate_record_mark_syntax, r_file, errors, warnings
               )
               errors.size.must_equal(xpect)
             end
@@ -158,15 +162,17 @@ class Repositext
             ["p.normal without pn\n{: .normal}", 0],
           ].each do |test_string, xpect|
             it "handles #{ test_string.inspect }" do
+              r_file = get_r_file(contents: test_string)
               validator, _logger, _reporter = build_validator_logger_and_reporter(
                 KramdownSyntaxAt,
-                FileLikeStringIO.new('_path', '_txt')
+                r_file
               )
               errors = []
               warnings = []
               kramdown_doc = Kramdown::Document.new(test_string, { :input => 'KramdownRepositext' })
               validator.send(
                 :validation_hook_on_element,
+                r_file,
                 kramdown_doc.root.children.first,
                 [],
                 errors,
@@ -192,15 +198,17 @@ class Repositext
 
           scenarios.each do |test_string, el_stack, xpect|
             it "handles #{ test_string.inspect }" do
+              r_file = get_r_file(contents: test_string)
               validator, _logger, _reporter = build_validator_logger_and_reporter(
                 KramdownSyntaxAt,
-                FileLikeStringIO.new('_path', '_txt')
+                r_file
               )
               errors = []
               warnings = []
               kramdown_doc = Kramdown::Document.new(test_string, { :input => 'KramdownRepositext' })
               validator.send(
                 :validation_hook_on_element,
+                r_file,
                 kramdown_doc.root.children.first.children.first,
                 el_stack,
                 errors,

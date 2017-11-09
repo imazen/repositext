@@ -9,23 +9,21 @@ class Repositext
 
         # Runs all validations for self
         def run
-          document_to_validate = @file_to_validate.read
-          outcome = no_subtitle_marks_followed_by_space?(
-            document_to_validate
-          )
+          content_at_file = @file_to_validate
+          outcome = no_subtitle_marks_followed_by_space?(content_at_file)
           log_and_report_validation_step(outcome.errors, outcome.warnings)
         end
 
       private
 
-        # @param content [String]
-        # @return [Outcome]
-        def no_subtitle_marks_followed_by_space?(content)
+        def no_subtitle_marks_followed_by_space?(content_at_file)
           # Early return if content doesn't contain any subtitle_marks
-          return Outcome.new(true, nil)  if !content.index('@')
+          return Outcome.new(true, nil)  if !content_at_file.contents.index('@')
 
           # We raise an exception if we find any errors
-          subtitle_marks_followed_by_space = find_subtitle_marks_followed_by_space(content)
+          subtitle_marks_followed_by_space = find_subtitle_marks_followed_by_space(
+            content_at_file.contents
+          )
           if subtitle_marks_followed_by_space.empty?
             Outcome.new(true, nil)
           else

@@ -9,10 +9,11 @@ class Repositext
         describe 'no_subtitle_marks_followed_by_space?' do
 
           it 'exits early on files that contain no subtitle_marks' do
-            v = SubtitleMarkNotFollowedBySpace.new('_', '_', '_', {})
+            r_file = get_r_file(contents: 'text without subtitle_mark')
+            v = SubtitleMarkNotFollowedBySpace.new(r_file, '_', '_', {})
             v.send(
               :no_subtitle_marks_followed_by_space?,
-              'text without subtitle_mark'
+              r_file
             ).success.must_equal(true)
           end
 
@@ -27,7 +28,8 @@ class Repositext
             ["\n\n@word1\n\nword2@\n", []],
           ].each do |test_string, xpect|
             it "handles #{ test_string.inspect }" do
-              v = SubtitleMarkNotFollowedBySpace.new('_', '_', '_', { })
+              r_file = get_r_file
+              v = SubtitleMarkNotFollowedBySpace.new(r_file, '_', '_', { })
               v.send(
                 :find_subtitle_marks_followed_by_space,
                 test_string

@@ -13,24 +13,22 @@ class Repositext
             ["markers content with spaces", false],
           ].each do |test_string, xpect|
             it "handles #{ test_string.inspect }" do
+              st_import_markers_file = get_r_file(
+                contents: test_string,
+                sub_class: 'Csv'
+              )
               v = SubtitleImportMarkersSyntax.new(
-                FileLikeStringIO.new('/_', '_'),
+                st_import_markers_file,
                 '_',
                 '_',
                 {}
               )
               if xpect
-                v.send(
-                  :no_unexpected_spaces?,
-                  test_string
-                )
+                v.send(:no_unexpected_spaces?, st_import_markers_file)
                 1.must_equal(1)
               else
                 lambda {
-                  v.send(
-                    :no_unexpected_spaces?,
-                    test_string
-                  )
+                  v.send(:no_unexpected_spaces?, st_import_markers_file)
                 }.must_raise(SubtitleImportMarkersSyntax::UnexpectedSpaceError)
               end
             end

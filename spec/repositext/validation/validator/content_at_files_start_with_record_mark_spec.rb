@@ -18,31 +18,37 @@ class Repositext
 
         [
           'starts_with_record_mark.txt'
-        ].each do |file_name|
-          it "passes a valid file: #{ file_name }" do
-            ContentAtFilesStartWithRecordMark.new(
-              File.open(get_test_data_path_for("/repositext/validation/validator/content_at_files_start_with_record_mark/valid/" + file_name)),
-              logger,
-              reporter,
-              {}
-            ).run
+        ].each do |filename|
+          it "passes a valid file: #{ filename }" do
+            r_file = get_r_file(
+              contents: File.read(
+                get_test_data_path_for(
+                  "/repositext/validation/validator/content_at_files_start_with_record_mark/valid/" + filename
+                )
+              ),
+              filename: filename
+            )
+            ContentAtFilesStartWithRecordMark.new(r_file, logger, reporter, {}).run
             reporter.errors.must_equal []
           end
         end
 
         [
           'does_not_start_with_record_mark.txt',
-        ].each do |file_name|
-          it "flags invalid file #{ file_name }" do
-            ContentAtFilesStartWithRecordMark.new(
-              File.open(get_test_data_path_for("/repositext/validation/validator/content_at_files_start_with_record_mark/invalid/" + file_name)),
-              logger,
-              reporter,
-              {}
-            ).run
+        ].each do |filename|
+          it "flags invalid file #{ filename }" do
+            r_file = get_r_file(
+              contents: File.read(
+                get_test_data_path_for(
+                  "/repositext/validation/validator/content_at_files_start_with_record_mark/invalid/" + filename
+                )
+              ),
+              filename: filename
+            )
+            ContentAtFilesStartWithRecordMark.new(r_file, logger, reporter, {}).run
             reporter.errors.size.must_equal 1
             reporter.errors.all? { |e|
-              e.location.first.index(file_name) && "Content AT file doesn't start with record_mark" == e.details.first
+              e.location[:filename].index(filename) && "Content AT file doesn't start with record_mark" == e.details.first
             }.must_equal true
           end
         end

@@ -8,15 +8,15 @@ class Repositext
 
         # Single files
 
-        validate_files(:imported_repositext_files) do |path|
+        validate_files(:imported_repositext_files) do |text_file|
           Validator::Utf8Encoding.new(
-            File.open(path), @logger, @reporter, @options
+            text_file, @logger, @reporter, @options
           ).run
         end
-        validate_files(:imported_at_files) do |path|
+        validate_files(:imported_at_files) do |content_at_file|
           @options['run_options'] << 'kramdown_syntax_at-no_underscore_or_caret'
           Validator::KramdownSyntaxAt.new(
-            File.open(path), @logger, @reporter, @options
+            content_at_file, @logger, @reporter, @options
           ).run
         end
 

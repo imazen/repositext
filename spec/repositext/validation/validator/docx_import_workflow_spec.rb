@@ -24,7 +24,7 @@ class Repositext
           ].each do |file_name, xpect_valid|
             it "validates #{ file_name.inspect }" do
               validator = DocxImportWorkflow.new(
-                FileLikeStringIO.new('/_', '_'),
+                get_r_file,
                 logger,
                 reporter,
                 {}
@@ -155,7 +155,7 @@ class Repositext
           ].each do |desc, style_entries, xpect|
             it "handles #{ desc }" do
               validator = DocxImportWorkflow.new(
-                FileLikeStringIO.new('/_', '_'),
+                get_r_file,
                 logger,
                 reporter,
                 {}
@@ -175,7 +175,7 @@ class Repositext
 
           it "Ignores the order of style elements in pPr and rPr" do
             validator = DocxImportWorkflow.new(
-              FileLikeStringIO.new('/_', '_'),
+              get_r_file,
               logger,
               reporter,
               {}

@@ -28,8 +28,9 @@ class Repositext
           nil,
           "Reading AT files",
           options
-        ) do |contents, filename|
+        ) do |content_at_file|
           total_count += 1
+          filename = content_at_file.filename
           docx_input_filename = filename.gsub(content_base_dir, docx_import_base_dir)
                                         .gsub(/\.at/, '.docx.at')
           folio_input_filename = filename.gsub(content_base_dir, folio_import_base_dir)
@@ -125,10 +126,7 @@ class Repositext
           options['file_filter'],
           nil,
           "Reading data.json files",
-          options.merge(
-            use_new_r_file_api: true,
-            content_type: content_type,
-          )
+          options
         ) do |data_json_file|
           total_file_count += 1
           st_sync_commit = data_json_file.read_data['st_sync_commit']
@@ -170,15 +168,15 @@ class Repositext
           nil,
           "Reading AT files",
           options
-        ) do |contents, filename|
+        ) do |content_at_file|
           total_file_count += 1
-          mpen = contents.scan(/(\[[^\]]+\n[^\]]+\])/)
+          mpen = content_at_file.contents.scan(/(\[[^\]]+\n[^\]]+\])/)
           if mpen.any?
             mpen_files_count += 1
-            $stderr.puts " - #{ filename }"
+            $stderr.puts " - #{ content_at_file.filename }"
           end
           mpen.each do |match|
-            multi_para_editors_notes << { filename: filename, contents: match }
+            multi_para_editors_notes << { filename: content_at_file.filename, contents: match }
             $stderr.puts "   - #{ match.inspect }"
           end
         end
@@ -214,8 +212,8 @@ class Repositext
           nil,
           "Reading folio import warnings",
           options
-        ) do |contents, filename|
-          warnings = JSON.parse(contents)
+        ) do |json_file|
+          warnings = JSON.parse(json_file.contents)
           warnings.each do |warning|
             message_stub = warning['message'].split(':').first || ''
             uniq_warnings[message_stub] += 1
@@ -259,10 +257,10 @@ class Repositext
           nil,
           "Reading Content AT files",
           options
-        ) do |contents, filename|
+        ) do |content_at_file|
           file_count += 1
           # Extract words with oe
-          str_sc = Kramdown::Utils::StringScanner.new(contents)
+          str_sc = Kramdown::Utils::StringScanner.new(content_at_file.contents)
           while !str_sc.eos? do
             if(str_sc.skip_until(before_word_with_oe_regex))
               word_with_oe = str_sc.scan(word_with_oe_regex)
@@ -300,18 +298,18 @@ class Repositext
           nil,
           "Reading content AT files",
           options
-        ) do |contents, filename|
+        ) do |content_at_file|
           # parse AT, find all paras with q, analyze inner
           # Since the kramdown parser is specified as module in Rtfile,
           # I can't use the standard kramdown API:
           # `doc = Kramdown::Document.new(contents, :input => 'kramdown_repositext')`
           # We have to patch a base Kramdown::Document with the root to be able
           # to convert it.
-          root, _warnings = config.kramdown_parser(:kramdown).parse(contents)
+          root, _warnings = config.kramdown_parser(:kramdown).parse(content_at_file.contents)
           doc = Kramdown::Document.new('')
           doc.root = root
           misaligned_paras += doc.to_report_misaligned_question_paragraphs.map { |mp|
-            mp[:location] = filename
+            mp[:location] = content_at_file.filename
             mp
           }
           file_count += 1

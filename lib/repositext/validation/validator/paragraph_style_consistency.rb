@@ -29,7 +29,7 @@ class Repositext
           else
             Outcome.new(
               false, nil, [],
-              pclass_and_fspan_mismatches.map { |(line_number, error_attrs)|
+              pclass_and_fspan_mismatches.map { |(mismatch_location_attrs, error_attrs)|
                 Reportable.error(
                   [@file_to_validate.first.filename, line_number].compact,
                   error_attrs
@@ -48,7 +48,7 @@ class Repositext
         #     type: :p,
         #     paragraph_classes: ["normal", "first_par"],
         #     formatting_spans: [:italic, :smcaps],
-        #     line_number: 3,
+        #     line: 3,
         #   }
         def extract_pclasses_and_fspans(doc)
           kramdown_doc = Kramdown::Document.new(doc, input: 'KramdownRepositext')
@@ -286,8 +286,8 @@ class Repositext
             # Cast Diff::LCS::ContextChange to array!
             type, p_attrs, f_attrs = diff.to_a
             # Get detailed paragraph attrs for reporting
-            f_p_style_and_spans = f_pclasses_and_fspans[f_attrs.first]
-            p_p_style_and_spans = p_pclasses_and_fspans[p_attrs.first]
+            f_p_style_and_spans = f_pclasses_and_fspans[f_attrs.first] || {}
+            p_p_style_and_spans = p_pclasses_and_fspans[p_attrs.first] || {}
             # Skip any that are equal
             if '=' == type || ('' == f_attrs.last.to_s && '' == p_attrs.last.to_s)
               next

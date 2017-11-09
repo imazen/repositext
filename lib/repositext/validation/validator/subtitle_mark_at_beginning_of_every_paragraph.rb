@@ -11,9 +11,9 @@ class Repositext
 
         # Runs all validations for self
         def run
-          document_to_validate = @file_to_validate.read
+          content_at_file = @file_to_validate
           outcome = subtitle_mark_at_beginning_of_every_paragraph?(
-            document_to_validate
+            content_at_file
           )
           log_and_report_validation_step(outcome.errors, outcome.warnings)
         end
@@ -21,9 +21,10 @@ class Repositext
       private
 
         # Checks that every paragraph in content begins with a subtitle_mark
-        # @param content [String]
+        # @param content_at_file [RFile::ContentAt]
         # @return [Outcome]
-        def subtitle_mark_at_beginning_of_every_paragraph?(content)
+        def subtitle_mark_at_beginning_of_every_paragraph?(content_at_file)
+          content = content_at_file.contents
           # Early return if content doesn't contain any subtitle_marks
           return Outcome.new(true, nil)  if !content.index('@')
           case @options[:content_type]

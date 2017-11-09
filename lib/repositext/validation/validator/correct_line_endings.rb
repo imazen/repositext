@@ -7,13 +7,13 @@ class Repositext
       class CorrectLineEndings < Validator
 
         def run
-          document_to_validate = @file_to_validate.read
-          outcome = correct_line_endings?(document_to_validate)
+          content_at_file = @file_to_validate
+          outcome = correct_line_endings?(content_at_file)
           log_and_report_validation_step(outcome.errors, outcome.warnings)
         end
 
-        def correct_line_endings?(a_string)
-          if a_string.index("\r")
+        def correct_line_endings?(content_at_file)
+          if content_at_file.contents.index("\r")
             Outcome.new(
               false, nil, [],
               [

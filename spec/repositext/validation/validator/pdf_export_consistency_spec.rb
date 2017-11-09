@@ -109,10 +109,7 @@ class Repositext
             it "handles #{ pdf_raw_text.inspect }" do
               validator, _logger, _reporter = build_validator_logger_and_reporter(
                 PdfExportConsistency,
-                [
-                  FileLikeStringIO.new('_path', '_txt'),
-                  FileLikeStringIO.new('_path', '_txt'),
-                ]
+                get_r_file(sub_class: "Pdf")
               )
               errors = []
               warnings = []
@@ -151,10 +148,7 @@ class Repositext
             it "handles #{ pdf_raw_text.inspect }" do
               validator, _logger, _reporter = build_validator_logger_and_reporter(
                 PdfExportConsistency,
-                [
-                  FileLikeStringIO.new('_path', '_txt'),
-                  FileLikeStringIO.new('_path', '_txt'),
-                ]
+                get_r_file(sub_class: "Pdf")
               )
               errors = []
               warnings = []
@@ -213,10 +207,7 @@ class Repositext
             it "handles #{ pdf_raw_text.inspect }" do
               validator, _logger, _reporter = build_validator_logger_and_reporter(
                 PdfExportConsistency,
-                [
-                  FileLikeStringIO.new('_path', '_txt'),
-                  FileLikeStringIO.new('_path', '_txt'),
-                ]
+                get_r_file(sub_class: "Pdf")
               )
               validator.send(:sanitize_pdf_raw_text, pdf_raw_text).must_equal(xpect)
             end
@@ -243,10 +234,7 @@ class Repositext
             it "handles #{ pdf_raw_text.inspect }" do
               validator, _logger, _reporter = build_validator_logger_and_reporter(
                 PdfExportConsistency,
-                [
-                  FileLikeStringIO.new('_path', '_txt'),
-                  FileLikeStringIO.new('_path', '_txt'),
-                ]
+                get_r_file(sub_class: "Pdf")
               )
               validator.send(:sanitize_content_at_plain_text, pdf_raw_text).must_equal(xpect)
             end

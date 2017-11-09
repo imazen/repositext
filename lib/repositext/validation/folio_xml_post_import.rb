@@ -5,13 +5,13 @@ class Repositext
 
       # Specifies validations to run related to Folio Xml post import.
       def run_list
-        validate_files(:imported_repositext_files) do |path|
-          Validator::Utf8Encoding.new(File.open(path), @logger, @reporter, @options).run
+        validate_files(:imported_repositext_files) do |text_file|
+          Validator::Utf8Encoding.new(text_file, @logger, @reporter, @options).run
         end
-        validate_files(:imported_at_files) do |path|
+        validate_files(:imported_at_files) do |content_at_file|
           @options['run_options'] << 'kramdown_syntax_at-all_elements_are_inside_record_mark'
           Validator::KramdownSyntaxAt.new(
-            File.open(path),
+            content_at_file,
             @logger,
             @reporter,
             @options

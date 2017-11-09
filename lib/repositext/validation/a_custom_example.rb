@@ -6,8 +6,8 @@ class Repositext
       # Specify which validations to run.
       def run_list
         # File validations
-        all_plain_text_files(@file_pattern).each { |path|
-          Validator::Utf8Encoding.new(File.open(path), @logger, @reporter, @options).run
+        all_plain_text_files(@file_pattern).each { |r_file|
+          Validator::Utf8Encoding.new(r_file, @logger, @reporter, @options).run
         }
       end
 

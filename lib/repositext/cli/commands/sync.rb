@@ -20,10 +20,7 @@ class Repositext
           options['file_filter'],
           nil,
           "syncing file level data",
-          options.merge(
-            use_new_r_file_api: true,
-            content_type: content_type,
-          )
+          options
         ) do |content_at_file|
           content_at_file.update_file_level_data!(key_val_pairs)
         end
@@ -40,18 +37,13 @@ class Repositext
           ),
           /\.at\z/i,
           "Syncing subtitle_mark character positions from *.at to *.subtitle_markers.csv",
-          options.merge(input_is_binary: false)
-        ) do |contents, filename|
-          if contents.index('@')
+          options
+        ) do |content_at_file|
+          if content_at_file.contents.index('@')
             # This file contains subtitle_marks: Create subtitle_markers CSV file.
-            stm_csv_path = filename.gsub(/\.at\z/, '.subtitle_markers.csv')
-            previous_stm_csv = if File.exist?(stm_csv_path)
-              File.read(stm_csv_path)
-            else
-              nil
-            end
+            previous_stm_csv = content_at_file.corresponding_subtitle_markers_csv_file
             outcome = Repositext::Process::Sync::SubtitleMarkCharacterPositions.sync(
-              contents,
+              content_at_file.contents,
               previous_stm_csv,
               options['auto-insert-missing-subtitle-marks']
             )
@@ -86,10 +78,7 @@ class Repositext
           options['file_filter'],
           nil,
           "Reading content AT files",
-          options.merge(
-            use_new_r_file_api: true,
-            content_type: content_type,
-          )
+          options
         ) do |content_at_file|
           file_count += 1
           # Determine if we want symlink or not: Only if erp data for the file is present.
@@ -303,10 +292,7 @@ class Repositext
           options['file_filter'],
           nil,
           "Reading content AT files",
-          options.merge(
-            use_new_r_file_api: true,
-            content_type: content_type,
-          )
+          options
         ) do |content_at_file|
           file_count += 1
           # We want to sync the foreign file to the current primary

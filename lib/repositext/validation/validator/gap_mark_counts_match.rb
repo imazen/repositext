@@ -8,8 +8,8 @@ class Repositext
 
         # Runs all validations for self
         def run
-          filename_1, filename_2 = @file_to_validate
-          outcome = gap_mark_counts_match?(filename_1.read, filename_2.read)
+          file_1, file_2 = @file_to_validate
+          outcome = gap_mark_counts_match?(file_1, file_2)
           log_and_report_validation_step(outcome.errors, outcome.warnings)
         end
 
@@ -17,12 +17,12 @@ class Repositext
 
         # Checks if doc_1 and doc_2 contain the same number of gap_marks in each
         # line.
-        # @param [String] doc_1
-        # @param [String] doc_2
+        # @param r_file_1 [RFile]
+        # @param r_file_2 [RFile]
         # @return [Outcome]
-        def gap_mark_counts_match?(doc_1, doc_2)
-          doc_1_lines = doc_1.split("\n")
-          doc_2_lines = doc_2.split("\n")
+        def gap_mark_counts_match?(r_file_1, r_file_2)
+          doc_1_lines = r_file_1.split("\n")
+          doc_2_lines = r_file_2.split("\n")
 
           mismatching_lines = []
           doc_1_lines.each_with_index do |l1, idx|
@@ -43,7 +43,7 @@ class Repositext
             #   false, nil, [],
             #   [
             #     Reportable.error(
-            #       [@file_to_validate.last.path],
+            #       [@file_to_validate.last.filename],
             #       [
             #         'Gap_mark count mismatch',
             #         "file 1 contains #{ doc_1_count }, but file 2 contains #{ doc_2_count } gap_marks."

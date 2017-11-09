@@ -50,8 +50,11 @@ class Repositext
           options['file_filter'],
           "Exporting compare files for folio source",
           options.merge(:output_path_lambda => output_path_lambda)
-        ) do |contents, filename|
-          outcome = comparer.prepare_compare_file_for_folio_source(contents, filename)
+        ) do |txt_file|
+          outcome = comparer.prepare_compare_file_for_folio_source(
+            txt_file.contents,
+            txt_file.filename
+          )
           [outcome]
         end
 
@@ -76,8 +79,11 @@ class Repositext
           options['file_filter'],
           "Exporting compare files for content",
           options.merge(:output_path_lambda => output_path_lambda)
-        ) do |contents, filename|
-          outcome = comparer.prepare_compare_file_for_content(contents, filename)
+        ) do |content_at_file|
+          outcome = comparer.prepare_compare_file_for_content(
+            content_at_file.contents,
+            content_at_file.filename
+          )
           [outcome]
         end
 
@@ -113,12 +119,12 @@ class Repositext
           filename_2_proc,
           "Reading /compare/content/with_folio_source files",
           options
-        ) do |contents_1, filename_1, contents_2, filename_2|
+        ) do |txt_file_1, txt_file_2|
           outcome = Repositext::Process::Compare::RecordIdAndParagraphAlignment.compare(
-            contents_1,
-            filename_1,
-            contents_2,
-            filename_2,
+            txt_file_1.contents,
+            txt_file_1.filename,
+            txt_file_2.contents,
+            txt_file_2.filename,
             base_dir,
             report_name
           )

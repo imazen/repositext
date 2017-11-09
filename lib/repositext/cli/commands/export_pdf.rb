@@ -327,10 +327,7 @@ class Repositext
           output_base_dir,
           options['file_filter'],
           "Exporting AT files to #{ variant }",
-          options.merge(
-            use_new_r_file_api: true,
-            content_type: content_type,
-          )
+          options
         ) do |content_at_file|
           contents = content_at_file.contents
           filename = content_at_file.filename
