@@ -7,6 +7,7 @@ class Repositext
       # Run this migration after IDML has been imported and record_ids have
       # been merged.
       # This validation makes sure that no text was changed inadvertently.
+      # TODO: Convert to new RFile based API
       def run_list
         # File pairs
 

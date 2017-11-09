@@ -475,6 +475,9 @@ class Repositext
       # Key is that we need a specific list of files and not a pattern that matches
       # a group of files (e.g., just the year)
       def report_pdf_public_version_ids(options)
+        if options['skip-erp-api']
+          raise("\n\nERP API access is required for this command.\n\n".color(:red))
+        end
         # Validate that file-selector is given
         if options['file-selector'].blank? || !options['file-selector'][/\{[^\}]+\}/]
           raise ArgumentError.new(

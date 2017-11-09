@@ -27,6 +27,11 @@ class Repositext
 
       # Export AT files in `/content` to PDF book variant.
       def export_pdf_book(options)
+        if options['skip-erp-api']
+          raise(
+            "\n\nERP API access is required in order to export the pdf book variant.\n\n".color(:red)
+          )
+        end
         export_pdf_base(
           'pdf_book',
           options.merge(
@@ -251,25 +256,32 @@ class Repositext
           )
           rf.extract_product_identity_id.to_i
         }
-        erp_data = Services::ErpApi.call(
-          config.setting(:erp_api_protocol_and_host),
-          ENV['ERP_API_APPID'],
-          ENV['ERP_API_NAMEGUID'],
-          :get_pdf_public_versions,
-          {
-            languageids: [content_type.language_code_3_chars],
-            ids: file_pi_ids.join(',')
+        if options['skip-erp-api']
+          # Fake primary_title_and_public_version_ids
+          primary_titles_and_public_version_ids = Hash.new(
+            { primary_title: 'N/A', public_version_id: 'N/A' }
+          )
+        else
+          erp_data = Services::ErpApi.call(
+            config.setting(:erp_api_protocol_and_host),
+            ENV['ERP_API_APPID'],
+            ENV['ERP_API_NAMEGUID'],
+            :get_pdf_public_versions,
+            {
+              languageids: [content_type.language_code_3_chars],
+              ids: file_pi_ids.join(',')
+            }
+          )
+          Services::ErpApi.validate_product_identity_ids(erp_data, file_pi_ids)
+          primary_titles_and_public_version_ids = options[:primary_titles_override] || erp_data.inject({}) { |m,e|
+            pi_id = e['productidentityid'].to_s.rjust(4, '0')
+            m[pi_id] = {
+              primary_title: e['englishtitle'],
+              public_version_id: e['publicversionid']
+            }
+            m
           }
-        )
-        Services::ErpApi.validate_product_identity_ids(erp_data, file_pi_ids)
-        primary_titles_and_public_version_ids = options[:primary_titles_override] || erp_data.inject({}) { |m,e|
-          pi_id = e['productidentityid'].to_s.rjust(4, '0')
-          m[pi_id] = {
-            primary_title: e['englishtitle'],
-            public_version_id: e['publicversionid']
-          }
-          m
-        }
+        end
 
         input_base_dir = config.compute_base_dir(options['base-dir'] || :content_dir)
         input_file_selector = config.compute_file_selector(options['file-selector'] || :all_files)

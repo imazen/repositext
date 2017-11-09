@@ -207,6 +207,9 @@ class Repositext
       # Pulls data from ERP, creates data.json file if it doesn't exist and
       # adds/updates the setting.
       def sync_copyright_year_from_erp(options)
+        if options['skip-erp-api']
+          raise("\n\nERP API access is required for this command.\n\n".color(:red))
+        end
         # Compute list of all files matching file-selector
         file_list_pattern = config.compute_glob_pattern(
           options['base-dir'] || :content_dir,

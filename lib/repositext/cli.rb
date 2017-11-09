@@ -105,6 +105,10 @@ class Repositext
                  :type => :string,
                  :required => true,
                  :desc => 'Specifies which Rtfile to use. Defaults to the closest Rtfile found in the directory hierarchy.'
+    class_option :'skip-erp-api',
+                 :type => :boolean,
+                 :default => false,
+                 :desc => 'If true, skips requests to the ERP API, and will skip any functionality that depends on ERP data.'
     class_option :'skip-git-up-to-date-check',
                  :aliases => "-g",
                  :type => :boolean,
