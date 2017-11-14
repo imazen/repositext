@@ -6,8 +6,16 @@ class Repositext
       attr_accessor :location, :details, :level
 
       # Instantiates a new error instance
-      # @param location [Array<String>] the location of the reportable, from
-      #     more general to more specific. E.g., ['file', story x', line y']
+      # @param location [Hash{Symbol => Object}] the location of the reportable,
+      #   as a Hash with the following keys:
+      #   * :filename
+      #   * :line
+      #   * :column
+      #   * :context
+      #   * :corr_filename
+      #   * :corr_line
+      #   * :corr_column
+      #   * :corr_context
       # @param details [Array<String>] an array with information about the
       #     reportable, from more general to more specific. Follow this convention:
       #     1. error class as string
@@ -19,8 +27,16 @@ class Repositext
       end
 
       # Instantiates a new warning instance
-      # @param location [Array<String>] the location of the reportable, from
-      #     more general to more specific. E.g., ['file', story x', line y']
+      # @param location [Hash{Symbol => Object}] the location of the reportable,
+      #   as a Hash with the following keys:
+      #   * :filename
+      #   * :line
+      #   * :column
+      #   * :context
+      #   * :corr_filename
+      #   * :corr_line
+      #   * :corr_column
+      #   * :corr_context
       # @param details [Array<String>] an array with information about the
       #     reportable, from more general to more specific. Follow this convention:
       #     1. error class as string
@@ -32,8 +48,16 @@ class Repositext
       end
 
       # Instantiates a new stat instance
-      # @param location [Array<String>] the location of the reportable, from
-      #     more general to more specific. E.g., ['file', story x', line y']
+      # @param location [Hash{Symbol => Object}] the location of the reportable,
+      #   as a Hash with the following keys:
+      #   * :filename
+      #   * :line
+      #   * :column
+      #   * :context
+      #   * :corr_filename
+      #   * :corr_line
+      #   * :corr_column
+      #   * :corr_context
       # @param data [Object] typically an Array or Hash
       def self.stat(location, data)
         new(location, data, :stat)
@@ -41,8 +65,16 @@ class Repositext
 
       # Instantiates a new reportable instance. You should not call this directly
       # but use the `error` and `warning` class methods.
-      # @param location [Array<String>] the location of the reportable, from
-      #     more general to more specific. E.g., ['file', story x', line y']
+      # @param location [Hash{Symbol => Object}] the location of the reportable,
+      #   as a Hash with the following keys:
+      #   * :filename
+      #   * :line
+      #   * :column
+      #   * :context
+      #   * :corr_filename
+      #   * :corr_line
+      #   * :corr_column
+      #   * :corr_context
       # @param details [Array<String>] an array with information about the
       #     reportable, from more general to more specific. Follow this convention:
       #     1. error class as string
