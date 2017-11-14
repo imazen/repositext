@@ -47,7 +47,7 @@ class Repositext
               false, nil, [],
               diffs.map { |diff|
                 Reportable.error(
-                  [docx_file.filename],
+                  { filename: docx_file.filename },
                   ['Roundtrip comparison results in different content AT', diff]
                 )
               }

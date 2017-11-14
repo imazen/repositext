@@ -135,7 +135,7 @@ class Repositext
             case @options['validate_or_merge']
             when 'merge'
               # This is part of `merge` command, raise an exception if we find error
-              raise(InvalidCorrectionsFile.new((loc + desc).join("\n")))
+              raise(InvalidCorrectionsFile.new([loc.inspect] + desc).join("\n")))
             when 'validate'
               errors << Reportable.error(loc, desc)
             else
@@ -177,7 +177,7 @@ class Repositext
               case @options['validate_or_merge']
               when 'merge'
                 # This is part of `merge` command, raise an exception if we find error
-                raise(InvalidCorrection.new((loc + desc).join("\n")))
+                raise(InvalidCorrection.new([loc.inspect] + desc).join("\n")))
               when 'validate'
                 errors << Reportable.error(loc, desc)
               else
@@ -200,7 +200,7 @@ class Repositext
               case @options['validate_or_merge']
               when 'merge'
                 # This is part of `merge` command, raise an exception if we find error
-                raise(InvalidCorrection.new((loc + desc).join("\n")))
+                raise(InvalidCorrection.new([loc.inspect] + desc).join("\n")))
               when 'validate'
                 errors << Reportable.error(loc, desc)
               else
@@ -243,7 +243,7 @@ class Repositext
               case @options['validate_or_merge']
               when 'merge'
                 # This is part of `merge` command, raise an exception if we find error
-                raise(InvalidCorrection.new((loc + desc).join("\n")))
+                raise(InvalidCorrection.new([loc.inspect] + desc).join("\n")))
               when 'validate'
                 errors << Reportable.error(loc, desc)
               else
