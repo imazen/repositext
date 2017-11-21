@@ -120,7 +120,9 @@ class Repositext
       end
 
       def corresponding_subtitle_import_txt_filename
-        filename.sub(/(?<=\/)[a-z]{3}(?=[\d]{2}-[\d]{4})/, '') # remove lang code
+        # ImplementationTag #date_code_regex
+        filename.sub(/(?<=\/)#{ language.code_3_chars }(?=[\d]{2}-[\d]{4})/, '') # remove lang code 1
+                .sub(/(?<=\/)#{ language.code_3_chars }(?=cab)/, '') # remove lang code 2
                 .sub(/\/content\//, '/subtitle_import/') # update path
                 .sub(/\.at\z/, ".#{ language.code_2_chars }.txt") # update extension w/ lang code
       end
