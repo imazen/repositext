@@ -352,7 +352,7 @@
       \vspace*{4.6pt}%
       \setlength{\parskip}{0pt}
       \setlength{\parindent}{0pt}
-      <%= @polyglossia_default_language ? '' : '\titlefont' %>%
+      <%= @polyglossia_default_language ? '' : '\primaryfont' %>%
       \fontsize{8pt}{10.5pt}\selectfont
       <%= @id_write_to_primary %>
       \raggedright
@@ -368,7 +368,7 @@
       \vspace*{8.5pt}%
       \setlength{\parskip}{0pt}
       \setlength{\parindent}{0pt}
-      <%= @polyglossia_default_language ? '' : '\titlefont' %>%
+      <%= @polyglossia_default_language ? '' : '\primaryfont' %>%
       \fontsize{8pt}{10.5pt}\selectfont
       <%= @id_write_to_secondary %>
       \raggedright
@@ -877,7 +877,6 @@
 \newenvironment{RtSubTitle}
   {%
     \begin{center}
-      <%= @polyglossia_default_language ? '' : '\titlefont' %>%
       \fontsize{10pt}{10.5pt}\selectfont
   }
   {%
