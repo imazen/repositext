@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 
-  s.add_dependency('activesupport', '~> 5.1.2')
+  s.add_dependency('activesupport', '~> 5')
   s.add_dependency('alignment') # from github
   s.add_dependency('amatch', '~> 0.3.1')
   s.add_dependency('awesome_print', '~> 1.8.0')
@@ -41,7 +41,7 @@ Gem::Specification.new do |s|
   s.add_dependency('ruby-graphviz', '~> 1.2.3')
   s.add_dependency('rubyzip', '~> 1.2.1')
   s.add_dependency('rugged', '~> 0.25.1.1')
-  s.add_dependency('suspension', '1.1.0') # from local repo
+  s.add_dependency('suspension', '1.1.1') # from local repo
   s.add_dependency('thor', '~> 0.19.4')
   s.add_dependency('unicode_utils', '~> 1.4.0')
 

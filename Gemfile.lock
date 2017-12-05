@@ -18,14 +18,14 @@ PATH
 PATH
   remote: ../suspension
   specs:
-    suspension (1.1.0)
+    suspension (1.1.1)
       diff_match_patch_native
 
 PATH
   remote: .
   specs:
     repositext (0.0.1)
-      activesupport (~> 5.1.2)
+      activesupport (~> 5)
       alignment
       amatch (~> 0.3.1)
       awesome_print (~> 1.8.0)
@@ -48,7 +48,7 @@ PATH
       ruby-graphviz (~> 1.2.3)
       rubyzip (~> 1.2.1)
       rugged (~> 0.25.1.1)
-      suspension (= 1.1.0)
+      suspension (= 1.1.1)
       thor (~> 0.19.4)
       unicode_utils (~> 1.4.0)
 
