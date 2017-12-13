@@ -146,12 +146,21 @@ class Repositext
           options
         ) do |content_at_file|
           # NOTE: When calling this as part of an import (e.g., IDML), content_at_file
-          # is a temporary content_at file with extension `*.idml.at`. We need
-          # to get the content AT file in the `content` directory, and then
-          # get the corresponding primary content AT file from there.
-          # We can call corresponding_content_at_file here for all cases since
-          # it will point to itself if it is already the one in the `content` dir.
-          corr_content_at_file = content_at_file.corresponding_content_at_file
+          # is a temporary content AT file in the `idml_import` folder with
+          # extension `*.idml.at`. We need to get the content AT file in the
+          # `content` directory, and then get the corresponding primary content
+          # AT file from there. We can call corresponding_content_at_file here
+          # for all cases since it will point to itself if it is already the one
+          # in the `content` dir.
+          # NOTE: When initially importing an IDML file, the proper content_at
+          # file does not exist yet, so we just create a dummy one to get the
+          # corresponding_primary_filename
+          corr_content_at_file = RFile::ContentAt.new(
+            '_',
+            content_at_file.language,
+            content_at_file.corresponding_content_at_filename,
+            content_at_file.content_type
+          )
           outcome = Repositext::Process::Fix::InsertRecordMarkIntoAllAtFiles.fix(
             content_at_file.contents,
             content_at_file.filename,
