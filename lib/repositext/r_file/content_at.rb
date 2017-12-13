@@ -4,6 +4,9 @@ class Repositext
     class ContentAt < RFile
 
       include FollowsStandardFilenameConvention
+      # We need next line to resolve IDML import content AT to proper content AT file:
+      # `/idml_import/.../*.idml.at` => `/content/.../*.at`
+      include HasCorrespondingContentAtFile
       include HasCorrespondingDataJsonFile
       include HasCorrespondingPrimaryFile
 

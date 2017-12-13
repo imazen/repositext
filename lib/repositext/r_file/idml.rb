@@ -6,8 +6,6 @@ class Repositext
 
       include FollowsStandardFilenameConvention
       include HasCorrespondingContentAtFile
-      include HasCorrespondingPrimaryContentAtFile
-      include HasCorrespondingPrimaryFile
       include IsBinary
 
     end
