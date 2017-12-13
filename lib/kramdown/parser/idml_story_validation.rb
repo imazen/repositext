@@ -54,11 +54,11 @@ module Kramdown
       def validate_presence_of_character_style(kd_el, xml_node)
         if 'CharacterStyle/$ID/[No character style]' == xml_node['AppliedCharacterStyle']
           @validation_errors << ::Repositext::Validation::Reportable.error(
-            [
-              @validation_file_descriptor,
-              sprintf("story %5s", story_name_for_xml_node(xml_node)),
-              sprintf("line %5s", xml_node.line)
-            ],
+            {
+              filename: @validation_file_descriptor,
+              line: xml_node.line,
+              context: sprintf("story %5s", story_name_for_xml_node(xml_node)),
+            },
             [
               'Invalid character style',
               "'CharacterStyle/$ID/[No character style]'"
@@ -74,11 +74,11 @@ module Kramdown
       def validate_presence_of_paragraph_style(kd_el, xml_node)
         if 'ParagraphStyle/$ID/[No paragraph style]' == xml_node['AppliedParagraphStyle']
           @validation_errors << ::Repositext::Validation::Reportable.error(
-            [
-              @validation_file_descriptor,
-              sprintf("story %5s", story_name_for_xml_node(xml_node)),
-              sprintf("line %5s", xml_node.line)
-            ],
+            {
+              filename: @validation_file_descriptor,
+              line: xml_node.line,
+              context: sprintf("story %5s", story_name_for_xml_node(xml_node)),
+            },
             [
               'Invalid paragraph style',
               "'ParagraphStyle/$ID/[No paragraph style]'"
@@ -93,11 +93,11 @@ module Kramdown
         if !::Repositext::Validation::Validator::KramdownSyntaxAt.whitelisted_kramdown_features.include?(kd_el.type)
           st, li = (lo = kd_el.options[:location]) && lo.values_at(:story, :line)
           @validation_errors << Reportable.error(
-            [
-              @validation_file_descriptor,
-              sprintf("story %5s", st),
-              sprintf("line %5s", li)
-            ],
+            {
+              filename: @validation_file_descriptor,
+              line: li,
+              context: sprintf("story %5s", st),
+            },
             ['Invalid kramdown feature', ":#{ kd_el.type }"]
           )
         end
@@ -127,11 +127,11 @@ module Kramdown
         )
           st, li = (lo = kd_el.options[:location]) && lo.values_at(:story, :line)
           @validation_errors << ::Repositext::Validation::Reportable.error(
-            [
-              @validation_file_descriptor,
-              sprintf("story %5s", st),
-              sprintf("line %5s", li)
-            ],
+            {
+              filename: @validation_file_descriptor,
+              line: li,
+              context: sprintf("story %5s", st),
+            },
             ['Invalid class name', "#{ klasses }", "on element #{ kd_el.type}"]
           )
         end
