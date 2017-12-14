@@ -22,7 +22,19 @@ class Repositext
             to_subtitles
           )
           # Join subtitle fragments into single content string
-          foreign_subtitles_with_content.map { |e| e.content }.join
+          r = foreign_subtitles_with_content.map { |e| e.content }.join
+          # Clean up subtitle_mark placement
+          adjust_stmp_o = Process::Fix::AdjustSubtitleMarkPositions.fix(
+            r,
+            foreign_content_at_file.language
+          )
+          if adjust_stmp_o.success?
+            # Return string with adjusted subtitle_marks
+            adjust_stmp_o.result
+          else
+            raise "Handle this: #{ adjust_stmp_o.inspect }"
+          end
+
         end
 
       private
