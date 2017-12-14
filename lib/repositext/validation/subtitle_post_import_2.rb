@@ -7,6 +7,14 @@ class Repositext
       # Specifies validations to run after subtitle/subtitle_tagging import.
       def run_list
 
+        # Single files
+
+        validate_files(:content_at_files) do |content_at_file|
+          Validator::SubtitleMarkSyntax.new(
+            content_at_file, @logger, @reporter, @options.merge(:content_type => :content)
+          ).run
+        end
+
         # File pairs
 
         # Validate that subtitle_mark counts match between content_at and subtitle marker csv files
