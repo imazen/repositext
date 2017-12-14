@@ -8,7 +8,15 @@ class Repositext
 
         describe TransferStsFromFAlignedSentences2FPlainText do
 
-          let(:default_split_instance) { Split::Subtitles.new('_', '_') }
+          let(:default_language) { Repositext::Language::Generic.new }
+          let(:default_content_at_file) {
+            RFile::ContentAt.new('_contents', default_language, '_filename')
+          }
+          let(:default_split_instance) {
+            # We provide a proper RFile for foreign so that we can access its
+            # language attribute for text transformations.
+            Split::Subtitles.new('_', default_content_at_file)
+          }
 
           describe '#transfer_sts_from_sentences_to_plain_text' do
             [
@@ -231,7 +239,8 @@ class Repositext
             ].each do |(desc, f_pt, f_s_confs, xpect)|
               it "handles #{ desc }" do
                 default_split_instance.post_process_f_plain_text(
-                  f_pt, f_s_confs
+                  f_pt,
+                  f_s_confs
                 ).result.must_equal(xpect)
               end
             end

@@ -332,25 +332,17 @@ class Repositext
               end
 
               # Clean up general subtitle_mark placement
-
-              # Move subtitle marks to beginning of words
-              # "word.@ word" => "word. @word"
-              pt_line.gsub!(/@ (?=\S)/, ' @')
-
-              # Move spaces inside subtitle_marker sequences to beginning of the
-              # sequence "word.@@@@@ @word" => "word. @@@@@@word"
-              pt_line.gsub!(/(@+) (@+)/, ' \1\2')
-
-              # Move subtitle_marks to the outside of closing quote marks
-              # "word.@” word" => "word.” @word"
-              pt_line.gsub!(/@” (?=\w)/, '” @')
-
-              # Move subtitle_marks to the outside of closing parens
-              # "word.@) word" => "word.) @word"
-              pt_line.gsub!(/@\) (?=\w)/, ') @')
-
-              puts "  new pt_line: #{ pt_line.inspect }"  if debug
-              p_f_pt_lines << pt_line
+              adjust_stmp_o = Process::Fix::AdjustSubtitleMarkPositions.fix(
+                pt_line,
+                @f_content_at_file.language
+              )
+              if adjust_stmp_o.success?
+                new_pt_line = adjust_stmp_o.result
+                puts "  new pt_line: #{ new_pt_line.inspect }"  if debug
+                p_f_pt_lines << new_pt_line
+              else
+                raise "Handle this: #{ adjust_stmp_o.inspect }"
+              end
             }
 
             Outcome.new(true, [p_f_pt_lines.join("\n\n"), f_st_confs])

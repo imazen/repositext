@@ -20,7 +20,7 @@ class Repositext
               if applicable_st_ops_for_file.any?
                 # An st_ops_for_file exists. That means the file is being synced.
                 # NOTE: Not sure why we're passing applicable_st_ops_for_file
-                # as an array as their should really be only one.
+                # as an array as there should really be only one.
 
                 # Iterate over st_ops and incrementally update both content and data
                 found_st_ops = false
