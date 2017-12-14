@@ -37,6 +37,14 @@ class Repositext
         RepositorySet.new(Repositext::PARENT_DIR).git_fetch_and_pull(:all_content_repos)
       end
 
+      # Runs `rt fix add_first_par_class` on all content repos
+      def git_repo_fix_add_first_par_class(options)
+        RepositorySet.new(Repositext::PARENT_DIR).fix_add_first_par_class(
+          :all_content_repos,
+          content_type
+        )
+      end
+
       # Runs `rt fix add_initial_data_json_file` on all content repos
       def git_repo_fix_add_initial_data_json_file(options)
         RepositorySet.new(Repositext::PARENT_DIR).fix_add_initial_data_json_file(

@@ -64,6 +64,10 @@ class Repositext
       run_repositext_command(repo_set_spec, "rt #{ content_type.name } export pdf_book")
     end
 
+    def fix_add_first_par_class(repo_set_spec, content_type)
+      run_repositext_command(repo_set_spec, "rt #{ content_type.name } fix add_first_par_class")
+    end
+
     def fix_add_initial_data_json_file(repo_set_spec, content_type)
       run_repositext_command(repo_set_spec, "rt #{ content_type.name } fix add_initial_data_json_file")
     end
