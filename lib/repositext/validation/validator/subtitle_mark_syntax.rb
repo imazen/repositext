@@ -49,8 +49,8 @@ class Repositext
             if para =~ /\{[^\}]*@[^\}]*\}/
               r << ["Subtitle mark inside IAL:", line_idx + 1, para]
             end
-            if para =~ /\([^\)]*@[^\)]*\)/
-              r << ["Subtitle mark inside parenthesis:", line_idx + 1, para]
+            if para =~ /\(@|@\)/
+              r << ["Subtitle mark on wrong side of parens:", line_idx + 1, para]
             end
           }
           r

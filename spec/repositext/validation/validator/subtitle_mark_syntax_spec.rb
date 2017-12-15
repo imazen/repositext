@@ -47,19 +47,14 @@ class Repositext
               [["Subtitle mark inside IAL:", 1, "word word\n{: .@normal}"]]
             ],
             [
-              'Subtitle mark inside parenthesis 1',
+              'Subtitle mark inside opening parens',
               "word (@word word) word",
-              [["Subtitle mark inside parenthesis:", 1, "word (@word word) word"]]
+              [["Subtitle mark on wrong side of parens:", 1, "word (@word word) word"]]
             ],
             [
-              'Subtitle mark inside parenthesis 2',
-              "word (word @word) word",
-              [["Subtitle mark inside parenthesis:", 1, "word (word @word) word"]]
-            ],
-            [
-              'Subtitle mark inside parenthesis 3',
+              'Subtitle mark inside closing parens',
               "word (word word@) word",
-              [["Subtitle mark inside parenthesis:", 1, "word (word word@) word"]]
+              [["Subtitle mark on wrong side of parens:", 1, "word (word word@) word"]]
             ],
           ].each do |description, test_string, xpect|
             it "handles #{ description }" do
