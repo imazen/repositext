@@ -14,7 +14,7 @@ class Repositext
           content_at_file.corresponding_gap_mark_tagging_import_file
         }
         # Run pairwise validation
-        validate_file_pairs(:content_at_files, gi_file_name_proc) do |content_at_file, gap_mark_tagging_import_file|
+        validate_file_pairs(:content_at_files, gi_file_proc) do |content_at_file, gap_mark_tagging_import_file|
           Validator::GapMarkTaggingImportConsistency.new(
             [content_at_file, gap_mark_tagging_import_file],
             @logger,

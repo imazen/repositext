@@ -20,8 +20,8 @@ class Repositext
           # gap_mark_tagging_import files
           content_at_file, gap_mark_tagging_import_file = @file_to_validate
           outcome = contents_match?(
-            content_at_file.read,
-            gap_mark_tagging_import_file.read
+            content_at_file.contents,
+            gap_mark_tagging_import_file.contents
           )
           log_and_report_validation_step(outcome.errors, outcome.warnings)
         end

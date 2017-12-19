@@ -53,7 +53,7 @@ class Repositext
       end
 
       def corresponding_gap_mark_tagging_import_filename
-        filename.sub(/\/content\//, '/gap_mark_tagging/') # update path
+        filename.sub(/\/content\//, '/gap_mark_tagging_import/') # update path
                 .sub(/\.at\z/, '.gap_mark_tagging.txt') # update extension
       end
 
