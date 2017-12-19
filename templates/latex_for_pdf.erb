@@ -929,6 +929,8 @@
       \begin{spacing}{1.2311}
         <%= @polyglossia_default_language ? '' : '\titlefont' %>%
         \fontsize{16pt}{19.2pt}\selectfont
+        \setlength{\lineskiplimit}{-100pt} % This setting keeps latex from automatically stretching linespacing when characters may overlap.
+        \setlength{\parskip}{0pt plus 0pt minus 0pt} % to stop the vert space between title and first paragraph from varying
   }
   {%
       \end{spacing}

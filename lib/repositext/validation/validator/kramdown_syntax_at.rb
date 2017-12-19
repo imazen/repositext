@@ -319,8 +319,8 @@ class Repositext
               (parent_p_el = el_stack.reverse.detect { |a_el| :p == a_el.type }) &&
               parent_p_el.has_class?('scr')
             )
-              # Exception: Inside .scr paragraph: Only check for space and elipsis
-              report_error = [' ', '…'].include?(pt)
+              # Exception: Inside .scr paragraph: Only check for space
+              report_error = [' '].include?(pt)
             elsif el.has_class?('line_break')
               # *.*{: .line_break} is legitimate, don't report as error
               report_error = false
