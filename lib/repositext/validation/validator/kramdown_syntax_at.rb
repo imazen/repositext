@@ -244,6 +244,33 @@ class Repositext
               @kpn_tracker = l_kpn
             end
           end
+          # Validates that record ids are formatted correctly
+          l_id = el.attr['id']
+          if '' == l_id.to_s.strip
+            # Record ID is missing
+            errors << Reportable.error(
+              {
+                filename: content_at_file.filename,
+                line: el.options[:location],
+              },
+              [
+                'Record ID is missing',
+              ]
+            )
+          elsif l_id !~ /\Arid-[\dABC]{8}\z/ # matches "rid-55010139"
+            # Invalid Record ID
+            errors << Reportable.error(
+              {
+                filename: content_at_file.filename,
+                line: el.options[:location],
+              },
+              [
+                'Record ID is invalid',
+                "Invalid record ID: #{ l_id.inspect }",
+              ]
+            )
+          end
+
           # Validates that all p.song and p.song_break paragraphs are preceded by p.stanza,
           # p.song or p.song_break only. We assume that every p.song is a direct child of a
           # :record_mark
