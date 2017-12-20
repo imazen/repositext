@@ -65,7 +65,7 @@ class Repositext
           {
             exceptions: [],
             has_erp_data: true,
-            has_id_parts: true,
+            has_id_titles: true,
             is_primary: true,
             raw: {
               content: {
@@ -101,7 +101,7 @@ class Repositext
           {
             exceptions: [],
             has_erp_data: true,
-            has_id_parts: true,
+            has_id_titles: true,
             is_primary: true,
             raw: {
               content: {
@@ -203,7 +203,7 @@ class Repositext
           {
             exceptions: [],
             has_erp_data: true,
-            has_id_parts: true,
+            has_id_titles: true,
             is_primary: false,
             raw: {
               content: {
@@ -1064,7 +1064,7 @@ class Repositext
             [
               "Reports error if title from id is missing",
               {
-                has_id_parts: true,
+                has_id_titles: true,
                 exceptions: [],
                 prepared: {
                   content: { title_for_id: 'Title ID' },
@@ -1081,7 +1081,7 @@ class Repositext
             [
               "Reports error if titles are different",
               {
-                has_id_parts: true,
+                has_id_titles: true,
                 exceptions: [],
                 prepared: {
                   content: { title_for_id: "Title ID" },
@@ -1122,7 +1122,7 @@ class Repositext
               "Reports error on foreign if primary_title from id is missing",
               {
                 has_erp_data: true,
-                has_id_parts: true,
+                has_id_titles: true,
                 is_primary: false,
                 exceptions: [],
                 prepared: {
@@ -1142,7 +1142,7 @@ class Repositext
               "Reports error on foreign if primary_title from erp is missing",
               {
                 has_erp_data: true,
-                has_id_parts: true,
+                has_id_titles: true,
                 is_primary: false,
                 exceptions: [],
                 prepared: {
@@ -1183,7 +1183,7 @@ class Repositext
             [
               "Reports error if date code from id is missing",
               {
-                has_id_parts: true,
+                has_id_titles: true,
                 is_primary: true,
                 exceptions: [],
                 prepared: {
@@ -1207,7 +1207,7 @@ class Repositext
             [
               "Reports error if date codes from filename and id are different",
               {
-                has_id_parts: true,
+                has_id_titles: true,
                 is_primary: true,
                 exceptions: [],
                 prepared: {
@@ -1231,7 +1231,7 @@ class Repositext
             [
               "Reports error if language code from id is missing (foreign only)",
               {
-                has_id_parts: true,
+                has_id_titles: true,
                 is_primary: false,
                 exceptions: [],
                 prepared: {
@@ -1255,7 +1255,7 @@ class Repositext
             [
               "Reports error if language codes from id and filename are different (foreign only)",
               {
-                has_id_parts: true,
+                has_id_titles: true,
                 is_primary: false,
                 exceptions: [],
                 prepared: {

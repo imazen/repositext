@@ -10,19 +10,19 @@ class Repositext
     class ExtractContentAtIdParts
 
       # @param content_at [String]
-      def self.call(content_at)
-        new(content_at).call
+      def self.call(content_at, parts_to_extract=nil)
+        new(content_at, parts_to_extract).call
       end
 
       # @param content_at [String]
-      def initialize(content_at)
+      def initialize(content_at, parts_to_extract)
         @content_at = content_at
+        @parts_to_extract = parts_to_extract || %w[id_title1 id_title2 id_paragraph]
       end
 
       # @return Hash with keys for each part found
       def call
-        parts_to_extract = %w[id_title1 id_title2 id_paragraph]
-        parts_collector = parts_to_extract.inject({}) { |m,part_class|
+        parts_collector = @parts_to_extract.inject({}) { |m,part_class|
           found_part = @content_at[/^[^\n]+(?=\n\{: \.#{ part_class }\})/]
           if found_part
             m[part_class] ||= []

@@ -47,7 +47,7 @@ class Repositext
           val_attrs = {
             exceptions: @options['validator_exceptions'],
             has_erp_data: nil,
-            has_id_parts: nil,
+            has_id_titles: nil,
             is_primary: content_at_file.is_primary?,
             raw: {
               content: {
@@ -198,17 +198,21 @@ class Repositext
         end
 
         def extract_raw_attrs_id!(content_at_file, val_attrs)
+          # We are concerned with id_titles only in this validator, so we
+          # ignore the presence of id_paragraph when determining if a file has
+          # id_parts.
           id_parts = Services::ExtractContentAtIdParts.call(
-            content_at_file.contents
+            content_at_file.contents,
+            %w[id_title1 id_title2]
           ).result
           if id_parts.any?
-            val_attrs[:has_id_parts] = true
+            val_attrs[:has_id_titles] = true
             val_attrs[:raw][:id] = {
               id_title1: id_parts['id_title1'],
               id_title2: id_parts['id_title2'],
             }
           else
-            val_attrs[:has_id_parts] = false
+            val_attrs[:has_id_titles] = false
           end
           true
         end
@@ -277,7 +281,7 @@ class Repositext
         end
 
         def prepare_validation_attrs_id!(content_at_file, val_attrs)
-          return true  if !val_attrs[:has_id_parts]
+          return true  if !val_attrs[:has_id_titles]
           ra = val_attrs[:raw][:id]
           r = {}
           if val_attrs[:is_primary]
@@ -598,7 +602,7 @@ class Repositext
           pa_id = val_attrs[:prepared][:id]
 
           # Compare ID title with content
-          if val_attrs[:has_id_parts]
+          if val_attrs[:has_id_titles]
             if '' == pa_id[:title].to_s
               errors << Reportable.error(
                 { filename: @file_to_validate.filename },
@@ -621,7 +625,7 @@ class Repositext
           pa_id = val_attrs[:prepared][:id]
 
           # Compare primary ID title with ERP for foreign files only
-          if !val_attrs[:is_primary] && val_attrs[:has_id_parts]
+          if !val_attrs[:is_primary] && val_attrs[:has_id_titles]
             if '' == pa_id[:primary_title].to_s
               errors << Reportable.error(
                 { filename: @file_to_validate.filename },
@@ -653,7 +657,7 @@ class Repositext
           pa_id = val_attrs[:prepared][:id]
 
           # Compare ID datecode with filename (primary and foreign)
-          if val_attrs[:has_id_parts]
+          if val_attrs[:has_id_titles]
             if '' == pa_id[:date_code].to_s
               errors << Reportable.error(
                 { filename: @file_to_validate.filename },
@@ -671,7 +675,7 @@ class Repositext
           end
 
           # Compare ID language code with filename (foreign only)
-          if !val_attrs[:is_primary] && val_attrs[:has_id_parts]
+          if !val_attrs[:is_primary] && val_attrs[:has_id_titles]
             if '' == pa_id[:language_code].to_s
               errors << Reportable.error(
                 { filename: @file_to_validate.filename },
