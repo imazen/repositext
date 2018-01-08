@@ -165,12 +165,14 @@ class Repositext
 
             # compare the two counts
             if content_at_count != stm_csv_count
-              raise([
-                'Subtitle_mark count mismatch',
-                "content_at contains #{ content_at_count }, ",
-                "however subtitle_marker_csv contains #{ stm_csv_count } ",
-                "subtitle_marks.",
-              ].join.color(:red))
+              @files_with_subtitle_count_mismatch << {
+                file: f_content_at_file,
+                message: [
+                  "content_at contains #{ content_at_count }, ",
+                  "however subtitle_marker_csv contains #{ stm_csv_count } ",
+                  "subtitle_marks.",
+                ].join,
+              }
             end
             true
           end

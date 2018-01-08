@@ -66,6 +66,10 @@ class Repositext
           # Container for any files that were autosplit, grouped by language
           # { eng: ['54-0403', '65-0101'] }
           @auto_split_files_collector = Hash.new([])
+          # Container for any files that were synced, however their subtitle
+          # counts are mismatched, and they require manual fixing.
+          # See issue #492.
+          @files_with_subtitle_count_mismatch = []
         end
 
         def sync

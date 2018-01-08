@@ -50,6 +50,15 @@ class Repositext
             else
               puts "   - No files raised exceptions during autosplit".color(:green)
             end
+            if @files_with_subtitle_count_mismatch.any?
+              puts "   - The following #{ @files_with_subtitle_count_mismatch.count } files were synced, however their subtitle counts don't match:".color(:red)
+              @files_with_subtitle_count_mismatch.each { |f_attrs|
+                print "     - #{ f_attrs[:file].repo_relative_path(true) }: ".ljust(52).color(:red)
+                puts "#{ f_attrs[:message] }".color(:red)
+              }
+            else
+              puts "   - All synced files have matching subtitle counts.".color(:green)
+            end
             true
           end
 
