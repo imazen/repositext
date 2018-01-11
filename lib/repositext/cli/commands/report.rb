@@ -306,7 +306,16 @@ class Repositext
             else
               # st ops and content_changes
               files_found_count += 1
-              fwstrr[:subtitles_not_exported][:st_ops_and_content_changes] << [filename, st_tr_cnt]
+              # Add subtitle index + type of change to this file group
+              # st_tr: { "6938579" => ["content_change"], "2756941" => ["content_change"] }
+              subtitles = data_json_file.corresponding_content_at_file.subtitles
+              st_tr_attrs = st_tr.map { |stid, ops|
+                st = subtitles.detect { |e| stid == e.persistent_id }
+                # st may not exist if it was deleted via merge or delete operation.
+                idx = ((st && st.tmp_index) || '[N/A]').to_s.rjust(5, ' ')
+                { index: idx, operations: ops.join(', ') }
+              }
+              fwstrr[:subtitles_not_exported][:st_ops_and_content_changes] << [filename, st_tr_cnt, st_tr_attrs]
               desc = "   - subtitles have not been exported, #{ st_tr_cnt } st_ops and content_changes to review".color(:blue)
             end
           end
@@ -317,7 +326,13 @@ class Repositext
           $stderr.puts '-' * 80
           if(fs = fwstrr[:subtitles_not_exported][:st_ops_and_content_changes]).any?
             $stderr.puts "  With st ops (subtitles not exported yet):".color(:blue)
-            fs.each { |(fn, cnt)| $stderr.puts "   * #{ fn } (#{ cnt })" }
+            fs.each { |(fn, cnt, sts_tr)|
+
+              $stderr.puts "   * #{ fn } (#{ cnt })"
+              sts_tr.each { |st_tr|
+                $stderr.puts "         - index #{ st_tr[:index] }: #{ st_tr[:operations] }"
+              }
+            }
           end
           if(fs = fwstrr[:subtitles_not_exported][:content_changes_only]).any?
             $stderr.puts "  With content_changes (subtitles not exported yet):".color(:blue)
