@@ -26,6 +26,7 @@ class Repositext
           after: hash[:after],
           before: hash[:before],
           index: hash[:index],
+          is_record_boundary: hash[:is_record_boundary],
         }
       )
     end
@@ -74,6 +75,10 @@ class Repositext
 
     def tmp_index
       tmp_attrs[:index]
+    end
+
+    def tmp_is_record_boundary
+      tmp_attrs[:is_record_boundary]
     end
 
     # Returns a Hash describing self

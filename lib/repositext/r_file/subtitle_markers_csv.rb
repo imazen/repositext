@@ -13,17 +13,23 @@ class Repositext
       # @return [Array<Repositext::Subtitle>]
       def subtitles
         idx = 0
+        current_record_id = nil
         csv.to_a.map { |row|
+          new_record_id = row['recordId']
+          is_record_boundary = (new_record_id != current_record_id)
+          current_record_id = new_record_id
           Subtitle.new({
             relative_milliseconds: row['relativeMS'],
             samples: row['samples'],
             char_length: row['charLength'],
             persistent_id: row['persistentId'],
-            record_id: row['recordId'],
-            tmp_attrs: { index: idx += 1 },
+            record_id: new_record_id,
+            tmp_attrs: { index: idx += 1,
+                         is_record_boundary: is_record_boundary },
           })
         }
       end
+
 
       # @param new_subtitle_markers_data [Array<Hash>]
       #    [

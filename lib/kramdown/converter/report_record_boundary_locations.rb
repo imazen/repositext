@@ -34,6 +34,7 @@ module Kramdown
           containment = { type: :span, current_child_index: 0 }
         when :subtitle_mark
           subtitle = @subtitles.shift
+          # TODO: Use new subtitle.tmp_is_record_boundary
           is_record_boundary = (subtitle.record_id != @current_record_id)
           is_first_child = (1 == @containment_stack.last[:current_child_index])
           if is_record_boundary
