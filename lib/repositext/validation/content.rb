@@ -42,6 +42,9 @@ class Repositext
           Validator::KramdownSyntaxAt.new(
             content_at_file, @logger, @reporter, @options
           ).run
+          Validator::SubtitleMarkSyntax.new(
+            content_at_file, @logger, @reporter, @options
+          ).run
 
           if @options['skip-erp-api']
             @logger.warning("Skipping Validator::TitleConsistency since ERP data is not available.")
