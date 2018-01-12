@@ -280,6 +280,14 @@ class Repositext
         subtitle_attrs = if options[:subtitle_attrs_override]
           options[:subtitle_attrs_override]
         elsif (csmcf = corresponding_subtitle_markers_csv_file)
+          # We found csmcf either directly on primary or via symlink on foreign
+          csmcf.subtitles
+        elsif(
+          !is_primary? &&
+          (cpf = corresponding_primary_file) &&
+          (csmcf = cpf.corresponding_subtitle_markers_csv_file)
+        )
+          # We found csmcf via corresponding primary content at file
           csmcf.subtitles
         else
           []
