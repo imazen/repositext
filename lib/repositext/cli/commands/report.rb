@@ -288,15 +288,29 @@ class Repositext
           if subtitles_have_been_exported
             # No further distinction required
             files_found_count += 1
-            fwstrr[:subtitles_exported] << [filename, st_tr_cnt]
+            if st_tr.any? { |e| ['all', ['autosplit']] == e }
+              # all sts need to be reviewed, don't print details
+              fwstrr[:subtitles_exported] << [filename, 'all', []]
+            else
+              # only some sts need to be reviewed, print details
+              # Add subtitle index + type of change to this file group
+              # st_tr: { "6938579" => ["content_change"], "2756941" => ["content_change"] }
+              subtitles = data_json_file.corresponding_content_at_file.subtitles
+              st_tr_attrs = st_tr.map { |stid, ops|
+                st = subtitles.detect { |e| stid == e.persistent_id }
+                # st may not exist if it was deleted via merge or delete operation.
+                idx = ((st && st.tmp_index) || '[N/A]').to_s.rjust(5, ' ')
+                { index: idx, operations: ops.join(', ') }
+              }
+              fwstrr[:subtitles_exported] << [filename, st_tr_cnt, st_tr_attrs]
+            end
             desc = "   - subtitles have been exported, has #{ st_tr_cnt } subtitles to review".color(:blue)
           else
             # subtitles have not been exported, further distinguish kinds of changes
             if data_json_file.is_autosplit?
               # This file is autosplit
               files_found_count += 1
-              st_tr_cnt = 'all'
-              fwstrr[:subtitles_not_exported][:autosplit] << [filename, st_tr_cnt]
+              fwstrr[:subtitles_not_exported][:autosplit] << [filename, 'all']
               desc = "   - subtitles have not been exported, was autosplit".color(:blue)
             elsif st_tr.all? { |stid,ops| ops.all? { |op| 'content_change' == op } }
               # content_changes only
@@ -327,7 +341,6 @@ class Repositext
           if(fs = fwstrr[:subtitles_not_exported][:st_ops_and_content_changes]).any?
             $stderr.puts "  With st ops (subtitles not exported yet):".color(:blue)
             fs.each { |(fn, cnt, sts_tr)|
-
               $stderr.puts "   * #{ fn } (#{ cnt })"
               sts_tr.each { |st_tr|
                 $stderr.puts "         - index #{ st_tr[:index] }: #{ st_tr[:operations] }"
@@ -344,7 +357,13 @@ class Repositext
           end
           if(fs = fwstrr[:subtitles_exported]).any?
             $stderr.puts "  Subtitles already exported:".color(:blue)
-            fs.each { |(fn, cnt)| $stderr.puts "   * #{ fn } (#{ cnt })" }
+            # fs.each { |(fn, cnt)| $stderr.puts "   * #{ fn } (#{ cnt })" }
+            fs.each { |(fn, cnt, sts_tr)|
+              $stderr.puts "   * #{ fn } (#{ cnt })"
+              sts_tr.each { |st_tr|
+                $stderr.puts "         - index #{ st_tr[:index] }: #{ st_tr[:operations] }"
+              }
+            }
           end
           $stderr.puts
         end
