@@ -45,8 +45,9 @@ class Repositext
         # @param subtitles [Array<Subtitle>] the content AT file's subtitles
         def find_invalid_subtitle_marks(content, subtitles)
           r = []
-          # split on para boundaries for location info
-          content.split(/\n\n/).each_with_index { |para, line_idx|
+          # split on lines for location info
+          content.split(/\n/).each_with_index { |para, line_idx|
+            next  if '' == para # skip empty lines
             para_subtitles_count = para.count('@')
             para_subtitles = subtitles.shift(para_subtitles_count)
             if para =~ /\{[^\}]*@[^\}]*\}/
