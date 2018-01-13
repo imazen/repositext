@@ -47,7 +47,7 @@ class Repositext
           r = []
           # split on lines for location info
           content.split(/\n/).each_with_index { |para, line_idx|
-            next  if '' == para # skip empty lines
+            next  if '' == para.to_s.strip # skip empty lines
             para_subtitles_count = para.count('@')
             para_subtitles = subtitles.shift(para_subtitles_count)
             if para =~ /\{[^\}]*@[^\}]*\}/
@@ -70,6 +70,8 @@ class Repositext
               sts_at_rb_w_idx.each do |st_at_rb_w_idx|
                 ed_notes_w_st.each do |ed_note|
                   txt_before, txt_after = para.split(ed_note)
+                  txt_before ||= ''
+                  txt_after ||= ''
                   st_count_before = txt_before.count('@')
                   st_count_inside = ed_note.count('@')
                   st_count_after = txt_after.count('@')
