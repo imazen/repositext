@@ -910,7 +910,7 @@
             \vspace*{-2.73pt}% sets the spacing between the title and the bottom hrule.
             {%
               \color{<%= @header_footer_rules_present ? 'black' : 'white' %>}
-              \hrule width \hsize height <%= @polyglossia_default_language ? '0pt' : '0.201pt' %>
+              \hrule width <%= @header_footer_rules_present ? '\hsize' : '0.001pt' %> height <%= @polyglossia_default_language ? '0pt' : '0.201pt' %>
             }
             \setstretch{0}
           \end{spacing}
