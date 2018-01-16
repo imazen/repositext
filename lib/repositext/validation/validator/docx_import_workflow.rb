@@ -78,7 +78,7 @@ class Repositext
         def validate_corresponding_content_at_with_subtitles_does_not_exist(docx_file, errors, warnings)
           if(
             ccatf = docx_file.corresponding_content_at_file and
-            ccatf.has_subtitles?
+            ccatf.has_subtitle_marks?
           )
             # We need to terminate an import if we get here so we raise an exception.
             raise ContentAtFileWithSubtitlesExistsError.new(
