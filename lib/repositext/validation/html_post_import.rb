@@ -25,9 +25,9 @@ class Repositext
         hiat_file_proc = lambda { |html_file|
           r = RFile::ContentAt.new(
             '_',
-            html_file.filename.sub(/\.html\z/, '.html.at'),
             html_file.language,
-            html_file.content_at_file
+            html_file.filename.sub(/\.html\z/, '.html.at'),
+            html_file.content_type
           )
           r.reload_contents!
           r
