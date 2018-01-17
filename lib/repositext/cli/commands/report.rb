@@ -39,7 +39,7 @@ class Repositext
 
         lines << "Character inventory for #{ content_type.language_name }"
 
-        char_groups = chars.keys.group_by { |code|
+        char_groups = chars.group_by { |code, count|
           case code.chr('UTF-8')
           # We switched to using plain text instead of content AT, so we don't
           # need this char_group.
