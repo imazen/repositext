@@ -71,7 +71,7 @@ class Repositext
         describe '#validate_source' do
           [
             ["valid kramdown AT", 0],
-            ["Disconnected IAL \n\n{: .normal}\n\n", 1],
+            ["Disconnected IAL and trailing whitespace \n\n{: .normal}\n\n", 2],
             ["gap_mark at invalid position (inside word) word%word", 1],
             ["gap_mark at invalid position (after asterisk) *%word", 1],
             ["gap_mark at invalid position (after quote) *%word", 1],
@@ -98,10 +98,14 @@ class Repositext
             ["subtitle_mark NOT at invalid position (if followed by …?…) word@…?…", 0],
             ["subtitle_mark NOT at invalid position (if preced by …*) …*@word", 0],
             ["subtitle_mark NOT at invalid position (if followed by —) word@—", 0],
-            ["Paragraph not followed by exactly two newlines \n{: .normal}\nNext para", 2],
-            ["Paragraph not followed by exactly two newlines \n{: .normal}\n\n", 0],
-            ["Paragraph not followed by exactly two newlines \n{: .normal}\n\n\n", 1],
+            ["Paragraph not followed by exactly two newlines and trailing whitespace \n{: .normal}\nNext para", 3],
+            ["Paragraph not followed by exactly two newlines and trailing whitespace \n{: .normal}\n\n", 1],
+            ["Paragraph not followed by exactly two newlines and trailing whitespace \n{: .normal}\n\n\n", 2],
             ["Multiple adjacent  spaces", 1],
+            ["Trailing whitespace character \n{: .normal}\n\n", 1],
+            ["Trailing whitespace character\u00A0\n{: .normal}\n\n", 1],
+            ["Trailing whitespace character\u202F\n{: .normal}\n\n", 1],
+            ["Trailing whitespace character\uFEFF\n{: .normal}\n\n", 1],
             ["Invalid elipsis 1 ...", 1],
             ["Invalid elipsis 2 . . .", 1],
             ["Invalid horizontal rule (prefix)\n\nx * * *\n", 1],
@@ -155,7 +159,7 @@ class Repositext
         describe '#validation_hook_on_element' do
           # Block level elements
           [
-            ["^^^\n\nsong para right after record mark\n{: .song}", 1],
+            ["^^^ {: .rid #rid-12340009}\n\nsong para right after record mark\n{: .song}", 1],
             ["*1*{: .pn} p.normal_pn with pn\n{: .normal_pn}", 0],
             ["p.normal_pn without pn\n{: .normal_pn}", 1],
             ["*1*{: .pn} p.normal with pn\n{: .normal}", 1],

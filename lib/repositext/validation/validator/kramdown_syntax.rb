@@ -138,6 +138,23 @@ class Repositext
               break
             end
           end
+          # Detect trailing spaces at the end of lines
+          str_sc.reset
+          while !str_sc.eos? do
+            # We check for regular space, no-break space, narrow no-break space, and zero-width no-break space
+            if (match = str_sc.scan_until(/[ \u00A0\u202F\uFEFF](?=\n)/))
+              errors << Reportable.error(
+                {
+                  filename: content_at_file.filename,
+                  line: str_sc.current_line_number,
+                  context: match[-40..-1].inspect,
+                },
+                ['Trailing whitespace character']
+              )
+            else
+              break
+            end
+          end
           # Detect invalid elipses: '...' or '. . .'
           str_sc.reset
           while !str_sc.eos? do
