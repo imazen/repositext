@@ -52,6 +52,7 @@ class Repositext
         %w[loz loz],
         %w[lua lua],
         %w[lug lg],
+        %w[lve lue],
         %w[mag mg],
         %w[mal ml],
         %w[man mni],
