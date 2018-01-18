@@ -207,34 +207,49 @@ class Repositext
 
       # Reports all content AT files that don't have st_sync_active.
       def report_files_that_dont_have_st_sync_active(options)
-        ftdhssa = []
+        inactive_files = []
+        active_files = []
         total_file_count = 0
 
         Repositext::Cli::Utils.read_files(
           config.compute_glob_pattern(
             options['base-dir'] || :content_dir,
             options['file-selector'] || :all_files,
-            options['file-extension'] || :json_extension
+            options['file-extension'] || :at_extension
           ),
-          /\.data\.json\z/,
+          options['file_filter'],
           nil,
-          "Reading data.json files",
+          "Reading content AT files",
           options
-        ) do |data_json_file|
+        ) do |content_at_file|
+          data_json_file = content_at_file.corresponding_data_json_file
           total_file_count += 1
-          rrfn = data_json_file.repo_relative_path(true)
+          lang_and_date_code = [
+            content_at_file.language_code_3_chars,
+            content_at_file.extract_date_code
+          ].join
           if data_json_file.contents.index('"st_sync_active":false')
-            ftdhssa << rrfn
+            inactive_files << lang_and_date_code
             $stderr.puts "   - doesn't have st_sync_active".color(:blue)
+          else
+            active_files << lang_and_date_code
           end
         end
-        if ftdhssa.any?
-          $stderr.puts "\n\n#{ ftdhssa.length } files that don't have st_sync_active:"
+        inactive_files_count = inactive_files.length
+        active_files_count = active_files.length
+        if inactive_files_count > 0
+          $stderr.puts "\n\n#{ inactive_files_count } files that DON'T HAVE st_sync_active:"
           $stderr.puts '-' * 80
-          ftdhssa.each { |e| $stderr.puts e }
+          inactive_files.each { |e| $stderr.puts e }
           $stderr.puts
         end
-        summary_line = "Found #{ ftdhssa.length } of #{ total_file_count } files that don't have st_sync_active at #{ Time.now.to_s }."
+        if active_files_count > 0
+          $stderr.puts "\n\n#{ active_files_count } files that HAVE st_sync_active:"
+          $stderr.puts '-' * 80
+          active_files.each { |e| $stderr.puts e }
+          $stderr.puts
+        end
+        summary_line = "Found #{ inactive_files_count } of #{ total_file_count } files that don't have st_sync_active at #{ Time.now.to_s }."
         $stderr.puts summary_line
       end
 
