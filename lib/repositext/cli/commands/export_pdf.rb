@@ -342,9 +342,11 @@ class Repositext
           "Exporting AT files to #{ variant }",
           options
         ) do |content_at_file|
+          product_identity_id = content_at_file.extract_product_identity_id
+          # Dependency boundary
           contents = content_at_file.contents
           filename = content_at_file.filename
-          product_identity_id = content_at_file.extract_product_identity_id
+          pdf_version = primary_titles_and_public_version_ids[product_identity_id][:pdf_version]
           primary_title = primary_titles_and_public_version_ids[product_identity_id][:primary_title]
           public_version_id = primary_titles_and_public_version_ids[product_identity_id][:public_version_id]
           config.update_for_file(filename.gsub(/\.at\z/, '.data.json'))
