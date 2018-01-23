@@ -104,6 +104,12 @@ module Kramdown
           # Assign l_vars not used in template
           git_repo = Repositext::Repository.new(@options[:source_filename])
           latest_commit = git_repo.latest_commit(@options[:source_filename])
+          date_code = Repositext::Utils::FilenamePartExtractor.extract_date_code(
+            @options[:source_filename]
+          )
+          language_code_3 = Repositext::Utils::FilenamePartExtractor.extract_language_code_3(
+            @options[:source_filename]
+          )
           # assign i_vars referenced in template file.
           @additional_footer_text = escape_latex_text(@options[:additional_footer_text])
           @body = latex_body
@@ -111,9 +117,7 @@ module Kramdown
           @company_phone_number = @options[:company_phone_number]
           @company_short_name = @options[:company_short_name]
           @company_web_address = @options[:company_web_address]
-          @date_code = Repositext::Utils::FilenamePartExtractor.extract_date_code(
-            @options[:source_filename]
-          ).capitalize
+          @language_and_date_code = [language_code_3, date_code].upcase
           # Applies the settings for the first eagle indent and drop cap.
           @first_eagle = @options[:first_eagle]
           # Sets the starting page number.
@@ -159,9 +163,7 @@ module Kramdown
           @id_write_to_secondary = @options[:id_write_to_secondary]
           @include_meta_info = include_meta_info
           @is_primary_repo = @options[:is_primary_repo]
-          @language_code_3 = Repositext::Utils::FilenamePartExtractor.extract_language_code_3(
-            @options[:source_filename]
-          ).capitalize
+          @language_code_3 = language_code_3.upcase
           @language_name = @options[:language_name]
           @last_eagle_hspace = @options[:last_eagle_hspace]
           @latest_commit_hash = latest_commit.oid[0,8]
