@@ -277,7 +277,8 @@ class Repositext
             pi_id = e['productidentityid'].to_s.rjust(4, '0')
             m[pi_id] = {
               primary_title: e['englishtitle'],
-              public_version_id: e['publicversionid']
+              public_version_id: e['publicversionid'],
+              pdf_version: e['version'],
             }
             m
           }
@@ -385,6 +386,7 @@ class Repositext
             options['pdf_export_size']
           )
           options[:paragraph_number_font_name] = config.setting(:pdf_export_paragraph_number_font_name)
+          options[:pdf_version] = pdf_version
           options[:pv_id] = public_version_id
           options[:question1_indent] = config.setting(:pdf_export_question1_indent)
           options[:question2_indent] = config.setting(:pdf_export_question2_indent)

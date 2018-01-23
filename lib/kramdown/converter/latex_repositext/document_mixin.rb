@@ -102,10 +102,6 @@ module Kramdown
         # @return [String]
         def wrap_body_in_template(latex_body, document_title_plain_text, document_title_latex)
           # Assign l_vars not used in template
-          date_code = @options[:source_filename].split('/')
-                                                 .last
-                                                 .match(/[[:alpha:]]{3}\d{2}-\d{4}[[:alpha:]]?/)
-                                                 .to_s
           git_repo = Repositext::Repository.new(@options[:source_filename])
           latest_commit = git_repo.latest_commit(@options[:source_filename])
           # assign i_vars referenced in template file.
@@ -115,7 +111,9 @@ module Kramdown
           @company_phone_number = @options[:company_phone_number]
           @company_short_name = @options[:company_short_name]
           @company_web_address = @options[:company_web_address]
-          @date_code = date_code.capitalize
+          @date_code = Repositext::Utils::FilenamePartExtractor.extract_date_code(
+            @options[:source_filename]
+          ).capitalize
           # Applies the settings for the first eagle indent and drop cap.
           @first_eagle = @options[:first_eagle]
           # Sets the starting page number.
@@ -161,6 +159,9 @@ module Kramdown
           @id_write_to_secondary = @options[:id_write_to_secondary]
           @include_meta_info = include_meta_info
           @is_primary_repo = @options[:is_primary_repo]
+          @language_code_3 = Repositext::Utils::FilenamePartExtractor.extract_language_code_3(
+            @options[:source_filename]
+          ).capitalize
           @language_name = @options[:language_name]
           @last_eagle_hspace = @options[:last_eagle_hspace]
           @latest_commit_hash = latest_commit.oid[0,8]
@@ -175,6 +176,8 @@ module Kramdown
           @page_settings = page_settings_for_latex_geometry_package
           # Force foreign languages to use Excelsior for paragraph numbers.
           @paragraph_number_font_name = @options[:paragraph_number_font_name]
+          @pdf_version = @options[:pdf_version]
+          @piid = Repositext::Utils::FilenamePartExtractor.extract_product_identity_id(@options[:source_filename])
           @polyglossia_default_language = polyglossia_default_language(@options[:language_code_3_chars])
           @primary_font_name = @options[:primary_font_name]
           @pv_id = @options[:pv_id]
