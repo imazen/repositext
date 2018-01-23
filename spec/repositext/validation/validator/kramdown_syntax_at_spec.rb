@@ -223,6 +223,31 @@ class Repositext
           end
         end
 
+        describe '#validate_inner_texts' do
+          [
+            [[text: "Leftover asterisk * word word"], 1],
+            [[text: "Leftover underscore _ word word"], 1],
+            [[text: "Equal sign = word word"], 1],
+          ].each do |inner_texts, xpect|
+            it "handles #{ inner_texts.inspect }" do
+              r_file = get_r_file(contents: '_')
+              validator, _logger, _reporter = build_validator_logger_and_reporter(
+                KramdownSyntaxAt,
+                r_file
+              )
+              errors = []
+              warnings = []
+              validator.send(
+                :validate_inner_texts,
+                r_file,
+                inner_texts,
+                errors,
+                warnings
+              )
+              errors.size.must_equal(xpect)
+            end
+          end
+        end
 
       end
 

@@ -331,12 +331,12 @@ class Repositext
         # @param warnings [Array] collector for warnings
         def validate_inner_texts(content_at_file, inner_texts, errors, warnings)
           inner_texts.each do |it|
-            # Detect leftover '*' or '_' kramdown syntax characters
+            # Detect leftover '*' or '_' kramdown syntax characters or equal signs
             match_data = it[:text].to_enum(
               :scan,
               /
                 .{0,10} # capture up to 10 preceding characters on same line
-                [\*\_]  # detect any asterisks or underscores
+                [\*\_\=]  # detect any asterisks, underscores or equal signs
                 .{0,10} # capture up to 10 following characters on same line
               /x
             ).map { Regexp.last_match }
@@ -347,7 +347,7 @@ class Repositext
                   line: it[:location],
                   context: e.to_s,
                 },
-                ['Leftover kramdown character', e[0]]
+                ['Leftover kramdown character or equal sign', e[0]]
               )
             end
           end
