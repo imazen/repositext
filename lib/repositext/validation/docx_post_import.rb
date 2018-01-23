@@ -34,7 +34,13 @@ class Repositext
           config.update_for_file(content_at_file.corresponding_data_json_filename)
           @options['run_options'] << 'kramdown_syntax_at-no_underscore_or_caret'
           Validator::KramdownSyntaxAt.new(
-            content_at_file, @logger, @reporter, @options
+            content_at_file,
+            @logger,
+            @reporter,
+            @options.merge(
+              "validator_invalid_gap_mark_regex" => config.setting(:validator_invalid_gap_mark_regex),
+              "validator_invalid_subtitle_mark_regex" => config.setting(:validator_invalid_subtitle_mark_regex)
+            )
           ).run
           Validator::ValidTypographicQuotes.new(
             content_at_file, @logger, @reporter, @options

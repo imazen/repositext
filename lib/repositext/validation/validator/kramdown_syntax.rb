@@ -50,30 +50,57 @@ class Repositext
               break
             end
           end
-          # Detect gap_marks (%) and subtitle_marks (@) inside of words,
-          # asterisks, quotes (straight or typographic), parentheses, or brackets.
-          # NOTE: We allow subtitle_marks/gap_marks to immediately follow words
-          # if the mark is followed by `…?…` or `—` (emdash).
+          # Detect gap_marks (%) inside of words, asterisks, quotes (straight or
+          # typographic), parentheses, or brackets.
+          # NOTE: We allow gap_marks to immediately follow words if the mark is
+          # followed by `…?…` or `—` (emdash).
+          # NOTE: This section is very similar to the next section where we
+          # check subtitle_marks.
+          # The regex can be overridden via data.json file under the key
+          # "validator_invalid_gap_mark_regex".
+          invalid_gap_mark_regex = Regexp.new(
+            @options['validator_invalid_gap_mark_regex'] ||
+            "(?<=[[:alpha:]\\*\"“”'‘’\\(\\[])%(?!(…?…|—))"
+          )
           str_sc.reset
           while !str_sc.eos? do
-            if (match = str_sc.scan_until(/(?<=[[:alpha:]\*\"\“\”\'\‘\’\(\[])(%|@)(?!(…?…|—))/))
-              next  if "…*@" == match[-3..-1] # allow subtitle marks after ellipsis and asterisk
-              msg = case match[-1]
-              when '%'
-                next  if @options['skip_invalid_gap_mark_validation']
-                ':gap_mark (%) at invalid position'
-              when '@'
-                ':subtitle_mark (@) at invalid position'
-              else
-                raise "Unhandled match: #{ match.inspect }"
-              end
+            if (match = str_sc.scan_until(invalid_gap_mark_regex))
+              next  if @options['skip_invalid_gap_mark_validation']
               errors << Reportable.error(
                 {
                   filename: content_at_file.filename,
                   line: str_sc.current_line_number,
                   context: match[-40..-1].inspect,
                 },
-                [msg]
+                [':gap_mark (%) at invalid position']
+              )
+            else
+              break
+            end
+          end
+          # Detect subtitle_marks (@) inside of words, asterisks, quotes (straight or
+          # typographic), parentheses, or brackets.
+          # NOTE: We allow subtitle_marks to immediately follow words if the mark is
+          # followed by `…?…` or `—` (emdash).
+          # NOTE: This section is very similar to the previous section where we
+          # check gap_marks.
+          # The regex can be overridden via data.json file under the key
+          # "validator_invalid_subtitle_mark_regex".
+          invalid_subtitle_mark_regex = Regexp.new(
+            @options['validator_invalid_subtitle_mark_regex'] ||
+            "(?<=[[:alpha:]\\*\"“”'‘’\\(\\[])@(?!(…?…|—))"
+          )
+          str_sc.reset
+          while !str_sc.eos? do
+            if (match = str_sc.scan_until(invalid_subtitle_mark_regex))
+              next  if "…*@" == match[-3..-1] # allow subtitle marks after ellipsis and asterisk
+              errors << Reportable.error(
+                {
+                  filename: content_at_file.filename,
+                  line: str_sc.current_line_number,
+                  context: match[-40..-1].inspect,
+                },
+                [':subtitle_mark (@) at invalid position']
               )
             else
               break

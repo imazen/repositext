@@ -40,7 +40,13 @@ class Repositext
             content_at_file, @logger, @reporter, @options
           ).run
           Validator::KramdownSyntaxAt.new(
-            content_at_file, @logger, @reporter, @options
+            content_at_file,
+            @logger,
+            @reporter,
+            @options.merge(
+              "validator_invalid_gap_mark_regex" => config.setting(:validator_invalid_gap_mark_regex),
+              "validator_invalid_subtitle_mark_regex" => config.setting(:validator_invalid_subtitle_mark_regex)
+            )
           ).run
           Validator::SubtitleMarkSyntax.new(
             content_at_file, @logger, @reporter, @options

@@ -10,7 +10,15 @@ class Repositext
         # Single files
 
         validate_files(:content_at_files) do |content_at_file|
-          Validator::KramdownSyntaxAt.new(content_at_file, @logger, @reporter, @options).run
+          Validator::KramdownSyntaxAt.new(
+            content_at_file,
+            @logger,
+            @reporter,
+            @options.merge(
+              "validator_invalid_gap_mark_regex" => config.setting(:validator_invalid_gap_mark_regex),
+              "validator_invalid_subtitle_mark_regex" => config.setting(:validator_invalid_subtitle_mark_regex)
+            )
+          ).run
           Validator::Utf8Encoding.new(content_at_file, @logger, @reporter, @options).run
           if @options['is_primary_repo']
             Validator::SubtitleMarkAtBeginningOfEveryParagraph.new(

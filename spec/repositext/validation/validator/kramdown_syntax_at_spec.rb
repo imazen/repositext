@@ -125,6 +125,47 @@ class Repositext
               errors.size.must_equal(xpect)
             end
           end
+
+          it "allows override of invalid_gap_mark_regex" do
+            # We removed quotes from default regex for invalid gap_marks so
+            # that a gap_mark that would typically be invalid is now valid.
+            # Instead of two errors, this reports only one (asterisk)
+            r_file = get_r_file(contents: "2 gap_marks at invalid position: after quote '%word and after asterisk *%word")
+            validator, _logger, _reporter = build_validator_logger_and_reporter(
+              KramdownSyntaxAt,
+              r_file,
+              nil,
+              nil,
+              "validator_invalid_gap_mark_regex" => "(?<=[[:alpha:]\\*\\(\\[])%(?!(…?…|—))"
+            )
+            errors = []
+            warnings = []
+            validator.send(
+              :validate_source, r_file, errors, warnings
+            )
+            errors.size.must_equal(1)
+          end
+
+          it "allows override of invalid_subtitle_mark_regex" do
+            # We removed quotes from default regex for invalid subtitle_marks so
+            # that a subtitle_mark that would typically be invalid is now valid.
+            # Instead of two errors, this reports only one (asterisk)
+            r_file = get_r_file(contents: "2 subtitle_marks at invalid position: after quote '@word and after asterisk *@word")
+            validator, _logger, _reporter = build_validator_logger_and_reporter(
+              KramdownSyntaxAt,
+              r_file,
+              nil,
+              nil,
+              "validator_invalid_subtitle_mark_regex" => "(?<=[[:alpha:]\\*\\(\\[])@(?!(…?…|—))"
+            )
+            errors = []
+            warnings = []
+            validator.send(
+              :validate_source, r_file, errors, warnings
+            )
+            errors.size.must_equal(1)
+          end
+
         end
 
         describe '#validate_record_mark_syntax' do

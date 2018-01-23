@@ -14,7 +14,10 @@ class Repositext
             content_at_file,
             @logger,
             @reporter,
-            @options
+            @options.merge(
+              "validator_invalid_gap_mark_regex" => config.setting(:validator_invalid_gap_mark_regex),
+              "validator_invalid_subtitle_mark_regex" => config.setting(:validator_invalid_subtitle_mark_regex)
+            )
           ).run
         end
       end
