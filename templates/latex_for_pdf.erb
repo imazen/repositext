@@ -24,11 +24,11 @@
 
 \usepackage[pdftex,
   pdfauthor={<%= @metadata_author %>},
-  pdftitle={<%= [@date_code.upcase, @document_title_plain_text, @company_short_name].compact.join(' ') %>},
-  pdfsubject={<%= [@date_code.upcase, @document_title_plain_text].compact.join(' ') %>},
-  pdfkeywords={<%= [@metadata_additional_keywords, @date_code.upcase, @document_title_plain_text, @company_short_name].compact.join(', ') %>},
-  pdfproducer={<%= [@company_long_name, @pv_id].compact.join(' - ') %>},
-  pdfcreator={<%= [@company_long_name, @pv_id].compact.join(' - ') %>}]{hyperref}
+  pdftitle={<%= [@language_and_date_code, @document_title_plain_text, @company_short_name].compact.join(' ') %>},
+  pdfsubject={<%= [@language_and_date_code, @document_title_plain_text].compact.join(' ') %>},
+  pdfkeywords={<%= [@metadata_additional_keywords, @language_and_date_code.upcase, @document_title_plain_text, @company_short_name].compact.join(', ') %>},
+  pdfproducer={<%= [@language_code_3, @piid, "V", @pdf_version].join('') %>},
+  pdfcreator={<%= [@language_code_3, @piid, "V", @pdf_version].join('') %>}]{hyperref}
 
 % fontspec to use custom fonts, silence doesn't add any font warnings to the log file to reduce noise.
 \usepackage[silent]{fontspec}
@@ -90,7 +90,7 @@
 }
 \newcommand{\RtFooterContent}{%
   <% if @include_meta_info %>
-    \fancyfoot[L]{\textscale{0.73}{\LR{<%= @date_code %>}}} % outside
+    \fancyfoot[L]{\textscale{0.73}{\LR{<%= @language_and_date_code %>}}} % outside
     \fancyfoot[C]{\textscale{0.73}{\LR{<%= @footer_title %>}}} % center
     \fancyfoot[R]{\textscale{0.67}{\LR{<%= @additional_footer_text %> Rev. <%= @latest_commit_hash %>}}} % inside
   <% end %>
@@ -300,7 +300,7 @@
     \par
   }
 
-% command to render id extra langauge info
+% command to render id extra language info
 \newcommand{\RtIdExtraLanguageInfo}
   {%
     \setlength{\parskip}{6.786pt}

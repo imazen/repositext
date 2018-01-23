@@ -117,7 +117,7 @@ module Kramdown
           @company_phone_number = @options[:company_phone_number]
           @company_short_name = @options[:company_short_name]
           @company_web_address = @options[:company_web_address]
-          @language_and_date_code = [language_code_3, date_code].upcase
+          @language_and_date_code = [language_code_3, date_code].join.upcase
           # Applies the settings for the first eagle indent and drop cap.
           @first_eagle = @options[:first_eagle]
           # Sets the starting page number.
