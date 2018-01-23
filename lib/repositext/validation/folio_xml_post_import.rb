@@ -5,6 +5,7 @@ class Repositext
 
       # Specifies validations to run related to Folio Xml post import.
       def run_list
+        config = @options['config']
         validate_files(:imported_repositext_files) do |text_file|
           Validator::Utf8Encoding.new(text_file, @logger, @reporter, @options).run
         end

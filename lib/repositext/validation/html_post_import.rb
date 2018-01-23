@@ -5,6 +5,7 @@ class Repositext
 
       # Specifies validations to run related to HTML import.
       def run_list
+        config = @options['config']
         validate_files(:input_html_files) do |html_file|
           Validator::Utf8Encoding.new(
             html_file, @logger, @reporter, @options

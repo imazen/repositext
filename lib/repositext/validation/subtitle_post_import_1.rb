@@ -6,6 +6,7 @@ class Repositext
 
       # Specifies validations to run after subtitle/subtitle_tagging import.
       def run_list
+        config = @options['config']
 
         # Single files
 

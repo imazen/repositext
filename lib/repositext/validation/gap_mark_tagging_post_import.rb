@@ -6,6 +6,7 @@ class Repositext
       # Specifies validations to run after gap_mark_tagging import.
       # NOTE: md files are not affected by gap_mark_tagging import, so we don't need to validate them.
       def run_list
+        config = @options['config']
         # Validate that gap_mark_tagging_export from new content_at is identical to
         # gap_mark_tagging import file. This is an extra safety measure
         # to make sure nothing went wrong.
