@@ -17,7 +17,10 @@ class Repositext
         # Language code from ID and from filename   | No         | Yes
         # Language code from ERP and from filename  | No         | Yes
         #
-        # The following validator_exceptions are available (can be combined):
+        # The following validator_exceptions are available (can be combined).
+        # They are specified in language/file level data.json files. There is
+        # a command fix_specify_validator_exceptions that can be used to apply
+        # exceptions to all languages.
         #
         # * 'ignore_end_diff_starting_at_pound_sign_erp': Endings of titles are
         #       different.

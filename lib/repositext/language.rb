@@ -107,7 +107,6 @@ class Repositext
     end
 
     # Returns absolute path to repo_base_dir.
-    # Expects pwd to be in one of the language dirs.
     # @return [String]
     def repo_base_dir
       File.join(Repositext::PARENT_DIR, repo_base_dir_name)
