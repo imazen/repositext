@@ -21,6 +21,19 @@ class Repositext
         end
       end
 
+      describe '.extract_language_code_3' do
+        [
+          ['segment1/segment2/segment3', ''],
+          ['segment1/segment2/eng71-0614_1234', 'eng'],
+          ['segment1/segment2/spn71-0614_1234', 'spn'],
+          ['eng71-0614.at', 'eng'],
+        ].each do |input, xpect|
+          it "handles #{ input.inspect }" do
+            FilenamePartExtractor.extract_language_code_3(input).must_equal(xpect)
+          end
+        end
+      end
+
       describe '.extract_year' do
         [
           ['segment1/segment2/segment3', ''],

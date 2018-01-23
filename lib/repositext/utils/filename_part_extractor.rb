@@ -16,6 +16,12 @@ class Repositext
         basename.match(/\d{2}-\d{4}[[:alpha:]]?/).to_s
       end
 
+      # Extracts the 3 character language code from filename
+      def self.extract_language_code_3(filename)
+        basename = filename.split('/').last
+        basename.match(/\A[[:alpha:]]{3}(?=\d{2})/).to_s
+      end
+
       # Extracts a 2-digit year from filename
       def self.extract_year(filename)
         extract_date_code(filename).match(/\A\d{2}/).to_s
