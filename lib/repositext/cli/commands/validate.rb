@@ -130,6 +130,7 @@ class Repositext
           imported_repositext_files: [input_base_dir, input_file_selector, :repositext_extensions],
         )
         validation_options = {
+          'config' => config,
           'folio_xml_parser_class' => config.kramdown_parser(:folio_xml),
           'kramdown_converter_method_name' => config.kramdown_converter_method(:to_at),
           'kramdown_parser_class' => config.kramdown_parser(:kramdown),
@@ -160,6 +161,7 @@ class Repositext
           gap_mark_tagging_export_files: [:gap_mark_tagging_export_dir, input_file_selector, gap_mark_tagging_file_extension],
         )
         validation_options = {
+          'config' => config,
           'kramdown_parser_class' => config.kramdown_parser(:kramdown),
           'kramdown_validation_parser_class' => config.kramdown_parser(:kramdown_validation),
         }.merge(options)
@@ -186,6 +188,7 @@ class Repositext
           imported_at_files: [input_base_dir, input_file_selector, :at_extension],
         )
         validation_options = {
+          'config' => config,
           'kramdown_parser_class' => config.kramdown_parser(:kramdown),
           'plain_text_converter_method_name' => config.kramdown_converter_method(:to_plain_text),
           'kramdown_validation_parser_class' => config.kramdown_parser(:kramdown_validation)
@@ -211,6 +214,7 @@ class Repositext
           imported_repositext_files: [input_base_dir, input_file_selector, :repositext_extensions],
         )
         validation_options = {
+          'config' => config,
           'idml_parser_class' => config.kramdown_parser(:idml),
           'idml_validation_parser_class' => config.kramdown_parser(:idml_validation),
           'kramdown_converter_method_name' => config.kramdown_converter_method(:to_at),
@@ -385,6 +389,7 @@ class Repositext
           subtitle_export_files: [:subtitle_export_dir, input_file_selector, subtitle_files_extension],
         )
         validation_options = {
+          'config' => config,
           'is_primary_repo' => config.setting(:is_primary_repo),
           'kramdown_parser_class' => config.kramdown_parser(:kramdown),
           'kramdown_validation_parser_class' => config.kramdown_parser(:kramdown_validation),
