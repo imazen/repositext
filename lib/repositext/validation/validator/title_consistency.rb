@@ -26,6 +26,8 @@ class Repositext
         #       different.
         #       Remove everything starting with pound sign from erp. Resulting
         #       ERP title must be contained in main title.
+        # * 'ignore_id_title_attributes': File is expected to have different
+        #       font atrributes between the id title and the main title.
         # * 'ignore_short_word_capitalization': File is expected to capitalize
         #       small words differently between the 3 titles.
         # * 'multi_level_title': The file contains level 1 and level 2 headers
@@ -99,6 +101,7 @@ class Repositext
           # Validate validator_exceptions
           valid_exceptions = %w[
             ignore_end_diff_starting_at_pound_sign_erp
+            ignore_id_title_attributes
             ignore_short_word_capitalization
             multi_level_title
             remove_pound_sign_and_digits_erp
@@ -236,9 +239,12 @@ class Repositext
             t = remove_linebreaks_plain_text(
               [ra[:header_1_pt].to_s.strip, ra[:header_2_pt].to_s.strip].join(", ")
             )
+            tid = remove_linebreaks_plain_text(
+              [ra[:header_1_pt].to_s.strip, ra[:header_2_pt].to_s.strip].join(" — ")
+            )
             {
               title_for_erp: erp_title_sanitizer.call(t),
-              title_for_id: t,
+              title_for_id: tid,
             }
           else
             # Prepare both pt and kd from header 1
@@ -295,6 +301,11 @@ class Repositext
               r[:title] = remove_linebreaks_plain_text(
                 Kramdown::Document.new(raw_title).to_plain_text.strip
               )
+            elsif val_attrs[:exceptions].include?('ignore_id_title_attributes')
+              # Use plain text title
+              r[:title] = remove_linebreaks_plain_text(
+                Kramdown::Document.new(raw_title).to_plain_text.strip
+              )
             else
               # Work with kramdown titles
               r[:title] = remove_linebreaks_kramdown(raw_title)
@@ -330,6 +341,9 @@ class Repositext
             if val_attrs[:exceptions].include?('multi_level_title')
               # Use plain text title
               r[:title] = t_pt
+            elsif val_attrs[:exceptions].include?('ignore_id_title_attributes')
+              # Use plain text title
+              r[:title] = t_pt
             else
               # Use kramdown title
               r[:title] = t_kd
@@ -342,6 +356,7 @@ class Repositext
                                      .strip
                                      .sub(/\A\(/, '')
                                      .sub(/\)\z/, '')
+                                     .sub(/ — /, ', ')
               Kramdown::Document.new(p_t_kd).to_plain_text.strip
             else
               ''
@@ -354,7 +369,14 @@ class Repositext
         def apply_exceptions_content(attrs, exceptions, language)
           na = attrs.dup
           if exceptions.include?('ignore_end_diff_starting_at_pound_sign_erp')
-            # N/A
+            na[:title_for_erp] = apply_exception_ignore_end_diff_starting_at_pound_sign(
+              na[:title_for_erp],
+              language
+            )
+            na[:title_for_id] = apply_exception_ignore_end_diff_starting_at_pound_sign(
+              na[:title_for_id],
+              language
+            )
           end
           if exceptions.include?('ignore_short_word_capitalization')
             na[:title_for_erp] = apply_exception_ignore_short_word_capitalization(
@@ -429,6 +451,16 @@ class Repositext
 
         def apply_exceptions_id(attrs, exceptions, language)
           na = attrs.dup
+          if exceptions.include?('ignore_end_diff_starting_at_pound_sign_erp')
+            na[:title] = apply_exception_ignore_end_diff_starting_at_pound_sign(
+              na[:title],
+              language
+            )
+            na[:primary_title] = apply_exception_ignore_end_diff_starting_at_pound_sign(
+              na[:primary_title],
+              language
+            )
+          end
           if exceptions.include?('ignore_short_word_capitalization')
             na[:title] = apply_exception_ignore_short_word_capitalization(
               na[:title],
@@ -448,7 +480,8 @@ class Repositext
         def apply_exception_ignore_end_diff_starting_at_pound_sign(title, language)
           # Remove everything from pound sign to the end
           # test if erp is contained in title from content
-          title.sub(/\s#.*\z/, '')
+          title.gsub(/\s#.*\z/, '')
+               .gsub(/\sPart.*\z/, '')
         end
 
         def apply_exception_ignore_short_word_capitalization(title, language)
@@ -480,6 +513,7 @@ class Repositext
         def remove_linebreaks_kramdown(txt)
           txt.gsub("*{: .italic .smcaps} *.*{: .line_break}*", ' ')
              .gsub("*{: .bold .italic} *.*{: .line_break}*", ' ')
+             .gsub("** *.*{: .line_break}**", '')
              .gsub(" *.*{: .line_break}", ' ')
         end
 
