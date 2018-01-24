@@ -242,7 +242,7 @@ module Kramdown
 
       # @param ke [Kramdown::Element]
       def convert_gap_mark(ke)
-        # Nothing to do
+        add_text('%')
       end
 
       # @param ke [Kramdown::Element]
@@ -382,7 +382,7 @@ module Kramdown
 
       # @param ke [Kramdown::Element]
       def convert_subtitle_mark(ke)
-        # Nothing to do
+        add_text('@')
       end
 
       # @param ke [Kramdown::Element]
