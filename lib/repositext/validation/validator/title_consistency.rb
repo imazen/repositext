@@ -9,7 +9,7 @@ class Repositext
         #
         # Comparison                                | English    | Foreign
         # ------------------------------------------|------------|------------
-        # Title from ID and from content            | Formatted  | Formatted
+        # Title from ID and from content            | Formatted  | Formatted  (some exceptions apply where we use plain text)
         # Title from ERP and from content           | Plain text | Plain text
         # Primary title from ID and from ERP        | No         | Plain text
         # Date code from ID and from filename       | Yes        | Yes
@@ -18,9 +18,9 @@ class Repositext
         # Language code from ERP and from filename  | No         | Yes
         #
         # The following validator_exceptions are available (can be combined).
-        # They are specified in language/file level data.json files. There is
-        # a command fix_specify_validator_exceptions that can be used to apply
-        # exceptions to all languages.
+        # They are specified in language/file level data.json files. The
+        # command `fix_specify_validator_exceptions` can be used to apply
+        # exceptions for the given files to all languages.
         #
         # * 'ignore_end_diff_starting_at_pound_sign_erp': Endings of titles are
         #       different.
@@ -248,13 +248,18 @@ class Repositext
             }
           else
             # Prepare both pt and kd from header 1
+            title_for_id = if val_attrs[:exceptions].include?('ignore_id_title_attributes')
+              # use plain text
+              remove_linebreaks_plain_text(ra[:header_1_pt].to_s.strip)
+            else
+              # Use kramdown
+              remove_linebreaks_kramdown(ra[:header_1_kd].to_s.strip)
+            end
             {
               title_for_erp: remove_linebreaks_plain_text(
                 erp_title_sanitizer.call(ra[:header_1_pt].to_s.strip)
               ),
-              title_for_id: remove_linebreaks_kramdown(
-                ra[:header_1_kd].to_s.strip
-              ),
+              title_for_id: title_for_id,
             }
           end
           r = apply_exceptions_content(r, val_attrs[:exceptions], content_at_file.language)
@@ -296,13 +301,11 @@ class Repositext
           if val_attrs[:is_primary]
             # Get kramdown title from id_title1
             raw_title = ra[:id_title1].first.to_s.strip
-            if val_attrs[:exceptions].include?('multi_level_title')
-              # Work with plain text titles
-              r[:title] = remove_linebreaks_plain_text(
-                Kramdown::Document.new(raw_title).to_plain_text.strip
-              )
-            elsif val_attrs[:exceptions].include?('ignore_id_title_attributes')
-              # Use plain text title
+            if(
+              val_attrs[:exceptions].include?('multi_level_title') ||
+              val_attrs[:exceptions].include?('ignore_id_title_attributes')
+            )
+              # Work with plain text titles, remove line breaks
               r[:title] = remove_linebreaks_plain_text(
                 Kramdown::Document.new(raw_title).to_plain_text.strip
               )
@@ -329,7 +332,7 @@ class Repositext
               raw_title.sub(/[a-z]{3}\d{2}-\d{4}[a-z]?.*\z/i, '')
             ).strip
             t_pt_wldc = Kramdown::Document.new(raw_title).to_plain_text.strip
-            t_pt = nil
+            t_pt = t_pt_wldc
             # ImplementationTag #date_code_regex
             if(md = t_pt_wldc.match(/([a-z]{3})(\d{2}-\d{4}[a-z]?)/i))
               # NOTE: Don't touch capitalization of language code. We expect them
@@ -338,12 +341,12 @@ class Repositext
               r[:date_code] = md[2].to_s.strip
               t_pt = t_pt_wldc.sub(md.to_s, '').strip
             end
-            if val_attrs[:exceptions].include?('multi_level_title')
+            if(
+              val_attrs[:exceptions].include?('multi_level_title') ||
+              val_attrs[:exceptions].include?('ignore_id_title_attributes')
+            )
               # Use plain text title
-              r[:title] = t_pt
-            elsif val_attrs[:exceptions].include?('ignore_id_title_attributes')
-              # Use plain text title
-              r[:title] = t_pt
+              r[:title] = remove_linebreaks_plain_text(t_pt)
             else
               # Use kramdown title
               r[:title] = t_kd
@@ -377,6 +380,9 @@ class Repositext
               na[:title_for_id],
               language
             )
+          end
+          if exceptions.include?('ignore_id_title_attributes')
+            # Processing has already been done in prepare_validation_attrs_content
           end
           if exceptions.include?('ignore_short_word_capitalization')
             na[:title_for_erp] = apply_exception_ignore_short_word_capitalization(
@@ -460,6 +466,9 @@ class Repositext
               na[:primary_title],
               language
             )
+          end
+          if exceptions.include?('ignore_id_title_attributes')
+            # N/A
           end
           if exceptions.include?('ignore_short_word_capitalization')
             na[:title] = apply_exception_ignore_short_word_capitalization(
