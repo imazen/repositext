@@ -26,6 +26,8 @@ class Repositext
         #       different.
         #       Remove everything starting with pound sign from erp. Resulting
         #       ERP title must be contained in main title.
+        #   'ignore_romanian_a_i_circumflex_diffs': Romanian changed the use of
+        #       a and i circumflex characters. We ignore any diffs related to this.
         # * 'ignore_id_title_attributes': File is expected to have different
         #       font attributes between the id title and the main title.
         # * 'ignore_open_o_with_combining_tilde': File uses open_o_with_combining
@@ -113,6 +115,7 @@ class Repositext
             ignore_end_diff_starting_at_pound_sign_erp
             ignore_id_title_attributes
             ignore_open_o_with_combining_tilde
+            ignore_romanian_a_i_circumflex_diffs
             ignore_short_word_capitalization
             ignore_short_word_differences
             multi_level_title
@@ -621,7 +624,18 @@ class Repositext
 
               if val_attrs[:exceptions].include?('ignore_end_diff_starting_at_pound_sign_erp')
                 # Check for plain text containment, not equality
-                record_error = false  if pa_c[:title_for_erp][pa_erp[:title]]
+                if pa_c[:title_for_erp].index(pa_erp[:title])
+                  record_error = false
+                end
+              end
+              if val_attrs[:exceptions].include?('ignore_romanian_a_i_circumflex_diffs')
+                diffs = Suspension::StringComparer.compare(pa_erp[:title], pa_c[:title_for_erp])
+                # [[-1, "î", "line 1", "wîrd word"], [1, "â", "line 1", "wârd word"]]
+                ins_dels = diffs.map { |e| e[0] }.sort
+                diff_strings = diffs.map { |e| e[1] }.sort
+                if([-1,1] == ins_dels && %w[â î] == diff_strings)
+                  record_error = false
+                end
               end
               if val_attrs[:exceptions].include?('ignore_short_word_differences')
                 acceptable_words = content_at_file.language.words_that_can_be_different_in_title_consistency_validation
