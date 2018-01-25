@@ -361,7 +361,7 @@ class Repositext
               val_attrs[:uses_spaces_in_titles]
             ).strip
             t_pt_wldc = Kramdown::Document.new(raw_title).to_plain_text.strip
-            t_pt = t_pt_wldc
+            t_pt = "The id title has no language and date code!"
             # ImplementationTag #date_code_regex
             if(md = t_pt_wldc.match(/([a-z]{3})(\d{2}-\d{4}[a-z]?)/i))
               # NOTE: Don't touch capitalization of language code. We expect them
