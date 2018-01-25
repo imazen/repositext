@@ -84,8 +84,16 @@ class Repositext
       str.index('.') || str.index('!') || str.index('?')
     end
 
-     # Returns list of words that may be capitalized differently in titles.
-    def short_words_for_title_capitalization
+    # Returns list of words that may be capitalized differently when comparing
+    # titles in title consistency validation.
+    def words_that_can_be_capitalized_differently_in_title_consistency_validation
+      # Override this method in subclasses
+      []
+    end
+
+    # Returns list of words that may be different when comparing titles in title
+    # consistency validation.
+    def words_that_can_be_different_in_title_consistency_validation
       # Override this method in subclasses
       []
     end

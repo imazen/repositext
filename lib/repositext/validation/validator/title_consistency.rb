@@ -27,9 +27,14 @@ class Repositext
         #       Remove everything starting with pound sign from erp. Resulting
         #       ERP title must be contained in main title.
         # * 'ignore_id_title_attributes': File is expected to have different
-        #       font atrributes between the id title and the main title.
+        #       font attributes between the id title and the main title.
         # * 'ignore_short_word_capitalization': File is expected to capitalize
         #       small words differently between the 3 titles.
+        #   'ignore_short_word_differences': We accept the following differences:
+        #       * ID may have extra words when compared with content.
+        #       * ERP may have extra words when compared with content.
+        #       Acceptable words are specified on a per language basis in
+        #       `#words_that_can_be_different_in_title_consistency_validation`
         # * 'multi_level_title': The file contains level 1 and level 2 headers
         #       that need to be combined to get the main title. The two titles
         #       will be joined with ", " and will be compared in plain text
@@ -103,6 +108,7 @@ class Repositext
             ignore_end_diff_starting_at_pound_sign_erp
             ignore_id_title_attributes
             ignore_short_word_capitalization
+            ignore_short_word_differences
             multi_level_title
             remove_pound_sign_and_digits_erp
             remove_pound_sign_erp
@@ -495,7 +501,7 @@ class Repositext
 
         def apply_exception_ignore_short_word_capitalization(title, language)
           nt = title.dup
-          language.short_words_for_title_capitalization.each { |sw|
+          language.words_that_can_be_capitalized_differently_in_title_consistency_validation.each { |sw|
             nt.gsub!(/\b#{ sw }\b/i, sw)
           }
           nt
@@ -568,6 +574,18 @@ class Repositext
               if val_attrs[:exceptions].include?('ignore_end_diff_starting_at_pound_sign_erp')
                 # Check for plain text containment, not equality
                 record_error = false  if pa_c[:title_for_erp][pa_erp[:title]]
+              end
+              if val_attrs[:exceptions].include?('ignore_short_word_differences')
+                acceptable_words = content_at_file.language.words_that_can_be_different_in_title_consistency_validation
+                diffs = Suspension::StringComparer.compare(pa_erp[:title], pa_c[:title_for_erp])
+                if diffs.all? { |diff|
+                  # [-1, "on ", "line 1", "word word word on word"]
+                  ins_del, diff_string, line, context = diff
+                  sanitized_diff = diff_string.strip.unicode_downcase
+                  -1 == ins_del && acceptable_words.include?(sanitized_diff)
+                }
+                  record_error = false
+                end
               end
 
               if record_error
@@ -655,13 +673,29 @@ class Repositext
                 ["Title from id is missing"]
               )
             elsif pa_id[:title] != pa_c[:title_for_id]
-              errors << Reportable.error(
-                { filename: @file_to_validate.filename },
-                [
-                  "ID title is different from content title",
-                  "ID title: #{ pa_id[:title].inspect }, Content title: #{ pa_c[:title_for_id].inspect }"
-                ]
-              )
+              record_error = true
+              if val_attrs[:exceptions].include?('ignore_short_word_differences')
+                acceptable_words = content_at_file.language.words_that_can_be_different_in_title_consistency_validation
+                diffs = Suspension::StringComparer.compare(pa_id[:title], pa_c[:title_for_id])
+                if diffs.all? { |diff|
+                  # [-1, "on ", "line 1", "word word word on word"]
+                  ins_del, diff_string, line, context = diff
+                  sanitized_diff = diff_string.strip.unicode_downcase
+                  -1 == ins_del && acceptable_words.include?(sanitized_diff)
+                }
+                  record_error = false
+                end
+              end
+
+              if record_error
+                errors << Reportable.error(
+                  { filename: @file_to_validate.filename },
+                  [
+                    "ID title is different from content title",
+                    "ID title: #{ pa_id[:title].inspect }, Content title: #{ pa_c[:title_for_id].inspect }"
+                  ]
+                )
+              end
             end
           end
         end
