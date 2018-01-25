@@ -84,6 +84,12 @@ class Repositext
       str.index('.') || str.index('!') || str.index('?')
     end
 
+    # Returns a regex to be used for removal of trailing "Part x" from title
+    # from content for purposes of title consistency validation.
+    def regex_for_trailing_hashtag_diff_in_title_consistency_validation
+      nil
+    end
+
     # Returns list of words that may be capitalized differently when comparing
     # titles in title consistency validation.
     def words_that_can_be_capitalized_differently_in_title_consistency_validation

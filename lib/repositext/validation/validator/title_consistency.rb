@@ -499,16 +499,6 @@ class Repositext
 
         def apply_exceptions_id(attrs, exceptions, language)
           na = attrs.dup
-          if exceptions.include?('ignore_end_diff_starting_at_pound_sign_erp')
-            na[:title] = apply_exception_ignore_end_diff_starting_at_pound_sign(
-              na[:title],
-              language
-            )
-            na[:primary_title] = apply_exception_ignore_end_diff_starting_at_pound_sign(
-              na[:primary_title],
-              language
-            )
-          end
           if exceptions.include?('ignore_id_title_attributes')
             # N/A
           end
@@ -538,7 +528,7 @@ class Repositext
           # Remove everything from pound sign to the end
           # test if erp is contained in title from content
           title.gsub(/\s#.*\z/, '')
-               .gsub(/\sPart.*\z/, '')
+               .gsub(language.regex_for_trailing_hashtag_diff_in_title_consistency_validation, '')
         end
 
         def apply_exception_ignore_short_word_capitalization(title, language)
