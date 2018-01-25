@@ -28,6 +28,10 @@ class Repositext
         #       ERP title must be contained in main title.
         # * 'ignore_id_title_attributes': File is expected to have different
         #       font attributes between the id title and the main title.
+        # * 'ignore_open_o_with_combining_tilde': File uses open_o_with_combining
+        #       tilde in ERP and a character from private use area in content and id.
+        #       We replace the private use area characters in content and id
+        #       with the proper unicode code points and leave erp alone.
         # * 'ignore_short_word_capitalization': File is expected to capitalize
         #       small words differently between the 3 titles.
         #   'ignore_short_word_differences': We accept the following differences:
@@ -107,6 +111,7 @@ class Repositext
           valid_exceptions = %w[
             ignore_end_diff_starting_at_pound_sign_erp
             ignore_id_title_attributes
+            ignore_open_o_with_combining_tilde
             ignore_short_word_capitalization
             ignore_short_word_differences
             multi_level_title
@@ -390,6 +395,16 @@ class Repositext
           if exceptions.include?('ignore_id_title_attributes')
             # Processing has already been done in prepare_validation_attrs_content
           end
+          if exceptions.include?('ignore_open_o_with_combining_tilde')
+            na[:title_for_erp] = apply_exception_replace_open_o_with_combining_tilde(
+              na[:title_for_erp],
+              language
+            )
+            na[:title_for_id] = apply_exception_replace_open_o_with_combining_tilde(
+              na[:title_for_id],
+              language
+            )
+          end
           if exceptions.include?('ignore_short_word_capitalization')
             na[:title_for_erp] = apply_exception_ignore_short_word_capitalization(
               na[:title_for_erp],
@@ -476,6 +491,12 @@ class Repositext
           if exceptions.include?('ignore_id_title_attributes')
             # N/A
           end
+          if exceptions.include?('ignore_open_o_with_combining_tilde')
+            na[:title] = apply_exception_replace_open_o_with_combining_tilde(
+              na[:title],
+              language
+            )
+          end
           if exceptions.include?('ignore_short_word_capitalization')
             na[:title] = apply_exception_ignore_short_word_capitalization(
               na[:title],
@@ -523,6 +544,13 @@ class Repositext
           title.gsub(/\s?\*\d+\*\{\:[^\}]+\}\z/, '')
                .gsub(/\s?\d+/, '')
 
+        end
+
+        def apply_exception_replace_open_o_with_combining_tilde(title, language)
+          # Replace private use area character with proper unicode code points
+          # : \uF6ED
+          # ɔ̃: \u0254\u0303
+          title.gsub("\uF6ED", "\u0254\u0303")
         end
 
         def remove_linebreaks_kramdown(txt)
