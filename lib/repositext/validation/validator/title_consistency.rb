@@ -62,6 +62,7 @@ class Repositext
             exceptions: @options['validator_exceptions'],
             has_erp_data: nil,
             has_id_titles: nil,
+            uses_spaces_in_titles: content_at_file.language.uses_spaces_in_titles_in_title_consistency_validation,
             is_primary: content_at_file.is_primary?,
             raw: {
               content: {
@@ -248,10 +249,12 @@ class Repositext
           r = if val_attrs[:exceptions].include?('multi_level_title')
             # Join both level 1 and level 2 headers as plain text
             t = remove_linebreaks_plain_text(
-              [ra[:header_1_pt].to_s.strip, ra[:header_2_pt].to_s.strip].join(", ")
+              [ra[:header_1_pt].to_s.strip, ra[:header_2_pt].to_s.strip].join(", "),
+              val_attrs[:uses_spaces_in_titles]
             )
             tid = remove_linebreaks_plain_text(
-              [ra[:header_1_pt].to_s.strip, ra[:header_2_pt].to_s.strip].join(" — ")
+              [ra[:header_1_pt].to_s.strip, ra[:header_2_pt].to_s.strip].join(" — "),
+              val_attrs[:uses_spaces_in_titles]
             )
             {
               title_for_erp: erp_title_sanitizer.call(t),
@@ -261,14 +264,21 @@ class Repositext
             # Prepare both pt and kd from header 1
             title_for_id = if val_attrs[:exceptions].include?('ignore_id_title_attributes')
               # use plain text
-              remove_linebreaks_plain_text(ra[:header_1_pt].to_s.strip)
+              remove_linebreaks_plain_text(
+                ra[:header_1_pt].to_s.strip,
+                val_attrs[:uses_spaces_in_titles]
+              )
             else
               # Use kramdown
-              remove_linebreaks_kramdown(ra[:header_1_kd].to_s.strip)
+              remove_linebreaks_kramdown(
+                ra[:header_1_kd].to_s.strip,
+                val_attrs[:uses_spaces_in_titles]
+              )
             end
             {
               title_for_erp: remove_linebreaks_plain_text(
-                erp_title_sanitizer.call(ra[:header_1_pt].to_s.strip)
+                erp_title_sanitizer.call(ra[:header_1_pt].to_s.strip),
+                val_attrs[:uses_spaces_in_titles]
               ),
               title_for_id: title_for_id,
             }
@@ -318,11 +328,15 @@ class Repositext
             )
               # Work with plain text titles, remove line breaks
               r[:title] = remove_linebreaks_plain_text(
-                Kramdown::Document.new(raw_title).to_plain_text.strip
+                Kramdown::Document.new(raw_title).to_plain_text.strip,
+                val_attrs[:uses_spaces_in_titles]
               )
             else
               # Work with kramdown titles
-              r[:title] = remove_linebreaks_kramdown(raw_title)
+              r[:title] = remove_linebreaks_kramdown(
+                raw_title,
+                val_attrs[:uses_spaces_in_titles]
+              )
             end
             r[:primary_title] = ''
             # Get datecode from id_title2
@@ -340,7 +354,8 @@ class Repositext
             # and remove them from the plain text title.
             # ImplementationTag #date_code_regex
             t_kd = remove_linebreaks_kramdown(
-              raw_title.sub(/[a-z]{3}\d{2}-\d{4}[a-z]?.*\z/i, '')
+              raw_title.sub(/[a-z]{3}\d{2}-\d{4}[a-z]?.*\z/i, ''),
+              val_attrs[:uses_spaces_in_titles]
             ).strip
             t_pt_wldc = Kramdown::Document.new(raw_title).to_plain_text.strip
             t_pt = t_pt_wldc
@@ -357,7 +372,10 @@ class Repositext
               val_attrs[:exceptions].include?('ignore_id_title_attributes')
             )
               # Use plain text title
-              r[:title] = remove_linebreaks_plain_text(t_pt)
+              r[:title] = remove_linebreaks_plain_text(
+                t_pt,
+                val_attrs[:uses_spaces_in_titles]
+              )
             else
               # Use kramdown title
               r[:title] = t_kd
@@ -553,15 +571,17 @@ class Repositext
           title.gsub("\uF6ED", "\u0254\u0303")
         end
 
-        def remove_linebreaks_kramdown(txt)
-          txt.gsub("*{: .italic .smcaps} *.*{: .line_break}*", ' ')
-             .gsub("*{: .bold .italic} *.*{: .line_break}*", ' ')
-             .gsub("** *.*{: .line_break}**", '')
-             .gsub(" *.*{: .line_break}", ' ')
+        def remove_linebreaks_kramdown(txt, uses_spaces_in_titles)
+          replacement = uses_spaces_in_titles ? ' ' : ''
+          txt.gsub("*{: .italic .smcaps} *.*{: .line_break}*", replacement)
+             .gsub("*{: .bold .italic} *.*{: .line_break}*", replacement)
+             .gsub("** *.*{: .line_break}**", replacement)
+             .gsub(" *.*{: .line_break}", replacement)
         end
 
-        def remove_linebreaks_plain_text(txt)
-          txt.gsub(/ *\n+ */, ' ')
+        def remove_linebreaks_plain_text(txt, uses_spaces_in_titles)
+          replacement = uses_spaces_in_titles ? ' ' : ''
+          txt.gsub(/ *\n+ */, replacement)
         end
 
         # @param content_at_file [RFile::ContentAt]

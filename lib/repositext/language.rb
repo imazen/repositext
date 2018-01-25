@@ -171,6 +171,11 @@ class Repositext
       }
     end
 
+    # Returns true if this language uses spaces between words in titles.
+    def uses_spaces_in_titles_in_title_consistency_validation
+      true
+    end
+
   private
 
     # @param attr_name [Symbol] one of :code2, :code3, :name
